@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "roll-text",
+  "title": "RollText",
+  "description": "Each letter rolls up out of sight and its copy rolls in from below, one after another. CSS only; .roll-host on any ancestor triggers it.",
+  "files": [
+    {
+      "path": "src/components/fx/roll-text/RollText.tsx",
+      "content": "import \"./roll-text.css\";\n\n/**\n * RollText — on hover of the nearest link/button, each letter rolls up out of sight and its copy\n * rolls in from below, one letter after another (CSS only: an ancestor with .roll-host triggers it).\n * Screen readers get the text whole; the rolling letters are hidden from them.\n */\nexport function RollText({ children }: { children: string }) {\n  return (\n    <>\n      <span className=\"visually-hidden\">{children}</span>\n      <span className=\"roll\" aria-hidden=\"true\">\n        {[...children].map((char, i) => (\n          <span className=\"roll__c\" key={i} style={{ \"--i\": i } as React.CSSProperties}>\n            <span>{char}</span>\n            <span>{char}</span>\n          </span>\n        ))}\n      </span>\n    </>\n  );\n}\n",
+      "type": "registry:component"
+    },
+    {
+      "path": "src/components/fx/roll-text/roll-text.css",
+      "content": "/* RollText: on hover each letter rolls up out of sight and its copy rolls in from below. */\n\n.roll { display: inline-flex; overflow: hidden; }\n.roll__c { position: relative; display: flex; flex-direction: column; }\n.roll__c > span {\n  display: block;\n  white-space: pre;\n  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i) * 20ms);\n}\n.roll__c > span + span { position: absolute; top: 0; left: 0; right: 0; transform: translateY(100%); }\n@media (prefers-reduced-motion: reduce) {\n  .roll__c > span { transition: none; }\n}\n/* the trigger: any ancestor with .roll-host (the site's nav links bring their own rule, header.css) */\n.roll-host:hover .roll__c > span,\n.roll-host:focus-visible .roll__c > span { transform: translateY(-100%); }\n.roll-host:hover .roll__c > span + span,\n.roll-host:focus-visible .roll__c > span + span { transform: translateY(0); }\n",
+      "type": "registry:file",
+      "target": "src/components/fx/roll-text/roll-text.css"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,38 @@
+/* FX Lab: only what Tailwind can't say. The ride's demo layout (the site's own ride lives in services.css). */
+@import "../layout/footer/footer.css";
+@import "../sections/services/services.css";
+
+/* the site runs without Tailwind's preflight (styles/base.css is its reset): the lab resets its own bits */
+.lab ol, .lab ul { margin: 0; padding: 0; list-style: none; }
+.lab a { color: inherit; text-decoration: none; }
+.lab h1, .lab h2, .lab h3, .lab p { margin: 0; font-weight: inherit; }
+.lab h2 { font-weight: 400; }
+
+.lab-fill .w { opacity: 0.2; }
+.lab-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, -30%), rgb(218 255 2 / 0.14), transparent 60%);
+  pointer-events: none;
+}
+.lab-smoke canvas { mix-blend-mode: screen; }
+
+.lab-ride.is-on {
+  height: calc(100svh - 80px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  margin-inline: calc(var(--gutter) * -1);
+  overflow: clip;
+}
+.lab-track { display: grid; gap: 24px; }
+.lab-ride.is-on .lab-track { display: flex; align-items: center; gap: 4vw; width: max-content; justify-self: start; padding-inline: var(--gutter); }
+.lab-panel { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.lab-ride.is-on .lab-panel { flex: none; width: min(1100px, 80vw); }
+.lab-panel__media {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, hsl(calc(var(--h) * 1deg) 70% 50% / 0.35), transparent 70%), #0d0d0d;
+}

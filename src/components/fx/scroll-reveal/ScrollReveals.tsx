@@ -23,10 +23,11 @@ export function ScrollReveals({ root = "[data-page]", exclude = ".is-deck .stage
         once: true,
         onEnter: (batch) => {
           const passed = batch.filter((el) => el.getBoundingClientRect().bottom < 0);
-          if (passed.length) gsap.set(passed, { opacity: 1, y: 0, overwrite: true });
+          // done: the transform goes (a transformed ancestor would break a pinned, fixed child)
+          if (passed.length) gsap.set(passed, { opacity: 1, y: 0, overwrite: true, clearProps: "transform" });
           const seen = batch.filter((el) => !passed.includes(el));
           if (seen.length)
-            gsap.to(seen, { opacity: 1, y: 0, duration: touch ? 0.6 : 1.1, ease: touch ? "power2.out" : "expo.out", stagger: touch ? 0.05 : 0.08, overwrite: true });
+            gsap.to(seen, { opacity: 1, y: 0, duration: touch ? 0.6 : 1.1, ease: touch ? "power2.out" : "expo.out", stagger: touch ? 0.05 : 0.08, overwrite: true, clearProps: "transform" });
         },
       });
       const onFocus = (e: FocusEvent) => {

@@ -8,6 +8,9 @@
  * Elsewhere (phones, short windows, reduced motion) the block stays the list it always was.
  *
  * `services:go` (2 · Що ми робимо): while the ride is on, the page scrolls to that panel.
+ *
+ * Library use: initRide({ motion, root, track, panel, name, media, body, tabs }) — the selectors
+ * default to the site's markup; the HUD is optional ([data-ride-now|of|bar|names] inside root).
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
 
@@ -17,11 +20,22 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const RIDE_MQ = '(min-width: 1024px) and (min-height: 620px) and (hover: hover) and (pointer: fine)';
 const PX_PER_SCREEN = 1.0; // vertical scroll per px of sideways travel
 
-export function initRide({ motion }) {
-  const ride = $('[data-ride]');
-  const list = ride && $('.services', ride);
+export function initRide({
+  motion = true,
+  root = '[data-ride]',
+  track = '.services',
+  panel = '.service',
+  name = '.service__meta span:last-child',
+  media = '.service__demo',
+  body = '.service__meta, .service__title, .service__text, .service__foot',
+  tabs = '.service-tabs.is-on',
+  goEvent = 'services:go',
+  mq = RIDE_MQ,
+} = {}) {
+  const ride = $(root);
+  const list = ride && $(track, ride);
   if (!ride || !list) return { isOn: () => false };
-  const panels = $$('.service', list);
+  const panels = $$(panel, list);
   const gsap = GSAP;
   const ScrollTrigger = ST;
   const now = $('[data-ride-now]', ride);
@@ -58,11 +72,11 @@ export function initRide({ motion }) {
     window.scrollTo({ top: y, behavior: 'smooth' });
   };
 
-  document.addEventListener('services:go', (e) => {
+  document.addEventListener(goEvent, (e) => {
     if (!on) {
       // the phone switcher: its tab opens, and the anchor scrolls to the window as usual
       const tab = document.getElementById(`${e.detail?.id}-tab`);
-      if (tab?.closest('.service-tabs.is-on')) tab.click();
+      if (tab?.closest(tabs)) tab.click();
       return;
     }
     const i = panels.findIndex((p) => p.id === e.detail?.id);
@@ -81,7 +95,7 @@ export function initRide({ motion }) {
       const li = document.createElement('li');
       const b = document.createElement('button');
       b.type = 'button';
-      b.textContent = $('.service__meta span:last-child', p)?.textContent.trim() || pad(i + 1);
+      b.textContent = $(name, p)?.textContent.trim() || pad(i + 1);
       b.setAttribute('aria-current', 'false');
       b.addEventListener('click', () => goTo(i));
       li.append(b);
@@ -116,7 +130,7 @@ export function initRide({ motion }) {
   }, { passive: false });
 
   const mm = gsap.matchMedia();
-  mm.add(RIDE_MQ, () => {
+  mm.add(mq, () => {
     on = true;
     ride.classList.add('is-on');
     list.classList.remove('is-stacked');
@@ -151,8 +165,8 @@ export function initRide({ motion }) {
 
     // each panel: lit in the middle, stepped back at the sides; its numeral drifts faster
     panels.forEach((p, i) => {
-      const demo = $('.service__demo', p);
-      const body = $$('.service__meta, .service__title, .service__text, .service__foot', p);
+      const demo = $(media, p);
+      const copy = $$(body, p);
       gsap.timeline({
         scrollTrigger: {
           trigger: p,
@@ -163,9 +177,9 @@ export function initRide({ motion }) {
         },
       })
         .fromTo(demo, { scale: 0.86, autoAlpha: 0.35 }, { scale: 1, autoAlpha: 1, ease: 'power2.out', duration: 1 })
-        .fromTo(body, { x: 80, autoAlpha: 0 }, { x: 0, autoAlpha: 1, ease: 'power2.out', duration: 1, stagger: 0.04 }, 0)
+        .fromTo(copy, { x: 80, autoAlpha: 0 }, { x: 0, autoAlpha: 1, ease: 'power2.out', duration: 1, stagger: 0.04 }, 0)
         .to(demo, { scale: 0.86, autoAlpha: 0.35, ease: 'power2.in', duration: 1 }, 1)
-        .to(body, { x: -60, autoAlpha: 0, ease: 'power2.in', duration: 1 }, 1);
+        .to(copy, { x: -60, autoAlpha: 0, ease: 'power2.in', duration: 1 }, 1);
       gsap.fromTo(bigs[i], { xPercent: 40 }, {
         xPercent: -40,
         ease: 'none',

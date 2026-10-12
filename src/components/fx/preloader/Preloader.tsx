@@ -142,7 +142,7 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
             return;
           }
           // the copy slips up out of its masks, the line runs out to the right
-          const out = [...el.querySelectorAll<HTMLElement>("[data-pl-fade]"), word, count];
+          const out = [...el.querySelectorAll<HTMLElement>("[data-pl-fade]"), word, count.parentElement ?? count]; // the count with its «%»
           out.forEach((n, k) =>
             n.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-110%)", opacity: 0 }], { duration: 420, delay: k * 30, easing: IN, fill: "forwards" }),
           );

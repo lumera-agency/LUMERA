@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "smooth-scroll",
+  "title": "SmoothScroll",
+  "description": "Lenis on GSAP's ticker, synced with ScrollTrigger; off for reduced motion and touch; dialogs and [data-lenis-prevent] keep the wheel.",
+  "dependencies": [
+    "lenis@1.3.26"
+  ],
+  "registryDependencies": [
+    "@lumera/gsap-setup"
+  ],
+  "files": [
+    {
+      "path": "src/components/fx/smooth-scroll/SmoothScroll.tsx",
+      "content": "\"use client\";\n/*\n * SmoothScroll — Lenis: the page glides to where the wheel points instead of jumping in steps.\n * The page still scrolls natively (window.scrollY), so ScrollTrigger, sticky blocks and anchor links\n * keep working; Lenis drives ScrollTrigger from GSAP's ticker (one clock). Off with reduced motion\n * and on touch (the finger already scrolls smoothly). Elements that scroll by themselves (dialogs,\n * lists, [data-lenis-prevent]) keep the wheel. The open mobile menu stops it.\n */\nimport { useEffect } from \"react\";\nimport Lenis from \"lenis\";\nimport { gsap, ScrollTrigger } from \"@/lib/gsap\";\nimport \"./smooth-scroll.css\";\n\nlet instance: Lenis | null = null;\n/** The running Lenis (null when off): for scripted scrolls that should glide the same way. */\nexport const getLenis = () => instance;\n\nexport function SmoothScroll({ lerp = 0.095 }: { lerp?: number }) {\n  useEffect(() => {\n    if (matchMedia(\"(prefers-reduced-motion: reduce)\").matches) return;\n    if (!matchMedia(\"(hover: hover) and (pointer: fine)\").matches) return;\n    const lenis = new Lenis({\n      lerp,\n      smoothWheel: true,\n      syncTouch: false,\n      prevent: (node) => Boolean(node.closest?.(\"dialog, [data-lenis-prevent]\")),\n    });\n    instance = lenis;\n    lenis.on(\"scroll\", ScrollTrigger.update);\n    const tick = (time: number) => lenis.raf(time * 1000);\n    gsap.ticker.add(tick);\n    gsap.ticker.lagSmoothing(0);\n    // the open menu holds the page still\n    const root = document.documentElement;\n    const mo = new MutationObserver(() => (root.classList.contains(\"menu-open\") ? lenis.stop() : lenis.start()));\n    mo.observe(root, { attributes: true, attributeFilter: [\"class\"] });\n    return () => {\n      mo.disconnect();\n      gsap.ticker.remove(tick);\n      lenis.destroy();\n      instance = null;\n    };\n  }, [lerp]);\n  return null;\n}\n",
+      "type": "registry:component"
+    },
+    {
+      "path": "src/components/fx/smooth-scroll/smooth-scroll.css",
+      "content": "/* Lenis's own recommendations: the native smooth anchor scroll would fight the glide */\nhtml.lenis,\nhtml.lenis body { height: auto; }\nhtml.lenis { scroll-behavior: auto !important; }\n.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }\n.lenis.lenis-stopped { overflow: clip; }\n.lenis.lenis-smooth iframe { pointer-events: none; }\n",
+      "type": "registry:file",
+      "target": "src/components/fx/smooth-scroll/smooth-scroll.css"
+    }
+  ],
+  "type": "registry:component"
+}

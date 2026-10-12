@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "gsap-setup",
+  "title": "GSAP setup",
+  "description": "Registers ScrollTrigger, SplitText and useGSAP once; every effect imports GSAP from here.",
+  "dependencies": [
+    "gsap@3.15.0",
+    "@gsap/react@2.1.2"
+  ],
+  "files": [
+    {
+      "path": "src/lib/gsap.ts",
+      "content": "\"use client\";\n/** GSAP for the whole site: one place registers the plugins; components import from here. */\nimport { gsap } from \"gsap\";\nimport { ScrollTrigger } from \"gsap/ScrollTrigger\";\nimport { SplitText } from \"gsap/SplitText\";\nimport { useGSAP } from \"@gsap/react\";\n\nif (typeof window !== \"undefined\") {\n  gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);\n  // phones: the address bar sliding in and out is not a layout change\n  ScrollTrigger.config({ ignoreMobileResize: true });\n  // QA from the console and the headless checks (development only)\n  if (process.env.NODE_ENV !== \"production\") Object.assign(window, { gsap, ScrollTrigger });\n}\n\nexport { gsap, ScrollTrigger, SplitText, useGSAP };\n",
+      "type": "registry:lib"
+    }
+  ],
+  "type": "registry:lib"
+}

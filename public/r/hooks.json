@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "hooks",
+  "title": "Hooks",
+  "description": "useMediaQuery, useReducedMotion, useFinePointer, wait.",
+  "files": [
+    {
+      "path": "src/lib/hooks.ts",
+      "content": "\"use client\";\nimport { useEffect, useLayoutEffect, useSyncExternalStore } from \"react\";\n\nexport const useIsomorphicLayoutEffect = typeof window !== \"undefined\" ? useLayoutEffect : useEffect;\n\n/** A media query as state (false on the server and in the first client render). */\nexport function useMediaQuery(query: string) {\n  return useSyncExternalStore(\n    (onChange) => {\n      const mq = window.matchMedia(query);\n      mq.addEventListener(\"change\", onChange);\n      return () => mq.removeEventListener(\"change\", onChange);\n    },\n    () => window.matchMedia(query).matches,\n    () => false,\n  );\n}\n\nexport const useReducedMotion = () => useMediaQuery(\"(prefers-reduced-motion: reduce)\");\nexport const useFinePointer = () => useMediaQuery(\"(hover: hover) and (pointer: fine)\");\n\nexport const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));\n",
+      "type": "registry:lib"
+    }
+  ],
+  "type": "registry:lib"
+}

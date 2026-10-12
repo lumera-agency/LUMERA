@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "spotlight",
+  "title": "Spotlight",
+  "description": "Cards light up under the cursor: --mx / --my follow the pointer; the card's CSS draws the light.",
+  "files": [
+    {
+      "path": "src/components/fx/spotlight/useSpotlight.ts",
+      "content": "\"use client\";\nimport { useEffect, type RefObject } from \"react\";\n\n/**\n * Spotlight — cards light up under the cursor: --mx/--my follow the pointer inside each card, and\n * the card's CSS draws a radial light there (page.css .card::before/::after). Mouse only.\n */\nexport function useSpotlight(scope: RefObject<HTMLElement | null>, selector = \".card\") {\n  useEffect(() => {\n    const root = scope.current;\n    if (!root || !matchMedia(\"(hover: hover) and (pointer: fine)\").matches) return;\n    let frame = 0;\n    const move = (e: PointerEvent) => {\n      const card = (e.target as HTMLElement).closest<HTMLElement>(selector);\n      if (!card || !root.contains(card)) return;\n      const r = card.getBoundingClientRect();\n      const x = e.clientX - r.left;\n      const y = e.clientY - r.top;\n      if (frame) return;\n      frame = requestAnimationFrame(() => {\n        frame = 0;\n        card.style.setProperty(\"--mx\", `${x}px`);\n        card.style.setProperty(\"--my\", `${y}px`);\n      });\n    };\n    root.addEventListener(\"pointermove\", move, { passive: true });\n    return () => root.removeEventListener(\"pointermove\", move);\n  }, [scope, selector]);\n}\n",
+      "type": "registry:hook"
+    }
+  ],
+  "type": "registry:hook"
+}

@@ -1,0 +1,128 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "lumera",
+  "homepage": "https://lumera-seven-eta.vercel.app/lab",
+  "items": [
+    {
+      "name": "tokens",
+      "type": "registry:file",
+      "title": "Design tokens",
+      "description": "The one source of truth: Tailwind @theme (colors, type, motion, radii) + the CSS names the effects read. A new site = a new copy of this file.",
+      "files": [{ "path": "src/styles/tokens.css", "type": "registry:file", "target": "src/styles/tokens.css" }]
+    },
+    {
+      "name": "gsap-setup",
+      "type": "registry:lib",
+      "title": "GSAP setup",
+      "description": "Registers ScrollTrigger, SplitText and useGSAP once; every effect imports GSAP from here.",
+      "dependencies": ["gsap@3.15.0", "@gsap/react@2.1.2"],
+      "files": [{ "path": "src/lib/gsap.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "hooks",
+      "type": "registry:lib",
+      "title": "Hooks",
+      "description": "useMediaQuery, useReducedMotion, useFinePointer, wait.",
+      "files": [{ "path": "src/lib/hooks.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "preloader",
+      "type": "registry:component",
+      "title": "Preloader",
+      "description": "Five columns, the words of what you do, an honest counter driven by real loading milestones (window.lumeraLoader.step / finish), a column-lift exit that hands over to the hero. Rendered outside hydration.",
+      "files": [
+        { "path": "src/components/fx/preloader/Preloader.tsx", "type": "registry:component" },
+        { "path": "src/components/fx/preloader/preloader.css", "type": "registry:file", "target": "src/components/fx/preloader/preloader.css" }
+      ]
+    },
+    {
+      "name": "roll-text",
+      "type": "registry:component",
+      "title": "RollText",
+      "description": "Each letter rolls up out of sight and its copy rolls in from below, one after another. CSS only; .roll-host on any ancestor triggers it.",
+      "files": [
+        { "path": "src/components/fx/roll-text/RollText.tsx", "type": "registry:component" },
+        { "path": "src/components/fx/roll-text/roll-text.css", "type": "registry:file", "target": "src/components/fx/roll-text/roll-text.css" }
+      ]
+    },
+    {
+      "name": "magnetic",
+      "type": "registry:hook",
+      "title": "Magnetic",
+      "description": "A gentle pull toward the cursor (mouse only, never with reduced motion); the label lags for depth, presses squash.",
+      "registryDependencies": ["@lumera/gsap-setup"],
+      "files": [{ "path": "src/components/fx/magnetic/useMagnetic.ts", "type": "registry:hook" }]
+    },
+    {
+      "name": "hover-reveal",
+      "type": "registry:hook",
+      "title": "HoverReveal",
+      "description": "Over a list row, its picture follows the cursor: lerped follow, lean from the pointer's speed, unmask from the side it came from. After Codrops' Rapid Image Hover Menu (MIT).",
+      "registryDependencies": ["@lumera/gsap-setup"],
+      "files": [
+        { "path": "src/components/fx/hover-reveal/useHoverReveal.ts", "type": "registry:hook" },
+        { "path": "src/components/fx/hover-reveal/hover-reveal.css", "type": "registry:file", "target": "src/components/fx/hover-reveal/hover-reveal.css" }
+      ]
+    },
+    {
+      "name": "text-fill",
+      "type": "registry:component",
+      "title": "TextFill",
+      "description": "A paragraph whose words light up as you read down (scrubbed). No-break pairs light up as one.",
+      "registryDependencies": ["@lumera/gsap-setup"],
+      "files": [{ "path": "src/components/fx/text-fill/TextFill.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "scroll-reveal",
+      "type": "registry:component",
+      "title": "ScrollReveals",
+      "description": "[data-sr] blocks rise and fade in by batches; [data-split] headings unmask line by line. Touch only fades; a jump shows what it passed at once; focus shows its block.",
+      "registryDependencies": ["@lumera/gsap-setup"],
+      "files": [{ "path": "src/components/fx/scroll-reveal/ScrollReveals.tsx", "type": "registry:component" }]
+    },
+    {
+      "name": "spotlight",
+      "type": "registry:hook",
+      "title": "Spotlight",
+      "description": "Cards light up under the cursor: --mx / --my follow the pointer; the card's CSS draws the light.",
+      "files": [{ "path": "src/components/fx/spotlight/useSpotlight.ts", "type": "registry:hook" }]
+    },
+    {
+      "name": "smooth-scroll",
+      "type": "registry:component",
+      "title": "SmoothScroll",
+      "description": "Lenis on GSAP's ticker, synced with ScrollTrigger; off for reduced motion and touch; dialogs and [data-lenis-prevent] keep the wheel.",
+      "dependencies": ["lenis@1.3.26"],
+      "registryDependencies": ["@lumera/gsap-setup"],
+      "files": [
+        { "path": "src/components/fx/smooth-scroll/SmoothScroll.tsx", "type": "registry:component" },
+        { "path": "src/components/fx/smooth-scroll/smooth-scroll.css", "type": "registry:file", "target": "src/components/fx/smooth-scroll/smooth-scroll.css" }
+      ]
+    },
+    {
+      "name": "horizontal-ride",
+      "type": "registry:lib",
+      "title": "HorizontalRide",
+      "description": "A pinned horizontal ride: vertical scroll drives a track sideways; the middle panel lit, neighbours step back, outlined numerals drift for depth, a HUD counts and names the panels. Selectors are options.",
+      "registryDependencies": ["@lumera/gsap-setup"],
+      "files": [{ "path": "src/components/fx/horizontal-ride/ride.js", "type": "registry:lib" }]
+    },
+    {
+      "name": "splash-cursor",
+      "type": "registry:lib",
+      "title": "SplashCursor",
+      "description": "Smoke that follows the mouse: a small GPU fluid (WebGL2), knobs as React Bits' <SplashCursor />.",
+      "files": [
+        { "path": "src/components/fx/splash-cursor/fluid.js", "type": "registry:lib" },
+        { "path": "src/components/fx/splash-cursor/startSplashCursor.ts", "type": "registry:lib" }
+      ]
+    },
+    {
+      "name": "chrome-wordmark",
+      "type": "registry:lib",
+      "title": "ChromeWordmark",
+      "description": "A word in liquid chrome (plain WebGL): domain-warped noise shaded as polished metal, an ivory lens at the cursor.",
+      "files": [{ "path": "src/components/fx/chrome-wordmark/wordmark.js", "type": "registry:lib" }]
+    }
+  ]
+}
