@@ -140,12 +140,13 @@
 :is(.page, .topbar, .footer) .btn--primary { --btn-bg: var(--ember); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(210 86 28 / 0.6); }
 :is(.page, .topbar, .footer) :is(.btn--ghost, .btn--line) { --btn-fill: var(--ember); --btn-fill-ink: var(--on-ink); }
 
+/* a link in running text: underlined in its own colour, faint (an ember line read as an error) */
 .link {
   color: var(--ink);
   text-decoration: underline;
   text-decoration-thickness: 1px;
-  text-decoration-color: rgb(210 86 28 / 0.75);
-  text-underline-offset: 0.1875rem;
-  transition: text-decoration-color var(--dur-fast);
+  text-decoration-color: color-mix(in srgb, currentColor 38%, transparent);
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--dur-fast), color var(--dur-fast);
 }
-.link:hover { color: var(--ember-ink); text-decoration-color: var(--ember); }
+.link:hover { text-decoration-color: currentColor; }

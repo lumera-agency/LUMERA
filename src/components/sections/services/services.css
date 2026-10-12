@@ -21,8 +21,71 @@
 .services { border-top: 1px solid var(--line); }
 .service__foot { grid-column: 7 / span 3; grid-row: 3; align-self: start; max-width: var(--measure); }
 .service__price { margin: 0.875rem 0 0; padding-top: 0.75rem; border-top: 1px solid var(--line); font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
-.service__more-btn { min-height: 2.75rem; margin-top: 0.25rem; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-decoration-color: rgba(210, 86, 28, 0.75); text-underline-offset: 0.25em; }
-.service__more-btn:hover { text-decoration-color: var(--ink); }
+/* «Детальніше» opens a card: the word and a lime disc with a plus (the FAQ's sign); a link (SaaS)
+   gets an arrow instead. On hover the disc flows out to the left into a pill under the word, the word
+   turns dark and the plus turns. When its slide comes to the middle, the disc sends out one ring. */
+.service__more-btn {
+  --more-ico: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d0d0d' stroke-width='1.9' stroke-linecap='round'><path d='M12 5v14M5 12h14'/></svg>");
+  --disc: 1.75rem;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  margin-top: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.35s var(--ease-out);
+}
+/* the lime: a disc under the icon at rest, a pill under the whole button on hover */
+.service__more-btn::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  right: 0;
+  width: var(--disc);
+  height: var(--disc);
+  border-radius: 999px;
+  background: var(--lime);
+  translate: 0 -50%;
+  transition: width 0.6s var(--ease-out), height 0.6s var(--ease-out), right 0.6s var(--ease-out);
+}
+.service__more-btn::after {
+  content: "";
+  flex: none;
+  width: var(--disc);
+  height: var(--disc);
+  border-radius: 50%;
+  background: var(--more-ico) center / 0.875rem no-repeat;
+  transition: transform 0.6s var(--ease-out);
+}
+.service__more-btn:is(:hover, :focus-visible) { color: var(--on-ink); }
+.service__more-btn:is(:hover, :focus-visible)::before { width: calc(100% + 1.125rem); height: 2.25rem; right: -0.25rem; }
+.service__more-btn:is(:hover, :focus-visible)::after { transform: rotate(90deg); }
+.service__more-btn:active::before { scale: 0.97; }
+.service__more-link {
+  --more-ico: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d0d0d' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17 17 7M8.5 7H17v8.5'/></svg>");
+}
+.service__more-link:is(:hover, :focus-visible)::after { transform: rotate(45deg); }
+/* the ride: its slide in the middle, the disc sends out one ring (again each time it comes back) */
+.ride.is-on .service.is-current .service__more-btn::before { animation: more-ring 1.4s 0.7s var(--ease-out) both; }
+@keyframes more-ring {
+  from { box-shadow: 0 0 0 0 rgb(218 255 2 / 0.55); }
+  to { box-shadow: 0 0 0 0.875rem rgb(218 255 2 / 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .service__more-btn::before,
+  .service__more-btn::after { transition: none; }
+  .ride.is-on .service.is-current .service__more-btn::before { animation: none; }
+}
 .service__dialog { width: min(35rem, calc(100vw - 2rem)); max-height: min(84vh, 42.5rem); padding: 0; border: 1px solid rgba(246, 246, 243, 0.14); border-radius: var(--radius-lg); background: #121212; color: var(--ink); overflow: auto; overscroll-behavior: contain; }
 .service__dialog::backdrop { background: rgba(0, 0, 0, 0.62); }
 .service__dialog-in { position: relative; padding: 1.625rem 1.625rem 1.5rem; }
