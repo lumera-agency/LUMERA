@@ -4,17 +4,20 @@
  *               up over the last, the ones below step back to thin edges; otherwise a list whose line
  *               fills with the scroll and each node lights as the line passes it
  *   initChecks  the «before launch» checks tick one by one as the stage comes up
- *   deckTurns() how many cards have slid in (the stone beside the deck turns a quarter per card)
+ *   deckProgress() where the deck is, in stages (0 … 5, scrubbed): the stone beside it takes its pose from it
+ * The deck turns one stage per wheel gesture (fx/scroll-paging).
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
 import { dpx, topbarHeight } from '@/lib/css';
+import { initPaging } from '@/components/fx/scroll-paging/paging.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-let turnsOf = () => 0;
-export const deckTurns = () => turnsOf();
+let progressOf = () => 0;
+export const deckProgress = () => progressOf();
 
-const DECK_IN = [0.1, 0.55]; // where in its step a card slides in (fractions of the step)
+export const DECK_IN = [0.1, 0.55]; // where in its step a card slides in (fractions of the step)
+export const DECK_REST = 0.85;      // where in its step the deck rests: the card down, the stone turned
 const DECK_RUN = 2.2;        // how long the block holds while the cards flip, in screen heights
 const deckWide = window.matchMedia('(min-width: 1101px)');
 const deckOn = () => deckWide.matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -48,12 +51,15 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
 
   /* the deck */
   let deck = null;
+  let paging = null;
   const content = (card) => [...card.children].filter((el) => !el.classList.contains('stage__node'));
   const titleOffset = () => {
     const t = $('.stage__title', cards[0]);
     return t ? t.offsetTop + t.offsetHeight / 2 : 40;
   };
   const build = () => {
+    paging?.destroy();
+    paging = null;
     deck?.scrollTrigger?.kill();
     deck?.kill();
     deck = null;
@@ -109,14 +115,20 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
       deck.to(after, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.4 }, cards.length - 0.45);
     }
     deck.set({}, {}, cards.length); // five steps, the whole run
+    // one wheel gesture, one stage: it rests where a card is down and the stone has turned, the
+    // last stop where the run ends (after launch up too)
+    paging = initPaging({
+      stops: () => {
+        const st = deck?.scrollTrigger;
+        if (!st) return [];
+        const at = (t) => st.start + ((st.end - st.start) * t) / cards.length;
+        return [0, ...cards.slice(1, -1).map((_, k) => k + 1 + DECK_REST), cards.length].map(at);
+      },
+      duration: 1.1,
+    });
   };
-  // the stone beside the deck (three/stage-stone, mounted by Approach): a quarter turn per card slid in
-  turnsOf = () => {
-    const t = deck ? deck.time() : 0;
-    let n = 0;
-    for (let i = 1; i < cards.length; i++) if (t >= i + (DECK_IN[0] + DECK_IN[1]) / 2) n = i;
-    return n;
-  };
+  // the stone beside the deck (three/stage-stone, mounted by Approach) takes its pose from here
+  progressOf = () => (deck ? deck.time() : 0);
   deckWide.addEventListener('change', () => {
     build();
     ScrollTrigger.refresh();
@@ -203,11 +215,13 @@ function initChecks(reducedMotion) {
   }
   const ScrollTrigger = ST;
   const stages = $('[data-stages]');
-  // the deck: a card's points tick as it slides on top (deckTurns: how many have slid in)
+  // the deck: a card's points tick as it slides on top (half-way in, by the deck's progress)
   if (stages?.classList.contains('is-deck')) {
     const cards = $$('.stage', stages);
     const sync = () => {
-      const n = turnsOf();
+      const p = progressOf();
+      let n = 0;
+      for (let i = 1; i < cards.length; i++) if (p >= i + (DECK_IN[0] + DECK_IN[1]) / 2) n = i;
       cards.forEach((card, i) => { if (i <= n) $$('[data-checks]', card).forEach(tick); });
     };
     // while the block is on screen (it is pinned for the deck's whole run), each frame asks the deck
