@@ -27,9 +27,3 @@
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 .logo--sm { --logo-h: 1.5rem; }
-.logo,
-.logo__sub { transition: color var(--dur-fast) ease; }
-.logo:hover,
-.logo:focus-visible,
-.logo:hover .logo__sub,
-.logo:focus-visible .logo__sub { color: var(--signal); }

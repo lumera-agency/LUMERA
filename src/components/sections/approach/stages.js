@@ -15,6 +15,7 @@ export const deckTurns = () => turnsOf();
 
 const DECK_IN = [0.1, 0.55]; // where in its step a card slides in (fractions of the step)
 const DECK_RUN = 2.2;        // how long the block holds while the cards flip, in screen heights
+const PIN_DROP = () => Math.round(Math.min(48, Math.max(24, window.innerHeight * 0.045))); // px the pinned block sits below the topbar
 const deckWide = window.matchMedia('(min-width: 1101px)');
 const deckOn = () => deckWide.matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function markDeck() {
@@ -70,7 +71,7 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
       defaults: { ease: 'power2.out', duration: DECK_IN[1] - DECK_IN[0] },
       scrollTrigger: {
         trigger: section,
-        start: () => `top ${bar()}px`,
+        start: () => `top ${bar() + PIN_DROP()}px`, // a little below the topbar, not glued to it
         end: () => `+=${Math.round(window.innerHeight * DECK_RUN)}`,
         pin: section,
         pinSpacing: true,
