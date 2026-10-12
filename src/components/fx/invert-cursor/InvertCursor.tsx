@@ -3,7 +3,8 @@
  * InvertCursor — inside `scope` the mouse pointer becomes a circle that inverts whatever is under it
  * (white with mix-blend-mode: difference), like the lens on the footer's LUMERA; outside it the
  * native pointer stays. It trails the pointer a little, grows over anything clickable, presses in on
- * click; text fields keep the native caret, and over `quiet` areas it steps aside.
+ * click, and over large type ([data-cursor-lens]) it opens into a lens; text fields keep the native
+ * caret, and over `quiet` areas it steps aside.
  * Mouse only; with reduced motion it follows without the trail. `scope` "body" = the whole page.
  */
 import { useEffect } from "react";
@@ -17,6 +18,9 @@ type Props = {
   size?: number;
   /** scale over clickable things */
   grow?: number;
+  /** where the circle becomes a big lens (large type), and its scale there */
+  lens?: string;
+  lensGrow?: number;
   /** what counts as clickable */
   clickable?: string;
   /** where the circle steps aside (an effect there is the cursor) */
@@ -29,6 +33,8 @@ export function InvertCursor({
   scope = "body",
   size = 22,
   grow = 2.9,
+  lens = "[data-cursor-lens]",
+  lensGrow = 5,
   clickable = 'a, button, [role="button"], [role="tab"], summary, label, select, [data-cursor="hover"]',
   quiet = "[data-wordmark]",
   text = 'input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]), textarea, [contenteditable="true"]',
@@ -42,6 +48,7 @@ export function InvertCursor({
     el.setAttribute("aria-hidden", "true");
     el.style.setProperty("--size", `${size}px`);
     el.style.setProperty("--grow", String(grow));
+    el.style.setProperty("--lens", String(lensGrow));
     el.innerHTML = '<span class="invert-cursor__dot"></span>';
     document.body.append(el);
     // the native pointer hides only inside the scope (invert-cursor.css)
@@ -55,6 +62,7 @@ export function InvertCursor({
     const at = { x: 0, y: 0 };
     const read = (target: Element | null) => {
       el.classList.toggle("is-hover", Boolean(target?.closest?.(clickable)));
+      el.classList.toggle("is-lens", Boolean(target?.closest?.(lens)));
       el.classList.toggle("is-away", Boolean(target?.closest?.(`${quiet}, ${text}`)));
     };
 
@@ -104,6 +112,6 @@ export function InvertCursor({
       el.remove();
       areas.forEach((a) => a.removeAttribute("data-invert-cursor"));
     };
-  }, [scope, size, grow, clickable, quiet, text]);
+  }, [scope, size, grow, lens, lensGrow, clickable, quiet, text]);
   return null;
 }

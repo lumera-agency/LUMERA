@@ -28,6 +28,7 @@
 }
 .invert-cursor.is-on .invert-cursor__dot { opacity: 1; transform: scale(1); }
 .invert-cursor.is-on.is-hover .invert-cursor__dot { transform: scale(var(--grow)); }
-.invert-cursor.is-on.is-down .invert-cursor__dot { transform: scale(0.75); }
-.invert-cursor.is-on.is-hover.is-down .invert-cursor__dot { transform: scale(calc(var(--grow) * 0.85)); }
+.invert-cursor.is-on.is-lens .invert-cursor__dot { transform: scale(var(--lens)); }
+.invert-cursor.is-on.is-down .invert-cursor__dot { transform: scale(0.88); }
+.invert-cursor.is-on.is-hover.is-down .invert-cursor__dot { transform: scale(calc(var(--grow) * 0.9)); }
 .invert-cursor.is-away .invert-cursor__dot { opacity: 0; transform: scale(0.2); }

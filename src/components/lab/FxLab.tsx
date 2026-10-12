@@ -22,7 +22,7 @@ import "./lab.css";
 const FX = [
   { id: "preloader", name: "Preloader", file: "fx/preloader", use: "<Preloader brand note words last stages />  ·  window.lumeraLoader.step(p, i) / finish()" },
   { id: "roll-text", name: "RollText", file: "fx/roll-text", use: '<a className="roll-host"><RollText>Послуги</RollText></a>' },
-  { id: "invert-cursor", name: "InvertCursor", file: "fx/invert-cursor", use: "<InvertCursor scope=\".footer__top, .footer__bottom\" size={22} grow={2.9} /> once in the layout" },
+  { id: "invert-cursor", name: "InvertCursor", file: "fx/invert-cursor", use: "<InvertCursor scope=\"#manifesto, .footer__top\" size={110} lensGrow={1.35} />  ·  data-cursor-lens on large type" },
   { id: "invert-fill", name: "InvertFill", file: "fx/invert-fill", use: "<InvertFill /> once in the layout  ·  <ButtonLink className=\"btn--invert\">" },
   { id: "run-label", name: "RunLabel", file: "fx/run-label", use: "useRunLabel(buttonRef)  ·  <RunLabel>Text</RunLabel>" },
   { id: "magnetic", name: "Magnetic", file: "fx/magnetic", use: "useMagnetic(ref, { strength: 1 })  ·  <ButtonLink magnetic>" },
