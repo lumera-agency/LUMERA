@@ -79,6 +79,26 @@
       ]
     },
     {
+      "name": "invert-cursor",
+      "type": "registry:component",
+      "title": "InvertCursor",
+      "description": "The mouse pointer becomes a circle that inverts what is under it (mix-blend-mode: difference): trails a little, grows over anything clickable, presses on click; text fields keep the caret, quiet areas get it out of the way. Mouse only.",
+      "registryDependencies": [
+        "@lumera/gsap-setup"
+      ],
+      "files": [
+        {
+          "path": "src/components/fx/invert-cursor/InvertCursor.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/fx/invert-cursor/invert-cursor.css",
+          "type": "registry:file",
+          "target": "src/components/fx/invert-cursor/invert-cursor.css"
+        }
+      ]
+    },
+    {
       "name": "invert-fill",
       "type": "registry:component",
       "title": "InvertFill",
