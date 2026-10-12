@@ -72,6 +72,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           words={t("preloader.words")}
           last={t("preloader.last")}
           stages={t("preloader.stages")}
+          images={[1, 2, 3, 4].map((n) => `/img/what/what-${n}-${locale === "ru" ? "ru" : "uk"}.webp`)}
         />
         <a className="skip-link" href="#main">{t("skip")}</a>
         <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" size={110} grow={1.15} lensGrow={1.35} />

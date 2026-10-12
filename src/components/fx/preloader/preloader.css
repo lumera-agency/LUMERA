@@ -1,4 +1,5 @@
-/* preloader: split 1:1 from website-v2/css by scripts/split-css.mjs (rule order kept) */
+/* Preloader: the brand top left, the percentage top right, the stack of pictures in the middle with
+   the words under it, the note at the foot. One black sheet that leaves by a single wipe (Preloader.tsx). */
 
 .preloader {
   --pl-ink: #f6f6f3;
@@ -10,39 +11,36 @@
   color: var(--pl-ink);
   visibility: visible; /* shown even while another language keeps the body hidden (<head>) */
   pointer-events: auto;
-  animation: preloader-fallback 0.01s 8s forwards;
+  animation: preloader-fallback 0.01s 9s forwards;
 }
 html:not(.js) .preloader { display: none; }
-.preloader__cols { position: absolute; inset: 0; display: flex; }
-.preloader__cols i {
-  flex: 1 0 0;
-  margin-right: -1px; /* no hairline of the hero between two columns */
-  background: #0a0a0a;
-  box-shadow: inset -1px 0 0 rgba(246, 246, 243, 0.05);
-  will-change: transform;
-}
-.preloader__cols i:last-child { margin-right: 0; box-shadow: none; }
+/* the black, its own layer: on leaving it opens a window (clip-path) while the picture grows */
+.preloader__bg { position: absolute; inset: 0; background: #0a0a0a; will-change: clip-path; }
 .preloader__glow {
   position: absolute;
-  right: -10vw;
-  bottom: -30vh;
-  width: 70vw;
+  left: 50%;
+  top: 46%;
+  width: min(90vw, 70rem);
   height: 70vh;
+  translate: -50% -50%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(218, 255, 2, 0.09), transparent);
+  background: radial-gradient(closest-side, rgba(218, 255, 2, 0.08), transparent);
   pointer-events: none;
 }
 .preloader__frame {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto 1fr auto auto;
-  padding: clamp(1.25rem, 3.4vh, 2.25rem) var(--gutter) clamp(1.25rem, 4vh, 2.5rem);
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr auto;
+  column-gap: var(--col-gap);
+  padding: clamp(1.25rem, 3.4vh, 2.25rem) var(--gutter) clamp(1.25rem, 3.4vh, 2.25rem);
+  animation: preloader-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+@keyframes preloader-in { from { opacity: 0; transform: translateY(0.75rem); } }
+
 .preloader__brand,
-.preloader__note,
-.preloader__status {
+.preloader__note {
   margin: 0;
   font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   font-size: 0.75rem;
@@ -50,64 +48,77 @@ html:not(.js) .preloader { display: none; }
   text-transform: uppercase;
   color: var(--pl-mute);
 }
-.preloader__brand { display: flex; align-items: center; gap: 0.75rem; color: var(--pl-ink); }
+.preloader__brand { grid-column: 1; grid-row: 1; align-self: start; display: flex; align-items: center; gap: 0.75rem; color: var(--pl-ink); }
 .preloader__mark { width: 1.375rem; height: 1.375rem; fill: currentColor; }
-.preloader__note { justify-self: end; text-align: right; }
-.preloader__words {
+.preloader__note { grid-column: 1 / -1; grid-row: 3; justify-self: center; text-align: center; }
+
+/* top right: the percentage */
+.preloader__count {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  justify-self: end;
+  margin: -0.12em 0 0;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 3.6vw, 3.75rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.preloader__count > span { display: inline-block; }
+.preloader__count sup { font-size: 0.36em; vertical-align: top; margin-left: 0.12em; color: var(--pl-lime); letter-spacing: 0; }
+
+/* the middle: the stack, the words under it */
+.preloader__center {
   grid-column: 1 / -1;
-  align-self: center;
+  grid-row: 2;
+  place-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(2rem, 5.5vh, 3.75rem);
+  padding-top: clamp(0.5rem, 2vh, 1.5rem);
+}
+.preloader__stack {
+  position: relative;
+  width: clamp(9rem, min(19vw, 32vh), 26rem);
+  aspect-ratio: 4 / 5;
+  margin-bottom: 9%; /* the turned cards reach below the box */
+  pointer-events: none;
+}
+.preloader__card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 0.875rem;
+  opacity: 0;
+  box-shadow: 0 1.75rem 3.5rem -1rem rgb(0 0 0 / 0.7), 0 0 0 1px rgb(246 246 243 / 0.08);
+  will-change: transform, opacity;
+}
+.preloader__card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.preloader__words {
+  position: relative;
+  width: min(92vw, 64rem);
   margin: 0;
   height: 1.12em;
   overflow: hidden;
   font-family: var(--font-sans);
-  font-size: clamp(2.6rem, 9.4vw, 9.5rem);
+  font-size: clamp(2rem, 4.6vw, 5rem);
   font-weight: 300;
   font-variation-settings: "SHRP" 64;
   line-height: 1.1;
   letter-spacing: -0.045em;
+  text-align: center;
   white-space: nowrap;
 }
-.preloader__word { display: block; }
+.preloader__word { position: absolute; inset: 0; display: block; }
 .preloader__word b { font-weight: inherit; color: var(--pl-lime); }
-.preloader__status { grid-column: 1; align-self: end; display: flex; gap: 0.875rem; padding-bottom: 0.9em; }
-.preloader__status span:first-child { color: var(--pl-ink); }
-.preloader__count {
-  grid-column: 2;
-  grid-row: 3;
-  justify-self: end;
-  margin: 0;
-  overflow: hidden;
-  font-family: var(--font-sans);
-  font-size: clamp(3.4rem, 11vw, 11rem);
-  font-weight: 300;
-  line-height: 0.86;
-  letter-spacing: -0.05em;
-  font-variant-numeric: tabular-nums;
-}
-.preloader__count > span { display: inline-block; }
-.preloader__count sup { font-size: 0.24em; vertical-align: top; margin-left: 0.15em; color: var(--pl-lime); letter-spacing: 0; }
-.preloader__line {
-  grid-column: 1 / -1;
-  position: relative;
-  height: 1px;
-  margin-top: clamp(0.875rem, 2.4vh, 1.5rem);
-  background: rgba(246, 246, 243, 0.14);
-  overflow: hidden;
-}
-.preloader__line i {
-  position: absolute;
-  inset: 0;
-  background: var(--pl-lime);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  box-shadow: 0 0 0.75rem rgba(218, 255, 2, 0.6);
-}
+
 @media (max-width: 600px) {
-  .preloader__frame { grid-template-rows: auto 1fr auto auto auto; }
-  .preloader__note { display: none; }
-  .preloader__words { font-size: clamp(2.2rem, 11.5vw, 4rem); }
-  .preloader__status { grid-row: 4; padding: 0.625rem 0 0; }
-  .preloader__count { grid-column: 1 / -1; grid-row: 3; justify-self: start; font-size: clamp(4.5rem, 30vw, 8rem); }
-  .preloader__line { grid-row: 5; }
+  .preloader__stack { width: clamp(9rem, 50vw, 12.5rem); }
+  .preloader__words { font-size: clamp(1.875rem, 9.5vw, 3rem); }
+  .preloader__count { font-size: clamp(1.625rem, 7vw, 2.25rem); }
 }
 @keyframes preloader-fallback { to { visibility: hidden; } }
