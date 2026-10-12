@@ -14,7 +14,7 @@
     },
     {
       "path": "src/components/fx/hover-reveal/hover-reveal.css",
-      "content": "/* HoverReveal: the frame at the cursor. Size it with a class (passed as `className`) or here. */\n.hover-reveal {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 40;\n  width: clamp(240px, 21vw, 340px);\n  aspect-ratio: 4 / 5;\n  pointer-events: none;\n  visibility: hidden;\n  opacity: 0;\n  will-change: transform;\n}\n.hover-reveal__in {\n  position: absolute;\n  inset: 0;\n  overflow: hidden;\n  border-radius: 18px;\n  box-shadow: 0 50px 90px -40px rgb(15 14 13 / 0.55), 0 0 0 1px rgb(15 14 13 / 0.06);\n}\n.hover-reveal img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; clip-path: inset(100% 0 0 0); }\n",
+      "content": "/* HoverReveal: the frame at the cursor. Size it with a class (passed as `className`) or here. */\n.hover-reveal {\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 40;\n  width: clamp(15rem, 21vw, 21.25rem);\n  aspect-ratio: 4 / 5;\n  pointer-events: none;\n  visibility: hidden;\n  opacity: 0;\n  will-change: transform;\n}\n.hover-reveal__in {\n  position: absolute;\n  inset: 0;\n  overflow: hidden;\n  border-radius: 1.125rem;\n  box-shadow: 0 3.125rem 5.625rem -2.5rem rgb(15 14 13 / 0.55), 0 0 0 1px rgb(15 14 13 / 0.06);\n}\n.hover-reveal img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; clip-path: inset(100% 0 0 0); }\n",
       "type": "registry:file",
       "target": "src/components/fx/hover-reveal/hover-reveal.css"
     }

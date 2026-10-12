@@ -49,8 +49,8 @@
   --ease-in-out: cubic-bezier(0.87, 0, 0.13, 1); /* expo.inOut — lines, wipes */
 
   /* shape */
-  --radius-lg: 22px;
-  --radius-md: 14px;
+  --radius-lg: 1.375rem;
+  --radius-md: 0.875rem;
 }
 
 :root {
@@ -89,26 +89,26 @@
   --dur-slow: 900ms;
 
   /* layout scale */
-  --gutter: clamp(20px, 3.65vw, 72px);
-  --header-h: clamp(68px, calc(var(--vh, 1vh) * 9), 92px);
-  --topbar-h: 64px;
-  --col-gap: clamp(16px, 2vw, 32px);
-  --card-gap: clamp(14px, 1.4vw, 22px);
-  --rhythm-xs: clamp(18px, 3vh, 32px);        /* label → title */
-  --rhythm-s: clamp(24px, 4vh, 44px);         /* list → its footnote */
-  --rhythm-m: clamp(44px, 7vh, 88px);         /* header → content, group → group */
-  --rhythm-l: clamp(56px, 9vh, 112px);        /* block → block */
-  --rhythm-section: clamp(96px, 13vh, 168px); /* section padding */
-  --card-pad: clamp(28px, 2.8vw, 40px);
-  --row-pad: 24px;
-  --row-pad-s: 16px;
+  --gutter: clamp(1.25rem, 3.65vw, 4.5rem);
+  --header-h: clamp(4.25rem, calc(var(--vh, 1vh) * 9), 5.75rem);
+  --topbar-h: 4rem;
+  --col-gap: clamp(1rem, 2vw, 2rem);
+  --card-gap: clamp(0.875rem, 1.4vw, 1.375rem);
+  --rhythm-xs: clamp(1.125rem, 3vh, 2rem);        /* label → title */
+  --rhythm-s: clamp(1.5rem, 4vh, 2.75rem);         /* list → its footnote */
+  --rhythm-m: clamp(2.75rem, 7vh, 5.5rem);         /* header → content, group → group */
+  --rhythm-l: clamp(3.5rem, 9vh, 7rem);        /* block → block */
+  --rhythm-section: clamp(6rem, 13vh, 10.5rem); /* section padding */
+  --card-pad: clamp(1.75rem, 2.8vw, 2.5rem);
+  --row-pad: 1.5rem;
+  --row-pad-s: 1rem;
   --index-w: 3rem;
   --measure: 55ch;
   --track-caps: 0.16em;
   --track-num: 0.08em;
 
   /* textures */
-  --hatch: repeating-linear-gradient(-45deg, rgb(246 246 243 / 0.12) 0 1px, transparent 1px 7px);
+  --hatch: repeating-linear-gradient(-45deg, rgb(246 246 243 / 0.12) 0 1px, transparent 1px 0.4375rem);
   --stone-tex: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='3' stitchTiles='stitch'/><feColorMatrix values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/><feComponentTransfer result='grit'><feFuncR type='linear' slope='1.6' intercept='0.1'/><feFuncG type='linear' slope='1.6' intercept='0.1'/><feFuncB type='linear' slope='1.6' intercept='0.1'/></feComponentTransfer><feTurbulence type='fractalNoise' baseFrequency='0.007' numOctaves='4' seed='8' stitchTiles='stitch'/><feColorMatrix values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/><feComponentTransfer result='mottle'><feFuncR type='linear' slope='1.8' intercept='0.04'/><feFuncG type='linear' slope='1.8' intercept='0.04'/><feFuncB type='linear' slope='1.8' intercept='0.04'/></feComponentTransfer><feBlend in='grit' in2='mottle' mode='multiply'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
 
   color-scheme: dark;

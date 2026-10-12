@@ -21,7 +21,7 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--col-gap);
   align-items: center;
-  padding: clamp(18px, 3.2vh, 34px) 0;
+  padding: clamp(1.125rem, 3.2vh, 2.125rem) 0;
   color: var(--ink-dark);
   text-decoration: none;
   transition: opacity 0.5s var(--ease-out);
@@ -60,7 +60,7 @@
   justify-self: end;
   display: grid;
   place-items: center;
-  width: clamp(44px, 3.6vw, 56px);
+  width: clamp(2.75rem, 3.6vw, 3.5rem);
   aspect-ratio: 1;
   border-radius: 50%;
   border: 1px solid var(--line-dark);
@@ -72,7 +72,7 @@
 @media (hover: hover) and (pointer: fine) {
   .what__list:hover .what__row { opacity: 0.26; }
   .what__list:hover .what__row:hover { opacity: 1; }
-  .what__row:hover .what__name-in { transform: translateX(clamp(16px, 2.2vw, 40px)); }
+  .what__row:hover .what__name-in { transform: translateX(clamp(1rem, 2.2vw, 2.5rem)); }
   .what__row:hover .what__num { color: var(--ember); }
   .what__row:hover .what__arrow { background: var(--ink-dark); border-color: var(--ink-dark); color: var(--ivory); transform: rotate(45deg); }
   .what__item:has(.what__row:hover)::after { transform: scaleX(1); transform-origin: 0 50%; }
@@ -80,16 +80,16 @@
 .what__row:focus-visible { outline-offset: -2px; }
 .what__row:focus-visible .what__arrow { background: var(--ink-dark); color: var(--ivory); }
 @media (hover: none), (pointer: coarse) {
-  .what__row { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 14px; row-gap: 8px; align-items: start; }
+  .what__row { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 0.875rem; row-gap: 0.5rem; align-items: start; }
   .what__num { grid-column: 1; grid-row: 1; padding-top: 0.55em; }
   .what__name { grid-column: 2; grid-row: 1; }
   .what__name-in { font-size: clamp(1.7rem, 7.4vw, 3rem); }
   .what__desc { grid-column: 2; grid-row: 2; }
   .what__arrow { display: none; }
-  .what__thumb { display: block; grid-column: 3; grid-row: 1 / span 2; width: clamp(64px, 18vw, 120px); height: auto; aspect-ratio: 4 / 5; border-radius: 10px; object-fit: cover; }
+  .what__thumb { display: block; grid-column: 3; grid-row: 1 / span 2; width: clamp(4rem, 18vw, 7.5rem); height: auto; aspect-ratio: 4 / 5; border-radius: 0.625rem; object-fit: cover; }
 }
 @media (max-width: 860px) and (hover: hover) and (pointer: fine) {
   .what__name { grid-column: 2 / span 10; }
-  .what__desc { grid-column: 2 / span 9; grid-row: 2; margin-top: 8px; }
+  .what__desc { grid-column: 2 / span 9; grid-row: 2; margin-top: 0.5rem; }
   .what__arrow { grid-row: 1; }
 }

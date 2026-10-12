@@ -1,17 +1,17 @@
 /* footer: split 1:1 from website-v2/css by scripts/split-css.mjs (rule order kept) */
 .footer__claim { text-wrap: balance; }
-.footer :focus-visible { scroll-margin-top: calc(var(--topbar-h) + 16px); }
+.footer :focus-visible { scroll-margin-top: calc(var(--topbar-h) + 1rem); }
 .footer__up .ico { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
-.footer { padding: var(--rhythm-section) var(--gutter) 28px; border-top: 1px solid var(--line); background: #080808; }
+.footer { padding: var(--rhythm-section) var(--gutter) 1.75rem; border-top: 1px solid var(--line); background: #080808; }
 .footer__top {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--col-gap);
-  row-gap: 48px;
+  row-gap: 3rem;
   align-items: end;
 }
-.footer__lead { grid-column: 1 / span 5; display: grid; justify-items: start; gap: 28px; }
+.footer__lead { grid-column: 1 / span 5; display: grid; justify-items: start; gap: 1.75rem; }
 .footer__claim { margin: 0; font-size: var(--fs-h3); font-weight: 300; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); }
 .footer__nav { grid-column: 7 / -1; display: grid; justify-items: start; gap: 2px; }
 .footer__nav a {
@@ -23,26 +23,26 @@
   color: var(--ink);
   text-decoration: none;
   transition: color var(--dur), transform var(--dur-slow) var(--ease-out);
-  padding-block: 4px;
+  padding-block: 0.25rem;
 }
 .footer__nav a:hover,
-.footer__nav a:focus-visible { color: #fff; transform: translateX(10px); }
+.footer__nav a:focus-visible { color: #fff; transform: translateX(0.625rem); }
 .footer__bottom {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--col-gap);
-  row-gap: 14px;
+  row-gap: 0.875rem;
   align-items: center;
   margin-top: var(--rhythm-l);
-  padding-top: 20px;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--line);
   font-size: var(--fs-caption);
   color: var(--ink-mute);
 }
 .footer__legal { grid-column: 1 / span 6; justify-self: start; }
-.footer__contacts { grid-column: 7 / span 4; display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; }
+.footer__contacts { grid-column: 7 / span 4; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 0; }
 .footer__contacts a { white-space: nowrap; }
-.footer__end { grid-column: 11 / -1; justify-self: end; display: flex; align-items: center; gap: 20px; }
+.footer__end { grid-column: 11 / -1; justify-self: end; display: flex; align-items: center; gap: 1.25rem; }
 .footer__up { white-space: nowrap; }
 .footer__contacts a,
 .footer__up { color: var(--ink-soft); text-decoration: none; }
@@ -50,7 +50,7 @@
 .footer__up:hover { color: var(--ink); }
 .footer__legal { margin: 0; }
 .footer__contacts a,
-.footer__up { display: inline-flex; align-items: center; min-height: 44px; }
+.footer__up { display: inline-flex; align-items: center; min-height: 2.75rem; }
 .footer__mark {
   position: relative;
   margin-top: var(--rhythm-m);
@@ -74,7 +74,7 @@
 }
 .footer__mark.is-live .footer__mark-text { position: absolute; visibility: hidden; }
 .footer__mark-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-.footer__drop { position: absolute; left: 4%; top: 14%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
+.footer__drop { position: absolute; left: 4%; top: 14%; width: 2.75rem; height: 2.75rem; transform: translate(-50%, -50%); }
 
 @media (min-width: 1101px) {
   .footer__lead { grid-column: 3 / span 4; }
@@ -91,11 +91,11 @@
   .footer__end { grid-column: 2; grid-row: 1; }
   .footer__contacts { grid-column: 1 / -1; }
 }
-.footer__nav a { padding-block: max(4px, (44px - 1.04em) / 2); }
+.footer__nav a { padding-block: max(0.25rem, (2.75rem - 1.04em) / 2); }
 .footer__up { gap: 0.3em; }
 @media (max-width: 860px) {
   .footer .lang { gap: 0; }
-  .footer .lang__link { min-width: 44px; justify-content: center; }
+  .footer .lang__link { min-width: 2.75rem; justify-content: center; }
 }
 .footer .lang { font-size: var(--fs-caption); }
 .footer__mark { container-type: inline-size; }

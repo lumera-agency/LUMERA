@@ -4,10 +4,12 @@
  * list of presets (under the topbar), with one ring round the chosen one. A click before the
  * configurator is mounted is kept and applied right after the mount (presetReady).
  */
+import { topbarHeight } from '@/lib/css';
+
 const $ = (selector, root = document) => root.querySelector(selector);
 
 const preset = { api: null, pending: null, reducedMotion: false };
-const topbarH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
+const topbarH = topbarHeight;
 
 const presetPhone = () => window.matchMedia('(max-width: 700px)').matches;
 /** How far below the top of the screen the list of presets should land: just under the topbar. (Phones

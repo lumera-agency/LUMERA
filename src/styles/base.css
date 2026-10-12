@@ -5,7 +5,14 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* the layout is in rem: up to about 1680×1000 the root stays at the browser's 16 px, on a bigger
+   screen it grows with it, by the tighter of width and height (so pinned screens still fit an
+   ultrawide), up to twice the size */
+html {
+  font-size: clamp(100%, min(0.9524vw, 1.75vh), 200%);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 body {
   margin: 0;
@@ -27,8 +34,8 @@ h1, p { margin: 0; }
 
 :focus-visible {
   outline: 2px solid var(--ink);
-  outline-offset: 4px;
-  border-radius: 6px;
+  outline-offset: 0.25rem;
+  border-radius: 0.375rem;
 }
 html.motion:not(.is-ready) [data-reveal],
 html.motion:not(.is-ready) [data-title],
@@ -57,7 +64,7 @@ html.motion:not(.is-ready) [data-rail-track] { visibility: hidden; }
 }
 #pricing { scroll-margin-top: calc(var(--topbar-h) - 1px); }
 @media (max-width: 600px) {
-  #approach { --nd: 28px; --tl: calc(var(--fs-h4) * 1.2); --pt: 0px; }
+  #approach { --nd: 1.75rem; --tl: calc(var(--fs-h4) * 1.2); --pt: 0px; }
 }
 [data-slot-default] { transition: opacity 0.35s ease; }
 [data-ico] { transform-origin: 50% 50%; }

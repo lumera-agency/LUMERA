@@ -16,6 +16,7 @@
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
 import { scrollToY } from '@/lib/scroll';
+import { topbarHeight } from '@/lib/css';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -93,7 +94,7 @@ export function initRide({
     skipping = true;
     const box = ride.parentElement?.classList.contains('pin-spacer') ? ride.parentElement : ride; // GSAP wraps a pinned element
     const after = box.nextElementSibling;
-    const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
+    const bar = topbarHeight();
     const target = () => Math.max(after ? after.getBoundingClientRect().top + window.scrollY - bar - 32 : trigger.end, trigger.end + 1);
     const veil = document.createElement('div');
     veil.className = 'ride__veil';
@@ -182,7 +183,7 @@ export function initRide({
     bigs.forEach((b) => { b.hidden = false; });
 
     const distance = () => Math.max(0, list.scrollWidth - window.innerWidth);
-    const bar_ = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
+    const bar_ = topbarHeight;
     const track = gsap.to(list, {
       x: () => -distance(),
       ease: 'none',

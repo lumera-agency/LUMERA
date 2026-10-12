@@ -3,7 +3,7 @@
 
 .manifesto {
   --ember: #d2561c; /* black text on it: 4.6:1 */
-  --glitch-shift: clamp(4px, 0.12em, 10px);
+  --glitch-shift: clamp(0.25rem, 0.12em, 0.625rem);
   --glitch-after: 3s;
   --glitch-before: 2s;
   padding-block: 0;
@@ -11,7 +11,7 @@
 .manifesto__hold {
   display: grid;
   align-content: center;
-  min-height: min(100svh, 1000px);
+  min-height: min(100svh, 62.5rem);
   padding-block: var(--rhythm-section);
 }
 .manifesto__text {

@@ -7,6 +7,7 @@
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
 import { holdDemos, openDemos, demoTimeline } from './demos/timelines.js';
+import { topbarHeight } from '@/lib/css';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -105,7 +106,6 @@ function initStack(motion) {
 }
 
 const svcPhone = window.matchMedia('(max-width: 600px)');
-const topbarHeight = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
 
 /** Phones: if the open service's window and title end under the screen's edge, the page comes up just
  *  enough to show them, never past `top` (the chips) under the bar. */

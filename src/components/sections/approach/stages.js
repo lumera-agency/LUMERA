@@ -7,6 +7,7 @@
  *   deckTurns() how many cards have slid in (the stone beside the deck turns a quarter per card)
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
+import { dpx, topbarHeight } from '@/lib/css';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -65,7 +66,7 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
     // the whole block (heading, cards, stone) holds still under the topbar while the cards
     // flip; the page runs on after DECK_RUN screen heights of scroll
     const section = root.closest('section') || root;
-    const bar = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
+    const bar = () => topbarHeight();
     // the label's distance from the section's top: its padding (a rect would carry the reveal's offset)
     const lead = () => parseFloat(getComputedStyle(section).paddingTop) || 0;
     deck = gsap.timeline({
@@ -74,7 +75,7 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
         trigger: section,
         // the block stops with its label («5 · Підхід») just under the topbar: the section's empty top
         // padding goes up out of view, so the whole deck and the line down to the stone fit on screen
-        start: () => `top ${bar() - lead() + 36}px`,
+        start: () => `top ${bar() - lead() + dpx(36)}px`,
         end: () => `+=${Math.round(window.innerHeight * DECK_RUN)}`,
         pin: section,
         pinSpacing: true,
@@ -85,7 +86,7 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
     });
     // each next card waits just under the one on top, unseen; it appears there and, opaque
     // before it reaches it, slides up over it
-    const below = (i) => cards[i - 1].offsetHeight + 20;
+    const below = (i) => cards[i - 1].offsetHeight + dpx(20);
     gsap.set(cards.slice(1), { autoAlpha: 0, y: (n) => below(n + 1) });
     deck.set(cards.slice(1), { autoAlpha: 0, y: (n) => below(n + 1) }, 0);
     deck.set(cards.flatMap(content), { autoAlpha: 1 }, 0);
@@ -141,8 +142,8 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
       // each card sits centred in the frame, so whichever is on top faces the stone
       cards.forEach((c) => { c.style.top = `${Math.round((deckH - c.offsetHeight) / 2)}px`; });
       // the current stage's title rides at 47% of the view, the stone beside it
-      const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
-      const top = Math.max(bar + 24, Math.min(window.innerHeight * 0.47 - titleOffset(), window.innerHeight - pin.offsetHeight - 32));
+      const bar = topbarHeight();
+      const top = Math.max(bar + dpx(24), Math.min(window.innerHeight * 0.47 - titleOffset(), window.innerHeight - pin.offsetHeight - dpx(32)));
       root.style.setProperty('--pin-top', `${Math.round(top)}px`);
     }
     const top = root.getBoundingClientRect().top;
