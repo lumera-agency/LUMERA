@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { WebGLGate } from "@/components/three/lib/WebGLGate";
 
 const StageStone = dynamic(() => import("@/components/three/stage-stone/StageStone"), { ssr: false });
 const DECK = "(min-width: 1101px)";
@@ -63,5 +64,6 @@ export function StageStoneSlot() {
       setSlot = null;
     };
   }, []);
-  return on ? <StageStone /> : <span className="process__stone" aria-hidden="true" />;
+  const empty = <span className="process__stone" aria-hidden="true" />;
+  return on ? <WebGLGate fallback={empty}><StageStone /></WebGLGate> : empty;
 }

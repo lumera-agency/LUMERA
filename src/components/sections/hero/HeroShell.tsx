@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { boot, sceneRun, useSceneRunning } from "@/lib/boot";
 import { useReducedMotion } from "@/lib/hooks";
+import { WebGLGate } from "@/components/three/lib/WebGLGate";
 import { useBoot } from "./useBoot";
 import "./hero.css";
 
@@ -20,6 +21,12 @@ const ShardsScene = dynamic(() => import("@/components/three/hero/ShardsScene"),
 /** The page rides over the first screen: the hero's content is held back as the page scrolls
  *  (HOLD of the scroll, so it nearly stays put) and dims, and the blocks slide over it. */
 const HOLD = 0.7;
+
+/** No 3D here: the start-up doesn't wait for a scene that won't come. */
+const skipScene = () => {
+  boot.sceneLoaded.resolve();
+  boot.sceneReady.resolve();
+};
 
 /**
  * The first screen's stage: background light, the 3D canvases, grain, and the boot sequence.
@@ -84,8 +91,10 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       <div className="hero__bg" aria-hidden="true">
         <div className="hero__glow" data-glow ref={glow} />
       </div>
-      <ShardsScene running={running} reducedMotion={reducedMotion} />
-      <HeroScene heroRef={hero} glowRef={glow} orbitLabel={orbitLabel} running={running} reducedMotion={reducedMotion} />
+      <WebGLGate onSkip={skipScene}>
+        <ShardsScene running={running} reducedMotion={reducedMotion} />
+        <HeroScene heroRef={hero} glowRef={glow} orbitLabel={orbitLabel} running={running} reducedMotion={reducedMotion} />
+      </WebGLGate>
       <div className="hero__grain" aria-hidden="true" />
       {children}
     </div>
