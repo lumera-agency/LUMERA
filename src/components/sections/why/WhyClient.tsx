@@ -23,6 +23,7 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
         mountHScroll(el, { reducedMotion });
       };
       mountStrip();
+      requestAnimationFrame(() => ScrollTrigger.refresh());
       const onChange = () => {
         api?.sync();
         mountStrip();

@@ -10,6 +10,10 @@ import { boot, loader, restoreScroll, sceneRun } from "@/lib/boot";
 import { settleHero } from "@/components/three/hero/state";
 import { wait } from "@/lib/hooks";
 import { playIntro } from "./useHeroIntro";
+import { startSplashCursor } from "@/components/fx/splash-cursor/startSplashCursor";
+
+/** The hero's smoke cursor: React Bits' <SplashCursor /> knobs. */
+const SPLASH = { DENSITY_DISSIPATION: 10, VELOCITY_DISSIPATION: 3.5, PRESSURE: 0.25, CURL: 16, SPLAT_RADIUS: 0.05, SPLAT_FORCE: 2500, COLOR_UPDATE_SPEED: 3, COLOR: "#7f7b84" };
 
 let started = false; // once per page load (React's dev double-mount runs effects twice)
 
@@ -54,6 +58,8 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
       sceneRun.set(true);
       const intro = playIntro(hero);
       intro.timeline.then(introDone);
+      const fluid = hero.querySelector<HTMLCanvasElement>("[data-fluid]");
+      if (fluid) startSplashCursor(fluid, hero, { ...SPLASH, quiet: hero.querySelector(".header") });
     })();
   }, [heroRef, reducedMotion]);
 }

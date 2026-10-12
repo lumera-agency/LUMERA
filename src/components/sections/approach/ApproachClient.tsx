@@ -27,7 +27,7 @@ export function ApproachClient({ children }: { children: React.ReactNode }) {
     const phone = matchMedia("(max-width: 600px)");
     let alive = true;
     (async () => {
-      const [{ initApproach, deckOn }, { mountApproach }] = await Promise.all([import("./stages.js"), import("./approach-phone.js")]);
+      const [{ initApproach, deckOn }, { mountApproach }, { ScrollTrigger }] = await Promise.all([import("./stages.js"), import("./approach-phone.js"), import("@/lib/gsap")]);
       if (!alive) return;
       initApproach({ motion: !reducedMotion, reducedMotion });
       setSlot?.(deckOn());
@@ -40,6 +40,7 @@ export function ApproachClient({ children }: { children: React.ReactNode }) {
       };
       mountPhone();
       phone.addEventListener("change", mountPhone);
+      requestAnimationFrame(() => ScrollTrigger.refresh());
     })();
     return () => {
       alive = false;

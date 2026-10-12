@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import { PAGE_NAV } from "@/content/nav";
-import { Logo } from "@/components/ui/logo/Logo";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { RollText } from "@/components/fx/roll-text/RollText";
 import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
