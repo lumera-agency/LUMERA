@@ -22,7 +22,7 @@ export async function What() {
     image: `/img/what/what-${d.n}-${locale === "ru" ? "ru" : "uk"}.webp`,
   }));
   return (
-    <section className="section section--ivory what" id="what" aria-labelledby="what-title" data-what="">
+    <section className="section what" id="what" aria-labelledby="what-title" data-what="">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta" data-sr="">
