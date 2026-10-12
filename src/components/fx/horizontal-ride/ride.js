@@ -87,12 +87,12 @@ export function initRide({
   next?.addEventListener('click', () => goTo(current + 1));
   skip?.addEventListener('click', () => {
     if (!trigger) return;
-    // out of the ride: to what follows it (the element after the ride, or just past the pin)
+    // out of the ride at once: to what follows it (the element after the ride, or just past the pin)
     const box = ride.parentElement?.classList.contains('pin-spacer') ? ride.parentElement : ride; // GSAP wraps a pinned element
     const after = box.nextElementSibling;
     const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
     const y = after ? after.getBoundingClientRect().top + window.scrollY - bar - 32 : trigger.end;
-    scrollToY(Math.max(y, trigger.end + 1));
+    scrollToY(Math.max(y, trigger.end + 1), { immediate: true }); // a jump out: the panels are not run through
   });
 
   document.addEventListener(goEvent, (e) => {
