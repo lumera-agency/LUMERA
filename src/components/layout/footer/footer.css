@@ -78,7 +78,7 @@
 
 @media (min-width: 1101px) {
   .footer__lead { grid-column: 3 / span 4; }
-  .footer__legal { grid-column: 3 / span 4; }
+  .footer__legal { grid-column: 1 / span 4; } /* the left edge, under nothing */
   .footer__contacts { grid-column: 7 / span 4; }
   .footer__end { grid-column: 11 / -1; }
 }
