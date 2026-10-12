@@ -2,8 +2,7 @@
 import { useRef, type AnchorHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 import { useMagnetic } from "@/components/fx/magnetic/useMagnetic";
-import { RunLabel } from "@/components/fx/run-label/RunLabel";
-import { useRunLabel } from "@/components/fx/run-label/useRunLabel";
+import { RollText } from "@/components/fx/roll-text/RollText";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import "./button.css";
 
@@ -17,16 +16,15 @@ type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
 };
 
 /**
- * A link styled as a button. Hover: it keeps its colour and glows a little, the label runs like a
- * ticker (fx/run-label), the arrow leaves up-right as its copy comes in.
+ * A link styled as a button (button.css). Primary: liquid rises with a running wave and the label's
+ * letters roll; ghost / line: the fill sweeps up from the bottom. The arrow swaps on the diagonal.
  */
 export function ButtonLink({ href, variant = "primary", size, magnetic = false, className, children, ...rest }: Props) {
   const ref = useRef<HTMLAnchorElement>(null);
   useMagnetic(ref, { strength: typeof magnetic === "number" ? magnetic : 1, enabled: Boolean(magnetic) });
-  useRunLabel(ref);
   return (
-    <a ref={ref} href={href} className={cn("btn", `btn--${variant}`, size && `btn--${size}`, className)} {...rest}>
-      <span className="btn__label">{typeof children === "string" ? <RunLabel>{children}</RunLabel> : children}</span>
+    <a ref={ref} href={href} className={cn("btn", `btn--${variant}`, size && `btn--${size}`, variant === "primary" && "roll-host", className)} {...rest}>
+      <span className="btn__label">{variant === "primary" && typeof children === "string" ? <RollText>{children}</RollText> : children}</span>
       <ArrowIcon />
     </a>
   );

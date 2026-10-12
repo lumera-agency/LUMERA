@@ -14,6 +14,8 @@ import { useHoverReveal } from "@/components/fx/hover-reveal/useHoverReveal";
 import { useSpotlight } from "@/components/fx/spotlight/useSpotlight";
 import { startSplashCursor } from "@/components/fx/splash-cursor/startSplashCursor";
 import { InvertFill } from "@/components/fx/invert-fill/InvertFill";
+import { RunLabel } from "@/components/fx/run-label/RunLabel";
+import { useRunLabel } from "@/components/fx/run-label/useRunLabel";
 import "@/components/fx/roll-text/roll-text.css";
 import "./lab.css";
 
@@ -22,7 +24,7 @@ const FX = [
   { id: "roll-text", name: "RollText", file: "fx/roll-text", use: '<a className="roll-host"><RollText>Послуги</RollText></a>' },
   { id: "invert-cursor", name: "InvertCursor", file: "fx/invert-cursor", use: "<InvertCursor scope=\".footer__top, .footer__bottom\" size={22} grow={2.9} /> once in the layout" },
   { id: "invert-fill", name: "InvertFill", file: "fx/invert-fill", use: "<InvertFill /> once in the layout  ·  <ButtonLink className=\"btn--invert\">" },
-  { id: "run-label", name: "RunLabel", file: "fx/run-label", use: "useRunLabel(buttonRef)  ·  <RunLabel>Text</RunLabel>  (built into ButtonLink)" },
+  { id: "run-label", name: "RunLabel", file: "fx/run-label", use: "useRunLabel(buttonRef)  ·  <RunLabel>Text</RunLabel>" },
   { id: "magnetic", name: "Magnetic", file: "fx/magnetic", use: "useMagnetic(ref, { strength: 1 })  ·  <ButtonLink magnetic>" },
   { id: "hover-reveal", name: "HoverReveal", file: "fx/hover-reveal", use: 'useHoverReveal(listRef, { rows: "[data-row]", images })' },
   { id: "text-fill", name: "TextFill", file: "fx/text-fill", use: "<TextFill>A paragraph that lights up as you read</TextFill>" },
@@ -118,8 +120,7 @@ export function FxLab({ locale }: { locale: string }) {
 
       <Block id="run-label" title="RunLabel">
         <div className="flex flex-wrap items-center gap-6">
-          <ButtonLink href="#run-label" variant="primary">Отримати план і оцінку</ButtonLink>
-          <ButtonLink href="#run-label" variant="ghost">Обговорити проєкт</ButtonLink>
+          <RunLabelDemo />
         </div>
       </Block>
 
@@ -207,5 +208,16 @@ export function FxLab({ locale }: { locale: string }) {
       </Block>
       <ScrollReveals root="[data-lab]" />
     </div>
+  );
+}
+
+/** RunLabel on its own: a plain .btn with the ticker label (the site's buttons use the liquid wave). */
+function RunLabelDemo() {
+  const ref = useRef<HTMLAnchorElement>(null);
+  useRunLabel(ref);
+  return (
+    <a ref={ref} href="#run-label" className="btn btn--line">
+      <span className="btn__label"><RunLabel>Отримати план і оцінку</RunLabel></span>
+    </a>
   );
 }

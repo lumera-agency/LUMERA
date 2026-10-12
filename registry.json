@@ -119,7 +119,7 @@
       "name": "run-label",
       "type": "registry:component",
       "title": "RunLabel",
-      "description": "On hover a button's label runs like a ticker: two copies slide in a loop with faded edges; leaving, it glides to the end of the cycle and stops on the text at rest.",
+      "description": "On hover a button's label runs like a ticker: two copies slide in a loop with faded edges; leaving, it glides to the end of the cycle and stops on the text at rest. (A library variant; the site's buttons use the liquid wave in ui/button.)",
       "registryDependencies": [
         "@lumera/gsap-setup"
       ],
