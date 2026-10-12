@@ -74,7 +74,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           stages={t("preloader.stages")}
         />
         <a className="skip-link" href="#main">{t("skip")}</a>
-        <InvertCursor scope="#manifesto, .footer__top, .footer__bottom" size={110} grow={1.15} lensGrow={1.35} />
+        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" size={110} grow={1.15} lensGrow={1.35} />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

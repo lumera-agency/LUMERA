@@ -13,11 +13,14 @@ export async function Manifesto() {
     <ManifestoClient>
       <div className="manifesto__hold">
         <div className="container">
-          <h2 className="manifesto__text" id="manifesto-text" data-sr="">
-            <span className="manifesto__lead manifesto__glitch" data-glitch="" data-text={t("glitch")}>{t("glitch")}</span>
+          <h2 className="manifesto__text" id="manifesto-text" data-sr="" data-cursor-size="150" data-cursor-still="">
+            {/* .manifesto__ink: the words themselves (the lines are blocks): the inverting lens works over these */}
+            <span className="manifesto__lead manifesto__glitch" data-glitch="" data-text={t("glitch")}>
+              <span className="manifesto__ink">{t("glitch")}</span>
+            </span>
             <span className="manifesto__rest">
-              <span>{t("and")}</span>&nbsp;
-              <mark className="manifesto__mark" data-text={t("mark")}>{t("mark")}</mark>
+              <span className="manifesto__ink">{t("and")}</span>&nbsp;
+              <mark className="manifesto__mark manifesto__ink" data-text={t("mark")}>{t("mark")}</mark>
             </span>
           </h2>
           <span className="manifesto__slot" data-slot="manifesto" aria-hidden="true" />

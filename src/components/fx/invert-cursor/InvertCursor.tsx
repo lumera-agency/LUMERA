@@ -5,7 +5,7 @@
  * with a little lag, its rim ripples (the wordmark shader's own ripple, two sines round the edge), it
  * stretches along the way it moves and settles round when it stops, and it grows in and out softly.
  * Bigger over anything clickable and over large type ([data-cursor-lens]); [data-cursor-size] on an
- * area sets its own diameter. Text fields keep the native caret; over `quiet` areas it steps aside;
+ * area sets its own diameter, [data-cursor-still] keeps it a plain round circle there (no ripple, no stretch). Text fields keep the native caret; over `quiet` areas it steps aside;
  * outside the scope the native pointer stays. Mouse only; reduced motion: no lag, no ripple.
  */
 import { useEffect } from "react";
@@ -70,6 +70,7 @@ export function InvertCursor({
     let inScope = false;
     let down = false;
     let under: Element | null = null;
+    let still = false; // a plain circle here ([data-cursor-still])
     let placed = false;
     let time = 0;
     let last = 0;
@@ -84,13 +85,14 @@ export function InvertCursor({
     };
     const aim = () => {
       target.r = radiusFor(under);
+      still = Boolean(under?.closest?.("[data-cursor-still]"));
       wake();
     };
 
     // a closed, smooth outline through the rim's points (Catmull-Rom as cubic Béziers)
     const outline = (r: number, t: number, stretch: number, angle: number) => {
-      const a1 = reduced ? 0 : 0.026 * ripple; // the wordmark lens: 0.022 / 0.016, a touch more on a small lens
-      const a2 = reduced ? 0 : 0.019 * ripple;
+      const a1 = reduced || still ? 0 : 0.026 * ripple; // the wordmark lens: 0.022 / 0.016, a touch more on a small lens
+      const a2 = reduced || still ? 0 : 0.019 * ripple;
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
       const pts: [number, number][] = [];
@@ -136,7 +138,7 @@ export function InvertCursor({
       vel.x += ((cur.x - px) / dt - vel.x) * k;
       vel.y += ((cur.y - py) / dt - vel.y) * k;
       const speed = Math.hypot(vel.x, vel.y);
-      const stretch = reduced ? 0 : Math.min(0.16, speed / 5200);
+      const stretch = reduced || still ? 0 : Math.min(0.16, speed / 5200);
       path.setAttribute("d", cur.r > 0 ? outline(cur.r, time, stretch, Math.atan2(vel.y, vel.x)) : "");
       svg.style.transform = `translate3d(${(cur.x - box / 2).toFixed(1)}px, ${(cur.y - box / 2).toFixed(1)}px, 0)`;
       // runs while the lens is out (its rim keeps rippling) or still settling
