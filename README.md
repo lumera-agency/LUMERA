@@ -34,7 +34,6 @@ src/
     sections/              блоки страницы: hero, what, services, manifesto, why, approach, pricing, faq, contact
     lab/                   витрина
   content/                 данные без текста (навигация)
-scripts/                   инструменты переноса: split-css, html2jsx, convert-locales, move-rules
 registry.json              реестр эффектов (shadcn)
 ```
 
@@ -65,7 +64,8 @@ registry.json              реестр эффектов (shadcn)
 ### Стили
 
 Tailwind v4 подключён **без preflight**: сброс сайта — `styles/base.css` (на нём сверстан v2), CSS
-блоков разрезан из v2 по компонентам скриптом `scripts/split-css.mjs` с сохранением порядка правил.
+блоков разрезан из v2 по компонентам с сохранением порядка правил (разовые скрипты переноса удалены,
+они есть в истории git).
 Новый код и витрина — на утилитах Tailwind с токенами (`bg-bg`, `text-ink`, `text-lime`, `font-mono`,
 `text-display`, `ease-out` …). Класс сайта `.container` исключён из генерации Tailwind (`globals.css`).
 Новый сайт на библиотеке может включить preflight как обычно.
