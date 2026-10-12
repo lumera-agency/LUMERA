@@ -15,7 +15,8 @@
  * [data-ride-now|of|bar|names], [data-ride-prev], [data-ride-next], [data-ride-skip].
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
-import { getLenis, scrollToY } from '@/lib/scroll';
+import { scrollToY } from '@/lib/scroll';
+import { initPaging } from '@/components/fx/scroll-paging/paging.js';
 import { topbarHeight } from '@/lib/css';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -231,103 +232,17 @@ export function initRide({
       });
     });
 
-    // paging: inside the ride one wheel gesture turns one slide (a glide; the rest of that gesture,
-    // the trackpad's momentum included, is swallowed). Coming from above or below, the scroll lands
-    // softly on the first or the last slide; one more gesture past them and the page goes on as
-    // usual. A sideways swipe turns the slides too. Wheel events are caught before Lenis sees them.
-    let paging = false;
-    let armed = true; // the next gesture may turn a slide
-    let lastWheel = 0;
-    let lastAbs = 0;
-    const EDGE = 2;
-    const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
-    const swallow = (e) => {
-      if (e.cancelable) e.preventDefault();
-      e.lenisStopPropagation = true; // Lenis skips an event marked so
-    };
-    const turnTo = (i) => {
-      const lenis = getLenis();
-      const y = scrollFor(i);
-      if (y == null) return;
-      paging = true;
-      armed = false;
-      const done = () => { paging = false; };
-      if (lenis) lenis.scrollTo(y, { duration: 1, easing: inOut, lock: true, force: true, onComplete: done });
-      else {
-        window.scrollTo({ top: y, behavior: 'smooth' });
-        setTimeout(done, 900);
-      }
-    };
-    const onWheel = (e) => {
-      if (!trigger || e.ctrlKey) return;
-      const lenis = getLenis();
-      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
-      const sideways = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-      const delta = (sideways ? e.deltaX : e.deltaY) * unit;
-      const abs = Math.abs(delta);
-      const now = e.timeStamp || performance.now(); // when the input happened, not when it got through
-      // a new gesture: after a pause, or a push clearly stronger than the fading one before it
-      const fresh = now - lastWheel > 180 || (abs > lastAbs * 1.6 && abs > 6);
-      lastWheel = now;
-      lastAbs = abs;
-      if (!delta) return;
-      const { start, end } = trigger;
-      const y = lenis ? lenis.animatedScroll : window.scrollY;
-      const inside = y >= start - EDGE && y <= end + EDGE;
-      if (skipping || paging) {
-        if (inside || skipping) swallow(e);
-        return;
-      }
-      const dir = Math.sign(delta);
-      if (inside) {
-        if (fresh) armed = true;
-        const f = ((y - start) / (end - start || 1)) * (panels.length - 1);
-        const near = Math.abs(f - Math.round(f)) < 0.02;
-        const to = dir > 0 ? (near ? Math.round(f) + 1 : Math.ceil(f)) : (near ? Math.round(f) - 1 : Math.floor(f));
-        // past the first or the last slide: a fresh gesture leaves the ride, a tail stays put
-        if (to < 0 || to > panels.length - 1) {
-          if (!armed) swallow(e);
-          return;
-        }
-        swallow(e);
-        if (armed) turnTo(to);
-        return;
-      }
-      if (sideways) return; // outside the ride a sideways swipe is the browser's (back / forward)
-      // on the way in: the scroll may not run past the ride's edge, it settles on it
-      const target = (lenis ? lenis.targetScroll : y) + delta;
-      const edge = dir > 0 && y < start && target > start ? start : dir < 0 && y > end && target < end ? end : null;
-      if (edge == null) return;
-      swallow(e);
-      armed = false;
-      if (lenis) lenis.scrollTo(edge, { programmatic: false, lerp: lenis.options.lerp });
-      else window.scrollTo({ top: edge, behavior: 'smooth' });
-    };
-    window.addEventListener('wheel', onWheel, { passive: false, capture: true });
-
-    // the keyboard and the scrollbar scroll freely: once the scroll rests inside the ride it settles
-    // on the nearest slide
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let snapTimer = 0;
-    const onScroll = () => {
-      clearTimeout(snapTimer);
-      snapTimer = window.setTimeout(() => {
-        if (!trigger || skipping || paging || reducedMotion || performance.now() - lastWheel < 600) return;
-        const { start, end } = trigger;
-        const at = window.scrollY;
-        if (at <= start + EDGE || at >= end - EDGE) return;
-        const i = Math.round(((at - start) / (end - start)) * (panels.length - 1));
-        const y2 = scrollFor(i);
-        if (y2 != null && Math.abs(y2 - at) > EDGE) scrollToY(y2, { duration: 0.8 });
-      }, 200);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
+    // paging (fx/scroll-paging): a wheel gesture or a sideways swipe turns one slide; the scroll
+    // lands softly on the first and the last; a scroll left between two slides settles on one
+    const paging = initPaging({
+      stops: () => (trigger ? panels.map((_, i) => scrollFor(i)) : []),
+      sideways: true,
+      busy: () => skipping,
+    });
 
     requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => {
-      window.removeEventListener('wheel', onWheel, { capture: true });
-      window.removeEventListener('scroll', onScroll);
-      clearTimeout(snapTimer);
+      paging.destroy();
       ScrollTrigger.removeEventListener('refreshInit', sizePanels);
       ride.style.removeProperty('--panel-w');
       on = false;
