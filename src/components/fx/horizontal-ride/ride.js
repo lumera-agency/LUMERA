@@ -85,14 +85,33 @@ export function initRide({
   };
   prev?.addEventListener('click', () => goTo(current - 1));
   next?.addEventListener('click', () => goTo(current + 1));
+  // skip: out of the ride without running through the panels — the screen dips to black, the page
+  // jumps to what follows the ride, and it comes up again there (a cut, not a scroll)
+  let skipping = false;
   skip?.addEventListener('click', () => {
-    if (!trigger) return;
-    // out of the ride at once: to what follows it (the element after the ride, or just past the pin)
+    if (!trigger || skipping) return;
+    skipping = true;
     const box = ride.parentElement?.classList.contains('pin-spacer') ? ride.parentElement : ride; // GSAP wraps a pinned element
     const after = box.nextElementSibling;
     const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
-    const y = after ? after.getBoundingClientRect().top + window.scrollY - bar - 32 : trigger.end;
-    scrollToY(Math.max(y, trigger.end + 1), { immediate: true }); // a jump out: the panels are not run through
+    const target = () => Math.max(after ? after.getBoundingClientRect().top + window.scrollY - bar - 32 : trigger.end, trigger.end + 1);
+    const veil = document.createElement('div');
+    veil.className = 'ride__veil';
+    // self-contained (the effect may live without the site's CSS): the page's black, under a topbar (z 60)
+    veil.style.cssText = 'position:fixed;inset:0;z-index:45;background:var(--bg,#0a0a0a);opacity:0;pointer-events:none';
+    document.body.append(veil);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fade = (from, to, duration, easing) => veil.animate([{ opacity: from }, { opacity: to }], { duration: reduced ? 1 : duration, easing, fill: 'forwards' }).finished;
+    fade(0, 1, 260, 'cubic-bezier(0.7, 0, 0.84, 0)')
+      .then(() => {
+        scrollToY(target(), { immediate: true });
+        return new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))); // the new place is painted
+      })
+      .then(() => fade(1, 0, 620, 'cubic-bezier(0.16, 1, 0.3, 1)'))
+      .finally(() => {
+        veil.remove();
+        skipping = false;
+      });
   });
 
   document.addEventListener(goEvent, (e) => {
