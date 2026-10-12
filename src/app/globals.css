@@ -1,1 +1,14 @@
-@import "tailwindcss";
+/*
+ * Global styles. Tailwind without its preflight: the site's own reset (styles/base.css) is the
+ * one the components were built on, so they render exactly as before. Theme + utilities only.
+ * Each component imports its own stylesheet next to it (components/**\/*.css).
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@import "../styles/fonts.css";
+@import "../styles/tokens.css";
+@import "../styles/base.css";
+
+@source "../";

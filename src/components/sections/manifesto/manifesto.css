@@ -1,0 +1,130 @@
+/* manifesto: split 1:1 from website-v2/css by scripts/split-css.mjs (rule order kept) */
+
+
+.manifesto {
+  --ember: #d2561c; /* black text on it: 4.6:1 */
+  --glitch-shift: clamp(4px, 0.12em, 10px);
+  --glitch-after: 3s;
+  --glitch-before: 2s;
+  padding-block: 0;
+}
+.manifesto__hold {
+  display: grid;
+  align-content: center;
+  min-height: min(100svh, 1000px);
+  padding-block: var(--rhythm-section);
+}
+.manifesto__text {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 4.6rem);
+  font-weight: 400;
+  font-variation-settings: "SHRP" 64;
+  line-height: 1.14;
+  letter-spacing: -0.035em;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--ink-dark);
+}
+.manifesto__lead,
+.manifesto__rest { display: block; }
+@media (min-width: 1101px) {
+  .manifesto__rest { white-space: nowrap; }
+}
+.manifesto__glitch {
+  position: relative;
+  display: block;
+}
+.manifesto__glitch::before,
+.manifesto__glitch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: inherit;
+  background: var(--ivory); /* covers the line under each slice */
+  opacity: 0;
+  pointer-events: none;
+}
+.manifesto__glitch.is-glitching::before,
+.manifesto__glitch.is-glitching::after {
+  content: attr(data-text);
+  content: attr(data-text) / ""; /* decoration: not read out a second time */
+  opacity: 1;
+}
+.manifesto__glitch.is-glitching::after { left: var(--glitch-shift); right: calc(var(--glitch-shift) * -1); animation: glitch-slice var(--glitch-after) infinite linear alternate-reverse; }
+.manifesto__glitch.is-glitching::before { left: calc(var(--glitch-shift) * -1); right: var(--glitch-shift); animation: glitch-slice var(--glitch-before) infinite linear alternate-reverse; }
+@media (hover: hover) {
+  .manifesto__glitch:hover::before,
+  .manifesto__glitch:hover::after {
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    opacity: 1;
+  }
+  .manifesto__glitch:hover::after { left: var(--glitch-shift); right: calc(var(--glitch-shift) * -1); animation: glitch-slice var(--glitch-after) infinite linear alternate-reverse; }
+  .manifesto__glitch:hover::before { left: calc(var(--glitch-shift) * -1); right: var(--glitch-shift); animation: glitch-slice var(--glitch-before) infinite linear alternate-reverse; }
+}
+.manifesto__mark {
+  padding: 0.02em 0.16em 0.08em;
+  border-radius: 0.08em;
+  color: var(--ink-dark);
+  background: linear-gradient(var(--ember), var(--ember)) no-repeat 0 0 / 100% 100%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 1.1s var(--ease-out) 0.25s;
+}
+html.motion .manifesto:not(.is-in) .manifesto__mark { background-size: 0% 100%; }
+@media (hover: hover) and (min-width: 861px) {
+  .manifesto__rest { white-space: nowrap; }
+  .manifesto__mark { position: relative; display: inline-block; }
+  .manifesto__mark::before,
+  .manifesto__mark::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    padding: inherit;
+    border-radius: inherit;
+    color: var(--ink-dark);
+    background: var(--ember);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .manifesto__mark:hover::before,
+  .manifesto__mark:hover::after {
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    opacity: 1;
+  }
+  .manifesto__mark:hover::after { left: var(--glitch-shift); right: calc(var(--glitch-shift) * -1); animation: glitch-slice var(--glitch-after) infinite linear alternate-reverse; }
+  .manifesto__mark:hover::before { left: calc(var(--glitch-shift) * -1); right: var(--glitch-shift); animation: glitch-slice var(--glitch-before) infinite linear alternate-reverse; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .manifesto__glitch::before,
+  .manifesto__glitch::after,
+  .manifesto__mark::before,
+  .manifesto__mark::after { display: none; }
+}
+.manifesto__slot { display: none; }
+@keyframes glitch-slice {
+  0% { clip-path: inset(20% 0 50% 0); }
+  5% { clip-path: inset(10% 0 60% 0); }
+  10% { clip-path: inset(15% 0 55% 0); }
+  15% { clip-path: inset(25% 0 35% 0); }
+  20% { clip-path: inset(30% 0 40% 0); }
+  25% { clip-path: inset(40% 0 20% 0); }
+  30% { clip-path: inset(10% 0 60% 0); }
+  35% { clip-path: inset(15% 0 55% 0); }
+  40% { clip-path: inset(25% 0 35% 0); }
+  45% { clip-path: inset(30% 0 40% 0); }
+  50% { clip-path: inset(20% 0 50% 0); }
+  55% { clip-path: inset(10% 0 60% 0); }
+  60% { clip-path: inset(15% 0 55% 0); }
+  65% { clip-path: inset(25% 0 35% 0); }
+  70% { clip-path: inset(30% 0 40% 0); }
+  75% { clip-path: inset(40% 0 20% 0); }
+  80% { clip-path: inset(20% 0 50% 0); }
+  85% { clip-path: inset(10% 0 60% 0); }
+  90% { clip-path: inset(15% 0 55% 0); }
+  95% { clip-path: inset(25% 0 35% 0); }
+  100% { clip-path: inset(30% 0 40% 0); }
+}

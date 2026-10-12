@@ -1,0 +1,116 @@
+/*
+ * Lumera design tokens — the one source of truth.
+ *
+ * @theme   the values Tailwind turns into utilities: bg-bg, text-ink, text-lime, border-line,
+ *          font-sans / font-display / font-mono, ease-out / ease-in-out, rounded-lg, text-label …
+ *          (static: emitted even when no utility uses them — the components' CSS reads them too)
+ * :root    the names the components' own CSS uses (var(--ink), var(--rhythm-m) …): aliases of the
+ *          theme values, plus the layout scale that has no Tailwind namespace.
+ * A new site = a new copy of this file; the effects and sections only ever read tokens.
+ */
+@theme static {
+  /* surfaces and ink */
+  --color-bg: #0a0a0a;
+  --color-ink: #f6f6f3;
+  --color-ink-soft: rgb(246 246 243 / 0.78);
+  --color-ink-mute: rgb(246 246 243 / 0.55);
+  --color-line: rgb(246 246 243 / 0.14);
+  --color-border: rgb(246 246 243 / 0.09);
+  --color-border-strong: rgb(246 246 243 / 0.2);
+  --color-on-ink: #0d0d0d;
+  --color-on-accent: #0f0e0d;
+  --color-ivory: #fcfcfa;
+  --color-ink-dark: #0f0e0d;
+  --color-err: #eaa597;
+  /* signals: lime = the system at work, ember = the person who writes */
+  --color-lime: #daff02;
+  --color-ember: #d2561c;      /* on near-black 4.8:1 · black text on it 4.6:1 */
+  --color-ember-hi: #e2652a;   /* hover */
+  --color-ember-ink: #f08a52;  /* small ember text on dark */
+  --color-ember-deep: #b0461a; /* ember text on ivory 4.8:1 */
+  --color-ember-btn: #c24d18;  /* ember under white text 4.6:1 */
+
+  /* type */
+  --font-sans: "Geologica", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Archivo", "Arial Black", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --text-label: 0.75rem;                               /* 12 · mono caps labels, index numerals, tags */
+  --text-caption: 0.8125rem;                           /* 13 · hints, captions, notes */
+  --text-small: 0.875rem;                              /* 14 · the second line under an item name */
+  --text-body-s: 0.9375rem;                            /* 15 · dense body */
+  --text-body: 1rem;                                   /* 16 · body copy */
+  --text-lead: clamp(1rem, 0.25vw + 0.92rem, 1.15rem); /* 16 → 18.4 · intros */
+  --text-h4: clamp(1.2rem, 0.5vw + 0.98rem, 1.4rem);   /* 19.2 → 22.4 · card titles */
+  --text-h3: clamp(1.6rem, 2.3vw, 2.5rem);             /* 25.6 → 40 · service titles */
+  --text-display: clamp(2.3rem, 4.4vw, 4.75rem);       /* 36.8 → 76 · section titles */
+
+  /* motion: one rhythm for the whole page */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);     /* expo.out — arrivals */
+  --ease-in-out: cubic-bezier(0.87, 0, 0.13, 1); /* expo.inOut — lines, wipes */
+
+  /* shape */
+  --radius-lg: 22px;
+  --radius-md: 14px;
+}
+
+:root {
+  --bg: var(--color-bg);
+  --ink: var(--color-ink);
+  --ink-soft: var(--color-ink-soft);
+  --ink-mute: var(--color-ink-mute);
+  --line: var(--color-line);
+  --border: var(--color-border);
+  --border-strong: var(--color-border-strong);
+  --on-ink: var(--color-on-ink);
+  --on-accent: var(--color-on-accent);
+  --err: var(--color-err);
+  --lime: var(--color-lime);
+  --signal: var(--color-lime);
+  --signal-glow: rgb(218 255 2 / 0.35);
+  --ember: var(--color-ember);
+  --ember-hi: var(--color-ember-hi);
+  --ember-ink: var(--color-ember-ink);
+  --ember-deep: var(--color-ember-deep);
+  --ember-btn: var(--color-ember-btn);
+  --radius: var(--radius-md);
+
+  --fs-label: var(--text-label);
+  --fs-caption: var(--text-caption);
+  --fs-small: var(--text-small);
+  --fs-body-s: var(--text-body-s);
+  --fs-body: var(--text-body);
+  --fs-lead: var(--text-lead);
+  --fs-h4: var(--text-h4);
+  --fs-h3: var(--text-h3);
+  --fs-display: var(--text-display);
+
+  --dur-fast: 240ms;
+  --dur: 520ms;
+  --dur-slow: 900ms;
+
+  /* layout scale */
+  --gutter: clamp(20px, 3.65vw, 72px);
+  --header-h: clamp(68px, calc(var(--vh, 1vh) * 9), 92px);
+  --topbar-h: 64px;
+  --col-gap: clamp(16px, 2vw, 32px);
+  --card-gap: clamp(14px, 1.4vw, 22px);
+  --rhythm-xs: clamp(18px, 3vh, 32px);        /* label → title */
+  --rhythm-s: clamp(24px, 4vh, 44px);         /* list → its footnote */
+  --rhythm-m: clamp(44px, 7vh, 88px);         /* header → content, group → group */
+  --rhythm-l: clamp(56px, 9vh, 112px);        /* block → block */
+  --rhythm-section: clamp(96px, 13vh, 168px); /* section padding */
+  --card-pad: clamp(28px, 2.8vw, 40px);
+  --row-pad: 24px;
+  --row-pad-s: 16px;
+  --index-w: 3rem;
+  --measure: 55ch;
+  --track-caps: 0.16em;
+  --track-num: 0.08em;
+
+  /* textures */
+  --hatch: repeating-linear-gradient(-45deg, rgb(246 246 243 / 0.12) 0 1px, transparent 1px 7px);
+  --stone-tex: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='3' stitchTiles='stitch'/><feColorMatrix values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/><feComponentTransfer result='grit'><feFuncR type='linear' slope='1.6' intercept='0.1'/><feFuncG type='linear' slope='1.6' intercept='0.1'/><feFuncB type='linear' slope='1.6' intercept='0.1'/></feComponentTransfer><feTurbulence type='fractalNoise' baseFrequency='0.007' numOctaves='4' seed='8' stitchTiles='stitch'/><feColorMatrix values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/><feComponentTransfer result='mottle'><feFuncR type='linear' slope='1.8' intercept='0.04'/><feFuncG type='linear' slope='1.8' intercept='0.04'/><feFuncB type='linear' slope='1.8' intercept='0.04'/></feComponentTransfer><feBlend in='grit' in2='mottle' mode='multiply'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+
+  color-scheme: dark;
+}
+@media (max-width: 600px) { :root { --fs-display: clamp(1.875rem, 8.6vw, 2.3rem); } }
