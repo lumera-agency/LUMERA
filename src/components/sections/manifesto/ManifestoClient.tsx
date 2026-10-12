@@ -37,7 +37,7 @@ export function ManifestoClient({ children }: { children: React.ReactNode }) {
     };
   }, []);
   return (
-    <section ref={root} className="section section--ivory manifesto" id="manifesto" aria-labelledby="manifesto-text" data-manifesto="">
+    <section ref={root} className="section section--ivory manifesto" id="manifesto" aria-labelledby="manifesto-text" data-manifesto="" data-cursor-size="96">
       {children}
     </section>
   );

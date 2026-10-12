@@ -1,4 +1,5 @@
-/* InvertCursor: inside its scope the native pointer hides (text fields keep their caret); the circle inverts what is under it */
+/* InvertCursor: inside its scope the native pointer hides (text fields keep their caret); the lens
+   is an SVG drawn each frame (InvertCursor.tsx), white with difference: it inverts what is under it */
 [data-invert-cursor],
 [data-invert-cursor] * { cursor: none !important; }
 [data-invert-cursor] :is(input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]), textarea, [contenteditable="true"]) { cursor: text !important; }
@@ -8,27 +9,9 @@
   left: 0;
   top: 0;
   z-index: 100000;
-  width: 0;
-  height: 0;
+  overflow: visible;
   pointer-events: none;
   mix-blend-mode: difference;
   will-change: transform;
 }
-.invert-cursor__dot {
-  position: absolute;
-  left: calc(var(--size) / -2);
-  top: calc(var(--size) / -2);
-  width: var(--size);
-  height: var(--size);
-  border-radius: 50%;
-  background: #fff;
-  opacity: 0;
-  transform: scale(0.4);
-  transition: transform 0.45s var(--ease-out), opacity 0.25s ease;
-}
-.invert-cursor.is-on .invert-cursor__dot { opacity: 1; transform: scale(1); }
-.invert-cursor.is-on.is-hover .invert-cursor__dot { transform: scale(var(--grow)); }
-.invert-cursor.is-on.is-lens .invert-cursor__dot { transform: scale(var(--lens)); }
-.invert-cursor.is-on.is-down .invert-cursor__dot { transform: scale(0.88); }
-.invert-cursor.is-on.is-hover.is-down .invert-cursor__dot { transform: scale(calc(var(--grow) * 0.9)); }
-.invert-cursor.is-away .invert-cursor__dot { opacity: 0; transform: scale(0.2); }
+.invert-cursor path { fill: #fff; }

@@ -82,10 +82,8 @@
       "name": "invert-cursor",
       "type": "registry:component",
       "title": "InvertCursor",
-      "description": "The mouse pointer becomes a circle that inverts what is under it (mix-blend-mode: difference): trails a little, grows over anything clickable, presses on click; text fields keep the caret, quiet areas get it out of the way. Mouse only.",
-      "registryDependencies": [
-        "@lumera/gsap-setup"
-      ],
+      "description": "Inside a scope the pointer becomes a liquid lens that inverts what is under it (difference blend): trails with a lag, its rim ripples, it stretches along its motion and grows in and out softly; bigger over clickables and large type, [data-cursor-size] per area. Mouse only.",
+      "registryDependencies": [],
       "files": [
         {
           "path": "src/components/fx/invert-cursor/InvertCursor.tsx",
