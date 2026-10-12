@@ -164,6 +164,8 @@
     background: var(--bg);
     transform-origin: 50% 0;
   }
+  /* big screens: the content grows to fill the screen (stages.js sets --deck-k; 1 on a laptop) */
+  .process__body.is-deck .stage > * { zoom: var(--deck-k, 1); }
   .process__body.is-deck .stage__title { grid-column: 2 / span 3; font-size: var(--fs-h3); line-height: 1.05; letter-spacing: -0.03em; }
   .process__body.is-deck .stage__v { grid-column: 5 / -1; font-size: var(--fs-lead); }
   .process__body.is-deck .stage__node,

@@ -137,6 +137,20 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
       root.style.setProperty('--line-h', `${(mid(nodes[nodes.length - 1]) - mid(nodes[0])).toFixed(1)}px`);
     }
     if (root.classList.contains('is-deck') && pin) {
+      // a big screen: the cards' content grows (--deck-k, a zoom) into the room the pinned block
+      // leaves under itself, so the deck and the stone fill the screen; a laptop keeps k = 1
+      root.style.setProperty('--deck-k', '1');
+      const natural = Math.max(...cards.map((c) => c.offsetHeight));
+      root.style.setProperty('--deck-h', `${natural}px`);
+      const section = root.closest('section') || root;
+      const sectionCss = getComputedStyle(section);
+      const pinnedTop = topbarHeight() - (parseFloat(sectionCss.paddingTop) || 0) + dpx(36);
+      const bottom = (after || root).getBoundingClientRect().bottom - section.getBoundingClientRect().top;
+      const room = window.innerHeight - pinnedTop - bottom - Math.max(dpx(124), window.innerHeight * 0.12);
+      const cardCss = getComputedStyle(cards[0]);
+      const body = natural - (parseFloat(cardCss.paddingTop) || 0) - (parseFloat(cardCss.paddingBottom) || 0);
+      const k = Math.min(1.6, Math.max(1, 1 + room / Math.max(1, body)));
+      root.style.setProperty('--deck-k', k.toFixed(3));
       const deckH = Math.max(...cards.map((c) => c.offsetHeight));
       root.style.setProperty('--deck-h', `${deckH}px`);
       // each card sits centred in the frame, so whichever is on top faces the stone
