@@ -3,7 +3,7 @@
  * and lands on the last word with a lime dot; the counter and the lime line follow the real loading
  * (window.lumeraLoader.step, called by the page's boot). On leaving, the copy slips up out of its
  * masks and the columns lift left to right; finish() resolves as they start, so the next scene
- * starts under them. The second load in a session shows only the mark and the line.
+ * starts under them. It plays in full on every load.
  *
  * Server component: the markup and an inline script that starts the clock before any bundle runs.
  * Props are plain strings, so the same component works for any site (words · separated).
@@ -55,18 +55,12 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
   const el = document.querySelector<HTMLElement>("[data-preloader]");
   if (!el || !root.classList.contains("js")) return;
   const motion = root.classList.contains("motion") && !!el.animate;
-  let quick = false;
-  try {
-    quick = sessionStorage.getItem("lumera:loaded") === "1";
-    sessionStorage.setItem("lumera:loaded", "1");
-  } catch {}
-  if (quick) el.classList.add("preloader--quick");
   const q = <T extends Element = HTMLElement>(s: string) => el.querySelector<T>(s)!;
   const count = q("[data-pl-count]"), line = q("[data-pl-line]"), word = q("[data-pl-word]");
   const stageEl = q("[data-pl-stage]"), ofEl = q("[data-pl-of]");
   const OUT = "cubic-bezier(0.16, 1, 0.3, 1)", IN = "cubic-bezier(0.7, 0, 0.84, 0)", IN_OUT = "cubic-bezier(0.87, 0, 0.13, 1)";
   const CEIL = [0.3, 0.55, 0.8, 0.95, 1];
-  const MIN = quick ? 450 : cfg.min;
+  const MIN = cfg.min;
   let target = 0.04, creep = 0.04, shown = 0, stage = 0, done = false, last = performance.now();
   const setStage = (i: number) => {
     stage = Math.max(stage, i);
@@ -107,7 +101,7 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
     swap(cfg.words[w]);
     timer = window.setTimeout(tick, 290);
   };
-  if (!quick) timer = window.setTimeout(tick, 380);
+  timer = window.setTimeout(tick, 380);
 
   const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
   const until = (test: () => boolean) => new Promise<void>((r) => {
@@ -131,7 +125,7 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
           setStage(4);
           landing = true;
           clearTimeout(timer);
-          if (quick || !motion) return;
+          if (!motion) return;
           return new Promise<void>((r) => swap(cfg.last + "<b>.</b>", r)).then(() => wait(260));
         })
         .then(() => {
@@ -150,7 +144,7 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
           line.animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], { duration: 520, easing: IN_OUT, fill: "forwards" });
           // then the columns lift one after another, left to right
           const cols = [...el.querySelectorAll<HTMLElement>(".preloader__cols i")];
-          const D = quick ? 700 : 950, S = quick ? 45 : 75, AT = quick ? 60 : 260;
+          const D = 950, S = 75, AT = 260;
           const lifts = cols.map(
             (c, k) => c.animate([{ transform: "translateY(0)" }, { transform: "translateY(-101%)" }], { duration: D, delay: AT + k * S, easing: IN_OUT, fill: "forwards" }).finished,
           );

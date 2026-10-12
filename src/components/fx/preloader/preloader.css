@@ -102,11 +102,6 @@ html:not(.js) .preloader { display: none; }
   transform-origin: 0 50%;
   box-shadow: 0 0 12px rgba(218, 255, 2, 0.6);
 }
-.preloader--quick .preloader__words,
-.preloader--quick .preloader__count,
-.preloader--quick .preloader__status,
-.preloader--quick .preloader__note,
-.preloader--quick .preloader__glow { display: none; }
 @media (max-width: 600px) {
   .preloader__frame { grid-template-rows: auto 1fr auto auto auto; }
   .preloader__note { display: none; }
