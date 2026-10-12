@@ -74,7 +74,8 @@
   .topbar .btn--xs .btn__icon { display: none; }
   .topbar .btn--xs { padding-inline: 12px; font-size: 0.8125rem; }
   .topbar__end { gap: 10px; }
-  .topbar .logo__type { display: none; }
+  .topbar .logo__type,
+  .topbar .logo__mono { display: none; }
 }
 @media (max-width: 860px) { .topbar .btn--xs { --h: 44px; height: 44px; } }
 

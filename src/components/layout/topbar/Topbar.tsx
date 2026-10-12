@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import { PAGE_NAV } from "@/content/nav";
 import { ButtonLink } from "@/components/ui/button/Button";
+import { LogoContent } from "@/components/ui/logo/Logo";
 import { RollText } from "@/components/fx/roll-text/RollText";
 import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
 import { ScrollTopLink } from "@/components/layout/page-nav/ScrollTopLink";
@@ -62,8 +63,7 @@ export function Topbar() {
       onBlur={(e) => open && !bar.current?.contains(e.relatedTarget as Node) && setOpen(false)}
     >
       <ScrollTopLink className="logo logo--sm" aria-label={t("logo.top")}>
-        <svg className="logo__mark" viewBox="0 0 329 329" aria-hidden="true" focusable="false"><use href="#logo-mark" /></svg>
-        <span className="logo__type"><span className="logo__word">LUMERA</span><span className="logo__sub">STUDIO</span></span>
+        <LogoContent />
       </ScrollTopLink>
       <nav className="topbar__nav" aria-label={t("topbar.nav.label")}>
         {PAGE_NAV.filter((l) => !("bar" in l)).map((l) => (
