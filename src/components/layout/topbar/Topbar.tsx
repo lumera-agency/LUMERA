@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import { dpx, topbarHeight } from "@/lib/css";
@@ -8,20 +8,18 @@ import { ButtonLink } from "@/components/ui/button/Button";
 import { LogoContent } from "@/components/ui/logo/Logo";
 import { RollText } from "@/components/fx/roll-text/RollText";
 import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
+import { menu, useMenuOpen } from "@/components/layout/menu/menu-store";
 import { ScrollTopLink } from "@/components/layout/page-nav/ScrollTopLink";
 import "./topbar.css";
 
 /**
- * The compact page navigation: appears only once the hero has scrolled away. On phones the links
- * and the language switch open from the menu button (a sheet that closes on a link, Esc, a tap
- * outside or tabbing past its last link).
+ * The compact page navigation: appears only once the hero has scrolled away. On phones the menu
+ * button opens the site menu (MenuSheet).
  */
 export function Topbar() {
   const t = useTranslations();
-  const bar = useRef<HTMLDivElement>(null);
-  const menuBtn = useRef<HTMLButtonElement>(null);
   const [visible, setVisible] = useState(false);
-  const [open, setOpen] = useState(false);
+  const open = useMenuOpen();
 
   useEffect(() => {
     const hero = document.querySelector("[data-hero]");
@@ -34,7 +32,6 @@ export function Topbar() {
       queued = 0;
       const show = hero.getBoundingClientRect().bottom <= topbarHeight() + dpx(8);
       setVisible(show);
-      if (!show) setOpen(false);
     };
     const queue = () => {
       if (!queued) queued = requestAnimationFrame(check);
@@ -51,30 +48,8 @@ export function Topbar() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    const key = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      setOpen(false);
-      menuBtn.current?.focus();
-    };
-    const down = (e: PointerEvent) => !bar.current?.contains(e.target as Node) && setOpen(false);
-    document.addEventListener("keydown", key);
-    document.addEventListener("pointerdown", down);
-    return () => {
-      document.removeEventListener("keydown", key);
-      document.removeEventListener("pointerdown", down);
-    };
-  }, [open]);
-
   return (
-    <div
-      ref={bar}
-      className={cn("topbar", visible && "is-visible", open && "is-menu")}
-      data-topbar
-      inert={!visible}
-      onBlur={(e) => open && !bar.current?.contains(e.relatedTarget as Node) && setOpen(false)}
-    >
+    <div className={cn("topbar", visible && "is-visible")} data-topbar inert={!visible}>
       <ScrollTopLink className="logo logo--sm" aria-label={t("logo.top")}>
         <LogoContent />
       </ScrollTopLink>
@@ -88,20 +63,10 @@ export function Topbar() {
       <div className="topbar__end">
         <LangSwitch />
         <ButtonLink href="#contact" variant="ghost" size="xs">{t("cta.discuss")}</ButtonLink>
-        <button ref={menuBtn} className="topbar__menu" type="button" aria-expanded={open} aria-controls="topbar-sheet" aria-label={t("topbar.menu")} onClick={() => setOpen((o) => !o)}>
+        <button className="topbar__menu" type="button" aria-expanded={open} aria-controls="site-menu" aria-label={t("topbar.menu")} onClick={(e) => menu.toggle(e.currentTarget)}>
           <i />
           <i />
         </button>
-      </div>
-      <div className="topbar__sheet" id="topbar-sheet" hidden={!open} onClick={(e) => (e.target as HTMLElement).closest('a[href^="#"]:not(.lang__link)') && setOpen(false)}>
-        <nav aria-label={t("topbar.nav.label")}>
-          {PAGE_NAV.map((l) => (
-            <a key={l.href} href={l.href}>
-              <span>{t(l.label)}</span>
-            </a>
-          ))}
-        </nav>
-        <LangSwitch />
       </div>
     </div>
   );

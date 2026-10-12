@@ -1,6 +1,5 @@
 /* hero: split 1:1 from website-v2/css by scripts/split-css.mjs (rule order kept) */
 
-html.menu-open .hero { z-index: 100; }
 
 .hero {
   position: relative;
