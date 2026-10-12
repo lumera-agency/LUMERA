@@ -1,17 +1,5 @@
 /* button: split 1:1 from website-v2/css by scripts/split-css.mjs (rule order kept) */
 
-.roll { display: inline-flex; overflow: hidden; }
-.roll__c { position: relative; display: flex; flex-direction: column; }
-.roll__c > span {
-  display: block;
-  white-space: pre;
-  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i) * 20ms);
-}
-.roll__c > span + span { position: absolute; top: 0; left: 0; right: 0; transform: translateY(100%); }
-@media (prefers-reduced-motion: reduce) {
-  .roll__c > span { transition: none; }
-}
-
 .btn {
   --h: 52px;
   position: relative;

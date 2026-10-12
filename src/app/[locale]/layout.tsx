@@ -4,7 +4,9 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { LogoSprite } from "@/components/ui/logo/LogoSprite";
+import { Preloader } from "@/components/fx/preloader/Preloader";
 import "../globals.css";
+import "@/components/layout/page/page.css";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumera-seven-eta.vercel.app";
 
@@ -56,6 +58,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const t = await getTranslations({ locale });
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -67,6 +70,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       </head>
       <body>
         <LogoSprite />
+        <Preloader
+          brand="Lumera Studio"
+          note={t("preloader.note")}
+          words={t("preloader.words")}
+          last={t("preloader.last")}
+          stages={t("preloader.stages")}
+        />
+        <a className="skip-link" href="#main">{t("skip")}</a>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

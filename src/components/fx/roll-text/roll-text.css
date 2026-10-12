@@ -1,0 +1,18 @@
+/* RollText: on hover each letter rolls up out of sight and its copy rolls in from below. */
+
+.roll { display: inline-flex; overflow: hidden; }
+.roll__c { position: relative; display: flex; flex-direction: column; }
+.roll__c > span {
+  display: block;
+  white-space: pre;
+  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i) * 20ms);
+}
+.roll__c > span + span { position: absolute; top: 0; left: 0; right: 0; transform: translateY(100%); }
+@media (prefers-reduced-motion: reduce) {
+  .roll__c > span { transition: none; }
+}
+/* the trigger: any ancestor with .roll-host (the site's nav links bring their own rule, header.css) */
+.roll-host:hover .roll__c > span,
+.roll-host:focus-visible .roll__c > span { transform: translateY(-100%); }
+.roll-host:hover .roll__c > span + span,
+.roll-host:focus-visible .roll__c > span + span { transform: translateY(0); }
