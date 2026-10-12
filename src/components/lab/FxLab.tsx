@@ -19,6 +19,7 @@ import "./lab.css";
 const FX = [
   { id: "preloader", name: "Preloader", file: "fx/preloader", use: "<Preloader brand note words last stages />  ·  window.lumeraLoader.step(p, i) / finish()" },
   { id: "roll-text", name: "RollText", file: "fx/roll-text", use: '<a className="roll-host"><RollText>Послуги</RollText></a>' },
+  { id: "invert-fill", name: "InvertFill", file: "fx/invert-fill", use: "<InvertFill /> once in the layout  ·  .btn --btn-bg / --btn-fill / --btn-fill-ink" },
   { id: "magnetic", name: "Magnetic", file: "fx/magnetic", use: "useMagnetic(ref, { strength: 1 })  ·  <ButtonLink magnetic>" },
   { id: "hover-reveal", name: "HoverReveal", file: "fx/hover-reveal", use: 'useHoverReveal(listRef, { rows: "[data-row]", images })' },
   { id: "text-fill", name: "TextFill", file: "fx/text-fill", use: "<TextFill>A paragraph that lights up as you read</TextFill>" },
@@ -97,6 +98,13 @@ export function FxLab({ locale }: { locale: string }) {
               <RollText>{w}</RollText>
             </a>
           ))}
+        </div>
+      </Block>
+
+      <Block id="invert-fill" title="InvertFill">
+        <div className="flex flex-wrap items-center gap-6">
+          <ButtonLink href="#invert-fill" variant="primary">Отримати план і оцінку</ButtonLink>
+          <ButtonLink href="#invert-fill" variant="ghost">Обговорити проєкт</ButtonLink>
         </div>
       </Block>
 

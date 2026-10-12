@@ -15,7 +15,7 @@ export async function Footer() {
       <div className="container footer__top">
         <div className="footer__lead">
           <p className="footer__claim">{t.rich("footer.claim", rich)}</p>
-          <ButtonLink href="#contact" variant="primary" size="sm" magnetic>{t("cta.discuss")}</ButtonLink>
+          <ButtonLink href="#contact" variant="primary" size="sm">{t("cta.discuss")}</ButtonLink>
         </div>
         <nav className="footer__nav" aria-label={t("footer.nav.label")}>
           {PAGE_NAV.map((l) => (

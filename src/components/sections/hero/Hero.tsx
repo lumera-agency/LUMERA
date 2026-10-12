@@ -19,7 +19,7 @@ export async function Hero() {
             <span className="tone tone--key" style={tone(2)}>{t("title.3")}</span>
           </h1>
           <div className="hero__actions" data-reveal="cta">
-            <ButtonLink href="#contact" variant="primary" magnetic>{t("cta")}</ButtonLink>
+            <ButtonLink href="#contact" variant="primary">{t("cta")}</ButtonLink>
           </div>
         </div>
         <HeroRail />

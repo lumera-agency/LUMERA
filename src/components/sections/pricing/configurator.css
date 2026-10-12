@@ -2343,11 +2343,6 @@
   .cfg__note { grid-column: 1; grid-row: 4; }
   .cfg-sum { grid-column: 1; grid-row: 5; }
 }
-.plan__face .btn--line::before { background: var(--ember); }
-.plan__face .btn--line:hover,
-.plan__face .btn--line:focus-visible { color: var(--on-accent); border-color: var(--ember); }
-.plan__face .btn--primary { background: var(--ember); color: var(--on-accent); }
-.plan__face .btn--primary:hover { background: var(--ember-hi); box-shadow: 0 14px 36px -16px rgba(210, 86, 28, 0.6); }
 .fd__nav em,
 .fd__btn,
 .fd__form em { color: #111; background: var(--ember); }
@@ -2367,3 +2362,6 @@
 @keyframes pvWinDrift { from { translate: 0 0; rotate: 0deg; } to { translate: 1.5cqw 0.8cqw; rotate: 1deg; } }
 @keyframes pvArrowFlow { 0%, 100% { translate: 0 0; } 50% { translate: 0.7cqw 0; } }
 @keyframes pvStkSpin { to { rotate: 360deg; } }
+/* the plan cards: ember, the shared inverting fill (ui/button) */
+.plan__face .btn--primary { --btn-bg: var(--ember); --btn-ink: var(--on-accent); --btn-fill: var(--bg); --btn-fill-ink: var(--ember-ink); --btn-fill-line: var(--ember); }
+.plan__face .btn--line { --btn-fill: var(--ember); --btn-fill-ink: var(--on-accent); --btn-fill-line: var(--ember); }

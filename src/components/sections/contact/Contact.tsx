@@ -178,7 +178,7 @@ export async function Contact() {
               <textarea id="f-note" name="note" rows={3} placeholder={t("contact.field.textarea.placeholder")}></textarea>
             </div>
             <div className="lead-form__foot">
-              <button className="btn btn--primary" type="submit" data-form-submit="" data-magnetic="">
+              <button className="btn btn--primary" type="submit" data-form-submit="">
                 <span className="btn__label">{t("contact.btn.label")}</span>
                 <span className="btn__icon" aria-hidden="true">
                   <svg className="arrow arrow--a" viewBox="0 0 24 24">

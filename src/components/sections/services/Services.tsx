@@ -68,7 +68,7 @@ export async function Services() {
         {/* the services lead on to their prices: the configurator below (6 · Ціни) */}
         <div className="services__cta" data-sr="">
           <p className="services__cta-q">{t("services.cta.q")}</p>
-          <ButtonLink href="#pricing" variant="primary" magnetic>{t("services.cta.btn")}</ButtonLink>
+          <ButtonLink href="#pricing" variant="primary">{t("services.cta.btn")}</ButtonLink>
         </div>
       </div>
       <ServicesClient />

@@ -394,11 +394,6 @@
 @media (forced-colors: active) {
   .s-head__title .tone .hl { color: CanvasText; }
 }
-:where(.page, .topbar, .footer) .btn--primary { background: var(--ember); color: var(--on-ink); }
-:where(.page, .topbar, .footer) .btn--primary::before { background: linear-gradient(105deg, transparent 32%, rgba(255, 228, 210, 0.6) 50%, transparent 68%); }
-:where(.page, .topbar, .footer) .btn--primary:hover { background: var(--ember-hi); box-shadow: 0 12px 48px -12px rgba(210, 86, 28, 0.6); }
-:where(.page, .topbar, .footer) .btn--ghost::before, :where(.page, .topbar, .footer) .btn--line::before { background: var(--ember); }
-:where(.page, .topbar, .footer) .btn--ghost:hover, :where(.page, .topbar, .footer) .btn--ghost:focus-visible, :where(.page, .topbar, .footer) .btn--line:hover, :where(.page, .topbar, .footer) .btn--line:focus-visible { color: var(--on-ink); border-color: var(--ember); }
 .chip:hover span { border-color: rgba(210, 86, 28, 0.5); }
 .chip input:checked + span { border-color: var(--ember); color: var(--on-ink); background: var(--ember); }
 

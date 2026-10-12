@@ -243,12 +243,6 @@ html.has-fluid .hero__fluid { display: block; }
 }
 html.has-stage .hero { z-index: 10; }
 html.has-stage .hero__canvas { position: fixed; bottom: auto; height: calc(var(--vh, 1vh) * 100); }
-.hero .btn--primary { background: var(--signal); color: var(--on-ink); }
-.hero .btn--primary::before { background: linear-gradient(105deg, transparent 32%, rgba(255, 255, 255, 0.75) 50%, transparent 68%); }
-.hero .btn--primary:hover { background: #e6ff4a; box-shadow: 0 12px 48px -12px rgba(218, 255, 2, 0.55); }
-.hero .btn--ghost::before { background: var(--signal); }
-.hero .btn--ghost:hover,
-.hero .btn--ghost:focus-visible { color: var(--on-ink); border-color: var(--signal); }
 .rail__num { color: var(--signal); }
 .rail__pulse { background: linear-gradient(90deg, transparent 0%, rgba(218, 255, 2, 0) 72%, rgba(218, 255, 2, 0.85) 98%, var(--signal) 100%); }
 .rail__pulse::after { background: var(--signal); box-shadow: 0 0 10px 2px rgba(218, 255, 2, 0.6); }

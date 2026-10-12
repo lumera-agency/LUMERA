@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { LogoSprite } from "@/components/ui/logo/LogoSprite";
 import { Preloader } from "@/components/fx/preloader/Preloader";
+import { InvertFill } from "@/components/fx/invert-fill/InvertFill";
 import "../globals.css";
 import "@/components/layout/page/page.css";
 
@@ -73,6 +74,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           stages={t("preloader.stages")}
         />
         <a className="skip-link" href="#main">{t("skip")}</a>
+        <InvertFill />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
