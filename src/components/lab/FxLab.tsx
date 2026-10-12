@@ -19,7 +19,7 @@ import "./lab.css";
 const FX = [
   { id: "preloader", name: "Preloader", file: "fx/preloader", use: "<Preloader brand note words last stages />  ·  window.lumeraLoader.step(p, i) / finish()" },
   { id: "roll-text", name: "RollText", file: "fx/roll-text", use: '<a className="roll-host"><RollText>Послуги</RollText></a>' },
-  { id: "invert-cursor", name: "InvertCursor", file: "fx/invert-cursor", use: "<InvertCursor size={22} grow={2.9} quiet=\"[data-wordmark]\" /> once in the layout" },
+  { id: "invert-cursor", name: "InvertCursor", file: "fx/invert-cursor", use: "<InvertCursor scope=\".footer__top, .footer__bottom\" size={22} grow={2.9} /> once in the layout" },
   { id: "invert-fill", name: "InvertFill", file: "fx/invert-fill", use: "<InvertFill /> once in the layout  ·  .btn --btn-bg / --btn-fill / --btn-fill-ink" },
   { id: "magnetic", name: "Magnetic", file: "fx/magnetic", use: "useMagnetic(ref, { strength: 1 })  ·  <ButtonLink magnetic>" },
   { id: "hover-reveal", name: "HoverReveal", file: "fx/hover-reveal", use: 'useHoverReveal(listRef, { rows: "[data-row]", images })' },
@@ -103,7 +103,7 @@ export function FxLab({ locale }: { locale: string }) {
       </Block>
 
       <Block id="invert-cursor" title="InvertCursor">
-        <p className="max-w-[60ch] text-lead text-ink-soft">The pointer on this page is the effect: a circle that inverts everything under it, grows over links and buttons, steps aside over the wordmark (its own lens) and keeps the caret in text fields.</p>
+        <p className="max-w-[60ch] text-lead text-ink-soft">Inside its scope the pointer becomes a circle that inverts everything under it, grows over links and buttons and keeps the caret in text fields; outside it the native pointer stays. On the site the scope is the footer.</p>
       </Block>
 
       <Block id="invert-fill" title="InvertFill">

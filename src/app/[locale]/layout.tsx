@@ -76,7 +76,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         />
         <a className="skip-link" href="#main">{t("skip")}</a>
         <InvertFill />
-        <InvertCursor />
+        <InvertCursor scope=".footer__top, .footer__bottom" />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

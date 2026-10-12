@@ -1,7 +1,7 @@
-/* InvertCursor: the native pointer hides (text fields keep their caret); the circle inverts what is under it */
-html.has-invert-cursor,
-html.has-invert-cursor * { cursor: none !important; }
-html.has-invert-cursor :is(input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]), textarea, [contenteditable="true"]) { cursor: text !important; }
+/* InvertCursor: inside its scope the native pointer hides (text fields keep their caret); the circle inverts what is under it */
+[data-invert-cursor],
+[data-invert-cursor] * { cursor: none !important; }
+[data-invert-cursor] :is(input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]), textarea, [contenteditable="true"]) { cursor: text !important; }
 
 .invert-cursor {
   position: fixed;

@@ -1,16 +1,18 @@
 "use client";
 /*
- * InvertCursor — the mouse pointer becomes a circle that inverts whatever is under it (white with
- * mix-blend-mode: difference), like the lens on the footer's LUMERA, across the whole site. It trails
- * the pointer a little, grows over anything clickable, presses in on click; text fields keep the
- * native caret, and over `quiet` areas (the wordmark, which has its own lens) it steps aside.
- * Mouse only; with reduced motion it follows without the trail.
+ * InvertCursor — inside `scope` the mouse pointer becomes a circle that inverts whatever is under it
+ * (white with mix-blend-mode: difference), like the lens on the footer's LUMERA; outside it the
+ * native pointer stays. It trails the pointer a little, grows over anything clickable, presses in on
+ * click; text fields keep the native caret, and over `quiet` areas it steps aside.
+ * Mouse only; with reduced motion it follows without the trail. `scope` "body" = the whole page.
  */
 import { useEffect } from "react";
 import { gsap } from "@/lib/gsap";
 import "./invert-cursor.css";
 
 type Props = {
+  /** where the circle replaces the pointer (selector; several are fine) */
+  scope?: string;
   /** px, at rest */
   size?: number;
   /** scale over clickable things */
@@ -24,6 +26,7 @@ type Props = {
 };
 
 export function InvertCursor({
+  scope = "body",
   size = 22,
   grow = 2.9,
   clickable = 'a, button, [role="button"], [role="tab"], summary, label, select, [data-cursor="hover"]',
@@ -34,7 +37,6 @@ export function InvertCursor({
     const fine = matchMedia("(hover: hover) and (pointer: fine)");
     if (!fine.matches) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const root = document.documentElement;
     const el = document.createElement("div");
     el.className = "invert-cursor";
     el.setAttribute("aria-hidden", "true");
@@ -42,7 +44,9 @@ export function InvertCursor({
     el.style.setProperty("--grow", String(grow));
     el.innerHTML = '<span class="invert-cursor__dot"></span>';
     document.body.append(el);
-    root.classList.add("has-invert-cursor");
+    // the native pointer hides only inside the scope (invert-cursor.css)
+    const areas = [...document.querySelectorAll<HTMLElement>(scope)];
+    areas.forEach((a) => a.setAttribute("data-invert-cursor", ""));
 
     const opts = { duration: reduced ? 0 : 0.28, ease: "power3.out" };
     const xTo = gsap.quickTo(el, "x", opts);
@@ -65,7 +69,7 @@ export function InvertCursor({
       xTo(e.clientX);
       yTo(e.clientY);
       read(e.target as Element | null);
-      el.classList.add("is-on");
+      el.classList.toggle("is-on", Boolean((e.target as Element | null)?.closest?.(scope)));
     };
     // the page scrolls under a still pointer: what is under the circle changes
     let queued = 0;
@@ -73,7 +77,9 @@ export function InvertCursor({
       if (queued || !placed) return;
       queued = requestAnimationFrame(() => {
         queued = 0;
-        read(document.elementFromPoint(at.x, at.y));
+        const under = document.elementFromPoint(at.x, at.y);
+        read(under);
+        el.classList.toggle("is-on", Boolean(under?.closest(scope)));
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -96,8 +102,8 @@ export function InvertCursor({
       window.removeEventListener("blur", leave);
       gsap.killTweensOf(el);
       el.remove();
-      root.classList.remove("has-invert-cursor");
+      areas.forEach((a) => a.removeAttribute("data-invert-cursor"));
     };
-  }, [size, grow, clickable, quiet, text]);
+  }, [scope, size, grow, clickable, quiet, text]);
   return null;
 }

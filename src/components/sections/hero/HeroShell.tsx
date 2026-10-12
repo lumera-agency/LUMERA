@@ -86,7 +86,6 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       </div>
       <ShardsScene running={running} reducedMotion={reducedMotion} />
       <HeroScene heroRef={hero} glowRef={glow} orbitLabel={orbitLabel} running={running} reducedMotion={reducedMotion} />
-      <canvas className="hero__fluid" data-fluid aria-hidden="true" />
       <div className="hero__grain" aria-hidden="true" />
       {children}
     </div>
