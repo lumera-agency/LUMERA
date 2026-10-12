@@ -8,7 +8,9 @@
  * After Codrops' «Rapid Image Hover Menu» (MIT, github.com/codrops/RapidImageHoverMenu, © Codrops),
  * rewritten for one shared frame and GSAP 3.
  *
- *   useHoverReveal(listRef, { rows: "[data-reveal-row]", images: ["/a.webp", "/b.webp"] })
+ *   useHoverReveal(listRef, { rows: "[data-reveal-row]", images: ["/a.webp", "/b.webp"], avoid: ".row__go" })
+ * `avoid`: what the frame never covers (a row's own button): it keeps to the left of it, and over it
+ * the frame steps away.
  * The frame's look is CSS: .hover-reveal / .hover-reveal__in / img (hover-reveal.css), or your class.
  */
 import { useEffect, type RefObject } from "react";
@@ -32,9 +34,11 @@ type Options = {
   delay?: number;
   /** picture width/height (the images' own size, for layout) */
   size?: [number, number];
+  /** inside the list: what the frame never covers, and over which it steps away */
+  avoid?: string;
 };
 
-export function useHoverReveal(list: RefObject<HTMLElement | null>, { rows: rowSel, images, className = "", follow = 0.14, lean: leanRate = 0.09, maxLean = 9, delay = 0.08, size = [680, 850] }: Options) {
+export function useHoverReveal(list: RefObject<HTMLElement | null>, { rows: rowSel, images, className = "", follow = 0.14, lean: leanRate = 0.09, maxLean = 9, delay = 0.08, size = [680, 850], avoid }: Options) {
   useEffect(() => {
     const root = list.current;
     if (!root) return;
@@ -66,10 +70,20 @@ export function useHoverReveal(list: RefObject<HTMLElement | null>, { rows: rowS
     let frame = 0;
     let showCall: gsap.core.Tween | null = null;
     const box = () => ({ w: reveal.offsetWidth, h: reveal.offsetHeight });
+    const keepOut = avoid ? [...root.querySelectorAll<HTMLElement>(avoid)] : [];
+    const GAP = 24;
+    /** the left edge of what the frame keeps clear of (the column of the rows' buttons) */
+    const clearOf = () => (keepOut.length ? Math.min(...keepOut.map((el) => el.getBoundingClientRect().left)) - GAP : Infinity);
+    /** is the pointer on (or right by) one of them */
+    const onKeepOut = () =>
+      keepOut.some((el) => {
+        const r = el.getBoundingClientRect();
+        return pointer.x > r.left - GAP && pointer.x < r.right + GAP && pointer.y > r.top - GAP && pointer.y < r.bottom + GAP;
+      });
 
     const place = (snap: boolean) => {
       const { w, h } = box();
-      const tx = Math.min(pointer.x + w * 0.18, window.innerWidth - w - 16);
+      const tx = Math.max(16, Math.min(pointer.x + w * 0.18, window.innerWidth - w - 16, clearOf() - w));
       const ty = Math.min(Math.max(pointer.y - h / 2, 16), window.innerHeight - h - 16); // never cut by the edge
       const speed = pointer.x - lastX;
       lastX = pointer.x;
@@ -153,6 +167,7 @@ export function useHoverReveal(list: RefObject<HTMLElement | null>, { rows: rowS
         if (e.pointerType !== "mouse") return;
         pointer.x = e.clientX;
         pointer.y = e.clientY;
+        if (onKeepOut()) return;
         show(i, i >= lastRow);
         lastRow = i;
       });
@@ -167,6 +182,15 @@ export function useHoverReveal(list: RefObject<HTMLElement | null>, { rows: rowS
     on(root, "pointermove", (e: PointerEvent) => {
       pointer.x = e.clientX;
       pointer.y = e.clientY;
+      if (!keepOut.length || e.pointerType !== "mouse") return;
+      // over a row's button the frame steps away, and comes back once the pointer is off it
+      if (onKeepOut()) return hide();
+      if (shown || showCall?.isActive()) return;
+      const row = (e.target as Element).closest<HTMLElement>(rowSel);
+      const i = row ? rows.indexOf(row) : -1;
+      if (i < 0) return;
+      show(i, i >= lastRow);
+      lastRow = i;
     }, { passive: true });
     on(root, "pointerleave", hide);
     // a pointer that left without a leave event (a jump, a window switch): the next move anywhere hides it
@@ -181,5 +205,5 @@ export function useHoverReveal(list: RefObject<HTMLElement | null>, { rows: rowS
       gsap.killTweensOf([inner, ...pictures]);
       reveal.remove();
     };
-  }, [list, rowSel, images, className, follow, leanRate, maxLean, delay, size]);
+  }, [list, rowSel, images, className, follow, leanRate, maxLean, delay, size, avoid]);
 }

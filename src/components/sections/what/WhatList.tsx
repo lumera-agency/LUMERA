@@ -12,7 +12,7 @@ type Row = { n: number; service: string; name: string; desc: string; image: stri
  */
 export function WhatList({ rows }: { rows: Row[] }) {
   const list = useRef<HTMLOListElement>(null);
-  useHoverReveal(list, { rows: "[data-what-row]", images: rows.map((r) => r.image) });
+  useHoverReveal(list, { rows: "[data-what-row]", images: rows.map((r) => r.image), avoid: ".what__arrow" });
 
   useGSAP(
     () => {
