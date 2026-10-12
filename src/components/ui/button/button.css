@@ -1,7 +1,7 @@
 /*
  * Buttons. Each variant and each context sets only colour variables; the shape and the effects are
- * shared. Primary: liquid rises from the bottom with a running wave on its surface, the letters
- * roll, the button lifts with a glow of its colour. Ghost / line: the fill sweeps up from the bottom.
+ * shared. Primary: liquid rises from the bottom with a running wave on its surface, the button lifts
+ * with a glow of its colour. Ghost / line: the fill sweeps up from the bottom.
  * The arrow leaves up-right as its copy comes in. (Library options: fx/invert-fill, fx/run-label.)
  */
 .btn {
@@ -87,8 +87,8 @@
 :is(.btn--ghost, .btn--line):is(:hover, :focus-visible) { color: var(--btn-fill-ink); box-shadow: inset 0 0 0 1px var(--btn-fill); }
 :is(.btn--ghost, .btn--line):is(:hover, :focus-visible)::before { transform: translateY(0); }
 
-/* primary: liquid rises from the bottom, its surface a running wave; the letters roll (RollText),
-   the button lifts a little with a glow of its own colour */
+/* primary: liquid rises from the bottom, its surface a running wave; the button lifts a little
+   with a glow of its own colour */
 .btn--primary {
   --h: clamp(3.5rem, calc(var(--vh, 1vh) * 6.2), 4rem);
   --btn-bg: var(--ink);
