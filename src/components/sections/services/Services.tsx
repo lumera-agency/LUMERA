@@ -56,12 +56,24 @@ export async function Services() {
             <ServiceAutomation />
             <ServiceSaas />
           </div>
+          {/* one panel back / on (wide screens, while the ride is on) */}
+          <button className="ride__arrow ride__arrow--prev" type="button" data-ride-prev="" aria-label={t("services.ride.prev")}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+          </button>
+          <button className="ride__arrow ride__arrow--next" type="button" data-ride-next="" aria-label={t("services.ride.next")}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </button>
           <div className="ride__hud">
             <p className="ride__count" aria-hidden="true">
               <b data-ride-now="">01</b> / <span data-ride-of="">05</span>
             </p>
             <span className="ride__bar" aria-hidden="true"><i data-ride-bar="" /></span>
             <ul className="ride__names" data-ride-names="" aria-label={t("nav.services")} />
+            {/* out of the ride without scrolling it to the end */}
+            <button className="ride__skip" type="button" data-ride-skip="" aria-label={t("services.ride.skipLabel")}>
+              <span>{t("services.ride.skip")}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+            </button>
           </div>
         </div>
 

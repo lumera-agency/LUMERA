@@ -9,11 +9,9 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { setLenis } from "@/lib/scroll";
 import "./smooth-scroll.css";
 
-let instance: Lenis | null = null;
-/** The running Lenis (null when off): for scripted scrolls that should glide the same way. */
-export const getLenis = () => instance;
 
 export function SmoothScroll({ lerp = 0.095 }: { lerp?: number }) {
   useEffect(() => {
@@ -25,7 +23,7 @@ export function SmoothScroll({ lerp = 0.095 }: { lerp?: number }) {
       syncTouch: false,
       prevent: (node) => Boolean(node.closest?.("dialog, [data-lenis-prevent]")),
     });
-    instance = lenis;
+    setLenis(lenis); // scripted scrolls (lib/scroll) glide through it
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
@@ -38,7 +36,7 @@ export function SmoothScroll({ lerp = 0.095 }: { lerp?: number }) {
       mo.disconnect();
       gsap.ticker.remove(tick);
       lenis.destroy();
-      instance = null;
+      setLenis(null);
     };
   }, [lerp]);
   return null;

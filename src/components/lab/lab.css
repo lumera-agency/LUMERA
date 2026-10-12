@@ -23,6 +23,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
+  width: calc(100% + var(--gutter) * 2);
   margin-inline: calc(var(--gutter) * -1);
   overflow: clip;
 }

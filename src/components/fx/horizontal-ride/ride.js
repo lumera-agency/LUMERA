@@ -4,15 +4,18 @@
  * (ScrollTrigger pin + scrub; the panels' own effects ride on it through containerAnimation).
  * The panel in the middle is lit and its neighbours step back; behind each panel its big outlined
  * numeral drifts faster than the panel (depth); the HUD counts the panels, fills a lime line and
- * names them (a name scrolls the ride to its panel). A sideways trackpad swipe drives it too.
+ * names them (a name scrolls the ride to its panel). Arrows on the sides step one panel back or on,
+ * and «skip» leaves the ride for what comes after it. A sideways trackpad swipe drives it too.
  * Elsewhere (phones, short windows, reduced motion) the block stays the list it always was.
  *
  * `services:go` (2 · Що ми робимо): while the ride is on, the page scrolls to that panel.
  *
  * Library use: initRide({ motion, root, track, panel, name, media, body, tabs }) — the selectors
- * default to the site's markup; the HUD is optional ([data-ride-now|of|bar|names] inside root).
+ * default to the site's markup; the HUD and the buttons are optional, inside root:
+ * [data-ride-now|of|bar|names], [data-ride-prev], [data-ride-next], [data-ride-skip].
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
+import { scrollToY } from '@/lib/scroll';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -56,6 +59,7 @@ export function initRide({
     panels.forEach((p, k) => p.classList.toggle('is-current', k === i));
     buttons.forEach((b, k) => b.setAttribute('aria-current', String(k === i)));
     if (now) now.textContent = pad(i + 1);
+    syncArrows();
   };
 
   /** The scroll position that brings panel `i` to the middle of the stage. */
@@ -67,10 +71,29 @@ export function initRide({
     return trigger.start + (trigger.end - trigger.start) * Math.min(1, Math.max(0, x / max));
   };
   const goTo = (i) => {
-    const y = scrollFor(i);
+    const y = scrollFor(Math.max(0, Math.min(panels.length - 1, i)));
     if (y == null) return;
-    window.scrollTo({ top: y, behavior: 'smooth' });
+    scrollToY(y);
   };
+  // the buttons: one panel back / on, and out of the ride
+  const prev = $('[data-ride-prev]', ride);
+  const next = $('[data-ride-next]', ride);
+  const skip = $('[data-ride-skip]', ride);
+  const syncArrows = () => {
+    prev?.toggleAttribute('disabled', current <= 0);
+    next?.toggleAttribute('disabled', current >= panels.length - 1);
+  };
+  prev?.addEventListener('click', () => goTo(current - 1));
+  next?.addEventListener('click', () => goTo(current + 1));
+  skip?.addEventListener('click', () => {
+    if (!trigger) return;
+    // out of the ride: to what follows it (the element after the ride, or just past the pin)
+    const box = ride.parentElement?.classList.contains('pin-spacer') ? ride.parentElement : ride; // GSAP wraps a pinned element
+    const after = box.nextElementSibling;
+    const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
+    const y = after ? after.getBoundingClientRect().top + window.scrollY - bar - 32 : trigger.end;
+    scrollToY(Math.max(y, trigger.end + 1));
+  });
 
   document.addEventListener(goEvent, (e) => {
     if (!on) {

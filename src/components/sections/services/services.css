@@ -259,6 +259,7 @@ p.service__dialog-go--alt .link { color: inherit; }
   display: grid;
   grid-template-columns: minmax(0, 1fr); /* the screen's width, not the track's: the track overflows */
   grid-template-rows: minmax(0, 1fr) auto;
+  width: calc(100% + var(--gutter) * 2); /* explicit: the pin keeps this width (it drops the margins) */
   margin-inline: calc(var(--gutter) * -1); /* the track runs from edge to edge of the screen */
   overflow: hidden;
   overflow: clip; /* never scrolled sideways by a focus: ride.js brings the panel instead */
@@ -340,3 +341,57 @@ p.service__dialog-go--alt .link { color: inherit; }
 @media (max-width: 1240px) { .ride__names { display: none; } }
 .ride.is-on .service { isolation: isolate; }
 .service-tabs.is-on .service-tab:nth-child(5) { grid-column: 1 / -1; }
+
+/* v2 · the ride's buttons: arrows on the sides (one panel back / on) and «skip» after the names.
+   Only while the ride is on; elsewhere the block is a list or the phone switcher. */
+.ride__arrow,
+.ride__skip { display: none; }
+.ride.is-on .ride__arrow {
+  position: absolute;
+  top: calc(50% - 30px);
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--ink);
+  background: rgb(10 10 10 / 0.55);
+  box-shadow: inset 0 0 0 1px var(--line);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: color 0.3s var(--ease-out), background-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), opacity 0.3s ease;
+}
+.ride.is-on .ride__arrow--prev { left: calc(var(--gutter) * 0.35); }
+.ride.is-on .ride__arrow--next { right: calc(var(--gutter) * 0.35); }
+.ride.is-on .ride__arrow svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.4s var(--ease-out); }
+.ride.is-on .ride__arrow:hover { color: var(--on-accent); background: var(--lime); box-shadow: none; }
+.ride.is-on .ride__arrow--prev:hover svg { transform: translateX(-3px); }
+.ride.is-on .ride__arrow--next:hover svg { transform: translateX(3px); }
+.ride.is-on .ride__arrow:disabled { opacity: 0; pointer-events: none; }
+.ride.is-on .ride__arrow:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+
+.ride.is-on .ride__hud { grid-template-columns: auto minmax(0, 1fr) auto auto; }
+.ride.is-on .ride__skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 14px 0 16px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: var(--fs-label);
+  letter-spacing: 0.04em;
+  color: var(--lime);
+  background: none;
+  box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.55);
+  cursor: pointer;
+  transition: color 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
+}
+.ride.is-on .ride__skip svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.4s var(--ease-out); }
+.ride.is-on .ride__skip:hover { color: var(--on-accent); background: var(--lime); }
+.ride.is-on .ride__skip:hover svg { transform: translateY(2px); }
