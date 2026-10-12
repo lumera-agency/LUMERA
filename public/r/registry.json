@@ -102,16 +102,40 @@
       "name": "invert-fill",
       "type": "registry:component",
       "title": "InvertFill",
-      "description": "Buttons invert from the pointer: a circle of the inverse colour grows from where the pointer came in and shrinks toward where it leaves; one delegated listener writes --x / --y. Colours are variables per variant (--btn-bg, --btn-fill, --btn-fill-ink).",
+      "description": "Buttons invert from the pointer: a circle of the inverse colour grows from where the pointer came in and shrinks toward where it leaves (.btn--invert); one delegated listener writes --x / --y.",
       "files": [
         {
           "path": "src/components/fx/invert-fill/InvertFill.tsx",
           "type": "registry:component"
         },
         {
-          "path": "src/components/ui/button/button.css",
+          "path": "src/components/fx/invert-fill/invert-fill.css",
           "type": "registry:file",
-          "target": "src/components/ui/button/button.css"
+          "target": "src/components/fx/invert-fill/invert-fill.css"
+        }
+      ]
+    },
+    {
+      "name": "run-label",
+      "type": "registry:component",
+      "title": "RunLabel",
+      "description": "On hover a button's label runs like a ticker: two copies slide in a loop with faded edges; leaving, it glides to the end of the cycle and stops on the text at rest.",
+      "registryDependencies": [
+        "@lumera/gsap-setup"
+      ],
+      "files": [
+        {
+          "path": "src/components/fx/run-label/RunLabel.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/fx/run-label/useRunLabel.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "src/components/fx/run-label/run-label.css",
+          "type": "registry:file",
+          "target": "src/components/fx/run-label/run-label.css"
         }
       ]
     },

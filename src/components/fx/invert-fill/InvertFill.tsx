@@ -1,10 +1,11 @@
 "use client";
 import { useEffect } from "react";
+import "./invert-fill.css";
 
 /**
  * InvertFill — buttons invert from the pointer: this tracks where the pointer enters and leaves any
  * element matching `selector` and writes it to --x / --y on it; the button's CSS grows a circle of
- * the inverse colour from there (ui/button/button.css .btn::after). One delegated listener for the
+ * the inverse colour from there (invert-fill.css, on .btn--invert). One delegated listener for the
  * whole page, so buttons rendered later (the configurator's) get it too. Without it the circle grows
  * from the centre.
  */

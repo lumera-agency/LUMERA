@@ -1,0 +1,29 @@
+/* InvertFill (.btn--invert): on hover a circle of --btn-fill grows from the pointer's entry point
+   (--x / --y, InvertFill.tsx) and the text takes --btn-fill-ink, a hairline ring in that colour keeps
+   the edge; leaving, it shrinks back toward the exit point. */
+.btn--invert {
+  --btn-fill: var(--bg);
+  --btn-fill-ink: var(--btn-bg, var(--ink));
+  --btn-fill-line: var(--btn-fill-ink);
+}
+.btn--invert::after {
+  content: "";
+  position: absolute;
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+  z-index: -1;
+  width: 260%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--btn-fill);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.7s var(--ease-out);
+  pointer-events: none;
+}
+.btn--invert:hover,
+.btn--invert:focus-visible { --run-fade: var(--btn-fill); color: var(--btn-fill-ink); background: var(--btn-bg); box-shadow: inset 0 0 0 1px var(--btn-fill-line); }
+.btn--invert:hover::after,
+.btn--invert:focus-visible::after { transform: translate(-50%, -50%) scale(1); }
+@media (prefers-reduced-motion: reduce) {
+  .btn--invert::after { transition-duration: 1ms; }
+}

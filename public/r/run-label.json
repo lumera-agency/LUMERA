@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "run-label",
+  "title": "RunLabel",
+  "description": "On hover a button's label runs like a ticker: two copies slide in a loop with faded edges; leaving, it glides to the end of the cycle and stops on the text at rest.",
+  "registryDependencies": [
+    "@lumera/gsap-setup"
+  ],
+  "files": [
+    {
+      "path": "src/components/fx/run-label/RunLabel.tsx",
+      "content": "import \"./run-label.css\";\n\n/** The label's markup for useRunLabel: the text for screen readers, two copies on a track for the eye. */\nexport function RunLabel({ children }: { children: string }) {\n  return (\n    <span className=\"run-label\">\n      <span className=\"visually-hidden\">{children}</span>\n      <span className=\"run-label__track\" aria-hidden=\"true\">\n        <span>{children}</span>\n        <span>{children}</span>\n      </span>\n    </span>\n  );\n}\n",
+      "type": "registry:component"
+    },
+    {
+      "path": "src/components/fx/run-label/useRunLabel.ts",
+      "content": "\"use client\";\n/*\n * RunLabel — on hover a button's label starts running like a ticker (the hero's orbit, in small):\n * two copies of the text, the second one gap after the first, slide left in a loop; leaving, the run\n * glides on to the end of the current cycle and stops on the text at rest — never mid-word.\n * Markup: .run-label > .run-label__track > span + span (RunLabel.tsx renders it). Mouse only, never\n * with reduced motion.\n */\nimport { useEffect, type RefObject } from \"react\";\nimport { gsap } from \"@/lib/gsap\";\n\nexport function useRunLabel(host: RefObject<HTMLElement | null>, { speed = 85 } = {}) {\n  useEffect(() => {\n    const el = host.current;\n    const track = el?.querySelector<HTMLElement>(\".run-label__track\");\n    if (!el || !track) return;\n    if (matchMedia(\"(prefers-reduced-motion: reduce)\").matches || !matchMedia(\"(hover: hover) and (pointer: fine)\").matches) return;\n    let loop: gsap.core.Tween | null = null;\n    const cycle = () => {\n      const second = track.children[1] as HTMLElement | undefined;\n      return second ? second.offsetLeft : track.offsetWidth; // one copy + the gap\n    };\n    const enter = () => {\n      el.classList.add(\"is-running\");\n      loop?.kill();\n      const c = cycle();\n      const from = Number(gsap.getProperty(track, \"x\")) || 0;\n      // from wherever it is, on to the cycle's end, then round and round\n      loop = gsap.to(track, {\n        x: -c,\n        duration: (c + from) / speed,\n        ease: \"none\",\n        onComplete: () => {\n          loop = gsap.fromTo(track, { x: 0 }, { x: -c, duration: c / speed, ease: \"none\", repeat: -1 });\n        },\n      });\n    };\n    const leave = () => {\n      el.classList.remove(\"is-running\");\n      loop?.kill();\n      const c = cycle();\n      const x = Number(gsap.getProperty(track, \"x\")) || 0;\n      if (x === 0) return;\n      // glide on to the end of this cycle (the text comes back to rest), never back\n      loop = gsap.to(track, { x: -c, duration: Math.max(0.25, (c + x) / (speed * 2.2)), ease: \"power2.out\", onComplete: () => void gsap.set(track, { x: 0 }) });\n    };\n    el.addEventListener(\"pointerenter\", enter);\n    el.addEventListener(\"pointerleave\", leave);\n    return () => {\n      el.removeEventListener(\"pointerenter\", enter);\n      el.removeEventListener(\"pointerleave\", leave);\n      loop?.kill();\n      gsap.set(track, { clearProps: \"transform\" });\n    };\n  }, [host, speed]);\n}\n",
+      "type": "registry:hook"
+    },
+    {
+      "path": "src/components/fx/run-label/run-label.css",
+      "content": "/* RunLabel: the box is one copy wide; the second copy waits a gap to the right, a dot between them.\n   While it runs, the edges fade into the button (--run-fade: the button's colour). */\n.run-label { --run-gap: 1.6em; position: relative; display: inline-block; overflow: hidden; vertical-align: top; }\n.run-label__track { position: relative; display: inline-block; white-space: nowrap; will-change: transform; }\n.run-label__track > span + span { position: absolute; top: 0; left: calc(100% + var(--run-gap)); }\n.run-label__track > span + span::before {\n  content: \"\";\n  position: absolute;\n  top: 50%;\n  left: calc(var(--run-gap) / -2);\n  width: 0.28em;\n  height: 0.28em;\n  border-radius: 50%;\n  background: currentColor;\n  opacity: 0.6;\n  transform: translate(-50%, -50%);\n}\n.run-label::before,\n.run-label::after {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  z-index: 1;\n  width: 14%;\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity 0.3s ease;\n}\n.run-label::before { left: 0; background: linear-gradient(90deg, var(--run-fade, transparent), transparent); }\n.run-label::after { right: 0; background: linear-gradient(-90deg, var(--run-fade, transparent), transparent); }\n.is-running > .run-label::before,\n.is-running > .run-label::after,\n.is-running .run-label::before,\n.is-running .run-label::after { opacity: 1; }\n",
+      "type": "registry:file",
+      "target": "src/components/fx/run-label/run-label.css"
+    }
+  ],
+  "type": "registry:component"
+}

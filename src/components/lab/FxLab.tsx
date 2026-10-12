@@ -13,6 +13,7 @@ import { SmoothScroll } from "@/components/fx/smooth-scroll/SmoothScroll";
 import { useHoverReveal } from "@/components/fx/hover-reveal/useHoverReveal";
 import { useSpotlight } from "@/components/fx/spotlight/useSpotlight";
 import { startSplashCursor } from "@/components/fx/splash-cursor/startSplashCursor";
+import { InvertFill } from "@/components/fx/invert-fill/InvertFill";
 import "@/components/fx/roll-text/roll-text.css";
 import "./lab.css";
 
@@ -20,7 +21,8 @@ const FX = [
   { id: "preloader", name: "Preloader", file: "fx/preloader", use: "<Preloader brand note words last stages />  ·  window.lumeraLoader.step(p, i) / finish()" },
   { id: "roll-text", name: "RollText", file: "fx/roll-text", use: '<a className="roll-host"><RollText>Послуги</RollText></a>' },
   { id: "invert-cursor", name: "InvertCursor", file: "fx/invert-cursor", use: "<InvertCursor scope=\".footer__top, .footer__bottom\" size={22} grow={2.9} /> once in the layout" },
-  { id: "invert-fill", name: "InvertFill", file: "fx/invert-fill", use: "<InvertFill /> once in the layout  ·  .btn --btn-bg / --btn-fill / --btn-fill-ink" },
+  { id: "invert-fill", name: "InvertFill", file: "fx/invert-fill", use: "<InvertFill /> once in the layout  ·  <ButtonLink className=\"btn--invert\">" },
+  { id: "run-label", name: "RunLabel", file: "fx/run-label", use: "useRunLabel(buttonRef)  ·  <RunLabel>Text</RunLabel>  (built into ButtonLink)" },
   { id: "magnetic", name: "Magnetic", file: "fx/magnetic", use: "useMagnetic(ref, { strength: 1 })  ·  <ButtonLink magnetic>" },
   { id: "hover-reveal", name: "HoverReveal", file: "fx/hover-reveal", use: 'useHoverReveal(listRef, { rows: "[data-row]", images })' },
   { id: "text-fill", name: "TextFill", file: "fx/text-fill", use: "<TextFill>A paragraph that lights up as you read</TextFill>" },
@@ -108,8 +110,16 @@ export function FxLab({ locale }: { locale: string }) {
 
       <Block id="invert-fill" title="InvertFill">
         <div className="flex flex-wrap items-center gap-6">
-          <ButtonLink href="#invert-fill" variant="primary">Отримати план і оцінку</ButtonLink>
-          <ButtonLink href="#invert-fill" variant="ghost">Обговорити проєкт</ButtonLink>
+          <InvertFill />
+          <ButtonLink href="#invert-fill" variant="primary" className="btn--invert">Отримати план і оцінку</ButtonLink>
+          <ButtonLink href="#invert-fill" variant="ghost" className="btn--invert">Обговорити проєкт</ButtonLink>
+        </div>
+      </Block>
+
+      <Block id="run-label" title="RunLabel">
+        <div className="flex flex-wrap items-center gap-6">
+          <ButtonLink href="#run-label" variant="primary">Отримати план і оцінку</ButtonLink>
+          <ButtonLink href="#run-label" variant="ghost">Обговорити проєкт</ButtonLink>
         </div>
       </Block>
 

@@ -1,0 +1,35 @@
+/* RunLabel: the box is one copy wide; the second copy waits a gap to the right, a dot between them.
+   While it runs, the edges fade into the button (--run-fade: the button's colour). */
+.run-label { --run-gap: 1.6em; position: relative; display: inline-block; overflow: hidden; vertical-align: top; }
+.run-label__track { position: relative; display: inline-block; white-space: nowrap; will-change: transform; }
+.run-label__track > span + span { position: absolute; top: 0; left: calc(100% + var(--run-gap)); }
+.run-label__track > span + span::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(var(--run-gap) / -2);
+  width: 0.28em;
+  height: 0.28em;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+  transform: translate(-50%, -50%);
+}
+.run-label::before,
+.run-label::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 14%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.run-label::before { left: 0; background: linear-gradient(90deg, var(--run-fade, transparent), transparent); }
+.run-label::after { right: 0; background: linear-gradient(-90deg, var(--run-fade, transparent), transparent); }
+.is-running > .run-label::before,
+.is-running > .run-label::after,
+.is-running .run-label::before,
+.is-running .run-label::after { opacity: 1; }

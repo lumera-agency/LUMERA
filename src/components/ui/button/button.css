@@ -1,18 +1,18 @@
 /*
  * Buttons. Each variant and each context sets only colour variables; the shape and the effect are
- * shared. The effect (fx/invert-fill): on hover the button inverts — a circle of --btn-fill grows
- * from the point where the pointer came in (--x / --y), the text takes --btn-fill-ink, a hairline
- * ring in that colour keeps the edge; leaving, the circle shrinks back toward the exit point.
- * The label's letters roll (RollText) and the arrow leaves up-right as its copy comes in.
+ * shared. Hover: the button keeps its colour and brightens a little with a soft glow of it, the
+ * label starts running like a ticker (fx/run-label), the arrow leaves up-right as its copy comes in.
+ * (The inverting fill is a library option: fx/invert-fill, .btn--invert.)
  */
 .btn {
   --h: 52px;
   --btn-bg: transparent;
+  --btn-bg-hover: rgb(246 246 243 / 0.06);
   --btn-ink: var(--ink);
+  --btn-ink-hover: var(--ink);
   --btn-line: transparent;
-  --btn-fill: var(--ink);
-  --btn-fill-ink: var(--on-ink);
-  --btn-fill-line: transparent;
+  --btn-line-hover: transparent;
+  --btn-glow: transparent;
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -30,32 +30,22 @@
   overflow: hidden;
   color: var(--btn-ink);
   background: var(--btn-bg);
-  box-shadow: inset 0 0 0 1px var(--btn-line);
+  box-shadow: inset 0 0 0 1px var(--btn-line), 0 0 0 0 transparent;
+  --run-fade: var(--btn-bg);
   transition:
-    color 0.45s var(--ease-out),
-    box-shadow 0.45s var(--ease-out),
+    color 0.4s var(--ease-out),
+    background-color 0.4s var(--ease-out),
+    box-shadow 0.6s var(--ease-out),
     transform 0.25s var(--ease-out);
   -webkit-tap-highlight-color: transparent;
 }
-/* the fill: a circle from the pointer's entry point, wide enough to cover the button from any corner */
-.btn::after {
-  content: "";
-  position: absolute;
-  left: var(--x, 50%);
-  top: var(--y, 50%);
-  z-index: -1;
-  width: 260%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--btn-fill);
-  transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.7s var(--ease-out);
-  pointer-events: none;
-}
 .btn:hover,
-.btn:focus-visible { color: var(--btn-fill-ink); box-shadow: inset 0 0 0 1px var(--btn-fill-line); }
-.btn:hover::after,
-.btn:focus-visible::after { transform: translate(-50%, -50%) scale(1); }
+.btn:focus-visible {
+  --run-fade: var(--btn-bg-hover);
+  color: var(--btn-ink-hover);
+  background: var(--btn-bg-hover);
+  box-shadow: inset 0 0 0 1px var(--btn-line-hover), 0 14px 44px -14px var(--btn-glow);
+}
 .btn:active { transform: scale(0.97); }
 .btn__label { position: relative; display: inline-block; }
 
@@ -87,9 +77,7 @@
 /* variants: colours only */
 .btn--ghost {
   --btn-line: rgb(246 246 243 / 0.6);
-  --btn-fill: var(--ink);
-  --btn-fill-ink: var(--on-ink);
-  --btn-fill-line: var(--ink);
+  --btn-line-hover: var(--ink);
 }
 .btn--line {
   --h: 50px;
@@ -97,18 +85,15 @@
   gap: 1.2rem;
   padding: 0 1.2rem 0 1.5rem;
   --btn-line: rgb(246 246 243 / 0.32);
-  --btn-fill: var(--ink);
-  --btn-fill-ink: var(--on-ink);
-  --btn-fill-line: var(--ink);
+  --btn-line-hover: var(--ink);
 }
-/* primary: solid; inverts to the page's black with its own colour as text and ring */
 .btn--primary {
   --h: clamp(56px, calc(var(--vh, 1vh) * 6.2), 64px);
   --btn-bg: var(--ink);
+  --btn-bg-hover: #ffffff;
   --btn-ink: var(--on-ink);
-  --btn-fill: var(--bg);
-  --btn-fill-ink: var(--ink);
-  --btn-fill-line: var(--ink);
+  --btn-ink-hover: var(--on-ink);
+  --btn-glow: rgb(246 246 243 / 0.35);
   gap: clamp(1.75rem, 3vw, 2.75rem);
   padding: 0 1.6rem 0 clamp(1.75rem, 2.8vw, 2.6rem);
   font-size: clamp(1rem, 0.35vw + 0.9rem, 1.125rem);
@@ -122,14 +107,10 @@
 
 /* contexts (specificity above the variants, so the order of the stylesheets doesn't matter):
    the first screen in lime; the page, the topbar and the footer in ember */
-.hero .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-fill-ink: var(--signal); --btn-fill-line: var(--signal); }
-.hero .btn--ghost { --btn-fill: var(--signal); --btn-fill-line: var(--signal); }
-:is(.page, .topbar, .footer) .btn--primary { --btn-bg: var(--ember); --btn-ink: var(--on-ink); --btn-fill-ink: var(--ember-ink); --btn-fill-line: var(--ember); }
-:is(.page, .topbar, .footer) :is(.btn--ghost, .btn--line) { --btn-fill: var(--ember); --btn-fill-ink: var(--on-ink); --btn-fill-line: var(--ember); }
-
-@media (prefers-reduced-motion: reduce) {
-  .btn::after { transition-duration: 1ms; }
-}
+.hero .btn--primary { --btn-bg: var(--signal); --btn-bg-hover: #e6ff4a; --btn-ink: var(--on-ink); --btn-ink-hover: var(--on-ink); --btn-glow: rgb(218 255 2 / 0.55); }
+.hero .btn--ghost { --btn-line-hover: var(--signal); --btn-ink-hover: var(--signal); --btn-bg-hover: rgb(218 255 2 / 0.06); }
+:is(.page, .topbar, .footer) .btn--primary { --btn-bg: var(--ember); --btn-bg-hover: var(--ember-hi); --btn-ink: var(--on-ink); --btn-ink-hover: var(--on-ink); --btn-glow: rgb(210 86 28 / 0.6); }
+:is(.page, .topbar, .footer) :is(.btn--ghost, .btn--line) { --btn-line-hover: var(--ember); --btn-ink-hover: var(--ember-ink); --btn-bg-hover: rgb(210 86 28 / 0.08); }
 
 .link {
   color: var(--ink);
