@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { rich } from "@/lib/rich";
 import { ApproachClient, StageStoneSlot } from "./ApproachClient";
+import { StageChecks } from "./StageChecks";
 import "./approach.css";
 
 /**
@@ -70,10 +71,13 @@ export async function Approach() {
                   </span>
                   <p className="stage__num">1</p>
                   <h3 className="stage__title">{t("approach.stage.title.1")}</h3>
-                  <p className="stage__v">
-                    <span className="t-d">{t("approach.stage.v.1.text")}</span>
-                    <span className="t-m">{t("approach.stage.v.1.m")}</span>
-                  </p>
+                  <div className="stage__v">
+                    <p>
+                      <span className="t-d">{t("approach.stage.v.1.text")}</span>
+                      <span className="t-m">{t("approach.stage.v.1.m")}</span>
+                    </p>
+                    <StageChecks n={1} />
+                  </div>
                 </li>
                 <li className="stage" data-sr="">
                   <span className="stage__node" aria-hidden="true"></span>
@@ -105,11 +109,14 @@ export async function Approach() {
                   </span>
                   <p className="stage__num">2</p>
                   <h3 className="stage__title">{t("approach.stage.title.2")}</h3>
-                  <p className="stage__v">
-                    <span className="t-d">{t("approach.stage.v.2.text")}</span>
-                    <span className="t-m">{t("approach.stage.v.2.m")}</span>
-                    <span className="stage__you t-m">{t("approach.stage.you.2.m")}</span>
-                  </p>
+                  <div className="stage__v">
+                    <p>
+                      <span className="t-d">{t("approach.stage.v.2.text")}</span>
+                      <span className="t-m">{t("approach.stage.v.2.m")}</span>
+                      <span className="stage__you t-m">{t("approach.stage.you.2.m")}</span>
+                    </p>
+                    <StageChecks n={2} />
+                  </div>
                 </li>
                 <li className="stage" data-sr="">
                   <span className="stage__node" aria-hidden="true"></span>
@@ -146,10 +153,13 @@ export async function Approach() {
                   </span>
                   <p className="stage__num">3</p>
                   <h3 className="stage__title">{t("approach.stage.title.3")}</h3>
-                  <p className="stage__v">
-                    <span className="t-d">{t("approach.stage.v.3.text")}</span>
-                    <span className="t-m">{t("approach.stage.v.3.m")}</span>
-                  </p>
+                  <div className="stage__v">
+                    <p>
+                      <span className="t-d">{t("approach.stage.v.3.text")}</span>
+                      <span className="t-m">{t("approach.stage.v.3.m")}</span>
+                    </p>
+                    <StageChecks n={3} />
+                  </div>
                 </li>
                 <li className="stage" data-sr="">
                   <span className="stage__node" aria-hidden="true"></span>
@@ -177,11 +187,14 @@ export async function Approach() {
                   </span>
                   <p className="stage__num">4</p>
                   <h3 className="stage__title">{t("approach.stage.title.4")}</h3>
-                  <p className="stage__v">
-                    <span className="t-d">{t("approach.stage.v.4.text")}</span>
-                    <span className="t-m">{t("approach.stage.v.4.m")}</span>
-                    <span className="stage__you t-m">{t("approach.stage.you.4.m")}</span>
-                  </p>
+                  <div className="stage__v">
+                    <p>
+                      <span className="t-d">{t("approach.stage.v.4.text")}</span>
+                      <span className="t-m">{t("approach.stage.v.4.m")}</span>
+                      <span className="stage__you t-m">{t("approach.stage.you.4.m")}</span>
+                    </p>
+                    <StageChecks n={4} />
+                  </div>
                 </li>
                 <li className="stage stage--launch" data-sr="">
                   <span className="stage__node" aria-hidden="true"></span>

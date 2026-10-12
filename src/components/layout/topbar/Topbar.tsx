@@ -66,10 +66,9 @@ export function Topbar() {
         <span className="logo__type"><span className="logo__word">LUMERA</span><span className="logo__sub">STUDIO</span></span>
       </ScrollTopLink>
       <nav className="topbar__nav" aria-label={t("topbar.nav.label")}>
-        {PAGE_NAV.filter((l) => l.n < 8).map((l) => (
+        {PAGE_NAV.filter((l) => !("bar" in l)).map((l) => (
           <a key={l.href} className="nav__link" href={l.href}>
             <span><RollText>{t(l.label)}</RollText></span>
-            <sup aria-hidden="true">{l.n}</sup>
           </a>
         ))}
       </nav>
@@ -86,7 +85,6 @@ export function Topbar() {
           {PAGE_NAV.map((l) => (
             <a key={l.href} href={l.href}>
               <span>{t(l.label)}</span>
-              <sup aria-hidden="true">{l.n}</sup>
             </a>
           ))}
         </nav>

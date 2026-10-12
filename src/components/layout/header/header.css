@@ -139,15 +139,6 @@
   .menu-toggle { display: block; }
   .mobile-menu { display: flex; }
 }
-
-.nav__link sup {
-  margin-left: 0.25em;
-  font-size: 0.58em;
-  line-height: 0;
-  vertical-align: super;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-mute);
-}
 .nav__link { transition: color var(--dur-fast) ease; }
 .nav__link:hover,
 .nav__link:focus-visible,

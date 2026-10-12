@@ -1,19 +1,5 @@
 /* footer: split 1:1 from website-v2/css by scripts/split-css.mjs (rule order kept) */
-
-.footer__nav sup {
-  font-family: var(--font-mono);
-  font-weight: 400;
-}
 .footer__claim { text-wrap: balance; }
-
-.footer__nav sup {
-  margin-left: 0.25em;
-  font-size: 0.58em;
-  line-height: 0;
-  vertical-align: super;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-mute);
-}
 .footer :focus-visible { scroll-margin-top: calc(var(--topbar-h) + 16px); }
 .footer__up .ico { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -41,7 +27,6 @@
 }
 .footer__nav a:hover,
 .footer__nav a:focus-visible { color: #fff; transform: translateX(10px); }
-.footer__nav sup { font-size: 0.3em; }
 .footer__bottom {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -54,8 +39,7 @@
   font-size: var(--fs-caption);
   color: var(--ink-mute);
 }
-.footer__bottom .logo { grid-column: 1 / span 2; justify-self: start; }
-.footer__legal { grid-column: 3 / span 4; }
+.footer__legal { grid-column: 1 / span 6; justify-self: start; }
 .footer__contacts { grid-column: 7 / span 4; display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; }
 .footer__contacts a { white-space: nowrap; }
 .footer__end { grid-column: 11 / -1; justify-self: end; display: flex; align-items: center; gap: 20px; }
@@ -94,8 +78,7 @@
 
 @media (min-width: 1101px) {
   .footer__lead { grid-column: 3 / span 4; }
-  .footer__bottom .logo { grid-column: 3 / span 2; }
-  .footer__legal { grid-column: 5 / span 2; }
+  .footer__legal { grid-column: 3 / span 4; }
   .footer__contacts { grid-column: 7 / span 4; }
   .footer__end { grid-column: 11 / -1; }
 }
@@ -104,18 +87,13 @@
   .footer__lead,
   .footer__nav { grid-column: 1 / -1; }
   .footer__bottom { grid-template-columns: 1fr auto; }
-  .footer__bottom .logo { grid-column: 1; }
+  .footer__legal { grid-column: 1; grid-row: 1; }
   .footer__end { grid-column: 2; grid-row: 1; }
-  .footer__contacts,
-  .footer__legal { grid-column: 1 / -1; }
+  .footer__contacts { grid-column: 1 / -1; }
 }
 .footer__nav a { padding-block: max(4px, (44px - 1.04em) / 2); }
 .footer__up { gap: 0.3em; }
-@media (max-width: 420px) {
-  .footer__bottom .logo__type { display: none; }
-}
 @media (max-width: 860px) {
-  .footer__bottom .logo { min-width: 44px; min-height: 44px; }
   .footer .lang { gap: 0; }
   .footer .lang__link { min-width: 44px; justify-content: center; }
 }

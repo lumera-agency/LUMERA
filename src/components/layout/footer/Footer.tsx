@@ -5,7 +5,6 @@ import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
 import { ScrollTopLink } from "@/components/layout/page-nav/ScrollTopLink";
 import { rich } from "@/lib/rich";
 import { Wordmark } from "./Wordmark";
-import "@/components/ui/logo/logo.css";
 import "./footer.css";
 
 /** The footer: the claim and CTA, the page index, the bottom line, and LUMERA in liquid chrome. */
@@ -22,16 +21,11 @@ export async function Footer() {
           {PAGE_NAV.map((l) => (
             <a key={l.href} href={l.href}>
               <span>{t(l.label)}</span>
-              <sup aria-hidden="true">{l.n}</sup>
             </a>
           ))}
         </nav>
       </div>
       <div className="container footer__bottom">
-        <ScrollTopLink className="logo logo--sm" aria-label={t("logo.top")}>
-          <svg className="logo__mark" viewBox="0 0 329 329" aria-hidden="true" focusable="false"><use href="#logo-mark" /></svg>
-          <span className="logo__type"><span className="logo__word">LUMERA</span><span className="logo__sub">STUDIO</span></span>
-        </ScrollTopLink>
         <p className="footer__legal">{t("footer.legal")}</p>
         <p className="footer__contacts"><a href="#contact">{t("footer.write")}</a></p>
         <div className="footer__end">

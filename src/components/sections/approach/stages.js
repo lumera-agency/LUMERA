@@ -170,35 +170,51 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
 }
 
 function initChecks(reducedMotion) {
-  const list = $('[data-checks]');
-  if (!list) return;
-  const items = $$('li', list);
+  const lists = $$('[data-checks]');
+  if (!lists.length) return;
+  const done = new Set();
+  const tick = (list) => {
+    if (done.has(list)) return;
+    done.add(list);
+    $$('li', list).forEach((li, i) => setTimeout(() => li.classList.add('is-done'), 150 + i * 260));
+  };
   if (reducedMotion) {
-    items.forEach((li) => li.classList.add('is-done'));
+    lists.forEach((list) => $$('li', list).forEach((li) => li.classList.add('is-done')));
     return;
   }
-  const tick = () => items.forEach((li, i) => setTimeout(() => li.classList.add('is-done'), 150 + i * 260));
   const ScrollTrigger = ST;
-  if (ScrollTrigger) {
-    ScrollTrigger.create({ trigger: list.closest('.stage') || list, start: 'top 45%', once: true, onEnter: tick });
+  const stages = $('[data-stages]');
+  // the deck: a card's points tick as it slides on top (deckTurns: how many have slid in)
+  if (stages?.classList.contains('is-deck')) {
+    const cards = $$('.stage', stages);
+    const sync = () => {
+      const n = turnsOf();
+      cards.forEach((card, i) => { if (i <= n) $$('[data-checks]', card).forEach(tick); });
+    };
+    // while the block is on screen (it is pinned for the deck's whole run), each frame asks the deck
+    let on = false;
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting === on) return;
+      on = entry.isIntersecting;
+      if (on) GSAP.ticker.add(sync);
+      else GSAP.ticker.remove(sync);
+    }, { rootMargin: '-45% 0px 0px 0px' }).observe(stages.closest('section') || stages);
     return;
   }
-  const io = new IntersectionObserver((entries) => {
-    if (!entries[entries.length - 1].isIntersecting) return;
-    io.disconnect();
-    tick();
-  }, { threshold: 0.5 });
-  io.observe(list);
+  // the list: each card's points tick as the card comes up
+  for (const list of lists) {
+    ScrollTrigger.create({ trigger: list.closest('.stage') || list, start: 'top 45%', once: true, onEnter: () => tick(list) });
+  }
 }
 
 let started = false;
 export function initApproach({ motion, reducedMotion }) {
   if (started) return;
   started = true;
-  initChecks(reducedMotion);
   if (motion) {
     markDeck();
-    initStages();
+    initStages(); // first: the deck's turns tell the checks when a card is on top
   }
+  initChecks(reducedMotion);
 }
 export { deckOn };

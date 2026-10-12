@@ -1,9 +1,4 @@
 /* topbar: split 1:1 from website-v2/css by scripts/split-css.mjs (rule order kept) */
-
-.topbar .nav__link sup {
-  font-family: var(--font-mono);
-  font-weight: 400;
-}
 .topbar ::selection { color: var(--on-ink); background: rgba(246, 246, 243, 0.86); }
 
 .topbar {
@@ -70,7 +65,6 @@
   color: var(--ink);
   text-decoration: none;
 }
-.topbar__sheet nav a sup { font-family: var(--font-mono); font-size: var(--fs-label); color: var(--ink-mute); }
 .topbar .topbar__sheet .lang { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
 .topbar .topbar__sheet .lang__link { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; }
 @media (min-width: 861px) {
