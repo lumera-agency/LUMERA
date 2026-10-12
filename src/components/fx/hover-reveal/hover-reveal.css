@@ -1,0 +1,21 @@
+/* HoverReveal: the frame at the cursor. Size it with a class (passed as `className`) or here. */
+.hover-reveal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  width: clamp(240px, 21vw, 340px);
+  aspect-ratio: 4 / 5;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  will-change: transform;
+}
+.hover-reveal__in {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 50px 90px -40px rgb(15 14 13 / 0.55), 0 0 0 1px rgb(15 14 13 / 0.06);
+}
+.hover-reveal img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; clip-path: inset(100% 0 0 0); }

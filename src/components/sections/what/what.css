@@ -79,26 +79,6 @@
 }
 .what__row:focus-visible { outline-offset: -2px; }
 .what__row:focus-visible .what__arrow { background: var(--ink-dark); color: var(--ivory); }
-.what__reveal {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 40;
-  width: clamp(240px, 21vw, 340px);
-  aspect-ratio: 4 / 5;
-  pointer-events: none;
-  visibility: hidden;
-  opacity: 0;
-  will-change: transform;
-}
-.what__reveal-in {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: 18px;
-  box-shadow: 0 50px 90px -40px rgba(15, 14, 13, 0.55), 0 0 0 1px rgba(15, 14, 13, 0.06);
-}
-.what__reveal img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; clip-path: inset(100% 0 0 0); }
 @media (hover: none), (pointer: coarse) {
   .what__row { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 14px; row-gap: 8px; align-items: start; }
   .what__num { grid-column: 1; grid-row: 1; padding-top: 0.55em; }

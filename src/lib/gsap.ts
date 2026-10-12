@@ -9,6 +9,8 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
   // phones: the address bar sliding in and out is not a layout change
   ScrollTrigger.config({ ignoreMobileResize: true });
+  // QA from the console and the headless checks (development only)
+  if (process.env.NODE_ENV !== "production") Object.assign(window, { gsap, ScrollTrigger });
 }
 
 export { gsap, ScrollTrigger, SplitText, useGSAP };

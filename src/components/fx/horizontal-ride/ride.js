@@ -1,0 +1,190 @@
+/*
+ * 3 · Послуги as a ride (v2). On a wide, tall-enough screen the services stand side by side on one
+ * track: the stage pins under the topbar and the vertical scroll drives the track sideways
+ * (ScrollTrigger pin + scrub; the panels' own effects ride on it through containerAnimation).
+ * The panel in the middle is lit and its neighbours step back; behind each panel its big outlined
+ * numeral drifts faster than the panel (depth); the HUD counts the panels, fills a lime line and
+ * names them (a name scrolls the ride to its panel). A sideways trackpad swipe drives it too.
+ * Elsewhere (phones, short windows, reduced motion) the block stays the list it always was.
+ *
+ * `services:go` (2 · Що ми робимо): while the ride is on, the page scrolls to that panel.
+ */
+import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
+
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+const RIDE_MQ = '(min-width: 1024px) and (min-height: 620px) and (hover: hover) and (pointer: fine)';
+const PX_PER_SCREEN = 1.0; // vertical scroll per px of sideways travel
+
+export function initRide({ motion }) {
+  const ride = $('[data-ride]');
+  const list = ride && $('.services', ride);
+  if (!ride || !list) return { isOn: () => false };
+  const panels = $$('.service', list);
+  const gsap = GSAP;
+  const ScrollTrigger = ST;
+  const now = $('[data-ride-now]', ride);
+  const of = $('[data-ride-of]', ride);
+  const bar = $('[data-ride-bar]', ride);
+  const names = $('[data-ride-names]', ride);
+  const pad = (n) => String(n).padStart(2, '0');
+  if (of) of.textContent = pad(panels.length);
+
+  let on = false;
+  let trigger = null;
+  let current = -1;
+  let buttons = [];
+
+  const setCurrent = (i) => {
+    if (i === current) return;
+    current = i;
+    panels.forEach((p, k) => p.classList.toggle('is-current', k === i));
+    buttons.forEach((b, k) => b.setAttribute('aria-current', String(k === i)));
+    if (now) now.textContent = pad(i + 1);
+  };
+
+  /** The scroll position that brings panel `i` to the middle of the stage. */
+  const scrollFor = (i) => {
+    if (!trigger) return null;
+    const max = list.scrollWidth - window.innerWidth;
+    const first = panels[0].offsetLeft;
+    const x = panels[i].offsetLeft - first;
+    return trigger.start + (trigger.end - trigger.start) * Math.min(1, Math.max(0, x / max));
+  };
+  const goTo = (i) => {
+    const y = scrollFor(i);
+    if (y == null) return;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  };
+
+  document.addEventListener('services:go', (e) => {
+    if (!on) {
+      // the phone switcher: its tab opens, and the anchor scrolls to the window as usual
+      const tab = document.getElementById(`${e.detail?.id}-tab`);
+      if (tab?.closest('.service-tabs.is-on')) tab.click();
+      return;
+    }
+    const i = panels.findIndex((p) => p.id === e.detail?.id);
+    if (i < 0) return;
+    e.preventDefault();
+    history.replaceState(history.state, '', `#${e.detail.id}`);
+    goTo(i);
+  });
+
+  if (!motion || !gsap || !ScrollTrigger || !gsap.matchMedia) return { isOn: () => false };
+
+  // the names in the HUD (the services' own short names, translated with them)
+  if (names) {
+    names.textContent = '';
+    buttons = panels.map((p, i) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = $('.service__meta span:last-child', p)?.textContent.trim() || pad(i + 1);
+      b.setAttribute('aria-current', 'false');
+      b.addEventListener('click', () => goTo(i));
+      li.append(b);
+      names.append(li);
+      return b;
+    });
+  }
+
+  // the big numerals behind the panels
+  const bigs = panels.map((p, i) => {
+    const big = document.createElement('span');
+    big.className = 'ride__big';
+    big.setAttribute('aria-hidden', 'true');
+    big.textContent = pad(i + 1);
+    big.hidden = true;
+    p.append(big);
+    return big;
+  });
+
+  // the keyboard: a focused control in a panel off to the side brings that panel to the middle
+  list.addEventListener('focusin', (e) => {
+    if (!on) return;
+    const i = panels.findIndex((p) => p.contains(e.target));
+    if (i >= 0 && i !== current) goTo(i);
+  });
+
+  // a sideways trackpad swipe over the stage drives the ride like the wheel does
+  ride.addEventListener('wheel', (e) => {
+    if (!on || !trigger?.isActive || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    window.scrollBy({ top: e.deltaX, behavior: 'instant' });
+  }, { passive: false });
+
+  const mm = gsap.matchMedia();
+  mm.add(RIDE_MQ, () => {
+    on = true;
+    ride.classList.add('is-on');
+    list.classList.remove('is-stacked');
+    // the panels are not revealed one by one (the ride lights them), and the stack effect is off
+    const sr = panels.filter((p) => p.hasAttribute('data-sr'));
+    sr.forEach((p) => { p.removeAttribute('data-sr'); gsap.set(p, { clearProps: 'opacity,visibility,transform' }); });
+    bigs.forEach((b) => { b.hidden = false; });
+
+    const distance = () => Math.max(0, list.scrollWidth - window.innerWidth);
+    const bar_ = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
+    const track = gsap.to(list, {
+      x: () => -distance(),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: ride,
+        start: () => `top ${bar_()}px`,
+        end: () => `+=${Math.round(distance() * PX_PER_SCREEN)}`,
+        pin: true,
+        pinSpacing: true,
+        scrub: 0.6,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        refreshPriority: 2, // above 5 · Підхід's deck: its spacer goes in first
+        onUpdate: (self) => {
+          if (bar) bar.style.transform = `scaleX(${self.progress.toFixed(4)})`;
+          setCurrent(Math.round(self.progress * (panels.length - 1)));
+        },
+      },
+    });
+    trigger = track.scrollTrigger;
+    setCurrent(0);
+
+    // each panel: lit in the middle, stepped back at the sides; its numeral drifts faster
+    panels.forEach((p, i) => {
+      const demo = $('.service__demo', p);
+      const body = $$('.service__meta, .service__title, .service__text, .service__foot', p);
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: p,
+          containerAnimation: track,
+          start: 'left right',
+          end: 'right left',
+          scrub: true,
+        },
+      })
+        .fromTo(demo, { scale: 0.86, autoAlpha: 0.35 }, { scale: 1, autoAlpha: 1, ease: 'power2.out', duration: 1 })
+        .fromTo(body, { x: 80, autoAlpha: 0 }, { x: 0, autoAlpha: 1, ease: 'power2.out', duration: 1, stagger: 0.04 }, 0)
+        .to(demo, { scale: 0.86, autoAlpha: 0.35, ease: 'power2.in', duration: 1 }, 1)
+        .to(body, { x: -60, autoAlpha: 0, ease: 'power2.in', duration: 1 }, 1);
+      gsap.fromTo(bigs[i], { xPercent: 40 }, {
+        xPercent: -40,
+        ease: 'none',
+        scrollTrigger: { trigger: p, containerAnimation: track, start: 'left right', end: 'right left', scrub: true },
+      });
+    });
+
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => {
+      on = false;
+      trigger = null;
+      current = -1;
+      ride.classList.remove('is-on');
+      panels.forEach((p) => p.classList.remove('is-current'));
+      sr.forEach((p) => p.setAttribute('data-sr', ''));
+      bigs.forEach((b) => { b.hidden = true; });
+      if (bar) bar.style.transform = '';
+    };
+  });
+
+  return { isOn: () => on };
+}

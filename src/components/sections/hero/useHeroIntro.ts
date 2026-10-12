@@ -26,7 +26,7 @@ export function playIntro(hero: HTMLElement) {
   const title = hero.querySelector<HTMLElement>("[data-title]")!;
   // a re-split (a new width) hands the slide over to the new lines; once played, they stay at rest
   let slide: gsap.core.Tween | null = null;
-  const split = SplitText.create(title, {
+  const config: SplitText.Vars = {
     type: "lines",
     mask: "lines",
     linesClass: "line",
@@ -44,7 +44,8 @@ export function playIntro(hero: HTMLElement) {
       slide = gsap.from(self.lines, { yPercent: 115, duration: 1.3, stagger: 0.1, ease: "expo.out" });
       tl.add(slide, 0.95);
     },
-  });
+  };
+  const split = SplitText.create(title, config);
   let width = title.offsetWidth;
   let timer = 0;
   const ro = new ResizeObserver(() => {
@@ -52,7 +53,7 @@ export function playIntro(hero: HTMLElement) {
     timer = window.setTimeout(() => {
       if (title.offsetWidth === width) return;
       width = title.offsetWidth;
-      split.split({});
+      split.split(config);
     }, 200);
   });
   ro.observe(title);

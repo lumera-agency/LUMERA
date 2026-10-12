@@ -52,8 +52,6 @@ export const viewport: Viewport = {
    (styles/base.css), and come back by themselves after 3.5 s should a script fail. */
 const EARLY = `(function(r){r.classList.add('js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');setTimeout(function(){r.classList.add('is-ready')},3500)})(document.documentElement)`;
 
-const FONTS = ["geologica-cyrillic", "geologica-latin", "archivo-125-latin"];
-
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
@@ -64,9 +62,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
     <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: EARLY }} />
-        {FONTS.map((f) => (
-          <link key={f} rel="preload" href={`/fonts/${f}.woff2`} as="font" type="font/woff2" crossOrigin="anonymous" />
-        ))}
       </head>
       <body>
         <LogoSprite />

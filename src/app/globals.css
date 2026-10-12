@@ -12,3 +12,5 @@
 @import "../styles/base.css";
 
 @source "../";
+/* the site's own .container (a full-width block, page.css) — not Tailwind's breakpoint container */
+@source not inline("container");
