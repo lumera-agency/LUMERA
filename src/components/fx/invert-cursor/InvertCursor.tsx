@@ -48,6 +48,11 @@ export function InvertCursor({
     const xTo = gsap.quickTo(el, "x", opts);
     const yTo = gsap.quickTo(el, "y", opts);
     let placed = false;
+    const at = { x: 0, y: 0 };
+    const read = (target: Element | null) => {
+      el.classList.toggle("is-hover", Boolean(target?.closest?.(clickable)));
+      el.classList.toggle("is-away", Boolean(target?.closest?.(`${quiet}, ${text}`)));
+    };
 
     const move = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
@@ -55,13 +60,23 @@ export function InvertCursor({
         gsap.set(el, { x: e.clientX, y: e.clientY });
         placed = true;
       }
+      at.x = e.clientX;
+      at.y = e.clientY;
       xTo(e.clientX);
       yTo(e.clientY);
-      const target = e.target as Element | null;
-      el.classList.toggle("is-hover", Boolean(target?.closest?.(clickable)));
-      el.classList.toggle("is-away", Boolean(target?.closest?.(`${quiet}, ${text}`)));
+      read(e.target as Element | null);
       el.classList.add("is-on");
     };
+    // the page scrolls under a still pointer: what is under the circle changes
+    let queued = 0;
+    const onScroll = () => {
+      if (queued || !placed) return;
+      queued = requestAnimationFrame(() => {
+        queued = 0;
+        read(document.elementFromPoint(at.x, at.y));
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     const down = () => el.classList.add("is-down");
     const up = () => el.classList.remove("is-down");
     const leave = () => el.classList.remove("is-on");
@@ -72,6 +87,8 @@ export function InvertCursor({
     document.documentElement.addEventListener("pointerleave", leave);
     window.addEventListener("blur", leave);
     return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(queued);
       document.removeEventListener("pointermove", move);
       document.removeEventListener("pointerdown", down);
       document.removeEventListener("pointerup", up);
