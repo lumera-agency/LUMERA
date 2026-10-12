@@ -9,9 +9,9 @@ let lenis: Lenis | null = null;
 export const setLenis = (instance: Lenis | null) => void (lenis = instance);
 export const getLenis = () => lenis;
 
-export function scrollToY(y: number, { immediate = false } = {}) {
+export function scrollToY(y: number, { immediate = false, duration = 1.1 } = {}) {
   const top = Math.max(0, Math.round(y));
   const reduced = typeof window !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (lenis) lenis.scrollTo(top, { immediate: immediate || reduced, duration: 1.1 });
+  if (lenis) lenis.scrollTo(top, { immediate: immediate || reduced, duration });
   else window.scrollTo({ top, behavior: immediate || reduced ? "instant" : "smooth" });
 }

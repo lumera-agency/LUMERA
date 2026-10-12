@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "scroll",
+  "title": "Scripted scroll",
+  "description": "scrollToY: a scripted scroll that glides through Lenis when it runs (SmoothScroll registers it), else the browser's smooth scroll.",
+  "files": [
+    {
+      "path": "src/lib/scroll.ts",
+      "content": "\"use client\";\n/*\n * Scripted scrolls that glide like the wheel: through Lenis when it runs (fx/smooth-scroll), else the\n * browser's smooth scroll. One place, so a button, a link and the wheel never fight over the page.\n */\nimport type Lenis from \"lenis\";\n\nlet lenis: Lenis | null = null;\nexport const setLenis = (instance: Lenis | null) => void (lenis = instance);\nexport const getLenis = () => lenis;\n\nexport function scrollToY(y: number, { immediate = false, duration = 1.1 } = {}) {\n  const top = Math.max(0, Math.round(y));\n  const reduced = typeof window !== \"undefined\" && matchMedia(\"(prefers-reduced-motion: reduce)\").matches;\n  if (lenis) lenis.scrollTo(top, { immediate: immediate || reduced, duration });\n  else window.scrollTo({ top, behavior: immediate || reduced ? \"instant\" : \"smooth\" });\n}\n",
+      "type": "registry:lib"
+    }
+  ],
+  "type": "registry:lib"
+}

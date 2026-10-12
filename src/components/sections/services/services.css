@@ -267,21 +267,24 @@ p.service__dialog-go--alt .link { color: inherit; }
 .ride.is-on .services {
   display: flex;
   align-items: center;
-  gap: var(--ride-gap, 4vw);
+  gap: 0;
   width: max-content;
   justify-self: start;
-  padding-inline: var(--gutter);
+  padding-inline: 0;
   border-top: 0;
   will-change: transform;
 }
+/* one slide per screen: each panel is the stage's full width (--panel-w, ride.js), its content
+   centred between the arrows; on an ultrawide screen it is capped by the height (the window fills it) */
 .ride.is-on .service {
   flex: none;
-  width: var(--ride-w, min(82.5rem, 86vw));
+  width: var(--panel-w, 100vw);
+  padding-inline: max(calc(var(--gutter) + 6rem), calc((var(--panel-w, 100vw) - max(97.5rem, 190vh)) / 2));
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   grid-template-rows: auto auto auto minmax(0, 1fr);
   column-gap: clamp(1.75rem, 3vw, 3.5rem);
   row-gap: 0.875rem;
-  padding: 0;
+  padding-block: 0;
   border: 0;
   transform-origin: 50% 50%;
 }

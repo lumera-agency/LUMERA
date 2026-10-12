@@ -33,6 +33,30 @@
       ]
     },
     {
+      "name": "scroll",
+      "type": "registry:lib",
+      "title": "Scripted scroll",
+      "description": "scrollToY: a scripted scroll that glides through Lenis when it runs (SmoothScroll registers it), else the browser's smooth scroll.",
+      "files": [
+        {
+          "path": "src/lib/scroll.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "css-units",
+      "type": "registry:lib",
+      "title": "CSS lengths in px",
+      "description": "For a layout in rem with a fluid root: remPx, dpx (a design px on this screen) and lengthVar / topbarHeight (a custom property as px).",
+      "files": [
+        {
+          "path": "src/lib/css.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "hooks",
       "type": "registry:lib",
       "title": "Hooks",
@@ -241,9 +265,11 @@
       "name": "horizontal-ride",
       "type": "registry:lib",
       "title": "HorizontalRide",
-      "description": "A pinned horizontal ride: vertical scroll drives a track sideways; the middle panel lit, neighbours step back, outlined numerals drift for depth, a HUD counts and names the panels. Selectors are options.",
+      "description": "A pinned horizontal ride, one panel per screen: a wheel gesture (or a sideways swipe) turns one panel, the scroll lands softly on the first and the last, arrows step, skip leaves through a fade and glides on; outlined numerals drift for depth, a HUD counts and names the panels. Selectors are options.",
       "registryDependencies": [
-        "@lumera/gsap-setup"
+        "@lumera/gsap-setup",
+        "@lumera/scroll",
+        "@lumera/css-units"
       ],
       "files": [
         {

@@ -4,8 +4,8 @@
  * (ScrollTrigger pin + scrub; the panels' own effects ride on it through containerAnimation).
  * The panel in the middle is lit and its neighbours step back; behind each panel its big outlined
  * numeral drifts faster than the panel (depth); the HUD counts the panels, fills a lime line and
- * names them (a name scrolls the ride to its panel). Arrows on the sides step one panel back or on,
- * and «skip» leaves the ride for what comes after it. A sideways trackpad swipe drives it too.
+ * names them (a name scrolls the ride to its panel). One panel fills the stage; a wheel gesture turns
+ * one panel (sideways swipes too), arrows on the sides step back or on, and «skip» leaves the ride.
  * Elsewhere (phones, short windows, reduced motion) the block stays the list it always was.
  *
  * `services:go` (2 · Що ми робимо): while the ride is on, the page scrolls to that panel.
@@ -15,7 +15,7 @@
  * [data-ride-now|of|bar|names], [data-ride-prev], [data-ride-next], [data-ride-skip].
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
-import { scrollToY } from '@/lib/scroll';
+import { getLenis, scrollToY } from '@/lib/scroll';
 import { topbarHeight } from '@/lib/css';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -64,12 +64,13 @@ export function initRide({
   };
 
   /** The scroll position that brings panel `i` to the middle of the stage. */
+  // the way from the first panel to the last (not the track's scrollWidth: the last numeral sticks out)
+  const travel = () => Math.max(0, panels[panels.length - 1].offsetLeft - panels[0].offsetLeft);
   const scrollFor = (i) => {
     if (!trigger) return null;
-    const max = list.scrollWidth - window.innerWidth;
-    const first = panels[0].offsetLeft;
-    const x = panels[i].offsetLeft - first;
-    return trigger.start + (trigger.end - trigger.start) * Math.min(1, Math.max(0, x / max));
+    const max = travel();
+    const x = panels[i].offsetLeft - panels[0].offsetLeft;
+    return trigger.start + (trigger.end - trigger.start) * (max ? Math.min(1, Math.max(0, x / max)) : 0);
   };
   const goTo = (i) => {
     const y = scrollFor(Math.max(0, Math.min(panels.length - 1, i)));
@@ -86,16 +87,13 @@ export function initRide({
   };
   prev?.addEventListener('click', () => goTo(current - 1));
   next?.addEventListener('click', () => goTo(current + 1));
-  // skip: out of the ride without running through the panels — the screen dips to black, the page
-  // jumps to what follows the ride, and it comes up again there (a cut, not a scroll)
+  // skip: out of the ride without running through the panels, and without losing the place: a soft
+  // dip to black onto the last slide, then the page glides on until the next block comes up under it
+  // (the slides stay in sight above, so it is clear where we are)
   let skipping = false;
   skip?.addEventListener('click', () => {
     if (!trigger || skipping) return;
     skipping = true;
-    const box = ride.parentElement?.classList.contains('pin-spacer') ? ride.parentElement : ride; // GSAP wraps a pinned element
-    const after = box.nextElementSibling;
-    const bar = topbarHeight();
-    const target = () => Math.max(after ? after.getBoundingClientRect().top + window.scrollY - bar - 32 : trigger.end, trigger.end + 1);
     const veil = document.createElement('div');
     veil.className = 'ride__veil';
     // self-contained (the effect may live without the site's CSS): the page's black, under a topbar (z 60)
@@ -103,12 +101,19 @@ export function initRide({
     document.body.append(veil);
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const fade = (from, to, duration, easing) => veil.animate([{ opacity: from }, { opacity: to }], { duration: reduced ? 1 : duration, easing, fill: 'forwards' }).finished;
-    fade(0, 1, 260, 'cubic-bezier(0.7, 0, 0.84, 0)')
+    const frames = (n) => new Promise((r) => { const step = () => (n-- ? requestAnimationFrame(step) : r()); step(); });
+    fade(0, 1, 300, 'cubic-bezier(0.65, 0, 0.35, 1)')
       .then(() => {
-        scrollToY(target(), { immediate: true });
-        return new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))); // the new place is painted
+        scrollToY(trigger.end, { immediate: true }); // the last slide, the ride about to let go
+        return frames(2);
       })
-      .then(() => fade(1, 0, 620, 'cubic-bezier(0.16, 1, 0.3, 1)'))
+      .then(() => fade(1, 0, 450, 'cubic-bezier(0.16, 1, 0.3, 1)'))
+      .then(() => {
+        veil.remove();
+        // on, so the next block shows while the slides are still in sight above
+        scrollToY(trigger.end + Math.round(window.innerHeight * 0.45), { duration: 1.2 });
+        return new Promise((r) => setTimeout(r, reduced ? 0 : 1250));
+      })
       .finally(() => {
         veil.remove();
         skipping = false;
@@ -165,13 +170,6 @@ export function initRide({
     if (i >= 0 && i !== current) goTo(i);
   });
 
-  // a sideways trackpad swipe over the stage drives the ride like the wheel does
-  ride.addEventListener('wheel', (e) => {
-    if (!on || !trigger?.isActive || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-    e.preventDefault();
-    window.scrollBy({ top: e.deltaX, behavior: 'instant' });
-  }, { passive: false });
-
   const mm = gsap.matchMedia();
   mm.add(mq, () => {
     on = true;
@@ -182,15 +180,18 @@ export function initRide({
     sr.forEach((p) => { p.removeAttribute('data-sr'); gsap.set(p, { clearProps: 'opacity,visibility,transform' }); });
     bigs.forEach((b) => { b.hidden = false; });
 
-    const distance = () => Math.max(0, list.scrollWidth - window.innerWidth);
+    // one slide per screen: every panel as wide as the stage (CSS reads --panel-w), set before each measure
+    const sizePanels = () => ride.style.setProperty('--panel-w', `${ride.clientWidth}px`);
+    sizePanels();
+    ScrollTrigger.addEventListener('refreshInit', sizePanels);
     const bar_ = topbarHeight;
     const track = gsap.to(list, {
-      x: () => -distance(),
+      x: () => -travel(),
       ease: 'none',
       scrollTrigger: {
         trigger: ride,
         start: () => `top ${bar_()}px`,
-        end: () => `+=${Math.round(distance() * PX_PER_SCREEN)}`,
+        end: () => `+=${Math.round(travel() * PX_PER_SCREEN)}`,
         pin: true,
         pinSpacing: true,
         scrub: 0.6,
@@ -230,8 +231,105 @@ export function initRide({
       });
     });
 
+    // paging: inside the ride one wheel gesture turns one slide (a glide; the rest of that gesture,
+    // the trackpad's momentum included, is swallowed). Coming from above or below, the scroll lands
+    // softly on the first or the last slide; one more gesture past them and the page goes on as
+    // usual. A sideways swipe turns the slides too. Wheel events are caught before Lenis sees them.
+    let paging = false;
+    let armed = true; // the next gesture may turn a slide
+    let lastWheel = 0;
+    let lastAbs = 0;
+    const EDGE = 2;
+    const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+    const swallow = (e) => {
+      if (e.cancelable) e.preventDefault();
+      e.lenisStopPropagation = true; // Lenis skips an event marked so
+    };
+    const turnTo = (i) => {
+      const lenis = getLenis();
+      const y = scrollFor(i);
+      if (y == null) return;
+      paging = true;
+      armed = false;
+      const done = () => { paging = false; };
+      if (lenis) lenis.scrollTo(y, { duration: 1, easing: inOut, lock: true, force: true, onComplete: done });
+      else {
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        setTimeout(done, 900);
+      }
+    };
+    const onWheel = (e) => {
+      if (!trigger || e.ctrlKey) return;
+      const lenis = getLenis();
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
+      const sideways = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+      const delta = (sideways ? e.deltaX : e.deltaY) * unit;
+      const abs = Math.abs(delta);
+      const now = e.timeStamp || performance.now(); // when the input happened, not when it got through
+      // a new gesture: after a pause, or a push clearly stronger than the fading one before it
+      const fresh = now - lastWheel > 180 || (abs > lastAbs * 1.6 && abs > 6);
+      lastWheel = now;
+      lastAbs = abs;
+      if (!delta) return;
+      const { start, end } = trigger;
+      const y = lenis ? lenis.animatedScroll : window.scrollY;
+      const inside = y >= start - EDGE && y <= end + EDGE;
+      if (skipping || paging) {
+        if (inside || skipping) swallow(e);
+        return;
+      }
+      const dir = Math.sign(delta);
+      if (inside) {
+        if (fresh) armed = true;
+        const f = ((y - start) / (end - start || 1)) * (panels.length - 1);
+        const near = Math.abs(f - Math.round(f)) < 0.02;
+        const to = dir > 0 ? (near ? Math.round(f) + 1 : Math.ceil(f)) : (near ? Math.round(f) - 1 : Math.floor(f));
+        // past the first or the last slide: a fresh gesture leaves the ride, a tail stays put
+        if (to < 0 || to > panels.length - 1) {
+          if (!armed) swallow(e);
+          return;
+        }
+        swallow(e);
+        if (armed) turnTo(to);
+        return;
+      }
+      if (sideways) return; // outside the ride a sideways swipe is the browser's (back / forward)
+      // on the way in: the scroll may not run past the ride's edge, it settles on it
+      const target = (lenis ? lenis.targetScroll : y) + delta;
+      const edge = dir > 0 && y < start && target > start ? start : dir < 0 && y > end && target < end ? end : null;
+      if (edge == null) return;
+      swallow(e);
+      armed = false;
+      if (lenis) lenis.scrollTo(edge, { programmatic: false, lerp: lenis.options.lerp });
+      else window.scrollTo({ top: edge, behavior: 'smooth' });
+    };
+    window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+
+    // the keyboard and the scrollbar scroll freely: once the scroll rests inside the ride it settles
+    // on the nearest slide
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let snapTimer = 0;
+    const onScroll = () => {
+      clearTimeout(snapTimer);
+      snapTimer = window.setTimeout(() => {
+        if (!trigger || skipping || paging || reducedMotion || performance.now() - lastWheel < 600) return;
+        const { start, end } = trigger;
+        const at = window.scrollY;
+        if (at <= start + EDGE || at >= end - EDGE) return;
+        const i = Math.round(((at - start) / (end - start)) * (panels.length - 1));
+        const y2 = scrollFor(i);
+        if (y2 != null && Math.abs(y2 - at) > EDGE) scrollToY(y2, { duration: 0.8 });
+      }, 200);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => {
+      window.removeEventListener('wheel', onWheel, { capture: true });
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(snapTimer);
+      ScrollTrigger.removeEventListener('refreshInit', sizePanels);
+      ride.style.removeProperty('--panel-w');
       on = false;
       trigger = null;
       current = -1;

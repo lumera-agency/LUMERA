@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "css-units",
+  "title": "CSS lengths in px",
+  "description": "For a layout in rem with a fluid root: remPx, dpx (a design px on this screen) and lengthVar / topbarHeight (a custom property as px).",
+  "files": [
+    {
+      "path": "src/lib/css.ts",
+      "content": "/*\n * The layout is in rem and the root grows on big screens (styles/base.css), so a length from the CSS\n * is turned into pixels here, and so are the scripts' own offsets (\"design px\", 16 to the rem).\n */\nconst root = () => (typeof document === \"undefined\" ? null : document.documentElement);\n\n/** The root font size in px: 16 up to ~1680×1000, more on bigger screens. */\nexport function remPx() {\n  const el = root();\n  return (el && parseFloat(getComputedStyle(el).fontSize)) || 16;\n}\n\n/** A design px (the size at 16 px to the rem) on this screen. */\nexport const dpx = (n: number) => (n * remPx()) / 16;\n\n/** A length custom property on :root, in px (px, rem or a bare number). */\nexport function lengthVar(name: string, fallback = 0) {\n  const el = root();\n  const value = el ? getComputedStyle(el).getPropertyValue(name).trim() : \"\";\n  const n = parseFloat(value);\n  if (!Number.isFinite(n)) return fallback;\n  return value.endsWith(\"rem\") ? n * remPx() : n;\n}\n\n/** The topbar's height, px. */\nexport const topbarHeight = () => lengthVar(\"--topbar-h\", dpx(64));\n",
+      "type": "registry:lib"
+    }
+  ],
+  "type": "registry:lib"
+}
