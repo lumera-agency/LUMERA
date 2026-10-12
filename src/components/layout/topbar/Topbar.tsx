@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
+import { dpx, topbarHeight } from "@/lib/css";
 import { PAGE_NAV } from "@/content/nav";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { LogoContent } from "@/components/ui/logo/Logo";
@@ -25,17 +26,29 @@ export function Topbar() {
   useEffect(() => {
     const hero = document.querySelector("[data-hero]");
     if (!hero) return;
-    // the hero's own position decides (a jump on load can deliver a stale entry)
-    const io = new IntersectionObserver(
-      () => {
-        const show = hero.getBoundingClientRect().bottom <= 72;
-        setVisible(show);
-        if (!show) setOpen(false);
-      },
-      { rootMargin: "-72px 0px 0px 0px" },
-    );
-    io.observe(hero);
-    return () => io.disconnect();
+    // the hero's own position decides, checked on every scroll and resize: an observer only speaks at
+    // a crossing, and a jump, a glide overridden half-way or a restored page could leave the bar out
+    // over the hero's own header
+    let queued = 0;
+    const check = () => {
+      queued = 0;
+      const show = hero.getBoundingClientRect().bottom <= topbarHeight() + dpx(8);
+      setVisible(show);
+      if (!show) setOpen(false);
+    };
+    const queue = () => {
+      if (!queued) queued = requestAnimationFrame(check);
+    };
+    queue();
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    window.addEventListener("pageshow", queue);
+    return () => {
+      cancelAnimationFrame(queued);
+      window.removeEventListener("scroll", queue);
+      window.removeEventListener("resize", queue);
+      window.removeEventListener("pageshow", queue);
+    };
   }, []);
 
   useEffect(() => {

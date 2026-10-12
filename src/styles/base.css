@@ -10,6 +10,10 @@
    ultrawide), up to twice the size */
 html {
   font-size: clamp(100%, min(0.9524vw, 1.75vh), 200%);
+  /* the page never scrolls sideways, even for a moment (pinned blocks keep their old width until
+     ScrollTrigger re-measures after a resize); clip, unlike hidden, leaves sticky alone */
+  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
