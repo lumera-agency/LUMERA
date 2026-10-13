@@ -79,8 +79,9 @@ export function MenuSheet() {
         gsap.timeline({ onComplete: done })
           .to(rows, { yPercent: -115, duration: 0.4, ease: "power3.in", stagger: 0.025 }, 0)
           .to(fades, { autoAlpha: 0, y: -10, duration: 0.3, ease: "power2.in" }, 0)
-          .to(rule, { scaleX: 0, transformOrigin: "100% 50%", duration: 0.5, ease: "expo.inOut" }, 0)
-          .to(cols, { yPercent: -101, duration: 0.75, ease: "expo.inOut", stagger: { each: 0.05, from: "end" } }, 0.18);
+          // the frame (its row lines, the cross) is gone before the columns bare the page
+          .to(frame, { autoAlpha: 0, duration: 0.3, ease: "power1.in" }, 0.1)
+          .to(cols, { yPercent: -101, duration: 0.75, ease: "expo.inOut", stagger: { each: 0.05, from: "end" } }, 0.3);
       }
       const back = menu.opener();
       if (back?.isConnected && back.offsetParent) back.focus({ preventScroll: true });
