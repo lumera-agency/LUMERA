@@ -3,13 +3,16 @@ import { rich } from "@/lib/rich";
 import { WhatList } from "./WhatList";
 import "./what.css";
 
-/** The four directions; each row leads to its panel in 3 · Послуги. */
+/** The four directions; each row leads to its panel in 3 · Послуги, except the ones with a page of their own. */
 export const DIRECTIONS = [
   { n: 1, service: "svc-1" },
   { n: 2, service: "svc-4" },
   { n: 3, service: "svc-5" },
   { n: 4, service: "svc-3" },
 ] as const;
+
+/** Directions with a page of their own: the row opens it instead of scrolling to the panel. */
+const PAGES: Partial<Record<string, string>> = { "svc-4": "/ai-avtomatyzatsiia/" };
 
 /** 2 · Що ми робимо: four directions as one big list; over a row its picture follows the cursor. */
 export async function What() {
@@ -20,6 +23,8 @@ export async function What() {
     name: t(`${d.n}.name`),
     desc: t(`${d.n}.desc`),
     image: `/img/what/what-${d.n}-${locale === "ru" ? "ru" : "uk"}.webp`,
+    // the AI pages pick their language from ?lang=ru
+    href: PAGES[d.service] && (locale === "ru" ? `${PAGES[d.service]}?lang=ru` : PAGES[d.service]),
   }));
   return (
     <section className="section section--ivory what" id="what" aria-labelledby="what-title" data-what="">

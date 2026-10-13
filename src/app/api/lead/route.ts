@@ -27,6 +27,17 @@ function clean(body: Record<string, unknown>) {
   };
 }
 
+/** «Страница: …» for a lead sent from anywhere but the main page (/ or /ru). */
+function pageLine(page: string) {
+  let path = "";
+  try {
+    path = new URL(page, "https://lumera.local").pathname;
+  } catch {
+    return "";
+  }
+  return /^\/(ru\/?)?$/.test(path) ? "" : `Страница: ${path}`;
+}
+
 function telegramText(lead: Lead) {
   return [
     "Новая заявка с сайта Lumera",
@@ -37,6 +48,7 @@ function telegramText(lead: Lead) {
     lead.details && `Состав:\n${lead.details}`,
     lead.site && `Сайт: ${lead.site}`,
     lead.note && `Комментарий: ${lead.note}`,
+    pageLine(lead.page),
     `Язык страницы: ${lead.lang.toUpperCase()}`,
   ]
     .filter(Boolean)

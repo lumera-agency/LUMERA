@@ -3,12 +3,13 @@ import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useHoverReveal } from "@/components/fx/hover-reveal/useHoverReveal";
 
-type Row = { n: number; service: string; name: string; desc: string; image: string };
+type Row = { n: number; service: string; name: string; desc: string; image: string; href?: string };
 
 /**
  * The list: names rise out of their masks as it comes in; over a row the others step back (CSS) and
  * its picture follows the cursor (HoverReveal). A row fires `services:go` — the services' ride or
- * phone switcher takes it there; with nobody listening the anchor works as usual.
+ * phone switcher takes it there; with nobody listening the anchor works as usual. A row with an `href`
+ * (a direction with a page of its own) is a plain link to that page.
  */
 export function WhatList({ rows }: { rows: Row[] }) {
   const list = useRef<HTMLOListElement>(null);
@@ -37,7 +38,7 @@ export function WhatList({ rows }: { rows: Row[] }) {
     <ol className="what__list" data-what-list="" ref={list}>
       {rows.map((r) => (
         <li className="what__item" key={r.n}>
-          <a className="what__row" href={`#${r.service}`} data-what-row="" data-n={r.n} onClick={(e) => go(e, r.service)}>
+          <a className="what__row" href={r.href ?? `#${r.service}`} data-what-row="" data-n={r.n} onClick={r.href ? undefined : (e) => go(e, r.service)}>
             <span className="what__num">0{r.n}</span>
             <span className="what__name">
               <span className="what__name-in">{r.name}</span>
