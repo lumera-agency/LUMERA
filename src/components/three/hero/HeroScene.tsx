@@ -112,12 +112,15 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
     };
   }, [gl, scene, camera]);
 
-  // layout: where the stone sits and how big, from the hero's box (phones: between header and headline)
+  // layout: where the stone sits and how big, from the hero's box (phones: between header and headline).
+  // Only on a new width or height: R3F's size also carries the canvas's place on the page and changes
+  // with every scroll, and the headline measured mid-scroll (held by the lift) put the stone lower
+  const { width: sizeW, height: sizeH } = size;
   useEffect(() => {
     const hero = heroRef.current;
     if (!hero) return;
-    const W = Math.max(1, size.width);
-    const H = Math.max(1, size.height);
+    const W = Math.max(1, sizeW);
+    const H = Math.max(1, sizeH);
     const mobile = matchMedia("(max-width: 860px)").matches || W / H < 0.85;
     let cx: number;
     let cy: number;
@@ -127,10 +130,16 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
       cy = H * 0.54;
       s = Math.min(H * 0.74, W * 0.46);
     } else {
-      const rect = hero.getBoundingClientRect();
-      const title = hero.querySelector("h1")?.getBoundingClientRect();
-      const headerBottom = (hero.querySelector(".header")?.getBoundingClientRect().bottom ?? rect.top) - rect.top;
-      const bottom = (title?.top ?? rect.top + H * 0.6) - rect.top;
+      // places in the layout (offsets), not on screen: a transform (the lift) does not move them
+      const top = (el: HTMLElement | null) => {
+        let y = 0;
+        for (let n: HTMLElement | null = el; n && n !== hero; n = n.offsetParent as HTMLElement | null) y += n.offsetTop;
+        return y;
+      };
+      const header = hero.querySelector<HTMLElement>(".header");
+      const title = hero.querySelector<HTMLElement>("h1");
+      const headerBottom = header ? top(header) + header.offsetHeight : 0;
+      const bottom = title ? top(title) : H * 0.6;
       cx = W * 0.6;
       cy = headerBottom + (bottom - headerBottom) * 0.5;
       s = THREE.MathUtils.clamp(bottom - headerBottom, W * 0.55, W * 1.0);
@@ -143,7 +152,7 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
     const buffer = gl.getDrawingBufferSize(new THREE.Vector2());
     orbit.material.uniforms.uViewport.value.copy(buffer);
     if (reducedMotion) invalidate();
-  }, [size, heroRef, mask, orbit, gl, reducedMotion, invalidate]);
+  }, [sizeW, sizeH, heroRef, mask, orbit, gl, reducedMotion, invalidate]);
 
   // the pointer, -1…1 across the window (the stone leans toward it)
   useEffect(() => {
