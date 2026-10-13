@@ -91,12 +91,21 @@ function wireSwitchers() {
   }
 }
 
+/** Links back to the main page: the Next.js site keeps Russian under /ru (/ru, /ru#faq). */
+function wireMainLinks() {
+  if (current === DEFAULT_LANG) return;
+  for (const link of document.querySelectorAll('a[href="/"], a[href^="/#"]')) {
+    link.setAttribute('href', `/${current}${link.getAttribute('href').slice(1)}`);
+  }
+}
+
 /** Load the active dictionary and put its text into the page. */
 export async function initI18n() {
   current = detectLang();
   write(localStorage, STORE_KEY, current);
-  // keep the address honest when the language came from the saved choice
-  if (current !== DEFAULT_LANG && !new URLSearchParams(location.search).has('lang')) {
+  // keep the address honest: a saved choice shows as ?lang=ru, an explicit ?lang=uk (from the main page) goes away
+  const param = new URLSearchParams(location.search).get('lang');
+  if (param !== (current === DEFAULT_LANG ? null : current)) {
     history.replaceState(history.state, '', urlFor(current) + location.hash);
   }
   // the Ukrainian text is inline (the first paint): its dictionary is only needed for the other language
@@ -113,6 +122,7 @@ export async function initI18n() {
   }
   document.documentElement.lang = current;
   wireSwitchers();
+  wireMainLinks();
   document.documentElement.classList.remove('i18n-pending');
 }
 
