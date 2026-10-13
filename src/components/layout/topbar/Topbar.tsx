@@ -22,15 +22,15 @@ export function Topbar() {
   const open = useMenuOpen();
 
   useEffect(() => {
-    const hero = document.querySelector("[data-hero]");
-    if (!hero) return;
-    // the hero's own position decides, checked on every scroll and resize: an observer only speaks at
-    // a crossing, and a jump, a glide overridden half-way or a restored page could leave the bar out
-    // over the hero's own header
+    // the page after the hero decides (on touch screens the hero is sticky and never leaves), checked
+    // on every scroll and resize: an observer only speaks at a crossing, and a jump, a glide overridden
+    // half-way or a restored page could leave the bar out over the hero's own header
+    const page = document.querySelector("[data-page]");
+    if (!page) return;
     let queued = 0;
     const check = () => {
       queued = 0;
-      const show = hero.getBoundingClientRect().bottom <= topbarHeight() + dpx(8);
+      const show = page.getBoundingClientRect().top <= topbarHeight() + dpx(8);
       setVisible(show);
     };
     const queue = () => {

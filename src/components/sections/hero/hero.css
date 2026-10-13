@@ -240,6 +240,25 @@ html.has-fluid .hero__fluid { display: block; }
   opacity: var(--lift-dim, 0);
   pointer-events: none;
 }
+/* touch screens: the hero holds still while the page slides over it. Sticky: every browser has it and
+   runs it with the scroll itself (a script one frame behind the finger made the stone judder). A hero
+   taller than the screen first scrolls to its foot, then holds (--hero-height, HeroShell). Where the
+   browser has scroll timelines it also dims as it goes under. */
+@media (hover: none) and (pointer: coarse) {
+  .hero { position: sticky; top: min(0px, calc(var(--hero-min, 100svh) - var(--hero-height, 100svh))); }
+  .hero > * { translate: none; }
+  @supports (animation-timeline: scroll()) {
+    .hero::after {
+      animation: hero-dim linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px var(--hero-min, 100svh);
+    }
+  }
+}
+@keyframes hero-dim { to { opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero::after { animation: none !important; }
+}
 html.has-stage .hero { z-index: 10; }
 html.has-stage .hero__canvas { position: fixed; bottom: auto; height: calc(var(--vh, 1vh) * 100); }
 .rail__num { color: var(--signal); }
