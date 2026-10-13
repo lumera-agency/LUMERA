@@ -12,7 +12,7 @@ export const DIRECTIONS = [
 ] as const;
 
 /** Directions with a page of their own: the row opens it instead of scrolling to the panel. */
-const PAGES: Partial<Record<string, string>> = { "svc-4": "/ai-avtomatyzatsiia/" };
+const PAGES: Partial<Record<string, string>> = { "svc-4": "/ai-avtomatyzatsiia" };
 
 /** 2 · Що ми робимо: four directions as one big list; over a row its picture follows the cursor. */
 export async function What() {
@@ -23,8 +23,8 @@ export async function What() {
     name: t(`${d.n}.name`),
     desc: t(`${d.n}.desc`),
     image: `/img/what/what-${d.n}-${locale === "ru" ? "ru" : "uk"}.webp`,
-    // the AI pages pick their language from ?lang=ru
-    href: PAGES[d.service] && (locale === "ru" ? `${PAGES[d.service]}?lang=ru` : PAGES[d.service]),
+    // the AI pages remember the last language, so the row always names the main page's one
+    href: PAGES[d.service] && `${PAGES[d.service]}?lang=${locale === "ru" ? "ru" : "uk"}`,
   }));
   return (
     <section className="section section--ivory what" id="what" aria-labelledby="what-title" data-what="">
