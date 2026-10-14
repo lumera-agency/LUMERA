@@ -168,10 +168,8 @@ h1, h2, p { margin: 0; }
 .lang__link:focus-visible { color: var(--signal); }
 .nav__link .roll__c > span:first-child { color: var(--ink); }
 .nav__link .roll__c > span + span { color: var(--signal); }
-.nav__link sup,
-.footer__nav sup { margin-left: 0.25em; font-size: 0.58em; line-height: 0; vertical-align: super; font-variant-numeric: tabular-nums; color: var(--ink-mute); }
-.topbar .nav__link sup,
-.footer__nav sup { font-family: var(--font-mono); font-weight: 400; }
+.nav__link sup { margin-left: 0.25em; font-size: 0.58em; line-height: 0; vertical-align: super; font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+.topbar .nav__link sup { font-family: var(--font-mono); font-weight: 400; }
 
 /* ---------- UA · RU ---------- */
 .lang { display: flex; align-items: center; gap: 6px; font-size: 0.875rem; letter-spacing: 0.04em; }
@@ -463,11 +461,17 @@ html[data-page="ai"] .topbar__nav { gap: clamp(20px, 2.4vw, 40px); }
 .footer__top { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); row-gap: 48px; align-items: end; }
 .footer__lead { grid-column: 1 / span 5; display: grid; justify-items: start; gap: 28px; }
 .footer__claim { margin: 0; font-size: var(--fs-h3); font-weight: 300; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; }
-.footer__nav { grid-column: 7 / -1; display: grid; justify-items: start; gap: 2px; }
-.footer__nav a { font-size: var(--fs-display); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.04; letter-spacing: -0.035em; color: var(--ink); text-decoration: none; transition: color var(--dur), transform var(--dur-slow) var(--ease-out); padding-block: max(4px, (44px - 1.04em) / 2); }
+/* three short lists (owner, 2026-10-14: the display-size links to the main page went): the AI section, its examples,
+   the main site. Card-title size, the section heads' mono label above each */
+.footer__nav { grid-column: 6 / -1; display: grid; grid-template-columns: repeat(3, max-content); justify-content: space-between; gap: 40px var(--col-gap); align-items: start; }
+.footer__group { display: grid; align-content: start; }
+.footer__group-t { margin: 0 0 10px; font: 400 var(--fs-label)/1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.footer__group ul { display: grid; justify-items: start; margin: 0; padding: 0; list-style: none; }
+.footer__nav a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-h4); font-weight: 400; line-height: 1.25; letter-spacing: -0.01em; color: var(--ink-soft); text-decoration: none; transition: color var(--dur-fast) ease; }
 .footer__nav a:hover,
-.footer__nav a:focus-visible { color: #fff; transform: translateX(10px); }
-.footer__nav sup { font-size: 0.3em; }
+.footer__nav a:focus-visible,
+.footer__nav a[aria-current="page"] { color: var(--ink); }
+.footer__nav a[aria-current="page"]::before { content: ""; width: 6px; height: 6px; margin-right: 10px; border-radius: 50%; background: var(--ember); }
 .footer__bottom { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); row-gap: 14px; align-items: center; margin-top: var(--rhythm-l); padding-top: 20px; border-top: 1px solid var(--line); font-size: var(--fs-caption); color: var(--ink-mute); }
 .footer__bottom .logo { grid-column: 1 / span 2; justify-self: start; }
 .footer__legal { grid-column: 3 / span 4; margin: 0; }
@@ -488,9 +492,19 @@ html[data-page="ai"] .topbar__nav { gap: clamp(20px, 2.4vw, 40px); }
 .footer__mark-text { display: block; font-family: var(--font-display); font-stretch: 125%; font-weight: 800; font-size: calc(100cqw * 0.176); line-height: 0.8; white-space: nowrap; color: transparent; background: linear-gradient(180deg, #f4f2ee 0%, #a7aab0 34%, #2a2b2e 50%, #cfd2d6 62%, #6d7075 100%); -webkit-background-clip: text; background-clip: text; }
 .footer__mark.is-live .footer__mark-text { position: absolute; visibility: hidden; }
 .footer__mark-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-@media (max-width: 860px) {
+/* narrower: the lists go under the button, still three columns; on phones each list runs as a line of links that
+   wraps (the same order, and no label breaks inside) */
+@media (max-width: 1100px) {
   .footer__lead,
   .footer__nav { grid-column: 1 / -1; }
+  .footer__nav { justify-content: start; column-gap: clamp(40px, 8vw, 96px); }
+  .footer__bottom .logo { grid-column: 1 / span 3; }
+  .footer__legal { grid-column: 4 / span 3; }
+}
+@media (max-width: 860px) {
+  .footer__nav { grid-template-columns: minmax(0, 1fr); row-gap: 24px; }
+  .footer__group ul { display: flex; flex-wrap: wrap; column-gap: 24px; }
+  .footer__nav a { font-size: 1.0625rem; white-space: nowrap; }
   .footer__bottom { grid-template-columns: 1fr auto; }
   .footer__bottom .logo { grid-column: 1; min-width: 44px; min-height: 44px; }
   .footer__end { grid-column: 2; grid-row: 1; }
@@ -568,18 +582,6 @@ html:not(.motion) .ai-replay { display: none; }
 .ai-hero__in { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: center; }
 .ai-hero__copy { grid-column: 1 / span 7; }
 .ai-hero__visual { grid-column: 8 / -1; display: grid; justify-items: center; gap: 14px; }
-.ai-hero__eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: clamp(20px, 3.4vh, 32px);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
-.ai-hero__eyebrow::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 10px 1px var(--signal-glow); }
 .ai-hero__title { font-size: clamp(2.5rem, 4.4vw, 4.6rem); line-height: 1.03; max-width: 15ch; }
 .ai-hero__lead { max-width: 42ch; margin-top: clamp(20px, 3.2vh, 32px); font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
 .ai-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(20px, 3vh, 28px); }
@@ -660,7 +662,7 @@ html:not(.motion) .ai-replay { display: none; }
 .ai-ad__verdict { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
 .ai-stamp { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-size: 13px; line-height: 1; }
 .ai-ad[data-verdict="no"] .ai-stamp { color: var(--ink-mute); box-shadow: inset 0 0 0 1px var(--border-strong); }
-.ai-ad[data-verdict="no"] :is(.ai-ad__t, .ai-ad__meta) { opacity: 0.5; }
+.ai-ad[data-verdict="no"] .ai-ad__t { opacity: 0.55; }
 .ai-ad__lit { position: absolute; inset: -1px; border-radius: inherit; border: 1px solid rgba(218, 255, 2, 0.5); box-shadow: 0 0 0 1px rgba(218, 255, 2, 0.1), 0 24px 50px -30px rgba(218, 255, 2, 0.3); pointer-events: none; }
 .ai-ad[data-verdict="no"] .ai-ad__lit { display: none; }
 .ai-ad[data-verdict="yes"] .ai-stamp { font-weight: 600; color: var(--on-accent); background: var(--signal); box-shadow: 0 0 14px rgba(218, 255, 2, 0.3); }
@@ -914,7 +916,7 @@ html.og-render .ai-chips li { font-size: 14px; min-height: 36px; padding: 0 14px
 .ai-tg.is-pre .ai-msg__kb,
 .ai-tg.is-pre .ai-row__note,
 .ai-tg.is-pre .ai-row__n { opacity: 0.35; }
-.ai-decide.is-pre .ai-ad[data-verdict="no"] :is(.ai-ad__t, .ai-ad__meta) { opacity: 1; }
+.ai-decide.is-pre .ai-ad[data-verdict="no"] .ai-ad__t { opacity: 1; }
 
 /* ==========================================================================
    /ai-avtomatyzatsiia/ — the AI page's own blocks: a to-do list on the first screen, the letter's way (ivory),
@@ -1079,7 +1081,7 @@ html[data-page="ai"] .ai-hero__actions { flex-direction: column; align-items: fl
   .ai-path__step { grid-template-columns: 26px minmax(0, 1fr); column-gap: 12px; }
   .ai-path__n { grid-row: 1 / span 2; width: 26px; height: 26px; font-size: 11.5px; }
   .ai-path__cap { grid-column: 2; display: block; max-width: none; margin: 3px 0 0; font-size: var(--fs-small); line-height: 1.4; }
-  .ai-path__who { margin-right: 6px; font-size: 10.5px; letter-spacing: 0.1em; }
+  .ai-path__who { margin-right: 6px; font-size: 11px; letter-spacing: 0.1em; }
   .ai-path__seg { top: 32px; bottom: -12px; left: 13px; }
   .ai-path__end { margin-top: 20px; }
   .ai-art { grid-column: 2; margin-top: 8px; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; }
@@ -1103,7 +1105,7 @@ html[data-page="ai"] .ai-hero__actions { flex-direction: column; align-items: fl
   .ai-door__p { display: none; }
   .ai-door__body { gap: 8px; padding-top: 0; }
   .ai-door__k { gap: 6px 8px; }
-  .ai-door__tag { height: 22px; padding: 0 8px; font-size: 10.5px; letter-spacing: 0.1em; }
+  .ai-door__tag { height: 22px; padding: 0 8px; font-size: 11px; letter-spacing: 0.1em; }
   .ai-door__m { font-size: var(--fs-caption); }
   .ai-door__t { margin: 0; font-size: var(--fs-h4); line-height: 1.25; }
   .ai-door__go { font-size: 13.5px; }
@@ -1132,22 +1134,21 @@ html[data-page="ai"] .ai-hero__actions { flex-direction: column; align-items: fl
 .ai-hero--center .ai-hero__visual { grid-column: 1; }
 .ai-hero--center .ai-hero__copy { display: grid; justify-items: center; }
 .ai-hero--center .ai-hero__copy > * { grid-column: 1; }
-.ai-hero--center .ai-hero__eyebrow { padding: 8px 16px 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.025); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.14); }
 .ai-hero--center .ai-hero__title--auto { max-width: none; font-size: clamp(2.4rem, 4.6vw, 4.8rem); line-height: 1; letter-spacing: -0.04em; text-wrap: initial; }
 /* «AI-автоматизація» never breaks at its hyphen */
 .ai-hero--center .ai-hero__title .hl { white-space: nowrap; }
-/* each line rises out of its own mask (js/ai-page.js); the padding keeps the descenders inside it */
+/* each line rises out of its own mask (CSS, below: ai-line-in); the padding keeps the descenders inside it */
 .ai-l { display: block; overflow: hidden; overflow: clip; padding: 0.04em 0.08em 0.14em; margin: -0.04em -0.08em -0.14em; }
 .ai-l > .tone { display: inline-block; }
-.ai-hero--center .ai-hero__lead { max-width: 46ch; margin-inline: auto; text-shadow: 0 1px 14px rgba(0, 0, 0, 0.95), 0 0 3px rgba(0, 0, 0, 0.7); }
+.ai-hero--center .ai-hero__lead { max-width: 46ch; margin-inline: auto; color: var(--ink); text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.85), 0 1px 18px rgba(0, 0, 0, 0.95); }
 /* the words over the stone's bright chrome: a soft dark halo keeps them clear (static, drawn once) */
-.ai-hero--center .ai-hero__title { filter: drop-shadow(0 2px 20px rgba(0, 0, 0, 0.75)); }
+.ai-hero--center .ai-hero__title { filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.55)) drop-shadow(0 2px 20px rgba(0, 0, 0, 0.75)); }
 html[data-page="ai"] .ai-hero--center .ai-hero__actions { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 18px; }
 .ai-hero--center .ai-hero__visual { position: relative; isolation: isolate; width: 100%; margin-top: clamp(52px, 8vh, 88px); padding-bottom: clamp(64px, 10vh, 112px); justify-items: center; }
 .ai-hero--center .ai-todo { width: min(600px, 100%); text-align: left; }
 /* the main page's first-screen background (css/style.css .hero__bg / .hero__glow): its dark light, a soft glow and
    the stone (a still of it, img/ai/lock-stone.webp = img/stone.webp); grain over it, the words over all.
-   Static: it comes in once with the words (js/ai-page.js) */
+   Static: it comes in once with the words (CSS: ai-stone-in) */
 .ai-hero__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(120% 95% at 70% 56%, #161616 0%, #0c0c0c 52%, #070707 100%); }
 /* the stone stands behind the whole text block, as the first screen's background (owner, 2026-10-12: twice the size it
    was, in the middle); a soft light behind it, as on the main page. Its size follows the title's font (.ai-hero__head
@@ -1159,6 +1160,9 @@ html[data-page="ai"] .ai-hero--center .ai-hero__actions { flex-direction: row; f
 .ai-hero__stone { position: absolute; left: 0; top: 0; width: 6em; max-width: none; height: auto; translate: -50% -50%; rotate: -8deg; opacity: 0.55; filter: blur(1px) brightness(0.8); }
 /* the live stone (js/ai-stone.js): a square canvas around the same point; the stone fills about two thirds of it */
 .ai-hero__canvas { position: absolute; left: 0; top: 0; width: 11.6em; height: 11.6em; translate: -50% -50%; opacity: 0.8; pointer-events: none; }
+/* the lead runs right across the stone's middle, where its chrome is brightest: a soft dark band under those lines
+   (over the still and the canvas, the last thing in the box), the stone stays whole above and below it */
+.ai-hero__rock::after { content: ""; position: absolute; left: 0; top: 0.5em; width: 13.5em; height: 3.4em; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, rgba(10, 10, 10, 0.66), rgba(10, 10, 10, 0.42) 60%, rgba(10, 10, 10, 0)); pointer-events: none; }
 html[data-page="ai"] .ai-hero--center::before { z-index: 1; }
 .ai-hero--center .ai-hero__in { z-index: 2; }
 
@@ -1452,7 +1456,6 @@ html.ai-modal { overflow: hidden; }
 }
 @media (max-width: 600px) {
   .ai-hero--center { padding-top: calc(var(--topbar-h) + 52px); padding-bottom: 0; }
-  .ai-hero--center .ai-hero__eyebrow { padding: 7px 12px 7px 11px; font-size: 10.5px; }
   /* both lines stay whole down to 360 px (the longest, «для малого бизнеса», is about 9.3 em) */
   html[data-page="ai"] .ai-hero--center .ai-hero__title--auto { font-size: clamp(1.75rem, 9vw, 2.45rem); }
   .ai-hero--center .ai-hero__lead { max-width: 34ch; }
@@ -1502,9 +1505,19 @@ html.ai-modal { overflow: hidden; }
   .ai-chk { padding: 0 13px 0 11px; font-size: 13px; }
 }
 
-/* start frames: the first screen's words wait for the script (the head script shows them after 3.5 s regardless);
-   the service cards' scenes hold their start until they play */
-html[data-page="ai"].motion:not(.ai-up) :is(.ai-hero__eyebrow, .ai-hero__lead, .ai-hero__actions, .ai-l > .tone, .ai-hero__stone) { opacity: 0; }
+/* the first screen's words come in once, from CSS on the first paint: no script to wait for, so the title is there as
+   soon as its font (the owner's mask rise, shorter). Another language waits paused while the page is hidden (i18n-pending);
+   js/ai-i18n.js leaves the Ukrainian title in place, so it never restarts. The service cards' scenes hold their start
+   until they play */
+@keyframes ai-line-in { from { transform: translateY(104%); } }
+@keyframes ai-rise-in { from { opacity: 0; transform: translateY(14px); } }
+@keyframes ai-stone-in { from { opacity: 0; transform: scale(0.92) rotate(-5deg); } }
+html[data-page="ai"].motion .ai-hero--center .ai-l > .tone { animation: ai-line-in 0.8s var(--ease-out) 0.05s backwards; }
+html[data-page="ai"].motion .ai-hero--center .ai-l + .ai-l > .tone { animation-delay: 0.16s; }
+html[data-page="ai"].motion .ai-hero--center .ai-hero__lead { animation: ai-rise-in 0.65s var(--ease-out) 0.3s backwards; }
+html[data-page="ai"].motion .ai-hero--center .ai-hero__actions { animation: ai-rise-in 0.65s var(--ease-out) 0.4s backwards; }
+html[data-page="ai"].motion .ai-hero--center .ai-hero__stone { animation: ai-stone-in 1.4s var(--ease-out) 0.1s backwards; }
+html[data-page="ai"].i18n-pending .ai-hero--center :is(.ai-l > .tone, .ai-hero__lead, .ai-hero__actions, .ai-hero__stone) { animation-play-state: paused; }
 .ai-svc__art--tg.is-pre :is(.ai-mp, .ai-mp__dot),
 .ai-svc__art--crm.is-pre :is(.ai-mb, .ai-mc),
 .ai-svc__art--mail.is-pre :is(.ai-mm, .ai-mt__row),
@@ -1521,10 +1534,10 @@ html[data-page="ai"].og-render .ai-hero--center .ai-hero__in { grid-template-col
 html[data-page="ai"].og-render .ai-hero--center .ai-hero__copy { justify-items: start; }
 html[data-page="ai"].og-render .ai-hero--center .ai-hero__visual { grid-column: 2; margin: 0; padding: 0; }
 html[data-page="ai"].og-render .ai-hero--center .ai-hero__title--auto { font-size: 58px; }
-html[data-page="ai"].og-render .ai-hero--center .ai-hero__eyebrow { padding: 0; background: none; box-shadow: none; }
 html[data-page="ai"].og-render .ai-hero--center .ai-hero__actions { justify-content: flex-start; }
 html[data-page="ai"].og-render .ai-hero__head { font-size: 58px; }
 html[data-page="ai"].og-render .ai-hero__rock { top: 50%; }
+html[data-page="ai"].og-render .ai-hero__rock::after { display: none; }
 
 /* start frames of the AI page's scenes (js/ai-page.js). The final frame is the CSS above, so these only
    need to outrank it, never !important. The to-do list holds its start until the script runs, too */
@@ -1826,7 +1839,7 @@ html.motion:not(.ai-go) .ai-hero .ai-bub { opacity: 0; }
   .ai-howto__step { grid-template-columns: 26px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 9px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: none; }
   .ai-howto__n { width: 26px; height: 26px; font-size: 12px; }
   .ai-howto p { display: block; font-size: var(--fs-small); line-height: 1.4; }
-  .ai-howto b { margin-right: 6px; font-size: 10.5px; letter-spacing: 0.1em; }
+  .ai-howto b { margin-right: 6px; font-size: 11px; letter-spacing: 0.1em; }
   .ai-find { row-gap: 18px; }
   .ai-book__bar > i { display: none; }
   .ai-book__bar > span:not(.ai-sample) { display: inline-block; margin-left: 0; }

@@ -42,9 +42,9 @@
       document.head.appendChild(dictionary);
       if (lang !== 'uk') root.classList.add('i18n-pending');
       // safety nets: another language never keeps the page hidden for long, and the first screen's
-      // words and list never stay hidden or half-done if the script fails (js/ai-page.js plays them in)
+      // list never stays half-done if the script fails (js/ai-page.js plays it in; the words come in from CSS)
       setTimeout(function () { root.classList.remove('i18n-pending'); }, 3000);
-      setTimeout(function () { root.classList.add('ai-go', 'ai-up'); }, 3500);
+      setTimeout(function () { root.classList.add('ai-go'); }, 3500);
     })(document.documentElement);
   </script>
 
@@ -87,7 +87,7 @@
   <a class="skip-link" href="#main" data-i18n="skip">Перейти до змісту</a>
 
   <!-- The page's header: the main page's topbar, here always on (there is no hero to scroll past) -->
-  <div class="topbar ai-topbar" data-topbar>
+  <header class="topbar ai-topbar" data-topbar>
     <a class="logo logo--sm" href="/" aria-label="Lumera Studio — на головну" data-i18n-attr="aria-label:logo.home">
       <svg class="logo__mark" viewBox="0 0 329 329" aria-hidden="true" focusable="false"><use href="#logo-mark"/></svg>
       <span class="logo__type">
@@ -103,9 +103,9 @@
     </nav>
     <div class="topbar__end">
       <div class="lang">
-        <a class="lang__link" href="#" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
+        <a class="lang__link" href="/ai-avtomatyzatsiia" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
         <span class="lang__dot" aria-hidden="true">·</span>
-        <a class="lang__link" href="#" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
+        <a class="lang__link" href="/ai-avtomatyzatsiia/?lang=ru" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
       </div>
       <a class="btn btn--ghost btn--xs ai-topbar__cta" href="#lead">
         <span class="btn__label" data-i18n="ai.topbar.cta">Обговорити</span>
@@ -122,16 +122,17 @@
         <a href="#services"><span data-i18n="ai.nav.services">Що автоматизуємо</span><sup aria-hidden="true">3</sup></a>
         <a href="#examples"><span data-i18n="ai.nav.examples">Приклади</span><sup aria-hidden="true">4</sup></a>
         <a href="#calc"><span data-i18n="ai.nav.calc">Розрахунок</span><sup aria-hidden="true">5</sup></a>
-        <a href="#lead"><span data-i18n="nav.lead">Заявка</span><sup aria-hidden="true">6</sup></a>
+        <a href="#faq"><span data-i18n="nav.faq">Питання</span><sup aria-hidden="true">6</sup></a>
+        <a href="#lead"><span data-i18n="nav.lead">Заявка</span><sup aria-hidden="true">7</sup></a>
         <a class="topbar__home" href="/"><span data-i18n="nav.home">Головна Lumera Studio</span><sup aria-hidden="true">↗</sup></a>
       </nav>
       <div class="lang">
-        <a class="lang__link" href="#" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
+        <a class="lang__link" href="/ai-avtomatyzatsiia" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
         <span class="lang__dot" aria-hidden="true">·</span>
-        <a class="lang__link" href="#" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
+        <a class="lang__link" href="/ai-avtomatyzatsiia/?lang=ru" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
       </div>
     </div>
-  </div>
+  </header>
 
   <main class="page ai" id="main" data-page>
 
@@ -148,9 +149,9 @@
                always sits between the top bar and the buttons -->
           <div class="ai-hero__head">
               <div class="ai-hero__rock" aria-hidden="true"><i class="ai-hero__glow"></i><img class="ai-hero__stone" src="/img/ai/lock-stone.webp" width="520" height="626" alt="" decoding="async" fetchpriority="low"></div>
-            <h1 class="s-head__title s-head__title--stone ai-hero__title ai-hero__title--auto" id="ai-title" data-i18n-html="ai.hero.title"><span class="ai-l"><span class="tone"><em class="hl">AI-автоматизація</em></span></span> <span class="ai-l"><span class="tone">для малого бізнесу</span></span></h1>
+            <h1 class="s-head__title s-head__title--stone ai-hero__title ai-hero__title--auto" id="ai-title" data-i18n-html="ai.hero.title"><span class="ai-l"><span class="tone"><em class="hl">AI-автоматизація</em></span></span> <span class="ai-l"><span class="tone">для&nbsp;малого бізнесу</span></span></h1>
           </div>
-          <p class="ai-hero__lead" data-i18n="ai.hero.lead">Програма сама обробляє заявки, листи й питання клієнтів. Вам лишається подзвонити й домовитися.</p>
+          <p class="ai-hero__lead" data-i18n="ai.hero.lead">Програма сама обробляє заявки, листи й&nbsp;питання клієнтів.</p>
           <div class="ai-hero__actions">
             <a class="btn btn--primary" href="#lead">
               <span class="btn__label" data-i18n="cta.auto">Обговорити автоматизацію</span>
@@ -167,12 +168,12 @@
         <div class="ai-hero__visual">
           <div class="ai-todo" data-scene="todo">
             <div class="ai-sheet__win ai-todo__win">
-              <div class="ai-sheet__bar ai-todo__bar"><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><span id="todo-head" data-i18n="ai.todo.head">Справи на сьогодні</span><span class="ai-sample" data-i18n="sample">Приклад · дані умовні</span></div>
+              <div class="ai-sheet__bar ai-todo__bar"><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><span id="todo-head" data-i18n="ai.todo.head">Справи на&nbsp;сьогодні</span><span class="ai-sample" data-i18n="sample">Приклад · дані умовні</span></div>
               <ol class="ai-todo__list" aria-labelledby="todo-head">
-                <li class="ai-todo__row" data-who="prog"><span class="ai-todo__n" aria-hidden="true">1<i class="ai-todo__fill">1</i></span><span class="ai-todo__t" data-i18n="ai.todo.1">Перенести дані з листів у таблицю</span><span class="ai-todo__who"><span aria-hidden="true">✓ </span><span data-i18n="ai.todo.who.prog">програма</span></span></li>
+                <li class="ai-todo__row" data-who="prog"><span class="ai-todo__n" aria-hidden="true">1<i class="ai-todo__fill">1</i></span><span class="ai-todo__t" data-i18n="ai.todo.1">Перенести дані з&nbsp;листів у&nbsp;таблицю</span><span class="ai-todo__who"><span aria-hidden="true">✓ </span><span data-i18n="ai.todo.who.prog">програма</span></span></li>
                 <li class="ai-todo__row" data-who="bot"><span class="ai-todo__n" aria-hidden="true">2<i class="ai-todo__fill">2</i></span><span class="ai-todo__t" data-i18n="ai.todo.2">Назвати клієнту ціну</span><span class="ai-todo__who"><span aria-hidden="true">✓ </span><span data-i18n="ai.todo.who.bot">асистент</span></span></li>
                 <li class="ai-todo__row" data-who="prog"><span class="ai-todo__n" aria-hidden="true">3<i class="ai-todo__fill">3</i></span><span class="ai-todo__t" data-i18n="ai.todo.3">Передати нову заявку менеджеру</span><span class="ai-todo__who"><span aria-hidden="true">✓ </span><span data-i18n="ai.todo.who.prog">програма</span></span></li>
-                <li class="ai-todo__row ai-todo__row--you" data-who="you"><i class="ai-todo__hl" aria-hidden="true"></i><span class="ai-todo__n" aria-hidden="true">4<i class="ai-todo__fill">4</i></span><span class="ai-todo__t" data-i18n="ai.todo.4">Подзвонити клієнту й домовитися</span><span class="ai-todo__who"><span data-i18n="ai.todo.who.you">ви</span></span></li>
+                <li class="ai-todo__row ai-todo__row--you" data-who="you"><i class="ai-todo__hl" aria-hidden="true"></i><span class="ai-todo__n" aria-hidden="true">4<i class="ai-todo__fill">4</i></span><span class="ai-todo__t" data-i18n="ai.todo.4">Подзвонити клієнту й&nbsp;домовитися</span><span class="ai-todo__who"><span data-i18n="ai.todo.who.you">ви</span></span></li>
               </ol>
             </div>
             <button class="ai-replay" type="button" data-replay="todo" aria-label="Показати ще раз: справи на сьогодні" data-i18n-attr="aria-label:ai.replay.todo"><span aria-hidden="true">↻</span> <span data-i18n="replay">Ще раз</span></button>
@@ -292,7 +293,7 @@
               </ol>
             </div>
             <div class="ai-svc__body">
-              <h3 class="ai-svc__t" id="svc-4-t" data-i18n="ai.do.4.t">Складне під ваш бізнес</h3>
+              <h3 class="ai-svc__t" id="svc-4-t" data-i18n="ai.do.4.t">Задача під ваш бізнес</h3>
               <p class="ai-svc__p" data-i18n="ai.do.4">Пошук замовлень, запис клієнтів у розклад. Кожну схему збираємо окремо.</p>
               <p class="ai-svc__facts ai-svc__facts--talk" data-i18n="ai.do.4.facts">ціна й термін після розмови, у договорі</p>
               <div class="ai-svc__acts"><button class="ai-svc__more" type="button" aria-haspopup="dialog" aria-controls="dlg-custom" aria-describedby="svc-4-t" data-open="dlg-custom"><span data-i18n="ai.do.more">Детальніше</span><i aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-plus"/></svg></i></button><a class="btn btn--ghost btn--xs ai-svc__case" href="/keisy/poshuk-zamovlen"><span class="btn__label" data-i18n="ai.do.case">Дивитися кейс</span><span class="btn__icon" aria-hidden="true"><svg class="arrow arrow--a" viewBox="0 0 24 24"><use href="#ico-arrow"/></svg><svg class="arrow arrow--b" viewBox="0 0 24 24"><use href="#ico-arrow"/></svg></span></a></div>
@@ -411,14 +412,14 @@
           </div>
         </dialog>
 
-        <!-- Складне під ваш бізнес: how it works, what the price includes (js/ai-page.js opens it; a sheet from below on phones) -->
+        <!-- Задача під ваш бізнес: how it works, what the price includes (js/ai-page.js opens it; a sheet from below on phones) -->
         <dialog class="ai-dlg" id="dlg-custom" aria-labelledby="dlg-custom-t">
           <div class="ai-dlg__panel">
             <div class="ai-dlg__head">
               <p class="ai-dlg__k"><span data-i18n="ai.nav.services">Що автоматизуємо</span> · 4</p>
               <button class="ai-dlg__x" type="button" data-close aria-label="Закрити" data-i18n-attr="aria-label:ai.svc.close"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-x"/></svg></button>
             </div>
-            <h3 class="ai-dlg__t" id="dlg-custom-t" data-i18n="ai.do.4.t">Складне під ваш бізнес</h3>
+            <h3 class="ai-dlg__t" id="dlg-custom-t" data-i18n="ai.do.4.t">Задача під ваш бізнес</h3>
             <p class="ai-dlg__lead" data-i18n="ai.do.4">Пошук замовлень, запис клієнтів у розклад. Кожну схему збираємо окремо.</p>
             <div class="ai-dlg__grid">
               <div class="ai-dlg__how">
@@ -535,13 +536,60 @@
       </div>
     </section>
 
-    <!-- ================= 6 · Заявка: the main page's form, with the task set (Автоматизація), quick picks and the
+    <!-- ================= 6 · Питання: what a small-business owner asks before writing to us. Every answer is the main
+         page's own (its FAQ: CRM, guarantees, after the launch) or this page's (the calculator's launch times and the
+         landing, «разово», the assistant handing questions to a person); no monthly sums: they are not confirmed ================= -->
+    <section class="section ai-sec" id="faq" aria-labelledby="faq-title">
+      <div class="container faq-wrap">
+        <header class="s-head s-head--side">
+          <p class="s-head__meta"><span class="s-head__index">6</span><span data-i18n="nav.faq">Питання</span></p>
+          <h2 class="s-head__title" id="faq-title"><span class="tone" data-i18n-html="faq.title">Часті <em class="hl">запитання</em></span></h2>
+          <p class="s-head__intro" data-i18n-html="ai.faq.intro">Не знайшли відповіді? <a class="link" href="#lead">Напишіть нам</a>, відповімо протягом робочого дня.</p>
+        </header>
+        <div class="faq" data-faq>
+          <details class="faq__item" open>
+            <summary><span class="faq__num" aria-hidden="true">1</span><span class="faq__q" data-i18n="ai.faq.q.1">Що таке CRM і чи вона мені потрібна?</span><span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__body"><p data-i18n="ai.faq.a.1">Це програма, де зберігаються всі заявки й історія роботи з кожним клієнтом. Вона не обов’язкова: заявки можуть приходити вам у Telegram або на пошту. Якщо CRM потрібна, підключимо її, а сервіс ви оплачуєте за його тарифом.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary><span class="faq__num" aria-hidden="true">2</span><span class="faq__q" data-i18n="ai.faq.q.2">Чи є щомісячні платежі?</span><span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__body"><p data-i18n="ai.faq.a.2">Запуск ви оплачуєте разово. Якщо автоматизація працює на платних сервісах, їх оплачують окремо щомісяця. Наприклад, CRM: її тариф ви платите сервісу напряму. Скільки це буде для вашої задачі, скажемо на розмові.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary><span class="faq__num" aria-hidden="true">3</span><span class="faq__q" data-i18n="ai.faq.q.3">Скільки часу займає запуск?</span><span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__body"><p data-i18n-html="ai.faq.a.3">Якщо сайт уже є: заявки в Telegram <span data-weeks="lead">≈ 1 тиждень</span>, CRM і AI-асистент <span data-weeks="crm">≈ 1–2 тижні</span>. Для складніших схем строк скажемо після розмови.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary><span class="faq__num" aria-hidden="true">4</span><span class="faq__q" data-i18n="ai.faq.q.4">У мене вже є сайт. З ним можна працювати?</span><span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__body"><p data-i18n="ai.faq.a.4">Так. Працюємо з вашим сайтом на Tilda, WordPress, Wix та інших. Переробляти його не потрібно, достатньо доступу до адмінки.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary><span class="faq__num" aria-hidden="true">5</span><span class="faq__q" data-i18n="ai.faq.q.5">А якщо сайту немає?</span><span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__body"><p data-i18n-html="ai.faq.a.5">Зробимо лендінг: одну сторінку з формою заявки, від <span data-price="site">$500</span>. Його можна додати в <a class="link" href="#calc">калькуляторі</a>.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary><span class="faq__num" aria-hidden="true">6</span><span class="faq__q" data-i18n="ai.faq.q.6">Що робить асистент, якщо не знає відповіді?</span><span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__body"><p data-i18n="ai.faq.a.6">Передає питання людині: вашому менеджеру чи адміністратору. Якщо відповіді довго немає, нагадує.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary><span class="faq__num" aria-hidden="true">7</span><span class="faq__q" data-i18n="ai.faq.q.7">Що ви гарантуєте?</span><span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__body"><p data-i18n="ai.faq.a.7">Що все, про що домовились, працює. Перед запуском ви отримаєте тестову заявку, а помилки після запуску виправимо безкоштовно.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary><span class="faq__num" aria-hidden="true">8</span><span class="faq__q" data-i18n="ai.faq.q.8">Що буде після запуску?</span><span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__body"><p data-i18n="ai.faq.a.8">Усі акаунти оформлені на вас. Далі можемо стежити за заявками й вносити зміни. Або передамо вам усі доступи й відеоінструкцію.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 7 · Заявка: the main page's form, with the task set (Автоматизація), quick picks and the
          calculation when one was sent from block 5 ================= -->
     <section class="section section--contact ai-sec" id="lead" aria-labelledby="lead-title">
       <div class="container contact">
         <div class="contact__side">
           <header class="s-head s-head--side">
-            <p class="s-head__meta s-head__meta--hatch"><span class="s-head__index">6</span><span data-i18n="nav.lead">Заявка</span></p>
+            <p class="s-head__meta s-head__meta--hatch"><span class="s-head__index">7</span><span data-i18n="nav.lead">Заявка</span></p>
             <h2 class="s-head__title s-head__title--stone" id="lead-title"><span class="tone tone--key" data-i18n-html="lead.title">Що у вашому бізнесі <em class="hl">досі вручну</em>?</span></h2>
             <p class="s-head__intro" data-i18n="lead.text">Опишіть коротко. Відповімо протягом робочого дня і скажемо, чи можна це автоматизувати.</p>
           </header>
@@ -619,11 +667,11 @@
     </a>
   </div>
 
-  <!-- ================= Footer: the main page's, its links lead back to the main page's blocks ================= -->
+  <!-- ================= Footer: the main page's look; its lists keep to the AI section and lead back to the main site ================= -->
   <footer class="footer">
     <div class="container footer__top">
       <div class="footer__lead">
-        <p class="footer__claim" data-i18n-html="footer.claim">Від сайту до заявки —<br>одна система.</p>
+        <p class="footer__claim" data-i18n="ai.foot.claim">AI-автоматизація для малого бізнесу</p>
         <a class="btn btn--primary btn--sm" href="#lead">
           <span class="btn__label" data-i18n="cta.auto">Обговорити автоматизацію</span>
           <span class="btn__icon" aria-hidden="true">
@@ -632,12 +680,32 @@
           </span>
         </a>
       </div>
+      <!-- three short lists (owner, 2026-10-14): the AI section first, its examples, then the way back to the main site -->
       <nav class="footer__nav" aria-label="Навігація у футері" data-i18n-attr="aria-label:footer.nav.label">
-        <a href="/#services"><span data-i18n="footer.nav.services">Послуги</span></a>
-        <a href="/#approach"><span data-i18n="footer.nav.approach">Підхід</span></a>
-        <a href="/#why"><span data-i18n="footer.nav.why">Чому Lumera</span></a>
-        <a href="/#pricing"><span data-i18n="footer.nav.pricing">Ціни</span></a>
-        <a href="/#faq"><span data-i18n="nav.faq">Питання</span></a>
+        <div class="footer__group">
+          <p class="footer__group-t" id="foot-ai" data-i18n="ai.foot.g.ai">AI-автоматизація</p>
+          <ul aria-labelledby="foot-ai">
+            <li><a href="#how" data-i18n="ai.nav.how">Як це працює</a></li>
+            <li><a href="#services" data-i18n="ai.nav.services">Що автоматизуємо</a></li>
+            <li><a href="#calc" data-i18n="ai.nav.calc">Розрахунок</a></li>
+            <li><a href="#faq" data-i18n="nav.faq">Питання</a></li>
+          </ul>
+        </div>
+        <div class="footer__group">
+          <p class="footer__group-t" id="foot-ex" data-i18n="ai.nav.examples">Приклади</p>
+          <ul aria-labelledby="foot-ex">
+            <li><a href="/keisy/poshuk-zamovlen" data-i18n="ai.foot.case">Кейс: пошук замовлень</a></li>
+            <li><a href="/keisy/ai-asystent" data-i18n="ai.foot.asst">Приклад: AI-асистент</a></li>
+          </ul>
+        </div>
+        <div class="footer__group">
+          <p class="footer__group-t" id="foot-lumera">Lumera Studio</p>
+          <ul aria-labelledby="foot-lumera">
+            <li><a href="/" data-i18n="ai.foot.home">Головна</a></li>
+            <li><a href="/#services" data-i18n="footer.nav.services">Послуги</a></li>
+            <li><a href="/#why" data-i18n="footer.nav.why">Чому Lumera</a></li>
+          </ul>
+        </div>
       </nav>
     </div>
     <div class="container footer__bottom">
@@ -649,12 +717,12 @@
         </span>
       </a>
       <p class="footer__legal" data-i18n="footer.legal">© 2026 Lumera Studio</p>
-      <p class="footer__contacts"><a href="#lead" data-i18n="footer.write">Написати нам</a><a href="/keisy/poshuk-zamovlen" data-i18n="ai.foot.case">Кейс: пошук замовлень</a><a href="/keisy/ai-asystent" data-i18n="ai.foot.asst">Приклад: AI-асистент</a></p>
+      <p class="footer__contacts"><a href="#lead" data-i18n="footer.write">Написати нам</a></p>
       <div class="footer__end">
         <div class="lang">
-          <a class="lang__link" href="#" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
+          <a class="lang__link" href="/ai-avtomatyzatsiia" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
           <span class="lang__dot" aria-hidden="true">·</span>
-          <a class="lang__link" href="#" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
+          <a class="lang__link" href="/ai-avtomatyzatsiia/?lang=ru" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
         </div>
         <a class="footer__up" href="#top"><span data-i18n="footer.up">Вгору</span> <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19.5v-15M6 10.5l6-6 6 6"/></svg></a>
       </div>
