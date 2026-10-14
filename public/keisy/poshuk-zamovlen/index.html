@@ -74,7 +74,7 @@
   <a class="skip-link" href="#main" data-i18n="skip">Перейти до змісту</a>
 
   <!-- The page's header: the main page's topbar, here always on (there is no hero to scroll past) -->
-  <div class="topbar ai-topbar" data-topbar>
+  <header class="topbar ai-topbar" data-topbar>
     <a class="logo logo--sm" href="/" aria-label="Lumera Studio — на головну" data-i18n-attr="aria-label:logo.home">
       <svg class="logo__mark" viewBox="0 0 329 329" aria-hidden="true" focusable="false"><use href="#logo-mark"/></svg>
       <span class="logo__type">
@@ -89,9 +89,9 @@
     </nav>
     <div class="topbar__end">
       <div class="lang">
-        <a class="lang__link" href="#" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
+        <a class="lang__link" href="/keisy/poshuk-zamovlen" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
         <span class="lang__dot" aria-hidden="true">·</span>
-        <a class="lang__link" href="#" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
+        <a class="lang__link" href="/keisy/poshuk-zamovlen/?lang=ru" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
       </div>
       <a class="btn btn--ghost btn--xs ai-topbar__cta" href="#lead">
         <span class="btn__label" data-i18n="cta.want">Хочу такого робота</span>
@@ -112,12 +112,12 @@
         <a class="topbar__home" href="/"><span data-i18n="nav.home">Головна Lumera Studio</span><sup aria-hidden="true">↗</sup></a>
       </nav>
       <div class="lang">
-        <a class="lang__link" href="#" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
+        <a class="lang__link" href="/keisy/poshuk-zamovlen" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
         <span class="lang__dot" aria-hidden="true">·</span>
-        <a class="lang__link" href="#" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
+        <a class="lang__link" href="/keisy/poshuk-zamovlen/?lang=ru" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
       </div>
     </div>
-  </div>
+  </header>
 
   <main class="page ai" id="main" data-page>
 
@@ -147,6 +147,8 @@
         <div class="ai-hero__visual" aria-hidden="true">
           <div class="ai-film" data-film>
             <video class="ai-film__video" muted loop playsinline preload="none" width="864" height="1080" poster="/img/ai/case-film-uk.jpg" data-src="/img/ai/case-film-uk.mp4" data-i18n-attr="poster:case.film.poster;data-src:case.film.src"></video>
+            <!-- the other language's poster at once (the head script has set <html lang>): the Ukrainian one is never shown first -->
+            <script>(function (video, lang) { if (lang !== 'uk') { video.poster = '/img/ai/case-film-' + lang + '.jpg'; video.dataset.src = '/img/ai/case-film-' + lang + '.mp4'; } })(document.currentScript.previousElementSibling, document.documentElement.lang);</script>
           </div>
           <span class="ai-sample" data-i18n="sample">Приклад · дані умовні</span>
         </div>
@@ -242,7 +244,7 @@
                 <i class="ai-map__pin ai-map__pin--out" style="left: 95%; top: 60%"><b>✕</b></i>
                 <i class="ai-map__pin ai-map__pin--out" style="left: 9%; top: 88%"><b>✕</b></i>
               </div>
-              <p class="ai-dup"><span data-i18n="case.ad.3.t">Пофарбувати кімнату 15 м²</span><b data-i18n="case.bento.dup">повтор</b><i class="ai-dup__line"></i></p>
+              <p class="ai-dup"><span data-i18n="case.bento.dup.t">Укласти плитку на кухні</span><b data-i18n="case.bento.dup">повтор</b><i class="ai-dup__line"></i></p>
             </div>
           </li>
           <li class="ai-bc" data-svc>
@@ -509,25 +511,45 @@
     </a>
   </div>
 
-  <!-- ================= Footer: the main page's, its links lead back to the main page's blocks ================= -->
+  <!-- ================= Footer: the main page's look; its lists keep to the AI section and lead back to the main site ================= -->
   <footer class="footer">
     <div class="container footer__top">
       <div class="footer__lead">
-        <p class="footer__claim" data-i18n-html="footer.claim">Від сайту до заявки —<br>одна система.</p>
+        <p class="footer__claim" data-i18n="ai.foot.claim">AI-автоматизація для малого бізнесу</p>
         <a class="btn btn--primary btn--sm" href="#lead">
-          <span class="btn__label" data-i18n="cta.discuss">Обговорити проєкт</span>
+          <span class="btn__label" data-i18n="cta.auto">Обговорити автоматизацію</span>
           <span class="btn__icon" aria-hidden="true">
             <svg class="arrow arrow--a" viewBox="0 0 24 24"><use href="#ico-arrow"/></svg>
             <svg class="arrow arrow--b" viewBox="0 0 24 24"><use href="#ico-arrow"/></svg>
           </span>
         </a>
       </div>
+      <!-- three short lists (owner, 2026-10-14): the AI section first, its examples, then the way back to the main site -->
       <nav class="footer__nav" aria-label="Навігація у футері" data-i18n-attr="aria-label:footer.nav.label">
-        <a href="/#services"><span data-i18n="footer.nav.services">Послуги</span></a>
-        <a href="/#approach"><span data-i18n="footer.nav.approach">Підхід</span></a>
-        <a href="/#why"><span data-i18n="footer.nav.why">Чому Lumera</span></a>
-        <a href="/#pricing"><span data-i18n="footer.nav.pricing">Ціни</span></a>
-        <a href="/#faq"><span data-i18n="nav.faq">Питання</span></a>
+        <div class="footer__group">
+          <p class="footer__group-t" id="foot-ai" data-i18n="ai.foot.g.ai">AI-автоматизація</p>
+          <ul aria-labelledby="foot-ai">
+            <li><a href="/ai-avtomatyzatsiia#how" data-i18n="ai.nav.how">Як це працює</a></li>
+            <li><a href="/ai-avtomatyzatsiia#services" data-i18n="ai.nav.services">Що автоматизуємо</a></li>
+            <li><a href="/ai-avtomatyzatsiia#calc" data-i18n="ai.nav.calc">Розрахунок</a></li>
+            <li><a href="/ai-avtomatyzatsiia#faq" data-i18n="nav.faq">Питання</a></li>
+          </ul>
+        </div>
+        <div class="footer__group">
+          <p class="footer__group-t" id="foot-ex" data-i18n="ai.nav.examples">Приклади</p>
+          <ul aria-labelledby="foot-ex">
+            <li><a href="/keisy/poshuk-zamovlen" aria-current="page" data-i18n="ai.foot.case">Кейс: пошук замовлень</a></li>
+            <li><a href="/keisy/ai-asystent" data-i18n="ai.foot.asst">Приклад: AI-асистент</a></li>
+          </ul>
+        </div>
+        <div class="footer__group">
+          <p class="footer__group-t" id="foot-lumera">Lumera Studio</p>
+          <ul aria-labelledby="foot-lumera">
+            <li><a href="/" data-i18n="ai.foot.home">Головна</a></li>
+            <li><a href="/#services" data-i18n="footer.nav.services">Послуги</a></li>
+            <li><a href="/#why" data-i18n="footer.nav.why">Чому Lumera</a></li>
+          </ul>
+        </div>
       </nav>
     </div>
     <div class="container footer__bottom">
@@ -542,9 +564,9 @@
       <p class="footer__contacts"><a href="#lead" data-i18n="footer.write">Написати нам</a></p>
       <div class="footer__end">
         <div class="lang">
-          <a class="lang__link" href="#" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
+          <a class="lang__link" href="/keisy/poshuk-zamovlen" lang="uk" hreflang="uk" aria-current="true" aria-label="Українська">UA</a>
           <span class="lang__dot" aria-hidden="true">·</span>
-          <a class="lang__link" href="#" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
+          <a class="lang__link" href="/keisy/poshuk-zamovlen/?lang=ru" lang="ru" hreflang="ru" aria-label="Русский">RU</a>
         </div>
         <a class="footer__up" href="#top"><span data-i18n="footer.up">Вгору</span> <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19.5v-15M6 10.5l6-6 6 6"/></svg></a>
       </div>

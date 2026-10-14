@@ -38,7 +38,6 @@ boot();
 
 async function boot() {
   await initI18n();
-  revealHero();
   await fillFacts();
   typesetText($('.topbar'));
   typesetText($('[data-page]'));
@@ -86,29 +85,6 @@ async function fillFacts() {
       const t = engine.calculateTimeline({ ...engine.DEFAULT_CONFIG, format: 'existing', automation: el.dataset.weeks === 'crm' ? 'crmAi' : 'lead' });
       if (t) el.textContent = strings.weeks(t.min, t.max).replace(/ /g, '\u00a0');
     } catch { /* the dictionary's text stays */ }
-  }
-}
-
-/* ---------- AI page · 1 · the first screen's words come in once: the eyebrow, the title line by line (each rises
-   out of its own mask), the lead, the buttons. Their start frame waits in CSS (html.motion:not(.ai-up)), so nothing
-   jumps before the script; the head script shows them after 3.5 s regardless ---------- */
-function revealHero() {
-  const hero = $('.ai-hero--center');
-  if (!hero) return;
-  const show = () => root.classList.add('ai-up');
-  if (!motion || hero.getBoundingClientRect().bottom < 0) return show();
-  const rise = (el, delay, dy = 14, duration = 700) => el?.animate([{ opacity: 0, transform: `translateY(${dy}px)` }, { opacity: 1, transform: 'none' }], { duration, delay, easing: EASE, fill: 'backwards' });
-  rise($('.ai-hero__eyebrow', hero), 0, 8, 600);
-  $$('.ai-l > .tone', hero).forEach((line, i) => line.animate([{ transform: 'translateY(104%)' }, { transform: 'none' }], { duration: 950, delay: 90 + i * 130, easing: EASE, fill: 'backwards' }));
-  rise($('.ai-hero__lead', hero), 380);
-  rise($('.ai-hero__actions', hero), 480);
-  show();
-  // the stone settles in behind the words, to its own opacity (CSS: lower on phones); its place and tilt are CSS
-  // (translate, rotate), so the animation's transform only adds to them. All in the same frame as the class above
-  const stone = $('.ai-hero__stone', hero);
-  if (stone) {
-    const to = getComputedStyle(stone).opacity;
-    stone.animate([{ opacity: 0, transform: 'scale(0.92) rotate(-5deg)' }, { opacity: to, transform: 'none' }], { duration: 1600, delay: 120, easing: EASE, fill: 'backwards' });
   }
 }
 
@@ -370,10 +346,14 @@ function initCover() {
 }
 
 /* ---------- AI page · 1 · the main page's stone, live in 3D behind the title (js/ai-stone.js, three.js): loaded once
-   the page has, so the first screen never waits for it; never with reduced motion or in ?og (the picture stays) ---------- */
+   the page has, so the first screen never waits for it; never with reduced motion, on a data saver or a slow line,
+   or in ?og (the picture stays) ---------- */
 function initStone() {
   const host = $('.ai-hero__rock');
   if (!host || !motion) return;
+  // nor on a data saver or a slow line: three.js is ~200 KB to fetch and a heavy start on a weak phone
+  const net = navigator.connection;
+  if (net && (net.saveData || /(^|-)[23]g$/.test(net.effectiveType || ''))) return;
   const go = () => {
     import('/js/ai-stone.js')
       .then(({ initStone: start }) => start({ host, still: $('.ai-hero__stone', host), cover: host.closest('.ai-hero')?.nextElementSibling }))
@@ -639,7 +619,7 @@ function stamp(scene, card, delay) {
   anim(scene, $('.ai-stamp', card), [{ opacity: 0, transform: 'scale(1.9) rotate(-12deg)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay, easing: 'cubic-bezier(0.34, 1.5, 0.64, 1)' });
   anim(scene, verdict, [{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: delay + 120 });
   if (yes) anim(scene, $('.ai-ad__lit', card), [{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: delay + 80 });
-  else $$('.ai-ad__t, .ai-ad__meta', card).forEach((el) => anim(scene, el, [{ opacity: 1 }, { opacity: 0.5 }], { duration: 500, delay: delay + 150 }));
+  else anim(scene, $('.ai-ad__t', card), [{ opacity: 1 }, { opacity: 0.55 }], { duration: 500, delay: delay + 150 });
 }
 
 function printPad(scene, delay) {
@@ -826,7 +806,7 @@ function initDialogs() {
   const close = async (dlg, after) => {
     if (!dlg.open || dlg.dataset.closing) return;
     if (motion) {
-      dlg.dataset.closing = '';
+      dlg.dataset.closing = '1'; // a second Esc or click while it slides out does nothing
       stopFx(dlg);
       const panel = $('.ai-dlg__panel', dlg);
       const up = sheet();

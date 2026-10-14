@@ -44,14 +44,18 @@ function urlFor(lang) {
   return url.pathname + url.search;
 }
 
+// text that is already the same (the inline Ukrainian, its no-break spaces aside) stays as it is: the first screen,
+// already painted and playing in, is neither restarted nor re-wrapped
+const plain = (text) => text.replace(/&nbsp;|\u00a0/g, ' ');
+
 function applyKeys(root) {
   for (const el of root.querySelectorAll('[data-i18n]')) {
     const value = dict[el.dataset.i18n];
-    if (value != null) el.textContent = value;
+    if (value != null && plain(el.textContent) !== plain(value)) el.textContent = value;
   }
   for (const el of root.querySelectorAll('[data-i18n-html]')) {
     const value = dict[el.dataset.i18nHtml];
-    if (value != null) el.innerHTML = value;
+    if (value != null && plain(el.innerHTML) !== plain(value)) el.innerHTML = value;
   }
   for (const el of root.querySelectorAll('[data-i18n-attr]')) {
     for (const pair of el.dataset.i18nAttr.split(';')) {
