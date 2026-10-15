@@ -15,9 +15,10 @@ import "./topbar.css";
 /**
  * The compact page navigation: appears only once the hero has scrolled away. On phones the menu
  * button opens the site menu (MenuSheet). Another page passes its own links and CTA (ready text) and,
- * with `always`, keeps the bar on from the start (a page whose first screen has no header of its own).
+ * with `always`, keeps the bar on from the start (a page whose first screen has no header of its own); with `home`, its
+ * logo leads to the main page instead of back to the top.
  */
-export function Topbar({ links, cta, always = false }: { links?: readonly NavLink[]; cta?: NavCta; always?: boolean } = {}) {
+export function Topbar({ links, cta, always = false, home }: { links?: readonly NavLink[]; cta?: NavCta; always?: boolean; home?: string } = {}) {
   const t = useTranslations();
   const [shown, setVisible] = useState(false);
   const visible = always || shown;
@@ -55,9 +56,15 @@ export function Topbar({ links, cta, always = false }: { links?: readonly NavLin
 
   return (
     <div className={cn("topbar", visible && "is-visible")} data-topbar inert={!visible}>
-      <ScrollTopLink className="logo logo--sm" aria-label={t("logo.top")}>
-        <LogoContent />
-      </ScrollTopLink>
+      {home ? (
+        <a className="logo logo--sm" href={home} aria-label={t("logo.home")}>
+          <LogoContent />
+        </a>
+      ) : (
+        <ScrollTopLink className="logo logo--sm" aria-label={t("logo.top")}>
+          <LogoContent />
+        </ScrollTopLink>
+      )}
       {/* phones: the languages beside the logo (the left: who and in which language; the right: the
           button and the menu); wider screens keep theirs at the end */}
       <LangSwitch className="lang--start" />
