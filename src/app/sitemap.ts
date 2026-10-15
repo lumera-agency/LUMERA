@@ -2,11 +2,20 @@ import type { MetadataRoute } from "next";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumera-seven-eta.vercel.app";
 
-/** Both languages, each pointing at the other (hreflang). */
+/** Every page in both languages, each pointing at the other (hreflang): the main page, the AI page and its two cases. */
+const PAGES = [
+  { path: "", priority: 1 },
+  { path: "/ai-avtomatyzatsiia", priority: 0.8 },
+  { path: "/keisy/poshuk-zamovlen", priority: 0.6 },
+  { path: "/keisy/ai-asystent", priority: 0.6 },
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const languages = { uk: `${SITE}/`, ru: `${SITE}/ru` };
-  return [
-    { url: `${SITE}/`, changeFrequency: "monthly", priority: 1, alternates: { languages } },
-    { url: `${SITE}/ru`, changeFrequency: "monthly", priority: 0.9, alternates: { languages } },
-  ];
+  return PAGES.flatMap(({ path, priority }) => {
+    const languages = { uk: `${SITE}${path || "/"}`, ru: `${SITE}/ru${path}` };
+    return [
+      { url: languages.uk, changeFrequency: "monthly" as const, priority, alternates: { languages } },
+      { url: languages.ru, changeFrequency: "monthly" as const, priority: Math.round(priority * 90) / 100, alternates: { languages } },
+    ];
+  });
 }

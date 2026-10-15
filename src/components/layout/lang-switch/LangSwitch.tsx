@@ -1,21 +1,23 @@
 "use client";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/cn";
+import { getPathname, usePathname } from "@/i18n/navigation";
 
 const LANGS = [
-  { code: "uk", label: "UA", name: "Українська", href: "/" },
-  { code: "ru", label: "RU", name: "Русский", href: "/ru" },
+  { code: "uk", label: "UA", name: "Українська" },
+  { code: "ru", label: "RU", name: "Русский" },
 ] as const;
 
 export const SCROLL_KEY = "lumera:lang-scroll";
 
 /**
- * UA · RU: real links to the other language's page. The switch is a full load (the 3D scene and
+ * UA · RU: real links to the same page in the other language (/ ↔ /ru, /ai-avtomatyzatsiia ↔ /ru/ai-avtomatyzatsiia). The switch is a full load (the 3D scene and
  * every effect start fresh in the new language); the page comes back at the same scroll position
  * (lib/boot.ts restoreScroll).
  */
 export function LangSwitch({ className, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
   const locale = useLocale();
+  const pathname = usePathname();
   const remember = () => {
     try {
       sessionStorage.setItem(SCROLL_KEY, String(Math.round(window.scrollY)));
@@ -28,7 +30,7 @@ export function LangSwitch({ className, ...rest }: React.HTMLAttributes<HTMLDivE
           {i > 0 && <span className="lang__dot" aria-hidden="true">·</span>}
           <a
             className="lang__link"
-            href={l.href}
+            href={getPathname({ href: pathname, locale: l.code })}
             lang={l.code}
             hrefLang={l.code}
             aria-label={l.name}

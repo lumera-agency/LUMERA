@@ -1,6 +1,6 @@
 /*
  * 8 · Заявка, the form (ported 1:1 from website-v2/js/sections.js, framework-free): chips for the
- * task, validation, the plan chosen in the configurator, sending to /api/lead (on a local host a
+ * task (or a hidden task, the AI pages), validation, the plan chosen in the configurator, sending to /api/lead (on a local host a
  * missing endpoint is only simulated), the sent state. goToForm() glides to the form and focuses it.
  */
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -75,8 +75,11 @@ function initForm(reducedMotion) {
       error: 'f-task-err',
     },
   };
+  // a form whose task is already set (a hidden field: the AI pages) has no chips to check
+  if (!chips) delete rules.task;
   const touched = new Set();
   const showError = (key, show) => {
+    if (!rules[key]) return;
     $(`#${rules[key].error}`).hidden = !show;
     if (key === 'task') chips.classList.toggle('is-invalid', show);
     else if (show) rules[key].field().setAttribute('aria-invalid', 'true');

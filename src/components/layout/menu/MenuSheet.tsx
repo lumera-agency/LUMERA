@@ -13,7 +13,7 @@ import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { gsap } from "@/lib/gsap";
 import { scrollToY } from "@/lib/scroll";
-import { PAGE_NAV } from "@/content/nav";
+import { PAGE_NAV, type NavCta, type NavLink } from "@/content/nav";
 import { LogoContent } from "@/components/ui/logo/Logo";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
@@ -23,8 +23,12 @@ import "./menu-sheet.css";
 const noSubscribe = () => () => {};
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function MenuSheet() {
+/** Another page passes its own rows and CTA as ready text (Topbar does the same); the main page uses PAGE_NAV. */
+export function MenuSheet({ links, cta }: { links?: readonly NavLink[]; cta?: NavCta } = {}) {
   const t = useTranslations();
+  const items = links ?? PAGE_NAV.map((l) => ({ href: l.href, text: t(l.label) }));
+  const action = cta ?? { href: "#contact", text: t("cta.discuss") };
+  const hrefs = items.map((l) => l.href).join(" ");
   const open = useMenuOpen();
   const mounted = useSyncExternalStore(noSubscribe, () => true, () => false);
   const sheet = useRef<HTMLDivElement>(null);
@@ -33,14 +37,14 @@ export function MenuSheet() {
 
   // the block being read: its row gets the lime index
   useEffect(() => {
-    const blocks = PAGE_NAV.map((l) => document.querySelector(l.href)).filter((el): el is Element => Boolean(el));
+    const blocks = hrefs.split(" ").filter((h) => h.startsWith("#")).map((h) => document.querySelector(h)).filter((el): el is Element => Boolean(el));
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && setCurrent(`#${e.target.id}`)),
       { rootMargin: "-45% 0px -50% 0px" },
     );
     blocks.forEach((b) => io.observe(b));
     return () => io.disconnect();
-  }, []);
+  }, [hrefs]);
 
   // open / close: the page lock, the choreography, focus
   useEffect(() => {
@@ -127,6 +131,8 @@ export function MenuSheet() {
 
   /** A row: the page goes to its block under the sheet, then the sheet lifts off it. */
   const go = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // another page (a case, the main site): the link opens it, the sheet just closes
+    if (!href.startsWith("#")) return void menu.set(false);
     e.preventDefault();
     menu.set(false);
     const target = document.querySelector(href);
@@ -173,7 +179,7 @@ export function MenuSheet() {
         <nav className="menu-sheet__nav" aria-label={t("nav.mobileLabel")}>
           <span className="menu-sheet__rule" aria-hidden="true" />
           <ol className="menu-sheet__list">
-            {PAGE_NAV.map((l, i) => (
+            {items.map((l, i) => (
               <li key={l.href}>
                 <a
                   className="menu-sheet__link"
@@ -183,7 +189,7 @@ export function MenuSheet() {
                 >
                   <span className="menu-sheet__index" data-menu-fade="">{i + 1}</span>
                   <span className="menu-sheet__name">
-                    <span>{t(l.label)}</span>
+                    <span>{l.text}</span>
                   </span>
                   <svg className="menu-sheet__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false" data-menu-fade="">
                     <path d="M7 17 17 7M8.5 7H17v8.5" />
@@ -196,8 +202,8 @@ export function MenuSheet() {
 
         <div className="menu-sheet__foot">
           <div data-menu-fade="">
-            <ButtonLink href="#contact" variant="primary" className="menu-sheet__cta" onClick={(e) => go(e, "#contact")}>
-              {t("cta.discuss")}
+            <ButtonLink href={action.href} variant="primary" className="menu-sheet__cta" onClick={(e) => go(e, action.href)}>
+              {action.text}
             </ButtonLink>
           </div>
           <div className="menu-sheet__meta" data-menu-fade="">
