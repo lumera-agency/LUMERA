@@ -53,6 +53,9 @@ export function Topbar() {
       <ScrollTopLink className="logo logo--sm" aria-label={t("logo.top")}>
         <LogoContent />
       </ScrollTopLink>
+      {/* phones: the languages beside the logo (the left: who and in which language; the right: the
+          button and the menu); wider screens keep theirs at the end */}
+      <LangSwitch className="lang--start" />
       <nav className="topbar__nav" aria-label={t("topbar.nav.label")}>
         {PAGE_NAV.filter((l) => !("bar" in l)).map((l) => (
           <a key={l.href} className="nav__link" href={l.href}>
