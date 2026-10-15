@@ -273,10 +273,6 @@
       "you": "Ваша частина"
     },
     "img": {
-      "corp0": "/img/sites/pv-corp-0.jpg",
-      "corp1": "/img/sites/pv-corp-1.jpg",
-      "corp2": "/img/sites/pv-corp-2.jpg",
-      "corp3": "/img/sites/pv-corp-3.jpg",
       "how": {
         "d": "/img/sites/how-landing-d.jpg",
         "m": "/img/sites/how-landing-m.jpg"
@@ -292,6 +288,10 @@
       "shop": {
         "_": "/img/sites/pv-shop.jpg",
         "m": "/img/sites/pv-shop-m.jpg"
+      },
+      "corp": {
+        "_": "/img/sites/pv-corp.jpg",
+        "m": "/img/sites/pv-corp-m.jpg"
       }
     },
     "inc": {

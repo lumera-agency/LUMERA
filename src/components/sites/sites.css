@@ -1127,10 +1127,3 @@ html:not(.motion) :is(.st-bd__trk b, .st-hw::after, .st-hseg::before, .st-hw__ti
   .st-hw__more[aria-expanded="true"] i { color: var(--ivory); background: var(--ink-dark); box-shadow: none; transform: rotate(45deg); }
   .st-hw__more:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; border-radius: 6px; }
 }
-
-/* ==================== Next: the main page's contact layout ==================== */
-/* narrow screens: the main form's side column dissolves into the grid (contact.css); «Що ви отримуєте» stays under the
-   heading, full width, before the form (as on the static page) */
-@media (max-width: 860px) {
-  main[data-ai-page="sites"] .contact .st-get { grid-column: 1 / -1; order: 1; margin-top: var(--rhythm-m); }
-}

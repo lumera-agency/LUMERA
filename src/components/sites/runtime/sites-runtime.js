@@ -16,7 +16,7 @@ import { STRINGS } from '@/components/sections/pricing/configurator/strings.js';
 import { leadForm, goToForm as glideToForm } from '@/components/sections/contact/lead-form.js';
 import { restorePlace, restoreScroll } from '@/lib/boot';
 import { SPRING, slideIn, rollNumber } from './sites-rb.js';
-import { spotlight, initTilt, mountGlide, beam, beamOnView, deltaChip, mountFan } from './fx-page.js';
+import { spotlight, initTilt, mountGlide, beam, beamOnView, deltaChip } from './fx-page.js';
 import { mountHow } from './fx-how.js';
 
 /** The words the page writes (the page's language, from the server: SitesRuntime's `strings`, the static page's keys). */
@@ -323,7 +323,7 @@ function initScenes() {
     build: playBuild,
     'stage-landing': playDev,
     'stage-plus': playDev,
-    'stage-corp': playFan,
+    'stage-corp': playDev, // (16 Oct: the fan of cards is gone; the site scrolls through its pages)
     'stage-shop': playDev,
     how: playHow,
   };
@@ -470,8 +470,8 @@ function playBuild(scene) {
 }
 
 /* ---------- 2 · the showroom's stages: the phone comes in, the sample page scrolls down once on the computer and the
-   phone and comes back (a longer page takes longer: the volume shows), the ruler lights the blocks as they pass; the
-   5–7 pages fan out one by one ---------- */
+   phone and comes back (a longer page takes longer: the volume shows), the ruler lights the blocks as they pass (the
+   corporate site: its pages, Головна in full, then the first screen of the others) ---------- */
 /** a page-long still as a column of slices (one background image, each slice showing its part) */
 function sliceStill(img) {
   const W = Number(img.getAttribute('width')), Hs = Number(img.getAttribute('height'));
@@ -545,19 +545,16 @@ function runDev(scene, desk, deskVp, phoneImg, phoneVp, ruler) {
   if (ruler.length) {
     const timers = [];
     const step = down / ruler.length;
+    // (a ruler with data-stops: where each item starts, as parts of the scroll; else evenly)
+    const stops = (ruler[0].parentElement.dataset.stops || '').split(',').map(Number).filter((n) => Number.isFinite(n));
     ruler.forEach((li, i) => {
-      timers.push(setTimeout(() => { ruler.forEach((x) => x.classList.remove('is-on')); li.classList.add('is-on'); }, hold + i * step));
+      const at = stops.length === ruler.length ? stops[i] * down : i * step;
+      timers.push(setTimeout(() => { ruler.forEach((x) => x.classList.remove('is-on')); li.classList.add('is-on'); }, hold + at));
     });
     timers.push(setTimeout(() => ruler.forEach((x) => x.classList.remove('is-on')), hold + down + rest));
     scene.skip = () => { timers.forEach(clearTimeout); ruler.forEach((x) => x.classList.remove('is-on')); };
   }
   return Promise.all(scene.anims.map((a) => a.finished)).catch(() => {});
-}
-function playFan(scene) {
-  $$('.st-fan__p', scene.el).forEach((page, i) => {
-    anim(scene, page, [{ opacity: 0, translate: `${-i * 13}% ${-i * 6}%` }, { opacity: 1, translate: '0 0' }], { duration: 900, delay: 120 + i * 120, easing: EASE });
-  });
-  return [];
 }
 
 /* ---------- 4 · «Як працюємо»: the board comes up, the call's bubbles appear, the plan's boxes tick one by one (the
@@ -900,18 +897,12 @@ function initTabs() {
     const plus = ol.dataset.ruler === 'landingPlus';
     const words = (k) => t(k, '').split('·').map((w) => w.trim()).filter(Boolean);
     const add = t('sites.pv.lp.n.add', '').split(',').map(Number);
-    const items = plus ? words('sites.pv.lp.n.all').map((w, i) => [w, add.includes(i)]) : words('sites.pv.l.n').map((w) => [w, false]);
+    const corp = ol.dataset.ruler === 'corporate';
+    const items = plus ? words('sites.pv.lp.n.all').map((w, i) => [w, add.includes(i)]) : words(corp ? 'sites.pv.c' : 'sites.pv.l.n').map((w) => [w, false]);
     ol.replaceChildren(...items.map(([w, add]) => Object.assign(document.createElement('li'), { textContent: w, className: add ? 'is-add' : '' })));
   }
   let shown = state.format;
   glide = OG ? null : mountGlide($('.st-rail', room));
-  // the corporate site's fan: each card shows its page large (hover, tap, Enter); the name says which page
-  const pageWord = () => t('sites.fan.page', lang() === 'ru' ? 'Страница' : 'Сторінка');
-  const fan = OG ? null : mountFan($('[data-scene="stage-corp"]', room), {
-    motion,
-    label: (card) => `${pageWord()}: ${card.querySelector('.st-dev__bar span')?.textContent.trim() || ''}`,
-    note: (card) => t(`sites.pg.${card.dataset.pg}.d`, ''),
-  });
   let placed = false;
   syncTabs = (replay = false) => {
     for (const b of buttons) {
@@ -926,7 +917,6 @@ function initTabs() {
     // the black card glides to the chosen tab (placed at once the first time and without motion)
     glide?.place(buttons.find((b) => b.dataset.tab === state.format), !placed || !motion);
     placed = true;
-    if (shown !== state.format) fan?.close();
     if (shown !== state.format || replay) {
       const from = shown;
       shown = state.format;
@@ -992,7 +982,7 @@ function stageIn(stage, from) {
   }
   rise($('.st-stage__wk', stage), 330, 8);
   rise($('.st-stage__acts', stage), 380, 12);
-  for (const art of $$('.st-dev__desk, .st-fan', stage)) {
+  for (const art of $$('.st-dev__desk', stage)) {
     add(art.animate([{ opacity: 0, transform: 'translate3d(0, 22px, 0) scale(0.985)' }, { opacity: 1, transform: 'none' }], { duration: 760, delay: 60, easing: EASE, fill: 'backwards' }));
   }
 }

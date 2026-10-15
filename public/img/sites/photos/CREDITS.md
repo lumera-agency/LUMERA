@@ -7,7 +7,8 @@ phones load.
 
 - `landing/` — «Фуксія» (Лендінг): KOBU Agency, Unsplash.
 - `plus/` — «План» (Лендінг+): Neon Wang, Unsplash.
-- `corp/` — «Перлина» (Корпоративний сайт, the dental clinic): Cedric Fauntleroy, Pexels.
+- `corp/` — «Петроль» (Корпоративний сайт, the dental clinic, round 14): note thanun, Katarzyna Zygnerska, camera
+  obscura, Ozkan Guner, Maverick Frame, Jon Tyson, Kari Bjorn Photography and Benyamin Bohlouli, Unsplash.
 - `shop/` — «Дзеркало» (Магазин): Valentin Ivantsov, Pexels.
 
 `landing/dish-poster.png` is our own render of the 3D option, not a photo.

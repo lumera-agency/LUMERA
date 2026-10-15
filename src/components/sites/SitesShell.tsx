@@ -14,7 +14,9 @@ import { SitesRuntime } from "./SitesRuntime";
 import "@/components/layout/header/header.css";
 import "@/components/ai/ai.css";
 import "./sites-pv.css";
+import "./clinic/clinic.css";
 import "./sites.css";
+import "./sites-next.css";
 
 type Props = {
   nav: readonly NavLink[];
