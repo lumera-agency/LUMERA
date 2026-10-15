@@ -107,11 +107,21 @@ export function MenuSheet() {
     };
     const wide = matchMedia("(min-width: 861px)");
     const onWide = (e: MediaQueryListEvent) => e.matches && menu.set(false);
+    // a finger on the sheet never scrolls the page under it (older iOS ignores the overflow lock);
+    // the rows still scroll when they don't fit
+    const sheetEl = sheet.current;
+    const frame = sheetEl?.querySelector<HTMLElement>(".menu-sheet__frame");
+    const onTouch = (e: TouchEvent) => {
+      if (frame && frame.scrollHeight > frame.clientHeight + 1) return;
+      if (e.cancelable) e.preventDefault();
+    };
     document.addEventListener("keydown", onKey);
     wide.addEventListener("change", onWide);
+    sheetEl?.addEventListener("touchmove", onTouch, { passive: false });
     return () => {
       document.removeEventListener("keydown", onKey);
       wide.removeEventListener("change", onWide);
+      sheetEl?.removeEventListener("touchmove", onTouch);
     };
   }, [open]);
 
