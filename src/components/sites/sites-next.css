@@ -1,0 +1,14 @@
+/*
+ * «Дизайн і сайти»: what only the Next page needs on top of sites.css (which is rebuilt from the static page's CSS):
+ * the main page's contact layout on narrow screens and the footer above the page grain.
+ */
+/* narrow screens: the main form's side column dissolves into the grid (contact.css); «Що ви отримуєте» stays under the
+   heading, full width, before the form (as on the static page) */
+@media (max-width: 860px) {
+  main[data-ai-page="sites"] .contact .st-get { grid-column: 1 / -1; order: 1; margin-top: var(--rhythm-m); }
+}
+
+/* the main page's page shell lays a grain over the screen (.page__grain, sticky, one screen tall). At the bottom of the
+   page it reached into the footer and stopped half-way down the chrome LUMERA, a visible band (the owner, 15 Oct). Here
+   the footer sits above it: one even black from its top to the very bottom */
+body:has(main[data-ai-page="sites"]) .footer { position: relative; z-index: 2; }
