@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useHoverReveal } from "@/components/fx/hover-reveal/useHoverReveal";
+import { focusBlock } from "@/lib/scroll";
 
 type Row = { n: number; service: string; name: string; desc: string; image: string; href?: string };
 
@@ -33,7 +34,10 @@ export function WhatList({ rows, more }: { rows: Row[]; more: string }) {
 
   const go = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     const event = new CustomEvent("services:go", { detail: { id }, cancelable: true });
-    if (!document.dispatchEvent(event)) e.preventDefault();
+    if (document.dispatchEvent(event)) return; // nobody took it: the page's link routing does (lib/scroll)
+    e.preventDefault();
+    const panel = document.getElementById(id);
+    if (panel) focusBlock(panel);
   };
 
   return (

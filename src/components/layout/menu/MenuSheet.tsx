@@ -12,7 +12,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { gsap } from "@/lib/gsap";
-import { scrollToY } from "@/lib/scroll";
+import { focusBlock, scrollToY } from "@/lib/scroll";
 import { PAGE_NAV, type NavCta, type NavLink } from "@/content/nav";
 import { LogoContent } from "@/components/ui/logo/Logo";
 import { ButtonLink } from "@/components/ui/button/Button";
@@ -136,9 +136,11 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     if (!href.startsWith("#")) return void menu.set(false);
     e.preventDefault();
     menu.set(false);
-    const target = document.querySelector(href);
+    const target = document.querySelector<HTMLElement>(href);
     requestAnimationFrame(() => {
-      if (target) scrollToY(target.getBoundingClientRect().top + window.scrollY, { immediate: true });
+      if (!target) return;
+      scrollToY(target.getBoundingClientRect().top + window.scrollY, { immediate: true });
+      focusBlock(target); // after the menu gave the focus back to the burger
     });
   };
 

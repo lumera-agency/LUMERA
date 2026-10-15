@@ -52,7 +52,7 @@ export const viewport: Viewport = {
 
 /* Runs before first paint: the intro's start states are hidden only when JS and motion are on
    (styles/base.css), and come back by themselves after 3.5 s should a script fail. */
-const EARLY = `(function(r){r.classList.add('js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');setTimeout(function(){r.classList.add('is-ready')},3500)})(document.documentElement)`;
+const EARLY = `(function(r){try{history.scrollRestoration='manual'}catch(e){}r.classList.add('js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');setTimeout(function(){r.classList.add('is-ready')},3500)})(document.documentElement)`;
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;

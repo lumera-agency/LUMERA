@@ -6,7 +6,7 @@
  * Reduced motion: the settled composition at once, the preloader just fades.
  */
 import { useEffect, type RefObject } from "react";
-import { boot, jumpToHash, loader, pageLetGo, restoreScroll, sceneRun } from "@/lib/boot";
+import { boot, jumpToHash, loader, pageLetGo, restorePlace, restoreScroll, sceneRun } from "@/lib/boot";
 import { settleHero } from "@/components/three/hero/state";
 import { wait } from "@/lib/hooks";
 import { playIntro } from "./useHeroIntro";
@@ -42,8 +42,8 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
       clock?.step(0.95, 3);
 
       // once the preloader lets the page go (not before: the page is held, Lenis stopped): back where
-      // the visitor was (a language switch), or at the block the link named
-      const arrive = () => void pageLetGo().then(() => restoreScroll() || jumpToHash());
+      // the visitor was (a language switch, a reload), or at the block a link from outside named
+      const arrive = () => void pageLetGo().then(() => restoreScroll() || restorePlace() || jumpToHash());
       if (reducedMotion) {
         settleHero();
         sceneRun.set(true);

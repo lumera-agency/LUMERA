@@ -130,7 +130,6 @@ export function initRide({
     const i = panels.findIndex((p) => p.id === e.detail?.id);
     if (i < 0) return;
     e.preventDefault();
-    history.replaceState(history.state, '', `#${e.detail.id}`);
     goTo(i);
   });
 

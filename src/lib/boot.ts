@@ -108,3 +108,41 @@ export function jumpToHash() {
   window.setTimeout(again, 600);
   return true;
 }
+
+const PLACE_KEY = "lumera:place";
+/** How this page was reached: a link or typed address ("navigate"), a reload, back / forward. */
+export function arrivedBy() {
+  const nav = performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined;
+  return nav?.type ?? "navigate";
+}
+
+/** Keeps the page's place as the visitor leaves it (a reload, another page, the tab closed). */
+export function rememberPlace() {
+  const keep = () => {
+    try {
+      sessionStorage.setItem(PLACE_KEY, JSON.stringify({ path: location.pathname, y: Math.round(window.scrollY) }));
+    } catch {}
+  };
+  window.addEventListener("pagehide", keep);
+  return () => window.removeEventListener("pagehide", keep);
+}
+
+/**
+ * A reload (or back / forward without the page cached) brings the visitor back where they were, as
+ * browsers do on their own; ours can't (the preloader holds the page, the pinned blocks add their
+ * room later), so the place is kept (rememberPlace) and restored once the page is let go. A #id left
+ * in the address doesn't count then: the visitor has moved on from it.
+ */
+export function restorePlace() {
+  const by = arrivedBy();
+  if (by !== "reload" && by !== "back_forward") return false;
+  try {
+    const kept = JSON.parse(sessionStorage.getItem(PLACE_KEY) ?? "null") as { path: string; y: number } | null;
+    if (!kept || kept.path !== location.pathname) return false;
+    ScrollTrigger.refresh();
+    scrollToY(kept.y, { immediate: true });
+    return true;
+  } catch {
+    return false;
+  }
+}

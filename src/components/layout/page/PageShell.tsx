@@ -9,6 +9,8 @@ import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { ScrollReveals } from "@/components/fx/scroll-reveal/ScrollReveals";
 import { useSpotlight } from "@/components/fx/spotlight/useSpotlight";
+import { rememberPlace } from "@/lib/boot";
+import { routeAnchorLinks } from "@/lib/scroll";
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   const page = useRef<HTMLDivElement>(null);
@@ -18,6 +20,16 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   const head = useRef<HTMLSpanElement>(null);
 
   useSpotlight(page, ".card");
+
+  // links to a block go there without a #id in the address; a reload comes back to the same place
+  useEffect(() => {
+    const offLinks = routeAnchorLinks();
+    const offPlace = rememberPlace();
+    return () => {
+      offLinks();
+      offPlace();
+    };
+  }, []);
 
   // the seam: the bridge draws the hero glow's light in page coordinates
   useEffect(() => {
