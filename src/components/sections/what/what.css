@@ -85,8 +85,24 @@
   .what__name { grid-column: 2; grid-row: 1; }
   .what__name-in { font-size: clamp(1.7rem, 7.4vw, 3rem); }
   .what__desc { grid-column: 2; grid-row: 2; }
-  .what__arrow { display: none; }
-  .what__thumb { display: block; grid-column: 3; grid-row: 1 / span 2; width: clamp(4rem, 18vw, 7.5rem); height: auto; aspect-ratio: 4 / 5; border-radius: 0.625rem; object-fit: cover; }
+  .what__row { --thumb-w: clamp(4rem, 18vw, 7.5rem); }
+  .what__thumb { display: block; grid-column: 3; grid-row: 1 / span 2; align-self: start; width: var(--thumb-w); height: auto; aspect-ratio: 4 / 5; border-radius: 0.625rem; object-fit: cover; }
+  /* the go-arrow on the thumbnail's lower corner: what a tap does, in plain sight */
+  .what__arrow {
+    position: relative;
+    z-index: 1;
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: start;
+    justify-self: end;
+    width: 2.25rem; /* a sign, not the target: the whole row is the link */
+    margin: calc(var(--thumb-w) * 1.25 - 1.5rem) -0.5rem 0 0;
+    border: 0;
+    background: var(--ink-dark);
+    color: var(--ivory);
+    box-shadow: 0 0 0 0.1875rem var(--ivory);
+  }
+  .what__row:active .what__arrow { transform: rotate(45deg); }
 }
 @media (max-width: 860px) and (hover: hover) and (pointer: fine) {
   .what__name { grid-column: 2 / span 10; }
