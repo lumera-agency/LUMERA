@@ -30,12 +30,14 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* the page holds still under the preloader and the open menu: the root as well as the body (on iOS
-   the root is what scrolls) */
+/* the page holds still under the preloader, the open menu and the prices' editor (phones): the root as
+   well as the body (on iOS the root is what scrolls) */
 html.is-loading,
 html.is-loading body,
 html.menu-open,
-html.menu-open body { overflow: hidden; }
+html.menu-open body,
+html.cfg-editing,
+html.cfg-editing body { overflow: hidden; }
 
 /* the page's scrollbar: a translucent lime thumb on a faint veil, a step lighter than the page's black
    so the channel reads as its own; the thumb goes full lime on hover (scrollbar-color for Chrome and

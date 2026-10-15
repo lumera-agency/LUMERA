@@ -2,12 +2,16 @@
  * Lumera · Project Configurator — the block's UI (pd6's structure, art direction of 9 Oct 2026).
  *
  *   mountConfigurator(el, { lang, reducedMotion, assets, onDiscuss, tuneOpen })
- *     → { getConfig, setConfig, bundle, tune, face, sheet, project, fx, destroy }
+ *     → { getConfig, setConfig, bundle, tune, editor, face, sheet, project, fx, destroy }
  *
  * One state object (`cfg`, always normalize()d). Every change runs update(): flags, numbers, lists,
  * the preview. Bundles first, the controls under «Налаштувати», the price always on screen (≥701: the
  * sticky summary at the top of the right column; ≤700: the bottom bar). The breakdown is one renderer
  * with two hosts: the face over the preview (≥701) and a bottom-sheet <dialog> (≤700).
+ * ≤700 the controls and the preview don't sit in the page: «Зібрати свій варіант» opens them in a
+ * full-screen <dialog> (the editor: the preview on top, the groups' chips, the controls, the price and
+ * «Готово»), so nothing is held over the page while it scrolls. The phone's «back» shuts it too (it
+ * opens with a history entry of its own); shut, the card says what was put together.
  * Both calls to action are the site's own button (.btn.btn--primary: ember, dark text, the arrow).
  * Nothing here changes the height of anything above or beside what was tapped: rows show a reason
  * tag instead of swapping their sub-line; the two bundle notes share one cell (the taller one sets it).
@@ -22,8 +26,10 @@ const CHEV = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="cu
 // the site's own arrow (index.html .btn__icon): two copies, the second slides in on hover
 const ARROW = '<span class="btn__icon" aria-hidden="true"><svg class="arrow arrow--a" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg><svg class="arrow arrow--b" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg></span>';
 const PLUSI = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path class="v" d="M7 2v10"/><path d="M2 7h10"/></svg>';
+const GO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const CLOSE = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
 const BOOL = ['advancedMotion', 'threeDHero', 'secondLanguage', 'adsManagement'];
+const CHIPS = ['format', 'design', 'look', 'growth', 'leads']; // the editor's groups (their heads: #cfg-l-…)
 const phoneMQ = window.matchMedia('(max-width: 700px)');
 // pd8 4.4: up to 1100 px «Що входить у ціну» opens the bottom sheet (≥1101: the card flips to the face)
 const sheetMQ = window.matchMedia('(max-width: 1100px)');
@@ -38,6 +44,10 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches });
   const sheet = ref('sheet');
   const bar = ref('bar');
+  const editor = ref('editor');
+  const edScroll = ref('ed-scroll');
+  const chips = [...editor.querySelectorAll('[data-chip]')];
+  const root = document.documentElement;
 
   /* ---------- input ---------- */
   el.addEventListener('click', (e) => {
@@ -57,8 +67,12 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
       commit(next, opt);
       return;
     }
+    const chip = e.target.closest('[data-chip]');
+    if (chip) { toGroup(chip.dataset.chip); return; }
     const act = e.target.closest('[data-act]')?.dataset.act;
     if (act === 'tune') setTune(!state.tune);
+    if (act === 'editor') openEditor();
+    if (act === 'editor-close') closeEditor();
     if (act === 'break') sheetMQ.matches ? openSheet(e.target.closest('[data-act]')) : setFace(state.face === 'break' ? 'preview' : 'break');
     if (act === 'sheet-close') closeSheet();
     if (act === 'open-form') discuss();
@@ -77,6 +91,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   });
   sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); }); // the backdrop
   sheet.addEventListener('cancel', (e) => { e.preventDefault(); closeSheet(); }); // Esc
+  editor.addEventListener('cancel', (e) => { e.preventDefault(); closeEditor(); });
   // pd8 4.4: across 1100 px neither the sheet nor the face stays open on the wrong side; the button says what it opens
   function syncSheetMQ() {
     const btn = ref('break-btn');
@@ -99,7 +114,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     update();
     const after = calculateProject(state.cfg);
     if (before.once !== after.once || before.monthly !== after.monthly) bump();
-    if (phoneMQ.matches && source) clearBar(source);
+    if (phoneMQ.matches && source && !editor.contains(source)) clearBar(source);
   }
 
   function setTune(open) {
@@ -121,7 +136,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     ref('break-btn').querySelector('span').textContent = on ? t.summary.breakdownClose : t.summary.breakdownOpen;
     ref('break').toggleAttribute('inert', !on);
     ref('preview').toggleAttribute('inert', on);
-    preview.pause(on);
+    syncPause();
     if (on) ref('break').querySelector('h3').focus({ preventScroll: true });
   }
 
@@ -131,7 +146,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     ref('sheet-name').textContent = t.name(p.nameParts);
     ref('sheet-price').textContent = money(p.once) + ' ' + t.once + (p.monthly ? ' · +' + money(p.monthly) + t.perMonth : '');
     sheet.showModal();
-    preview.pause(true); // the cube and the silk rest while the sheet covers them
+    syncPause();
     bar.classList.add('is-hidden');
     requestAnimationFrame(() => sheet.classList.add('is-open'));
     sheet.querySelector('.cfg-sheet__close').focus({ preventScroll: true });
@@ -139,9 +154,87 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   function closeSheet() {
     if (!sheet.open) return;
     sheet.classList.remove('is-open');
-    const done = () => { sheet.close(); preview.pause(state.face === 'break'); syncBar(); state.opener?.focus({ preventScroll: true }); };
+    const done = () => { sheet.close(); syncPause(); syncBar(); state.opener?.focus({ preventScroll: true }); };
     reducedMotion ? done() : setTimeout(done, 280);
   }
+
+  /** the cube and the silk rest while nothing shows them: the face over them, the sheet over all, or (≤700) the editor shut */
+  function syncPause() {
+    preview.pause(state.face === 'break' || sheet.open || (phoneMQ.matches && !editor.open));
+  }
+
+  /* ---------- ≤700: the editor ---------- */
+  function openEditor() {
+    if (editor.open) return;
+    state.editorOpener = document.activeElement;
+    editor.showModal();
+    root.classList.add('cfg-editing'); // the page under it holds still (base.css)
+    history.pushState({ ...history.state, cfgEditor: true }, '');
+    edScroll.scrollTop = 0;
+    markChip();
+    syncPause();
+    syncBar();
+    requestAnimationFrame(() => editor.classList.add('is-open'));
+    editor.querySelector('.cfg-editor__close').focus({ preventScroll: true });
+  }
+  function closeEditor({ fromHistory = false, instant = false } = {}) {
+    if (!editor.open || editor.classList.contains('is-closing')) return;
+    editor.classList.remove('is-open');
+    editor.classList.add('is-closing');
+    const done = () => {
+      editor.classList.remove('is-closing');
+      editor.close();
+      root.classList.remove('cfg-editing');
+      syncPause();
+      syncBar();
+      state.editorOpener?.focus?.({ preventScroll: true });
+    };
+    reducedMotion || instant ? done() : setTimeout(done, 320);
+    // shut by its own buttons: its history entry goes too, so «back» then leaves nothing behind
+    if (!fromHistory && history.state?.cfgEditor) history.back();
+  }
+  const onHistory = () => closeEditor({ fromHistory: true });
+  window.addEventListener('popstate', onHistory);
+  // a reload with the editor open: the entry stays, the flag goes
+  if (history.state?.cfgEditor) history.replaceState({ ...history.state, cfgEditor: false }, '');
+
+  // the chips: a tap brings its group to the top; the one being read is marked
+  const groupOf = (id) => el.querySelector('#cfg-l-' + id)?.closest('.cfg__group');
+  const topIn = (node) => node.getBoundingClientRect().top - edScroll.getBoundingClientRect().top + edScroll.scrollTop;
+  function toGroup(id) {
+    const group = groupOf(id);
+    if (!group) return;
+    edScroll.scrollTo({ top: topIn(group) - 12, behavior: reducedMotion ? 'auto' : 'smooth' });
+  }
+  function markChip() {
+    const atEnd = edScroll.scrollTop + edScroll.clientHeight >= edScroll.scrollHeight - 2;
+    let current = CHIPS[0];
+    for (const id of CHIPS) {
+      const group = groupOf(id);
+      if (group && (topIn(group) - edScroll.scrollTop <= 48 || atEnd)) current = id;
+    }
+    chips.forEach((c) => c.setAttribute('aria-current', String(c.dataset.chip === current)));
+  }
+  let chipFrame = 0;
+  edScroll.addEventListener('scroll', () => { if (!chipFrame) chipFrame = requestAnimationFrame(() => { chipFrame = 0; markChip(); }); }, { passive: true });
+
+  // ≤700 the preview and the controls live in the editor; wider, in the page, as they always were
+  function placeControls() {
+    const body = ref('tune-body');
+    if (phoneMQ.matches) {
+      ref('ed-view').append(ref('view'));
+      edScroll.append(ref('pnote'), body);
+      body.hidden = false;
+    } else if (editor.contains(body)) {
+      closeEditor({ instant: true });
+      el.querySelector('.cfg__side').append(ref('view'), ref('pnote'));
+      el.querySelector('.cfg-tune').append(body);
+      setTune(state.tune);
+    }
+    el.querySelector('.cfg-notes__site').textContent = phoneMQ.matches ? t.bundleNotePhone : t.bundleNote;
+    syncPause();
+  }
+  phoneMQ.addEventListener('change', placeControls);
 
   function discuss() {
     const p = calculateProject(state.cfg);
@@ -159,7 +252,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   function bump() {
     if (reducedMotion) return;
     const pulse = [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }];
-    for (const n of ['once', 'bar-price']) ref(n).animate(pulse, { duration: 320, easing: 'cubic-bezier(.16,1,.3,1)' });
+    for (const n of ['once', 'bar-price', 'ed-price']) ref(n).animate(pulse, { duration: 320, easing: 'cubic-bezier(.16,1,.3,1)' });
     ref('bar-flash').animate([{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 0 }], { duration: 640, easing: 'ease-out' });
   }
 
@@ -175,7 +268,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   // alone misses a jump that carries them from below the screen to above it in one go.)
   const seen = { bundles: false, sum: false };
   const syncBar = () => {
-    const off = !seen.bundles || seen.sum || sheet.open;
+    const off = !seen.bundles || seen.sum || sheet.open || editor.open;
     bar.classList.toggle('is-hidden', off);
     bar.toggleAttribute('inert', off);
   };
@@ -241,6 +334,14 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     ref('bar-name').textContent = name;
     ref('bar-price').textContent = once;
     ref('bar-month').textContent = p.monthly ? '+' + money(p.monthly) + t.perMonth : '';
+    ref('ed-name').textContent = name;
+    ref('ed-price').textContent = once;
+    ref('ed-month').textContent = ref('bar-month').textContent;
+    // the editor's card: an invitation, or (no bundle matches any more) the project put together
+    const mine = !p.bundle;
+    ref('build').classList.toggle('is-mine', mine);
+    ref('build-name').textContent = mine ? t.buildMine + ' · ' + once : t.build[0];
+    ref('build-sub').textContent = mine ? name : t.build[1];
     ref('pnote').textContent = t.previewNote[cfg.format !== 'existing' ? cfg.design : cfg.growth === 'analytics' ? 'existingStats' : 'existing'];
 
     // breakdown: the same list in both hosts (face ≥701, sheet ≤700)
@@ -273,11 +374,13 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   setTune(state.tune);
   update();
   syncSheetMQ();
+  placeControls();
   return {
     getConfig: () => ({ ...state.cfg }),
     setConfig: (patch) => commit({ ...state.cfg, ...patch }),
     bundle: (id) => { state.lastBundle = id; commit(applyBundle(id, state.cfg)); },
-    tune: setTune,
+    tune: (open) => (phoneMQ.matches ? (open ? openEditor() : closeEditor()) : setTune(open)),
+    editor: (open) => (open ? openEditor() : closeEditor()),
     face: setFace,
     sheet: (on) => (on ? openSheet(ref('bar-open')) : closeSheet()),
     project: () => calculateProject(state.cfg),
@@ -286,6 +389,9 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
       ioMain.disconnect();
       ioSum.disconnect();
       sheetMQ.removeEventListener('change', syncSheetMQ);
+      phoneMQ.removeEventListener('change', placeControls);
+      window.removeEventListener('popstate', onHistory);
+      root.classList.remove('cfg-editing');
       preview.fx?.destroy();
       el.innerHTML = '';
       el.classList.remove('cfg');
@@ -355,6 +461,11 @@ function template(t) {
     </div>
 
     <div class="cfg-tune">
+      <button type="button" class="cfg-build" data-act="editor" data-ref="build" aria-haspopup="dialog">
+        <span class="cfg-build__t"><span class="cfg-build__name" data-ref="build-name">${escU(t.build[0])}</span><span class="cfg-build__sub" data-ref="build-sub">${escU(t.build[1])}</span></span>
+        <span class="cfg-build__go" aria-hidden="true">${GO}</span>
+        <span class="cfg-build__edit" aria-hidden="true">${escU(t.buildEdit)}</span>
+      </button>
       <button type="button" class="cfg-tune__btn" data-act="tune" data-ref="tune-btn" aria-expanded="false" aria-controls="cfg-tune">
         <span class="cfg-tune__t"><span class="cfg-tune__name">${escU(t.tune[0])}</span><span class="cfg-tune__sub">${escU(t.tune[1])}</span></span>
         <span class="cfg-tune__i">${PLUSI}</span>
@@ -442,6 +553,27 @@ function template(t) {
     <div class="cfg-sheet__top"><span class="cfg-sheet__grip" aria-hidden="true"></span><button type="button" class="cfg-sheet__close" data-act="sheet-close" aria-label="${escU(t.summary.close)}">${CLOSE}</button></div>
     <div class="cfg-sheet__head"><span class="cfg-sheet__name" data-ref="sheet-name"></span><span class="cfg-sheet__price" data-ref="sheet-price"></span></div>
     ${breakPanel('cfg-sheet-t', 'h3')}
+  </div>
+</dialog>
+
+<dialog class="cfg-editor" data-ref="editor" aria-labelledby="cfg-editor-t">
+  <div class="cfg-editor__top">
+    <h3 class="cfg-editor__t" id="cfg-editor-t">${escU(t.editor.title)}</h3>
+    <button type="button" class="cfg-editor__close" data-act="editor-close" aria-label="${escU(t.summary.close)}">${CLOSE}</button>
+  </div>
+  <div class="cfg-editor__view" data-ref="ed-view"></div>
+  <nav class="cfg-editor__chips" aria-label="${escU(t.tune[0])}">
+    ${CHIPS.map((g) => '<button type="button" class="cfg-chip" data-chip="' + g + '" aria-current="false">' + escU(t.editor.chips[g]) + '</button>').join('')}
+  </nav>
+  <div class="cfg-editor__scroll" data-ref="ed-scroll" data-lenis-prevent></div>
+  <div class="cfg-editor__foot">
+    <div class="cfg-editor__bar">
+      <span class="cfg-editor__sum">
+        <span class="cfg-editor__name" data-ref="ed-name"></span>
+        <span class="cfg-editor__row"><span class="cfg-editor__price" data-ref="ed-price"></span><span class="cfg-editor__once">${escU(t.once)}</span><span class="cfg-editor__month" data-ref="ed-month"></span></span>
+      </span>
+      <button type="button" class="cfg-editor__done" data-act="editor-close">${escU(t.editor.done)}</button>
+    </div>
   </div>
 </dialog>
 <span class="visually-hidden" role="status" data-ref="live"></span>`;

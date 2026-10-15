@@ -269,6 +269,8 @@
 
 .cfg-bar { display: none; }
 .cfg-sheet { display: none; }
+.cfg-build { display: none; }
+.cfg-editor { display: none; }
 @media (max-width: 1100px) {
   .cfg__cards--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cfg-sum { padding: 1.25rem; }
@@ -2365,3 +2367,71 @@
 /* the plan cards: ember, the shared inverting fill (ui/button) */
 .plan__face .btn--primary { --btn-bg: var(--ember); --btn-ink: var(--on-accent); --btn-fill: var(--bg); --btn-fill-ink: var(--ember-ink); --btn-fill-line: var(--ember); }
 .plan__face .btn--line { --btn-fill: var(--ember); --btn-fill-ink: var(--on-accent); --btn-fill-line: var(--ember); }
+
+/* ≤700: «Зібрати свій варіант» and the editor it opens (configurator.js). The card stands where
+   «Налаштувати» does wider; the editor is a full-screen <dialog>: the preview on top, the groups' chips,
+   the controls in a scroll of their own, the price and «Готово» at the foot. */
+@media (max-width: 700px) {
+  .cfg-tune { border-top: 0; }
+  .cfg-tune__btn { display: none; }
+  .cfg-build {
+    display: flex; align-items: center; gap: 0.875rem; width: 100%; min-height: 5.5rem;
+    padding: 1rem 1rem 1rem 1.125rem; border: 1px dashed rgba(246, 246, 243, 0.35); border-radius: 1rem;
+    background: none; text-align: left; -webkit-tap-highlight-color: transparent;
+  }
+  .cfg-build.is-mine { border-style: solid; border-color: rgba(246, 246, 243, 0.6); }
+  .cfg-build__t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.3125rem; }
+  .cfg-build__name { font-size: var(--fs-lead); font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; }
+  .cfg-build__sub { font-size: var(--fs-caption); line-height: 1.4; color: var(--ink-mute); text-wrap: pretty; }
+  .cfg-build__go { flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--lime); color: #0d0d0d; transition: transform 0.4s var(--ease-out); }
+  .cfg-build__go svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .cfg-build:active .cfg-build__go { transform: translateX(0.1875rem); }
+  .cfg-build__edit { display: none; flex: none; align-items: center; min-height: 2.25rem; padding: 0 0.875rem; border-radius: 999px; border: 1px solid var(--border-strong); font-size: var(--fs-caption); }
+  .cfg-build.is-mine .cfg-build__go { display: none; }
+  .cfg-build.is-mine .cfg-build__edit { display: inline-flex; }
+
+  .cfg-editor {
+    position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none;
+    margin: 0; padding: 0; border: 0;
+    flex-direction: column; background: var(--bg); color: var(--ink);
+    transform: translateY(100%); transition: transform 0.36s var(--ease-out);
+  }
+  .cfg-editor[open] { display: flex; }
+  .cfg-editor.is-open { transform: none; }
+  .cfg-editor::backdrop { background: rgba(0, 0, 0, 0.6); }
+  .cfg-editor__top { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 3.25rem; padding: env(safe-area-inset-top) 0.375rem 0 var(--gutter); border-bottom: 1px solid var(--line); }
+  .cfg-editor__t { margin: 0; font-size: var(--fs-lead); font-weight: 500; letter-spacing: -0.01em; }
+  .cfg-editor__close { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border: 0; background: none; }
+  .cfg-editor__view { flex: none; padding: 0.75rem var(--gutter) 0; }
+  .cfg-editor .cfg-view { position: relative; top: auto; z-index: auto; margin: 0; padding: 0; background: none; }
+  .cfg-editor .cfg-view::before,
+  .cfg-editor .cfg-view::after { content: none; }
+  /* one row on a phone: the chips share it (a narrow one wraps rather than scrolls sideways) */
+  .cfg-editor__chips { flex: none; display: flex; flex-wrap: wrap; gap: 0.25rem; padding: 0.75rem var(--gutter); border-bottom: 1px solid var(--line); }
+  .cfg-chip { flex: 1 1 auto; min-height: 2rem; padding: 0 0.375rem; border: 1px solid var(--line); border-radius: 999px; background: none; font-size: 0.75rem; color: var(--ink-mute); white-space: nowrap; transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
+  .cfg-chip[aria-current='true'] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+  .cfg-editor__scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1rem var(--gutter) 1.5rem; }
+  .cfg-editor__scroll .cfg__note { margin: 0 0 1.5rem; }
+  .cfg-editor__foot { flex: none; padding: 0.5rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom)); }
+  .cfg-editor__bar { display: flex; align-items: center; gap: 0.5rem; min-height: 3.75rem; padding: 0.375rem 0.375rem 0.375rem 1rem; border-radius: 1.25rem; background: var(--cfg-ivory); color: var(--cfg-on-ivory); }
+  .cfg-editor__sum { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .cfg-editor__name { font-size: 0.75rem; line-height: 1.3; color: var(--cfg-on-ivory-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cfg-editor__row { display: flex; align-items: baseline; gap: 0.375rem; white-space: nowrap; }
+  .cfg-editor__price { display: inline-block; font-size: 1.375rem; line-height: 1.1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; transform-origin: 0 70%; }
+  .cfg-editor__once,
+  .cfg-editor__month { font: 400 0.6875rem / 1 var(--font-mono); letter-spacing: 0.04em; color: var(--cfg-on-ivory-soft); }
+  .cfg-editor__month:empty { display: none; }
+  .cfg-editor__done { flex: none; height: 3rem; padding: 0 1.375rem; border: 0; border-radius: 0.875rem; background: var(--cfg-on-ivory); color: var(--cfg-ivory); font-size: var(--fs-body-s); font-weight: 500; }
+  .cfg-editor :focus-visible { outline-color: var(--ink); }
+  .cfg-editor__bar :focus-visible { outline-color: var(--cfg-on-ivory); }
+}
+@media (max-width: 380px) {
+  .cfg-chip { padding: 0 0.25rem; }
+}
+/* a short phone: a lower window on the preview, so the controls keep room */
+@media (max-width: 700px) and (max-height: 760px) {
+  .cfg-editor .pvw { --vph: 50cqw; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .cfg-editor { transition: none; }
+}
