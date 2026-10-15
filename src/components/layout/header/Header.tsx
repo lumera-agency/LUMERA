@@ -5,6 +5,7 @@ import { ButtonLink } from "@/components/ui/button/Button";
 import { RollText } from "@/components/fx/roll-text/RollText";
 import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
 import { menu, useMenuOpen } from "@/components/layout/menu/menu-store";
+import { fadeJumpTo } from "@/lib/scroll";
 import "./header.css";
 
 const LINKS = [
@@ -21,7 +22,18 @@ export function Header() {
   return (
     <header className="header">
       <div className="header__inner">
-        <Logo href={locale === "uk" ? "/" : "/ru"} label={t("logo.home")} data-reveal="nav" />
+        <Logo
+          href={locale === "uk" ? "/" : "/ru"}
+          label={t("logo.home")}
+          data-reveal="nav"
+          onClick={(e) => {
+            // on its own page it goes back to the top instead of loading the page again
+            if (new URL(e.currentTarget.href).pathname !== location.pathname) return;
+            e.preventDefault();
+            if (location.hash) history.replaceState(history.state, "", location.pathname + location.search);
+            fadeJumpTo(0);
+          }}
+        />
 
         <nav className="nav" aria-label={t("nav.label")}>
           <ul className="nav__list">
