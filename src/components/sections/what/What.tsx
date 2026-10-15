@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { rich } from "@/lib/rich";
+import { aiHref } from "@/components/ai/links";
 import { WhatList } from "./WhatList";
 import "./what.css";
 
@@ -18,14 +19,17 @@ const PAGES: Partial<Record<string, string>> = { "svc-4": "/ai-avtomatyzatsiia" 
 export async function What() {
   const t = await getTranslations("what");
   const locale = await getLocale();
-  const rows = DIRECTIONS.map((d) => ({
-    ...d,
-    name: t(`${d.n}.name`),
-    desc: t(`${d.n}.desc`),
-    image: `/img/what/what-${d.n}-${locale === "ru" ? "ru" : "uk"}.webp`,
-    // the AI pages remember the last language, so the row always names the main page's one
-    href: PAGES[d.service] && `${PAGES[d.service]}?lang=${locale === "ru" ? "ru" : "uk"}`,
-  }));
+  const rows = DIRECTIONS.map((d) => {
+    const page = PAGES[d.service];
+    return {
+      ...d,
+      name: t(`${d.n}.name`),
+      desc: t(`${d.n}.desc`),
+      image: `/img/what/what-${d.n}-${locale === "ru" ? "ru" : "uk"}.webp`,
+      // the page in the main page's language (/ai-avtomatyzatsiia, /ru/ai-avtomatyzatsiia)
+      href: page && aiHref(locale, page),
+    };
+  });
   return (
     <section className="section section--ivory what" id="what" aria-labelledby="what-title" data-what="">
       <div className="container">
