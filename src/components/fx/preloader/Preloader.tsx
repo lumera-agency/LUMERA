@@ -6,7 +6,8 @@
  * (window.lumeraLoader.step, called by the page's boot). On leaving, the copy slips up out of its
  * masks, the other pictures sink away and the top one grows to the whole screen straight from its place,
  * straightening on the way, and, letting go, opens the page through a window in the sheet that grows with
- * it (Osmo's «Willem»); one move, no stop; finish() resolves as it starts to grow, so the next scene
+ * it fading away (after Osmo's «Willem»); one move, no stop, transform and opacity only; finish() resolves
+ * as it starts to grow, so the next scene
  * starts under them. It plays in full on every load.
  *
  * Once per visit (sessionStorage): opened again in the same tab the page comes up at once, unless the
@@ -234,8 +235,8 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
           );
           // the pile: the others sink away from wherever they are; the top picture grows to the whole
           // screen straight from its place and angle, straightening on the way, and, letting go, opens
-          // the page: the black behind it has a window that grows with it (Osmo's «Willem» loader).
-          // One move, no stop between (the transforms are read as they are, mid-arrival or not)
+          // the page as the black behind it fades (after Osmo's «Willem» loader). One move, no stop
+          // between (the transforms are read as they are, mid-arrival or not)
           const down = cards.filter((c) => getComputedStyle(c).opacity !== "0");
           const top = down.reduce<HTMLElement | null>((a, c) => (!a || +c.style.zIndex > +a.style.zIndex ? c : a), null);
           down.forEach((c) => {
@@ -252,28 +253,22 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
             bg.animate([{ clipPath: "inset(0 0 0 0)" }, { clipPath: "inset(0 0 100% 0)" }], { duration: OPEN, delay: 300, easing: OPEN_EASE, fill: "forwards" }).finished.then(() => el.remove());
             return wait(450);
           }
-          const r = q(".preloader__stack").getBoundingClientRect(); // the card's own box, before its turn
+          const r = q(".preloader__stack").getBoundingClientRect(); // the card's own box, before its turn (the cards fill the stack)
           const at = getComputedStyle(top);
           const from = at.transform === "none" ? "translate(0px, 0px)" : at.transform;
-          const hole = (l: number, t: number, rt: number, b: number) =>
-            `polygon(evenodd, 0px 0px, ${W}px 0px, ${W}px ${H}px, 0px ${H}px, 0px 0px, ${l}px ${t}px, ${rt}px ${t}px, ${rt}px ${b}px, ${l}px ${b}px, ${l}px ${t}px)`;
-          // the window starts as a point in the card's middle, so it never shows past the turned card
           const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-          bg.animate([{ clipPath: hole(cx, cy, cx, cy) }, { clipPath: hole(-2, -2, W + 2, H + 2) }], { duration: OPEN, easing: OPEN_EASE, fill: "forwards" });
-          // the picture: a copy fixed at the card's place, so it can grow past the stack
-          const pic = top.cloneNode(true) as HTMLElement;
-          pic.style.cssText = "position:fixed;margin:0;z-index:3;left:" + r.left + "px;top:" + r.top + "px;width:" + r.width + "px;height:" + r.height + "px;transform:" + from + ";opacity:" + at.opacity;
-          el.append(pic);
-          top.style.visibility = "hidden";
-          pic.animate(
-            [
-              { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px", borderRadius: "0.875rem", transform: from },
-              { left: "0px", top: "0px", width: W + "px", height: H + "px", borderRadius: "0px", transform: "translate(0px, 0px)" },
-            ],
-            { duration: OPEN, easing: OPEN_EASE, fill: "forwards" },
-          );
-          pic.animate([{ opacity: at.opacity }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.3 }, { opacity: 0, offset: 0.82 }, { opacity: 0 }], { duration: OPEN, fill: "forwards" });
-          pic.querySelector("img")?.animate([{ transform: "scale(1)" }, { transform: "scale(1.1)" }], { duration: OPEN, easing: OPEN_EASE, fill: "forwards" });
+          // the black lets go under the growing picture (opacity: run by the compositor, like the
+          // picture's transform, so nothing stutters while the hero starts underneath)
+          bg.animate([{ opacity: 1 }, { opacity: 1, offset: 0.2 }, { opacity: 0, offset: 0.78 }, { opacity: 0 }], { duration: OPEN, fill: "forwards" });
+          // the picture itself grows (no copy, no swap): by transform alone, evenly, keeping its own
+          // proportions, from where it lies to where it covers the screen, straightening on the way;
+          // the compositor runs it, so the hero starting underneath can't make it stutter
+          const dx = W / 2 - cx, dy = H / 2 - cy;
+          const cover = Math.max(W / r.width, H / r.height) * 1.03;
+          top.style.zIndex = "9";
+          top.animate([{ transform: from }, { transform: "translate(" + dx + "px, " + dy + "px) scale(" + cover + ")" }], { duration: OPEN, easing: OPEN_EASE, fill: "forwards" });
+          top.animate([{ opacity: at.opacity }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.3 }, { opacity: 0, offset: 0.82 }, { opacity: 0 }], { duration: OPEN, fill: "forwards" });
+          top.querySelector("img")?.animate([{ transform: "scale(1)" }, { transform: "scale(1.06)" }], { duration: OPEN, easing: OPEN_EASE, fill: "forwards" });
           setTimeout(() => el.remove(), OPEN + 60);
           return wait(220);
         });

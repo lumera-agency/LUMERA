@@ -16,8 +16,8 @@
   animation: preloader-fallback 0.01s 9s forwards;
 }
 html:not(.js) .preloader { display: none; }
-/* the black, its own layer: on leaving it opens a window (clip-path) while the picture grows */
-.preloader__bg { position: absolute; inset: 0; background: #0a0a0a; will-change: clip-path; }
+/* the black, its own layer: on leaving it fades under the growing picture */
+.preloader__bg { position: absolute; inset: 0; background: #0a0a0a; will-change: opacity; }
 .preloader__glow {
   position: absolute;
   left: 50%;
