@@ -9,6 +9,8 @@
  * it starts to grow, so the next scene
  * starts under them. It plays in full on every load.
  *
+ * Once per visit (sessionStorage): opened again in the same tab the page comes up at once, unless the
+ * language was switched. While it runs the page can't be scrolled (html.is-loading).
  * Server component: the markup and an inline script that starts the clock before any bundle runs.
  * Props are plain strings, so the same component works for any site (words · separated).
  */
@@ -61,6 +63,21 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
   const root = document.documentElement;
   const el = document.querySelector<HTMLElement>("[data-preloader]");
   if (!el || !root.classList.contains("js")) return;
+  // once per visit: the page opened again in this tab (a reload, back from elsewhere) comes up at once;
+  // a language switch (LangSwitch leaves the scroll behind for the new page) plays it again
+  let again = false;
+  try {
+    again = sessionStorage.getItem("lumera:seen") === "1" && sessionStorage.getItem("lumera:lang-scroll") == null;
+    sessionStorage.setItem("lumera:seen", "1");
+  } catch {}
+  if (again) {
+    el.remove();
+    return;
+  }
+  // the page holds still under it (base.css; SmoothScroll stops Lenis); let go as it opens the page
+  root.classList.add("is-loading");
+  const release = () => root.classList.remove("is-loading");
+  setTimeout(release, 9000); // with the sheet's own fallback (preloader.css)
   const motion = root.classList.contains("motion") && !!el.animate;
   const q = <T extends Element = HTMLElement>(s: string) => el.querySelector<T>(s)!;
   const count = q("[data-pl-count]"), box = q(".preloader__words");
@@ -180,6 +197,7 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
           if (!motion) {
             el.style.transition = "opacity 0.3s ease";
             el.style.opacity = "0";
+            release();
             setTimeout(() => el.remove(), 320);
             return;
           }
@@ -200,6 +218,7 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
           const W = window.innerWidth, H = window.innerHeight;
           if (!top) {
             // no picture: the sheet just wipes up
+            release();
             bg.animate([{ clipPath: "inset(0 0 0 0)" }, { clipPath: "inset(0 0 100% 0)" }], { duration: OPEN, delay: 300, easing: OPEN_EASE, fill: "forwards" }).finished.then(() => el.remove());
             return wait(450);
           }
@@ -207,6 +226,7 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
           // then it grows to the whole screen and, letting go, opens the page: the black behind it has a
           // window of the same size (a clip-path with a hole) that grows with it (Osmo's «Willem» loader)
           return wait(SQUARE).then(() => {
+            release();
             const r = top.getBoundingClientRect();
             const hole = (l: number, t: number, rt: number, b: number) =>
               `polygon(evenodd, 0px 0px, ${W}px 0px, ${W}px ${H}px, 0px ${H}px, 0px 0px, ${l}px ${t}px, ${rt}px ${t}px, ${rt}px ${b}px, ${l}px ${b}px, ${l}px ${t}px)`;

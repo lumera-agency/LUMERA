@@ -11,6 +11,8 @@
   color: var(--pl-ink);
   visibility: visible; /* shown even while another language keeps the body hidden (<head>) */
   pointer-events: auto;
+  touch-action: none; /* a finger on it doesn't scroll the page under it */
+  overscroll-behavior: none;
   animation: preloader-fallback 0.01s 9s forwards;
 }
 html:not(.js) .preloader { display: none; }

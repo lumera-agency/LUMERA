@@ -4,7 +4,7 @@
  * The page still scrolls natively (window.scrollY), so ScrollTrigger, sticky blocks and anchor links
  * keep working; Lenis drives ScrollTrigger from GSAP's ticker (one clock). Off with reduced motion
  * and on touch (the finger already scrolls smoothly). Elements that scroll by themselves (dialogs,
- * lists, [data-lenis-prevent]) keep the wheel. The open mobile menu stops it.
+ * lists, [data-lenis-prevent]) keep the wheel. The preloader and the open menu stop it.
  */
 import { useEffect } from "react";
 import Lenis from "lenis";
@@ -28,9 +28,18 @@ export function SmoothScroll({ lerp = 0.095 }: { lerp?: number }) {
     const tick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
-    // the open menu holds the page still
+    // the preloader and the open menu hold the page still
     const root = document.documentElement;
-    const mo = new MutationObserver(() => (root.classList.contains("menu-open") ? lenis.stop() : lenis.start()));
+    let held = false;
+    const hold = () => {
+      const now = root.classList.contains("menu-open") || root.classList.contains("is-loading");
+      if (now === held) return;
+      held = now;
+      if (now) lenis.stop();
+      else lenis.start();
+    };
+    hold();
+    const mo = new MutationObserver(hold);
     mo.observe(root, { attributes: true, attributeFilter: ["class"] });
     return () => {
       mo.disconnect();

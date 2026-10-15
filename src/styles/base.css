@@ -30,6 +30,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* the page holds still under the preloader and the open menu: the root as well as the body (on iOS
+   the root is what scrolls) */
+html.is-loading,
+html.is-loading body,
+html.menu-open,
 html.menu-open body { overflow: hidden; }
 
 a { color: inherit; }
