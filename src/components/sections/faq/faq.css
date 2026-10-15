@@ -83,3 +83,4 @@
   .faq { margin-top: calc(var(--fs-label) * 0.75); }
 }
 .faq__body p:not(:last-child) { padding-bottom: 0.75rem; }
+.faq__write { margin: 1.75rem 0 0; }
