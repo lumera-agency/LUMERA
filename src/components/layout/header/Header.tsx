@@ -49,6 +49,9 @@ export function Header() {
           <LangSwitch data-reveal="nav" />
         </nav>
 
+        {/* phones: the languages stay in sight beside the burger (the nav with its own switch is hidden) */}
+        <LangSwitch className="lang--bar" data-reveal="nav" />
+
         <div className="header__cta" data-reveal="nav">
           <ButtonLink href="#contact" variant="ghost">{t("cta.discuss")}</ButtonLink>
         </div>

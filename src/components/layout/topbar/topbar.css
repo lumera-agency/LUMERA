@@ -61,4 +61,5 @@
   .topbar__nav { display: none; }
   .topbar__menu { display: block; }
   .topbar .logo { min-width: 2.75rem; min-height: 2.75rem; }
+  .topbar .lang { display: flex; } /* phones: the languages in sight (between 861 and 1100 px the nav needs the room) */
 }
