@@ -14,7 +14,7 @@
 import * as ENGINE from '@/components/sections/pricing/configurator/engine.js';
 import { STRINGS } from '@/components/sections/pricing/configurator/strings.js';
 import { leadForm, goToForm as glideToForm } from '@/components/sections/contact/lead-form.js';
-import { restoreScroll } from '@/lib/boot';
+import { restorePlace, restoreScroll } from '@/lib/boot';
 import { SPRING, slideIn, rollNumber } from './sites-rb.js';
 import { spotlight, initTilt, mountGlide, beam, beamOnView, deltaChip, mountFan } from './fx-page.js';
 import { mountHow } from './fx-how.js';
@@ -155,9 +155,9 @@ function fillFacts() {
   }
 }
 
-/* ---------- where the visitor lands: back where they were after a language switch, else at the #block ---------- */
+/* ---------- where the visitor lands: back where they were after a language switch or a reload, else at the #block ---------- */
 function arrive() {
-  if (restoreScroll()) return;
+  if (restoreScroll() || restorePlace()) return;
   const id = decodeURIComponent(location.hash.slice(1));
   const target = id && document.getElementById(id);
   if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' });

@@ -15,7 +15,7 @@
 import { PRICING, DEFAULT_CONFIG, calculateTimeline, money } from '@/components/sections/pricing/configurator/engine.js';
 import { STRINGS } from '@/components/sections/pricing/configurator/strings.js';
 import { leadForm, goToForm } from '@/components/sections/contact/lead-form.js';
-import { restoreScroll } from '@/lib/boot';
+import { restorePlace, restoreScroll } from '@/lib/boot';
 
 const root = document.documentElement;
 const $ = (selector, scope = document) => scope.querySelector(selector);
@@ -106,9 +106,9 @@ function initReveals() {
   });
 }
 
-/* ---------- where the visitor lands: back where they were after a language switch, else at the #block ---------- */
+/* ---------- where the visitor lands: back where they were after a language switch or a reload, else at the #block ---------- */
 function arrive() {
-  if (restoreScroll()) return;
+  if (restoreScroll() || restorePlace()) return;
   const id = decodeURIComponent(location.hash.slice(1));
   const target = id && document.getElementById(id);
   if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' });
