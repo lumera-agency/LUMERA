@@ -298,6 +298,8 @@ p.service__dialog-go--alt .link { color: inherit; }
   .services.is-tabs > .service:not(.is-open),
   .services.is-tabs > .service:not(.is-open) * { visibility: hidden !important; }
   .services.is-tabs .service__body { padding-top: 1rem; }
+  /* the window keeps the height of the longest service, so a shorter one already leaves room under it */
+  .services__cta { margin-top: 1.75rem; }
 }
 @media (max-width: 400px) {
   .svc-pick { column-gap: 0.625rem; }
