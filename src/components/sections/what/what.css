@@ -18,8 +18,10 @@
 .what__row {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--col-gap);
+  /* sized by what is in them: a narrow number, the name takes the room, the description a column of
+     its own, the button as wide as it is */
+  grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 20rem) auto;
+  column-gap: clamp(1.5rem, 3vw, 3.5rem);
   align-items: center;
   padding: clamp(1.125rem, 3.2vh, 2.125rem) 0;
   color: var(--ink-dark);
@@ -36,7 +38,7 @@
   color: var(--ink-dark-mute);
   transition: color 0.4s var(--ease-out);
 }
-.what__name { grid-column: 2 / span 7; display: block; overflow: hidden; padding-bottom: 0.08em; }
+.what__name { grid-column: 2; display: block; overflow: visible; overflow-y: clip; padding-bottom: 0.08em; } /* the mask only clips up and down: the hover shift is never cut */
 .what__name-in {
   display: inline-block;
   font-size: clamp(2.1rem, 4.6vw, 5.1rem);
@@ -47,7 +49,7 @@
   transition: transform 0.8s var(--ease-out);
 }
 .what__desc {
-  grid-column: 9 / span 3;
+  grid-column: 3;
   max-width: 30ch;
   font-size: var(--fs-small);
   font-weight: 300;
@@ -55,57 +57,71 @@
   color: var(--ink-dark-soft);
   text-wrap: pretty;
 }
-.what__arrow {
-  grid-column: 12;
-  justify-self: end;
-  display: grid;
-  place-items: center;
-  width: clamp(2.75rem, 3.6vw, 3.5rem);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid var(--line-dark);
-  transition: background-color 0.4s var(--ease-out), border-color 0.4s var(--ease-out), transform 0.6s var(--ease-out);
-}
-.what__arrow svg { width: 42%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.6s var(--ease-out); }
 .what__thumb { display: none; }
+
+/* the row's one way on, at its right end: a dark pill «Детальніше» with a lime disc, so the list reads
+   as something to open, not to scroll past; once the list is in, the discs send out one ring each,
+   top to bottom */
+.what__go {
+  grid-column: 4;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.3125rem 0.3125rem 0.3125rem 1.125rem;
+  border-radius: 999px;
+  background: var(--ink-dark);
+  color: var(--ivory);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: transform 0.6s var(--ease-out);
+}
+.what__go::after {
+  content: "";
+  flex: none;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  background: var(--lime) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d0d0d' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17 17 7M8.5 7H17v8.5'/></svg>") center / 0.875rem no-repeat;
+  transition: transform 0.5s var(--ease-out);
+}
+.what__list.is-in .what__go::after { animation: what-go-ring 1.6s var(--ease-out) both; }
+.what__list.is-in .what__item:nth-child(2) .what__go::after { animation-delay: 0.25s; }
+.what__list.is-in .what__item:nth-child(3) .what__go::after { animation-delay: 0.5s; }
+.what__list.is-in .what__item:nth-child(4) .what__go::after { animation-delay: 0.75s; }
+@keyframes what-go-ring {
+  from { box-shadow: 0 0 0 0 rgb(15 14 13 / 0.35); }
+  to { box-shadow: 0 0 0 0.875rem rgb(15 14 13 / 0); }
+}
+.what__row:active .what__go::after { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) {
+  .what__list.is-in .what__go::after { animation: none; }
+}
 
 @media (hover: hover) and (pointer: fine) {
   .what__list:hover .what__row { opacity: 0.26; }
   .what__list:hover .what__row:hover { opacity: 1; }
   .what__row:hover .what__name-in { transform: translateX(clamp(1rem, 2.2vw, 2.5rem)); }
   .what__row:hover .what__num { color: var(--ember); }
-  .what__row:hover .what__arrow { background: var(--ink-dark); border-color: var(--ink-dark); color: var(--ivory); transform: rotate(45deg); }
+  .what__row:hover .what__go { transform: translateX(-0.25rem); }
+  .what__row:hover .what__go::after { transform: rotate(45deg); }
   .what__item:has(.what__row:hover)::after { transform: scaleX(1); transform-origin: 0 50%; }
 }
 .what__row:focus-visible { outline-offset: -2px; }
-.what__row:focus-visible .what__arrow { background: var(--ink-dark); color: var(--ivory); }
+.what__row:focus-visible .what__go::after { transform: rotate(45deg); }
 @media (hover: none), (pointer: coarse) {
   .what__row { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 0.875rem; row-gap: 0.5rem; align-items: start; }
   .what__num { grid-column: 1; grid-row: 1; padding-top: 0.55em; }
   .what__name { grid-column: 2; grid-row: 1; }
   .what__name-in { font-size: clamp(1.7rem, 7.4vw, 3rem); }
   .what__desc { grid-column: 2; grid-row: 2; }
-  .what__row { --thumb-w: clamp(4rem, 18vw, 7.5rem); }
-  .what__thumb { display: block; grid-column: 3; grid-row: 1 / span 2; align-self: start; width: var(--thumb-w); height: auto; aspect-ratio: 4 / 5; border-radius: 0.625rem; object-fit: cover; }
-  /* the go-arrow on the thumbnail's lower corner: what a tap does, in plain sight */
-  .what__arrow {
-    position: relative;
-    z-index: 1;
-    grid-column: 3;
-    grid-row: 1 / span 2;
-    align-self: start;
-    justify-self: end;
-    width: 2.25rem; /* a sign, not the target: the whole row is the link */
-    margin: calc(var(--thumb-w) * 1.25 - 1.5rem) -0.5rem 0 0;
-    border: 0;
-    background: var(--ink-dark);
-    color: var(--ivory);
-    box-shadow: 0 0 0 0.1875rem var(--ivory);
-  }
-  .what__row:active .what__arrow { transform: rotate(45deg); }
+  .what__go { grid-column: 2; grid-row: 3; justify-self: start; margin-top: 0.625rem; }
+  .what__thumb { display: block; grid-column: 3; grid-row: 1 / span 3; width: clamp(4rem, 18vw, 7.5rem); height: auto; aspect-ratio: 4 / 5; border-radius: 0.625rem; object-fit: cover; }
 }
 @media (max-width: 860px) and (hover: hover) and (pointer: fine) {
-  .what__name { grid-column: 2 / span 10; }
-  .what__desc { grid-column: 2 / span 9; grid-row: 2; margin-top: 0.5rem; }
-  .what__arrow { grid-row: 1; }
+  .what__row { grid-template-columns: 3rem minmax(0, 1fr); column-gap: 1rem; }
+  .what__name { grid-column: 2; }
+  .what__desc { grid-column: 2; grid-row: 2; margin-top: 0.5rem; }
+  .what__go { grid-column: 2; grid-row: 3; justify-self: start; margin-top: 0.875rem; }
 }

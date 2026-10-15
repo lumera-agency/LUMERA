@@ -9,20 +9,22 @@ type Row = { n: number; service: string; name: string; desc: string; image: stri
  * The list: names rise out of their masks as it comes in; over a row the others step back (CSS) and
  * its picture follows the cursor (HoverReveal). A row fires `services:go` — the services' ride or
  * phone switcher takes it there; with nobody listening the anchor works as usual. A row with an `href`
- * (a direction with a page of its own) is a plain link to that page.
+ * (a direction with a page of its own) is a plain link to that page. Its one way on is a dark
+ * «Детальніше» pill with a lime disc, so the list reads as something to open, not to scroll past.
  */
-export function WhatList({ rows }: { rows: Row[] }) {
+export function WhatList({ rows, more }: { rows: Row[]; more: string }) {
   const list = useRef<HTMLOListElement>(null);
-  useHoverReveal(list, { rows: "[data-what-row]", images: rows.map((r) => r.image), avoid: ".what__arrow" });
+  useHoverReveal(list, { rows: "[data-what-row]", images: rows.map((r) => r.image), avoid: ".what__go" });
 
   useGSAP(
     () => {
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const names = gsap.utils.toArray<HTMLElement>(".what__name-in");
-      const rest = gsap.utils.toArray<HTMLElement>(".what__num, .what__desc, .what__arrow");
+      const rest = gsap.utils.toArray<HTMLElement>(".what__num, .what__desc, .what__go");
       gsap.set(names, { yPercent: 108 });
       gsap.set(rest, { autoAlpha: 0, y: 14 });
-      gsap.timeline({ scrollTrigger: { trigger: list.current, start: "top 82%", once: true } })
+      // once in, each row's «Детальніше» sends out one ring, top to bottom (CSS: .is-in)
+      gsap.timeline({ scrollTrigger: { trigger: list.current, start: "top 82%", once: true }, onComplete: () => list.current?.classList.add("is-in") })
         .to(names, { yPercent: 0, duration: 1.2, ease: "expo.out", stagger: 0.09, clearProps: "transform" }, 0)
         .to(rest, { autoAlpha: 1, y: 0, duration: 1.0, ease: "expo.out", stagger: 0.04, clearProps: "transform,opacity,visibility" }, 0.25);
     },
@@ -39,14 +41,12 @@ export function WhatList({ rows }: { rows: Row[] }) {
       {rows.map((r) => (
         <li className="what__item" key={r.n}>
           <a className="what__row" href={r.href ?? `#${r.service}`} data-what-row="" data-n={r.n} onClick={r.href ? undefined : (e) => go(e, r.service)}>
-            <span className="what__num">0{r.n}</span>
+            <span className="what__num">{r.n}</span>
             <span className="what__name">
               <span className="what__name-in">{r.name}</span>
             </span>
             <span className="what__desc">{r.desc}</span>
-            <span className="what__arrow" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7M8.5 7H17v8.5" /></svg>
-            </span>
+            <span className="what__go">{more}</span>
             {/* eslint-disable-next-line @next/next/no-img-element -- a 4:5 thumbnail shown on touch screens only */}
             <img className="what__thumb" src={r.image} alt="" width={680} height={850} loading="lazy" decoding="async" />
           </a>

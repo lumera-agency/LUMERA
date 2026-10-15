@@ -39,7 +39,7 @@ export async function What() {
           </h2>
           <p className="s-head__intro" data-sr="">{t("intro")}</p>
         </header>
-        <WhatList rows={rows} />
+        <WhatList rows={rows} more={t("more")} />
       </div>
     </section>
   );
