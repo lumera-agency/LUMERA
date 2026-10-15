@@ -66,11 +66,7 @@ html.motion:not(.is-ready) [data-rail-track] { visibility: hidden; }
   html { scroll-behavior: smooth; }
 }
 [data-slot] { pointer-events: none; }
-#services { padding-bottom: var(--rhythm-section); }
-
-@media (min-width: 1101px) {
-  #services { padding-bottom: 25vh; }
-}
+#services { padding-bottom: var(--rhythm-m); } /* as much room under its last line (a question with a button) as above it */
 #pricing { scroll-margin-top: calc(var(--topbar-h) - 1px); }
 @media (max-width: 600px) {
   #approach { --nd: 1.75rem; --tl: calc(var(--fs-h4) * 1.2); --pt: 0px; }

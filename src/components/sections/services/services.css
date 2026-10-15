@@ -96,7 +96,7 @@
 .service__more-list dt { font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
 .service__more-list dd { margin: 0.1875rem 0 0; font-size: var(--fs-small); line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
 .service__dialog-go { display: inline-block; margin-top: 1.25rem; font-size: var(--fs-small); }
-.services__cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.125rem 2rem; margin-top: var(--rhythm-m); }
+.services__cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.125rem 2rem; margin-top: var(--rhythm-m); } /* the same room above and below it (#services, base.css) */
 .services__cta-q { margin: 0; font-size: var(--fs-h4); line-height: 1.3; color: var(--ink); text-wrap: balance; }
 .services__note { max-width: var(--measure); margin: var(--rhythm-s) 0 0; font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-mute); text-wrap: pretty; }
 .services__note b {
