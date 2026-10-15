@@ -86,7 +86,7 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
         pin: section,
         pinSpacing: true,
         refreshPriority: 1, // the pin's spacer goes in before the triggers below are measured
-        scrub: 0.5,
+        scrub: 0.3, // the cards keep close to the scroll: a turned stage is there at once
         invalidateOnRefresh: true,
       },
     });
@@ -124,7 +124,7 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
         const at = (t) => st.start + ((st.end - st.start) * t) / cards.length;
         return [0, ...cards.slice(1, -1).map((_, k) => k + 1 + DECK_REST), cards.length].map(at);
       },
-      duration: 1.1,
+      duration: 0.75,
     });
   };
   // the stone beside the deck (three/stage-stone, mounted by Approach) takes its pose from here

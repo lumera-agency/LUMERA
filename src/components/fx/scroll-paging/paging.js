@@ -11,6 +11,8 @@
  *
  * A new gesture is told from a tail by the pushes: after a pause or a turn of direction, or while
  * they hold or grow (a wheel spun on, a fresh swipe); pushes that fade are momentum (fullPage.js).
+ * A gesture of its own during a glide (after a pause, or the other way) goes on to the next stop
+ * at once.
  */
 import { getLenis, scrollToY } from '@/lib/scroll';
 
@@ -28,6 +30,7 @@ const mean = (list) => list.reduce((sum, value) => sum + value, 0) / (list.lengt
 export function initPaging({ stops, sideways = false, busy = () => false, duration = 1 }) {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let paging = false;
+  let goal = 0; // where the glide under way is going
   let armed = true;
   let lastWheel = 0;
   let lastDir = 0;
@@ -40,6 +43,7 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
   const glideTo = (y) => {
     const lenis = getLenis();
     paging = true;
+    goal = y;
     armed = false;
     const done = () => { paging = false; };
     if (lenis) lenis.scrollTo(y, { duration, easing: inOut, lock: true, force: true, onComplete: done });
@@ -74,7 +78,14 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
     const inside = y >= first - EDGE && y <= last + EDGE;
     if (busy()) return swallow(e);
     if (paging) {
-      if (inside) swallow(e);
+      if (!inside) return;
+      swallow(e);
+      // a gesture of its own mid-glide (after a pause, or the other way) goes on to the stop after the
+      // one under way: no waiting for the glide to end. The rest of the first gesture never does
+      if (pushes.length === 1 && (!side || sideways)) {
+        const next = dir > 0 ? list.find((s) => s > goal + EDGE) : [...list].reverse().find((s) => s < goal - EDGE);
+        if (next != null) glideTo(next);
+      }
       return;
     }
     if (inside) {
