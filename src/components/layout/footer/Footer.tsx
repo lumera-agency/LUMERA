@@ -27,7 +27,6 @@ export async function Footer() {
       </div>
       <div className="container footer__bottom">
         <p className="footer__legal">{t("footer.legal")}</p>
-        <p className="footer__contacts"><a href="#contact">{t("footer.write")}</a></p>
         <div className="footer__end">
           <LangSwitch />
           <ScrollTopLink className="footer__up">
