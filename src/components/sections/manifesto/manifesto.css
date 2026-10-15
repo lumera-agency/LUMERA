@@ -8,11 +8,16 @@
   --glitch-before: 2s;
   padding-block: 0;
 }
+/* most of a screen on wide screens (room around the sentence); on phones a band, its own rhythm
+   above and below */
 .manifesto__hold {
   display: grid;
   align-content: center;
-  min-height: min(100svh, 62.5rem);
+  min-height: min(80svh, 52rem);
   padding-block: var(--rhythm-section);
+}
+@media (max-width: 600px) {
+  .manifesto__hold { min-height: 0; }
 }
 .manifesto__text {
   margin: 0;
