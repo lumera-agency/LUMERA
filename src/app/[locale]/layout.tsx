@@ -8,7 +8,8 @@ import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
 import "../globals.css";
 import "@/components/layout/page/page.css";
 
-const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon"];
+// (+ sites: «Дизайн і сайти», messages/sites/)
+const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites"];
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumera-seven-eta.vercel.app";
 
 export function generateStaticParams() {
