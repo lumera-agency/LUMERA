@@ -181,7 +181,7 @@ export function MenuSheet() {
                   aria-current={current === l.href ? "location" : undefined}
                   onClick={(e) => go(e, l.href)}
                 >
-                  <span className="menu-sheet__index" data-menu-fade="">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="menu-sheet__index" data-menu-fade="">{i + 1}</span>
                   <span className="menu-sheet__name">
                     <span>{t(l.label)}</span>
                   </span>

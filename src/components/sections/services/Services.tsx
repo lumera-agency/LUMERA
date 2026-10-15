@@ -65,7 +65,7 @@ export async function Services() {
           </button>
           <div className="ride__hud">
             <p className="ride__count" aria-hidden="true">
-              <b data-ride-now="">01</b> / <span data-ride-of="">05</span>
+              <b data-ride-now="">1</b> / <span data-ride-of="">5</span>
             </p>
             <span className="ride__bar" aria-hidden="true"><i data-ride-bar="" /></span>
             <ul className="ride__names" data-ride-names="" aria-label={t("nav.services")} />

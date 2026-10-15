@@ -12,7 +12,7 @@ export async function HeroRail() {
           {steps.map((n, i) => (
             <li key={n} className="rail__step" style={{ "--i": i } as React.CSSProperties} data-reveal="step">
               <span className="rail__node" aria-hidden="true" />
-              <span className="rail__num" aria-hidden="true">0{n}</span>
+              <span className="rail__num" aria-hidden="true">{n}</span>
               <span className="rail__title">{t(`${n}.title`)}</span>
               <span className="rail__text">{t(`${n}.text`)}</span>
             </li>

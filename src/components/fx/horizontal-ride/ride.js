@@ -47,8 +47,7 @@ export function initRide({
   const of = $('[data-ride-of]', ride);
   const bar = $('[data-ride-bar]', ride);
   const names = $('[data-ride-names]', ride);
-  const pad = (n) => String(n).padStart(2, '0');
-  if (of) of.textContent = pad(panels.length);
+  if (of) of.textContent = String(panels.length);
 
   let on = false;
   let trigger = null;
@@ -60,7 +59,7 @@ export function initRide({
     current = i;
     panels.forEach((p, k) => p.classList.toggle('is-current', k === i));
     buttons.forEach((b, k) => b.setAttribute('aria-current', String(k === i)));
-    if (now) now.textContent = pad(i + 1);
+    if (now) now.textContent = String(i + 1);
     syncArrows();
   };
 
@@ -144,7 +143,7 @@ export function initRide({
       const li = document.createElement('li');
       const b = document.createElement('button');
       b.type = 'button';
-      b.textContent = $(name, p)?.textContent.trim() || pad(i + 1);
+      b.textContent = $(name, p)?.textContent.trim() || String(i + 1);
       b.setAttribute('aria-current', 'false');
       b.addEventListener('click', () => goTo(i));
       li.append(b);
@@ -158,7 +157,7 @@ export function initRide({
     const big = document.createElement('span');
     big.className = 'ride__big';
     big.setAttribute('aria-hidden', 'true');
-    big.textContent = pad(i + 1);
+    big.textContent = String(i + 1);
     big.hidden = true;
     p.append(big);
     return big;
