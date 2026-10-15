@@ -70,7 +70,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           brand="Lumera Studio"
           note={t("preloader.note")}
           words={t("preloader.words")}
-          last={t("preloader.last")}
           stages={t("preloader.stages")}
           images={[1, 2, 3, 4].map((n) => `/img/what/what-${n}-${locale === "ru" ? "ru" : "uk"}.webp`)}
         />
