@@ -23,8 +23,9 @@ import "./menu-sheet.css";
 const noSubscribe = () => () => {};
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-/** Another page passes its own rows and CTA as ready text (Topbar does the same); the main page uses PAGE_NAV. */
-export function MenuSheet({ links, cta }: { links?: readonly NavLink[]; cta?: NavCta } = {}) {
+/** Another page passes its own rows and CTA as ready text (Topbar does the same); the main page uses PAGE_NAV. With
+ *  `home` the logo leads to the main page instead of back to the top. */
+export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; cta?: NavCta; home?: string } = {}) {
   const t = useTranslations();
   const items = links ?? PAGE_NAV.map((l) => ({ href: l.href, text: t(l.label) }));
   const action = cta ?? { href: "#contact", text: t("cta.discuss") };
@@ -160,10 +161,11 @@ export function MenuSheet({ links, cta }: { links?: readonly NavLink[]; cta?: Na
         <div className="menu-sheet__top">
           <a
             className="logo menu-sheet__logo"
-            href="#"
-            aria-label={t("logo.top")}
+            href={home ?? "#"}
+            aria-label={t(home ? "logo.home" : "logo.top")}
             data-menu-fade=""
             onClick={(e) => {
+              if (home) return void menu.set(false);
               e.preventDefault();
               menu.set(false);
               requestAnimationFrame(() => scrollToY(0, { immediate: true }));

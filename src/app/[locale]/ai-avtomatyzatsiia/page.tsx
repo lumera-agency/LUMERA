@@ -4,6 +4,7 @@ import { AiShell } from "@/components/ai/AiShell";
 import { AiFaq } from "@/components/ai/AiFaq";
 import { AiContact } from "@/components/ai/AiContact";
 import { aiFacts } from "@/components/ai/facts";
+import { aiHref } from "@/components/ai/links";
 import { aiMetadata } from "@/components/ai/meta";
 import { aiRich } from "@/components/ai/rich";
 import { Hero } from "@/components/sections/ai-page/Hero";
@@ -34,13 +35,14 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
     { href: "#calc", text: t("nav.calc") },
     { href: "#faq", text: c("nav.faq") },
     { href: "#contact", text: c("nav.lead"), bar: false },
+    { href: aiHref(locale, "/"), text: c("nav.home"), bar: false },
   ];
   const faq = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ q: t(`faq.q.${n}`), a: t.rich(`faq.a.${n}`, { ...aiRich, ...facts }) }));
   return (
     <AiShell
       page="ai"
       nav={nav}
-      footerLinks={nav}
+      footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: "Lumera Studio" }]}
       cta={{ href: "#contact", text: c("cta.auto") }}
       barCta={{ href: "#contact", text: t("topbar.cta") }}
       claim={t("foot.claim")}

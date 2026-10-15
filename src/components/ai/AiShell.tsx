@@ -1,5 +1,5 @@
 import { preload } from "react-dom";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { NavCta, NavLink } from "@/content/nav";
 import { SmoothScroll } from "@/components/fx/smooth-scroll/SmoothScroll";
 import { Topbar } from "@/components/layout/topbar/Topbar";
@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/footer/Footer";
 import { BackToTop } from "@/components/fx/back-to-top/BackToTop";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import { AiRuntime } from "./AiRuntime";
+import { aiHref } from "./links";
 import { AiSprite } from "./parts";
 // the topbar's links and UA · RU are styled with the main page's header (its first screen); ai.css goes last
 import "@/components/layout/header/header.css";
@@ -42,11 +43,13 @@ const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-m
 export async function AiShell({ page, nav, footerLinks, cta, barCta, claim, strings = {}, children }: Props) {
   for (const font of FIRST_SCREEN_FONTS) preload(`/fonts/${font}.woff2`, { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const t = await getTranslations();
+  // the logo leads to the main page in the page's language (/, /ru): the way back to the studio
+  const home = aiHref(await getLocale(), "/");
   return (
     <>
       <AiSprite />
       <SmoothScroll />
-      <Topbar always links={nav} cta={barCta ?? cta} />
+      <Topbar always links={nav} cta={barCta ?? cta} home={home} />
       <main id="main" className="ai" data-ai-page={page}>
         {children}
       </main>
@@ -58,7 +61,7 @@ export async function AiShell({ page, nav, footerLinks, cta, barCta, claim, stri
         </a>
       </div>
       <Footer claim={claim} links={footerLinks} cta={cta} />
-      <MenuSheet links={nav} cta={cta} />
+      <MenuSheet links={nav} cta={cta} home={home} />
       <BackToTop label={t("footer.up.span")} quiet=".footer, .ai-sticky.is-on, .ai-calc__send" />
       <AiRuntime strings={strings} />
     </>
