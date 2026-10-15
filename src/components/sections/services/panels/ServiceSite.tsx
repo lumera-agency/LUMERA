@@ -1,11 +1,13 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { PRICES, presetLabelFor } from "../copy";
+import { aiHref } from "@/components/ai/links";
+import { PRICES } from "../copy";
 
-/** 2 · Сайт і заявка: the page answers the client's questions; ordering takes two fields. Markup ported 1:1 from website-v2; the clip is demos/timelines.js. */
+/** 2 · Сайт і заявка: the page answers the client's questions; ordering takes two fields. Markup ported 1:1 from website-v2; the clip is demos/timelines.js.
+ *  «Детальніше» opens the sites page (/dyzain-i-saity) instead of a card. */
 export async function ServiceSite() {
   const t = await getTranslations();
   const prices = PRICES;
-  const presetLabel = presetLabelFor(await getLocale(), t);
+  const locale = await getLocale();
   return (
     <article className="service" id="svc-2" data-sr="">
       <div className="service__demo">
@@ -302,36 +304,10 @@ export async function ServiceSite() {
         <p className="service__text">{t("services.service.text.2")}</p>
         <div className="service__foot">
           <p className="service__price">{t("services.price.2.text", prices)}</p>
-          <button type="button" className="service__more-btn" data-more="more-2" aria-haspopup="dialog">
+          {/* the sites page has it all (the formats, sample sites, the price, the steps): «Детальніше» opens it */}
+          <a className="service__more-btn service__more-link" href={aiHref(locale, "/dyzain-i-saity")}>
             <span>{t("services.more.label")}</span>
-          </button>
-          <dialog className="service__dialog" id="more-2" aria-labelledby="more-2-t">
-            <div className="service__dialog-in">
-              <h3 className="service__dialog-t" id="more-2-t">{t("services.service.meta.span.2")}</h3>
-              <dl className="service__more-list">
-                <div>
-                  <dt>{t("services.more.dt.what")}</dt>
-                  <dd>{t("services.more.2.what")}</dd>
-                </div>
-                <div>
-                  <dt>{t("services.more.dt.price")}</dt>
-                  <dd>{t("services.more.2.price", prices)}</dd>
-                </div>
-                <div>
-                  <dt>{t("services.more.dt.depends")}</dt>
-                  <dd>{t("services.more.2.depends")}</dd>
-                </div>
-                <div>
-                  <dt>{t("services.more.dt.includes")}</dt>
-                  <dd>{t("services.more.2.includes")}</dd>
-                </div>
-              </dl>
-              <p className="service__dialog-go">
-                <a className="link" href="#pricing" data-cfg-preset="site" data-more-close="">{presetLabel("site")}</a>
-              </p>
-              <button type="button" className="service__dialog-x" data-more-close="" aria-label={t("services.more.close")}>×</button>
-            </div>
-          </dialog>
+          </a>
         </div>
       </div>
     </article>
