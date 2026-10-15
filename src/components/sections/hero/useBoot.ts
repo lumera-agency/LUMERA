@@ -6,7 +6,7 @@
  * Reduced motion: the settled composition at once, the preloader just fades.
  */
 import { useEffect, type RefObject } from "react";
-import { boot, loader, restoreScroll, sceneRun } from "@/lib/boot";
+import { boot, jumpToHash, loader, pageLetGo, restoreScroll, sceneRun } from "@/lib/boot";
 import { settleHero } from "@/components/three/hero/state";
 import { wait } from "@/lib/hooks";
 import { playIntro } from "./useHeroIntro";
@@ -40,18 +40,22 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
       await Promise.race([boot.sceneReady.promise, wait(4000)]);
       clock?.step(0.8, 3);
       clock?.step(0.95, 3);
-      restoreScroll();
 
+      // once the preloader lets the page go (not before: the page is held, Lenis stopped): back where
+      // the visitor was (a language switch), or at the block the link named
+      const arrive = () => void pageLetGo().then(() => restoreScroll() || jumpToHash());
       if (reducedMotion) {
         settleHero();
         sceneRun.set(true);
         await clock?.finish();
+        arrive();
         root.classList.add("is-ready");
         introDone();
         return;
       }
       // the columns start to lift first; the intro starts under them (a stalled loader: after 4 s)
       await Promise.race([clock?.finish() ?? Promise.resolve(), wait(4000)]);
+      arrive();
       sceneRun.set(true);
       const intro = playIntro(hero);
       intro.timeline.then(introDone);
