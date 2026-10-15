@@ -93,3 +93,7 @@
 .footer .lang { font-size: var(--fs-caption); }
 .footer__mark { container-type: inline-size; }
 .footer__mark-text { font-size: calc(100cqw * 0.176); }
+/* phones: the wordmark close under the last line (the desktop's rhythm left a gap) */
+@media (max-width: 600px) {
+  .footer__mark { margin-top: 1.25rem; }
+}
