@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 
-/** The section box; starts the glyphs' relay (why-orbit.js) and, on phones, the strip of cards. */
+/** The section box; starts the glyphs' relay (why-orbit.js) and, on phones, the accordion (why-phone.js). */
 export function WhyClient({ children }: { children: React.ReactNode }) {
   const root = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -12,27 +12,21 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
     let alive = true;
     let cleanup = () => {};
     (async () => {
-      const [{ mountWhy }, { mountHScroll }, { ScrollTrigger }] = await Promise.all([import("./why-orbit.js"), import("./why-phone.js"), import("@/lib/gsap")]);
+      const [{ mountWhy }, { mountAccordion }, { ScrollTrigger }] = await Promise.all([import("./why-orbit.js"), import("./why-phone.js"), import("@/lib/gsap")]);
       if (!alive) return;
-      // ≤ 600 px the strip of cards is the picture and the table's relay waits
+      // ≤ 600 px the accordion is the picture and the table's relay waits
       const api = (mountWhy as unknown as (root: HTMLElement, o: { reducedMotion: boolean; idle: () => boolean }) => { sync(): void; destroy?(): void } | null)(el, { reducedMotion, idle: () => phone.matches });
-      let strip = false;
-      const mountStrip = () => {
-        if (strip || !phone.matches) return;
-        strip = true;
-        mountHScroll(el, { reducedMotion });
-      };
-      mountStrip();
+      const accordion = mountAccordion(el, { reducedMotion });
       requestAnimationFrame(() => ScrollTrigger.refresh());
       const onChange = () => {
         api?.sync();
-        mountStrip();
         requestAnimationFrame(() => ScrollTrigger.refresh());
       };
       phone.addEventListener("change", onChange);
       cleanup = () => {
         phone.removeEventListener("change", onChange);
         api?.destroy?.();
+        accordion?.destroy();
       };
     })();
     return () => {

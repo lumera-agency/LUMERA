@@ -3,10 +3,18 @@ import { rich } from "@/lib/rich";
 import { WhyClient } from "./WhyClient";
 import "./why.css";
 
+/** On phones the rows of the accordion: the link, and its lines (the site's own, shorter where it has them). */
+const PHONE_LINKS = [
+  { link: "search", page: "why.page.1", sys: "why.sys.1" },
+  { link: "site", page: "why.page.2.short.m", sys: "why.sys.2.m" },
+  { link: "lead", page: "why.page.3", sys: "why.sys.3" },
+  { link: "source", page: "why.page.4", sys: "why.sys.4" },
+] as const;
+
 /**
  * 4 · Чому Lumera: the request's chain, link by link — «Тільки сторінка» against «Система Lumera».
  * Each link has a tiny UI glyph whose short story plays as a relay along the chain (why-orbit.js);
- * on phones the table becomes a strip of cards (why-phone.js). Markup ported 1:1 from website-v2.
+ * on phones the table becomes an accordion (why-phone.js). Markup ported 1:1 from website-v2.
  */
 export async function Why() {
   const t = await getTranslations();
@@ -180,130 +188,44 @@ export async function Why() {
               </tbody>
             </table>
           </div>
-          {/* ≤ 600 px only («плавна стрічка», js/why-phone.js): the four links as cards on one strip. The block
-               holds still (sticky) while the page scrolls on, and that scroll moves the strip sideways, one
-               card after another; after the last card the page goes on. There the cards are the list a screen
-               reader reads (the table above is display: none); a card that takes the keyboard focus is brought
-               into its place. Wider screens keep the table; this is display: none. */}
-          <div className="w5-hs" data-why-hs="">
-            <div className="w5-hs__stick">
-              <div className="w5-hs__view">
-                <ul className="w5-hs__track" role="list">
-                  <li className="w5-hcard" data-link="search" tabIndex={0}>
-                    <span className="w5-hcard__stage" aria-hidden="true">
-                      <span className="w5-glyph" data-glyph=""></span>
-                    </span>
-                    <h3 className="w5-hcard__name">{t("why.link.1")}</h3>
-                    <p className="w5-hcard__page">
-                      <span className="w5-hcard__k">
-                        <span className="w5-mark w5-mark--page" aria-hidden="true"></span>
-                        <span>{t("why.col.page")}</span>
-                      </span>
-                      <span>{t("why.page.1")}</span>
-                    </p>
-                    <p className="w5-hcard__sys">
-                      <span className="w5-hcard__k">
-                        <span className="w5-mark w5-mark--sys" aria-hidden="true">
-                          <b></b>
+          {/* ≤ 600 px only (why-phone.js): the four links as an accordion, the first open: the link's glyph
+               and name, under it «Тільки сторінка» against «Система Lumera». There the rows are what a screen
+               reader reads (the table above is display: none). Wider screens keep the table; this is display: none. */}
+          <ul className="w5-acc" role="list" data-why-acc="">
+            {PHONE_LINKS.map((l, i) => (
+              <li className={`w5-acc__item${i === 0 ? " is-open" : ""}`} data-link={l.link} key={l.link}>
+                <h3 className="w5-acc__head">
+                  <button className="w5-acc__btn" type="button" id={`w5-acc-${l.link}`} aria-expanded={i === 0} aria-controls={`w5-acc-${l.link}-text`}>
+                    <span className="w5-glyph" data-glyph="" aria-hidden="true"></span>
+                    <span className="w5-acc__name">{t(`why.link.${i + 1}`)}</span>
+                    <span className="w5-acc__sign" aria-hidden="true"></span>
+                  </button>
+                </h3>
+                <div className="w5-acc__panel" id={`w5-acc-${l.link}-text`} role="region" aria-labelledby={`w5-acc-${l.link}`}>
+                  <div className="w5-acc__clip">
+                    <div className="w5-acc__body">
+                      <p className="w5-acc__page">
+                        <span className="w5-acc__k">
+                          <span className="w5-mark w5-mark--page" aria-hidden="true"></span>
+                          <span>{t("why.col.page")}</span>
                         </span>
-                        <span>{t("why.col.system")}</span>
-                      </span>
-                      <span>{t("why.sys.1")}</span>
-                    </p>
-                  </li>
-                  <li className="w5-hcard" data-link="site" tabIndex={0}>
-                    <span className="w5-hcard__stage" aria-hidden="true">
-                      <span className="w5-glyph" data-glyph=""></span>
-                    </span>
-                    <h3 className="w5-hcard__name">{t("why.link.2")}</h3>
-                    <p className="w5-hcard__page">
-                      <span className="w5-hcard__k">
-                        <span className="w5-mark w5-mark--page" aria-hidden="true"></span>
-                        <span>{t("why.col.page")}</span>
-                      </span>
-                      <span>{t("why.page.2.short.m")}</span>
-                    </p>
-                    <p className="w5-hcard__sys">
-                      <span className="w5-hcard__k">
-                        <span className="w5-mark w5-mark--sys" aria-hidden="true">
-                          <b></b>
+                        <span>{t(l.page)}</span>
+                      </p>
+                      <p className="w5-acc__sys">
+                        <span className="w5-acc__k">
+                          <span className="w5-mark w5-mark--sys" aria-hidden="true">
+                            <b></b>
+                          </span>
+                          <span>{t("why.col.system")}</span>
                         </span>
-                        <span>{t("why.col.system")}</span>
-                      </span>
-                      <span>{t("why.sys.2.m")}</span>
-                    </p>
-                  </li>
-                  <li className="w5-hcard" data-link="lead" tabIndex={0}>
-                    <span className="w5-hcard__stage" aria-hidden="true">
-                      <span className="w5-glyph" data-glyph=""></span>
-                    </span>
-                    <h3 className="w5-hcard__name">{t("why.link.3")}</h3>
-                    <p className="w5-hcard__page">
-                      <span className="w5-hcard__k">
-                        <span className="w5-mark w5-mark--page" aria-hidden="true"></span>
-                        <span>{t("why.col.page")}</span>
-                      </span>
-                      <span>{t("why.page.3")}</span>
-                    </p>
-                    <p className="w5-hcard__sys">
-                      <span className="w5-hcard__k">
-                        <span className="w5-mark w5-mark--sys" aria-hidden="true">
-                          <b></b>
-                        </span>
-                        <span>{t("why.col.system")}</span>
-                      </span>
-                      <span>{t("why.sys.3")}</span>
-                    </p>
-                  </li>
-                  <li className="w5-hcard" data-link="source" tabIndex={0}>
-                    <span className="w5-hcard__stage" aria-hidden="true">
-                      <span className="w5-glyph" data-glyph=""></span>
-                    </span>
-                    <h3 className="w5-hcard__name">{t("why.link.4")}</h3>
-                    <p className="w5-hcard__page">
-                      <span className="w5-hcard__k">
-                        <span className="w5-mark w5-mark--page" aria-hidden="true"></span>
-                        <span>{t("why.col.page")}</span>
-                      </span>
-                      <span>{t("why.page.4")}</span>
-                    </p>
-                    <p className="w5-hcard__sys">
-                      <span className="w5-hcard__k">
-                        <span className="w5-mark w5-mark--sys" aria-hidden="true">
-                          <b></b>
-                        </span>
-                        <span>{t("why.col.system")}</span>
-                      </span>
-                      <span>{t("why.sys.4")}</span>
-                    </p>
-                  </li>
-                </ul>
-              </div>
-              <div className="w5-hs__ctrl" aria-hidden="true">
-                <span className="w5-hs__dashes">
-                  <i>
-                    <b></b>
-                  </i>
-                  <i>
-                    <b></b>
-                  </i>
-                  <i>
-                    <b></b>
-                  </i>
-                  <i>
-                    <b></b>
-                  </i>
-                </span>
-                <span className="w5-hs__count">
-                  <b>1</b>
-                  &thinsp;
-                  /
-                  &thinsp;
-                  4
-                </span>
-              </div>
-            </div>
-          </div>
+                        <span>{t(l.sys)}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
           <ul className="w5-sum" role="list">
             <li className="w5-sum__item" data-sr="">
               <h3 className="w5-sum__head">{t("why.sum.head.2")}</h3>

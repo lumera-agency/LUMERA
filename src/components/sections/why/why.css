@@ -234,68 +234,50 @@
 @media (min-width: 861px) {
   .w5-row { padding-block: var(--row-pad); border-bottom-color: var(--line); }
 }
-.w5-hs { display: none; }
-.w5-hs {
-  --step: 100vh; --rest: 12vh; --panel: calc(100vh - var(--topbar-h));
-  --cw: calc(100vw - 2 * var(--gutter) - 2.125rem); /* a card: the screen less the gutters and the next one's edge */
-  position: relative;
-  height: calc(var(--panel) + 3 * var(--step) + 2 * var(--rest));
-  margin: 0 calc(-1 * var(--gutter));
+/* ≤ 600 px (page.css shows it): the four links as an accordion (why-phone.js). A row: the glyph, the
+   name, a «+» that folds into a lime «−»; its text eases open through the grid's row (0fr ↔ 1fr) */
+.w5-acc { display: none; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.w5-acc__item { border-bottom: 1px solid var(--line); }
+.w5-acc__head { margin: 0; font: inherit; }
+.w5-acc__btn {
+  display: grid; grid-template-columns: 4.25rem minmax(0, 1fr) auto; align-items: center; column-gap: 1rem;
+  width: 100%; padding: 1.125rem 0; border: 0; background: none;
+  color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-@supports (height: 1svh) {
-  .w5-hs { --step: 100svh; --rest: 12svh; --panel: calc(100svh - var(--topbar-h)); }
+.w5-acc .w5-glyph { position: static; width: 4.25rem; height: 2.625rem; }
+.w5-acc__item.is-accent .w5-glyph :is(.g-on, .g-hl) { opacity: 1; }
+.w5-acc__name { font-size: 1.25rem; font-weight: 400; line-height: 1.2; letter-spacing: -0.02em; font-variation-settings: "SHRP" 50; }
+.w5-acc__sign {
+  position: relative; width: 2rem; height: 2rem; border-radius: 50%;
+  border: 1px solid rgba(246, 246, 243, 0.3);
+  transition: background-color 0.4s var(--ease-out), border-color 0.4s var(--ease-out);
 }
-.w5-hs__stick {
-  position: sticky; top: var(--topbar-h); height: var(--panel);
-  display: flex; flex-direction: column; justify-content: center; gap: 0.875rem;
-  overflow: hidden; overflow: clip; /* clip: a focused card can't scroll it sideways */
+.w5-acc__sign::before,
+.w5-acc__sign::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 0.75rem; height: 1.5px; margin: -0.75px 0 0 -0.375rem;
+  border-radius: 1px; background: var(--ink);
+  transition: transform 0.5s var(--ease-out), background-color 0.4s var(--ease-out);
 }
-.w5-hs__view { padding: 0.25rem var(--gutter) 0.375rem; }
-.w5-hs__track { display: flex; gap: 0.75rem; margin: 0; padding: 0; list-style: none; will-change: transform; }
-.w5-hcard {
-  position: relative; flex: 0 0 var(--cw); display: flex; flex-direction: column;
-  padding: 0 1.25rem 1.375rem; border-radius: 1.25rem;
-  border: 1px solid rgba(246, 246, 243, 0.14);
-  background: linear-gradient(180deg, #161615, #0f0f0e 52%);
-  transition: opacity 0.45s var(--ease-out);
-  outline: none;
-}
-.w5-hcard:not(.is-on) { opacity: 0.4; }
-.w5-hcard:focus-visible { border-color: var(--ink); box-shadow: 0 0 0 2px var(--bg), 0 0 0 0.1875rem var(--ink); }
-.w5-hcard__stage { position: relative; display: grid; place-items: center; height: clamp(8.25rem, 37vw, 9.75rem); margin: 0 -1.25rem 1rem; border-bottom: 1px solid var(--line); }
-.w5-hcard__stage::before {
-  content: ""; position: absolute; inset: 0; border-radius: 1.1875rem 1.1875rem 0 0;
-  background: radial-gradient(circle, rgba(246, 246, 243, 0.13) 0.8px, transparent 1.2px) 50% 50% / 0.875rem 0.875rem;
-  -webkit-mask: radial-gradient(62% 72% at 50% 50%, #000 20%, transparent 100%);
-  mask: radial-gradient(62% 72% at 50% 50%, #000 20%, transparent 100%);
-}
-.w5-hcard .w5-glyph { position: relative; inset: auto; width: clamp(9.375rem, 44vw, 11rem); height: clamp(5.75rem, 26.9vw, 6.7188rem); }
-.w5-hcard .w5-glyph .g-l { stroke-width: 1.25; }
-.w5-hcard.is-accent .w5-glyph :is(.g-on, .g-hl) { opacity: 1; }
-.w5-hcard__name { margin: 0 0 0.75rem; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.02em; font-variation-settings: "SHRP" 50; color: var(--ink); }
-.w5-hcard__page,
-.w5-hcard__sys { margin: 0; text-wrap: pretty; }
-.w5-hcard__k { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.25rem; font: 400 0.6875rem / 1.4 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
-.w5-hcard__k .w5-mark { position: relative; display: inline-block; flex: none; }
-.w5-hcard__page { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); }
-.w5-hcard__page .w5-hcard__k { color: var(--ink-mute); }
-.w5-hcard__sys { margin-top: 0.75rem; font-size: var(--fs-body); line-height: 1.45; color: var(--ink); }
-.w5-hcard__sys .w5-hcard__k { color: var(--signal); }
-.w5-hcard__page > span:last-child,
-.w5-hcard__sys > span:last-child { display: block; }
-.w5-hs__ctrl { display: flex; align-items: center; gap: 0.875rem; padding: 0 var(--gutter); }
-.w5-hs__dashes { flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.375rem; }
-.w5-hs__dashes i { position: relative; height: 2px; border-radius: 1px; background: rgba(246, 246, 243, 0.16); overflow: hidden; }
-.w5-hs__dashes b { position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; transform: scaleX(0); }
-.w5-hs__dashes i:first-child b { transform: none; }
-.w5-hs__count { flex: none; min-width: 3.4em; text-align: right; font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: 0.08em; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
-.w5-hs__count b { font-weight: 400; color: var(--ink); }
-.w5-hs__stick > .s-head { margin: 0 0 clamp(1.125rem, 3svh, 1.875rem); padding: 0 var(--gutter); }
-.w5-hs.has-head .w5-hs__stick { justify-content: center; }
-.w5-hs.is-still,
-html:not(.js) .w5-hs { height: auto; }
-.w5-hs.is-still .w5-hs__stick { position: static; height: auto; overflow: visible; }
-.w5-hs.is-still .w5-hs__track { flex-direction: column; }
-.w5-hs.is-still .w5-hcard { flex: none; opacity: 1; }
-.w5-hs.is-still .w5-hcard .w5-glyph .g-on { opacity: 1; }
-.w5-hs.is-still .w5-hs__ctrl { display: none; }
+.w5-acc__sign::after { transform: rotate(90deg); }
+.w5-acc__item.is-open .w5-acc__sign { border-color: var(--lime); background: var(--lime); }
+.w5-acc__item.is-open .w5-acc__sign::before,
+.w5-acc__item.is-open .w5-acc__sign::after { background: #0d0d0d; }
+.w5-acc__item.is-open .w5-acc__sign::after { transform: none; }
+.w5-acc__panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.5s var(--ease-out); }
+.w5-acc__item.is-open .w5-acc__panel,
+html:not(.js) .w5-acc__panel { grid-template-rows: 1fr; }
+.w5-acc__clip { min-height: 0; overflow: hidden; }
+.w5-acc__body { padding: 0 0 1.25rem; opacity: 0; transform: translateY(-0.375rem); transition: opacity 0.25s ease, transform 0.5s var(--ease-out); }
+.w5-acc__item.is-open .w5-acc__body,
+html:not(.js) .w5-acc__body { opacity: 1; transform: none; transition: opacity 0.45s 0.1s ease, transform 0.6s var(--ease-out); }
+.w5-acc__page,
+.w5-acc__sys { margin: 0; text-wrap: pretty; }
+.w5-acc__k { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.25rem; font: 400 0.6875rem / 1.4 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.w5-acc__k .w5-mark { position: relative; display: inline-block; flex: none; }
+.w5-acc__page { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); }
+.w5-acc__page .w5-acc__k { color: var(--ink-mute); }
+.w5-acc__sys { margin-top: 0.75rem; font-size: var(--fs-body); line-height: 1.45; color: var(--ink); }
+.w5-acc__sys .w5-acc__k { color: var(--signal); }
+.w5-acc__page > span:last-child,
+.w5-acc__sys > span:last-child { display: block; }
