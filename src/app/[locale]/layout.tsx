@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { LogoSprite } from "@/components/ui/logo/LogoSprite";
-import { Preloader } from "@/components/fx/preloader/Preloader";
 import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
 import "../globals.css";
 import "@/components/layout/page/page.css";
 
+const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon"];
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumera-seven-eta.vercel.app";
 
 export function generateStaticParams() {
@@ -58,6 +58,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const t = await getTranslations({ locale });
+  // the browser gets the main page's messages only: the AI pages render theirs on the server (messages/ai/)
+  const clientMessages = Object.fromEntries(Object.entries(await getMessages()).filter(([ns]) => !AI_NAMESPACES.includes(ns)));
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -66,16 +68,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       </head>
       <body>
         <LogoSprite />
-        <Preloader
-          brand="Lumera Studio"
-          note={t("preloader.note")}
-          words={t("preloader.words")}
-          stages={t("preloader.stages")}
-          images={[1, 2, 3, 4].map((n) => `/img/what/what-${n}-${locale === "ru" ? "ru" : "uk"}.webp`)}
-        />
         <a className="skip-link" href="#main">{t("skip")}</a>
         <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" size={110} grow={1.15} lensGrow={1.35} />
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={clientMessages}>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

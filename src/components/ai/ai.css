@@ -1,0 +1,1278 @@
+/*
+ * The AI pages (/ai-avtomatyzatsiia, /keisy/poshuk-zamovlen, /keisy/ai-asystent): their own blocks only. The kit
+ * (tokens, sections and heads, buttons, topbar, footer, FAQ, form) is the main page's (styles/tokens.css,
+ * layout/page/page.css, ui/button, layout/*, sections/faq, sections/contact). Ported from the static pages'
+ * css/ai-page.css (part 2), on the main page's ink, ivory and rem scale; the rules keep their order.
+ */
+/* ==========================================================================
+   Part 2 · the page
+   ========================================================================== */
+
+/* the AI pages' markup counts on two more resets than the main page's base.css has (it resets ul, h1 and p) */
+main.ai ol { margin: 0; padding: 0; list-style: none; }
+main.ai h2 { margin: 0; }
+
+/* the main page's page shell runs a dot down its left line as the page scrolls: not on the AI pages (owner, 2026-10-15) */
+main.ai .spine__head { display: none; }
+
+/* a block's part waiting to come in (runtime: initReveals; set only with motion, gone once it has played) */
+.ai-rv { opacity: 0; }
+
+/* the case's and the salon's first screens come in once, as the AI page's does (CSS, from the first paint) */
+html.motion main:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero__copy > * { animation: ai-rise-in 0.7s var(--ease-out) backwards; }
+html.motion main:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero__copy > :nth-child(2) { animation-delay: 0.08s; }
+html.motion main:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero__copy > :nth-child(3) { animation-delay: 0.16s; }
+html.motion main:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero__copy > :nth-child(4) { animation-delay: 0.24s; }
+html.motion main:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero__copy > :nth-child(n + 5) { animation-delay: 0.32s; }
+html.motion main:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero__visual { animation: ai-rise-in 0.9s var(--ease-out) 0.2s backwards; }
+
+/* the buttons in the main page's contexts (ui/button/button.css): the first screen's request in lime, as on the main
+   page's first screen; the phones' sticky request in ember, as everywhere on the page */
+.ai-hero .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.55); }
+.ai-hero .btn--ghost { --btn-fill: var(--signal); --btn-fill-ink: var(--on-ink); }
+.ai-sticky .btn--primary { --btn-bg: var(--ember); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(210 86 28 / 0.6); }
+
+/* the type and the small labels every block shares */
+.ai-sec { padding-top: clamp(5.5rem, 12vh, 9.5rem); }
+.ai-sec.section--ivory { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
+#contact { padding-bottom: var(--rhythm-section); }
+.ai-sample {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3em 0.75em;
+  border-radius: 62.4375rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--ink-soft);
+  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.14);
+}
+.ai-foot { max-width: 62ch; margin: var(--rhythm-s) 0 0; font-size: var(--fs-small); font-weight: 300; line-height: 1.55; color: var(--ink-mute); text-wrap: pretty; }
+/* «↻ Ще раз»: shown once a scene has played (it keeps its place: nothing moves when it appears) */
+.ai-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;
+  padding: 0 0.875rem;
+  border: 0;
+  border-radius: 62.4375rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: var(--ink-mute);
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s, color 0.2s;
+}
+.ai-replay:hover,
+.ai-replay:focus-visible { color: var(--ink); }
+.ai-replay:focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
+.ai-replay.is-on { opacity: 1; visibility: visible; }
+html:not(.motion) .ai-replay { display: none; }
+.section--ivory .ai-replay { color: var(--ink-dark-mute); }
+.section--ivory .ai-replay:hover,
+.section--ivory .ai-replay:focus-visible { color: var(--ink-dark); }
+.section--ivory .ai-replay:focus-visible { outline-color: var(--ink-dark); }
+
+/* ---------- topbar on this page: «Хочу такого робота»; on phones the sticky bar below carries it ---------- */
+@media (max-width: 600px) { .ai-topbar__cta { display: none; } }
+.topbar__sheet .topbar__home { color: var(--ink-soft); font-size: 1.05rem; }
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.ai-hero {
+  position: relative;
+  padding: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)) var(--gutter) clamp(4rem, 10vh, 7.5rem);
+  background: radial-gradient(110% 90% at 74% 38%, #171717 0%, #0d0d0d 50%, var(--bg) 100%);
+  overflow: hidden;
+}
+.ai-hero__in { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: center; }
+.ai-hero__copy { grid-column: 1 / span 7; }
+.ai-hero__visual { grid-column: 8 / -1; display: grid; justify-items: center; gap: 0.875rem; }
+.ai-hero__title { font-size: clamp(2.5rem, 4.4vw, 4.6rem); line-height: 1.03; max-width: 15ch; }
+.ai-hero__lead { max-width: 42ch; margin-top: clamp(1.25rem, 3.2vh, 2rem); font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+.ai-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: clamp(1.25rem, 3vh, 1.75rem); }
+.ai-chips li { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2rem; padding: 0 0.75rem; border-radius: 62.4375rem; font-family: var(--font-mono); font-size: 0.7812rem; letter-spacing: 0.01em; color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
+.ai-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: clamp(1.75rem, 4.4vh, 2.75rem); }
+.ai-down { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: var(--fs-body); color: var(--ink); text-decoration: underline; text-decoration-color: rgba(210, 86, 28, 0.75); text-underline-offset: 0.3em; text-decoration-thickness: 1px; }
+.ai-down svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ai-down:hover { color: var(--ember-ink); }
+
+/* a notification card (the case's and the salon's first screens) */
+.ai-push {
+  display: grid;
+  grid-template-columns: 1.875rem minmax(0, 1fr);
+  column-gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 1.125rem;
+  background: rgba(30, 30, 30, 0.86);
+  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08), 0 0.625rem 1.5rem -0.875rem #000;
+  font-size: 0.7812rem;
+  line-height: 1.35;
+}
+.ai-push__app { grid-row: 1 / span 3; display: grid; place-items: center; width: 1.875rem; height: 1.875rem; border-radius: 0.5rem; color: var(--on-accent); background: var(--signal); }
+.ai-push__app svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ai-push__head { display: flex; justify-content: space-between; gap: 0.5rem; color: var(--ink-mute); font-size: 0.7188rem; }
+.ai-push__head b { font-weight: 500; color: var(--ink); }
+.ai-push__t { font-weight: 500; color: var(--ink); }
+.ai-push__b { color: var(--ink-soft); }
+
+/* ==========================================================================
+   2 · Результат: two bars of time, 60 minutes become 15 (ivory)
+   ========================================================================== */
+.ai-time { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); }
+.ai-time__row { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; padding: 1.625rem 0; border-top: 1px solid var(--line-dark); }
+.ai-time__row:last-of-type { border-bottom: 1px solid var(--line-dark); }
+.ai-time__label { grid-column: 1 / span 3; display: grid; gap: 2px; }
+.ai-time__label b { font-family: var(--font-mono); font-size: var(--fs-label); font-weight: 400; letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+.ai-time__label span { font-size: var(--fs-h3); font-weight: 300; line-height: 1.1; letter-spacing: -0.02em; color: var(--ink-dark); }
+.ai-time__bar { grid-column: 4 / span 6; position: relative; height: 3.25rem; border-radius: 0.625rem; overflow: hidden; }
+.ai-time__bar i { position: absolute; left: 0; top: 0; bottom: 0; transform-origin: 0 50%; border-radius: 0.625rem; }
+/* before: the whole hour, in five-minute marks */
+.ai-time__bar--before { box-shadow: inset 0 0 0 1px var(--line-dark); }
+.ai-time__bar--before i {
+  right: 0;
+  background:
+    linear-gradient(90deg, transparent calc(100% - 1px), rgba(241, 236, 227, 0.2) calc(100% - 1px)) 0 0 / calc(100% / 12) 100% repeat-x,
+    linear-gradient(180deg, #2a2724, #0f0e0d);
+}
+/* after: a quarter of it in ember (the manager's 15 minutes), the rest set free (hatched) */
+.ai-time__bar--after { background: repeating-linear-gradient(-45deg, rgba(15, 14, 13, 0.16) 0 1px, transparent 1px 0.5rem); box-shadow: inset 0 0 0 1px var(--line-dark); }
+.ai-time__bar--after i { width: 25%; background: linear-gradient(180deg, #e46a2e, #b0461a); }
+.ai-time__free { position: absolute; left: 25%; top: 0; bottom: 0; display: flex; align-items: center; padding-left: 1rem; font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: 0.02em; color: var(--ink-dark-soft); }
+.ai-time__text { grid-column: 10 / -1; font-size: var(--fs-body); font-weight: 300; line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+.ai-time__scale { grid-column: 4 / span 6; display: flex; justify-content: space-between; margin-top: 0.625rem; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--ink-dark-mute); font-variant-numeric: tabular-nums; }
+.ai-time .ai-replay { grid-column: 10 / -1; justify-self: end; margin-top: 2px; }
+.ai-total { margin-top: var(--rhythm-m); max-width: 24ch; font-size: var(--fs-h3); font-weight: 300; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink-dark); text-wrap: balance; }
+.ai-total b { font-weight: 400; color: var(--ember-deep); }
+
+/* ==========================================================================
+   4 · Як робот вирішує: four ads with a stamp each, and the foreman's notes
+   ========================================================================== */
+.ai-decide { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: start; }
+.ai-deck { grid-column: 1 / span 7; }
+.ai-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.875rem; }
+.ai-ad {
+  position: relative;
+  display: grid;
+  gap: 0.375rem;
+  align-content: start;
+  padding: 1.125rem 1.25rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #151515, #101010);
+}
+.ai-ad__src { display: flex; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-mute); }
+.ai-ad__src span + span::before { content: "·"; margin-right: 0.5rem; }
+.ai-ad__t { font-size: clamp(1.05rem, 1.3vw, 1.25rem); font-weight: 400; line-height: 1.3; color: var(--ink); }
+.ai-ad__meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-mute); }
+.ai-ad__verdict { display: grid; grid-template-columns: 1.625rem minmax(0, 1fr); gap: 0.625rem; align-items: start; margin-top: 0.625rem; padding-top: 0.75rem; border-top: 1px solid var(--line); font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
+.ai-stamp { display: grid; place-items: center; width: 1.625rem; height: 1.625rem; border-radius: 50%; font-size: 0.8125rem; line-height: 1; }
+.ai-ad[data-verdict="no"] .ai-stamp { color: var(--ink-mute); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.ai-ad[data-verdict="no"] .ai-ad__t { opacity: 0.55; }
+.ai-ad__lit { position: absolute; inset: -1px; border-radius: inherit; border: 1px solid rgba(218, 255, 2, 0.5); box-shadow: 0 0 0 1px rgba(218, 255, 2, 0.1), 0 1.5rem 3.125rem -1.875rem rgba(218, 255, 2, 0.3); pointer-events: none; }
+.ai-ad[data-verdict="no"] .ai-ad__lit { display: none; }
+.ai-ad[data-verdict="yes"] .ai-stamp { font-weight: 600; color: var(--on-accent); background: var(--signal); box-shadow: 0 0 0.875rem rgba(218, 255, 2, 0.3); }
+.ai-ad[data-verdict="yes"] .ai-ad__verdict { color: var(--ink); }
+/* the foreman's notes: a sheet of ruled paper (ivory: no signal on it, the ✓ is ink and ember) */
+.ai-pad {
+  grid-column: 8 / -1;
+  position: relative;
+  padding: 1.375rem 1.5rem 1.25rem 2.75rem;
+  border-radius: 0.375rem;
+  color: #0f0e0d;
+  background: linear-gradient(90deg, transparent 1.9375rem, rgba(210, 86, 28, 0.55) 1.9375rem 2rem, transparent 2rem), #fcfcfa;
+  box-shadow: 0 1.875rem 3.75rem -1.875rem rgba(0, 0, 0, 0.9), 0 2px 0 rgba(255, 255, 255, 0.4) inset;
+  transform: rotate(-1deg);
+}
+.ai-pad__head { display: grid; gap: 2px; padding-bottom: 0.75rem; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: var(--track-caps); text-transform: uppercase; color: rgba(15, 14, 13, 0.62); }
+.ai-pad__head span + span { font-family: var(--font-sans); font-size: 1rem; letter-spacing: 0; text-transform: none; color: #0f0e0d; }
+.ai-pad__lines { font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.4; }
+.ai-pad__lines li { padding: 0.5625rem 0 0.4375rem; border-top: 1px solid rgba(15, 14, 13, 0.1); }
+.ai-pad__lines b { font-weight: 500; }
+.ai-pad__ok { font-weight: 500; color: var(--ember-deep); }
+.ai-decide .ai-replay { grid-column: 1 / -1; justify-self: end; margin-top: 0.5rem; }
+
+/* ==========================================================================
+   5 · Що отримує менеджер: the Telegram message with numbered notes; the table in one line beside it
+   ========================================================================== */
+.ai-manager { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); row-gap: var(--rhythm-m); align-items: start; }
+.ai-tg { position: relative; grid-column: 1 / span 7; display: grid; justify-items: start; gap: 0.875rem; padding-right: 18.125rem; }
+.ai-phone {
+  position: relative;
+  width: 20.625rem;
+  padding: 0.5rem;
+  border-radius: 2.75rem;
+  background: #050505;
+  box-shadow: 0 0 0 1px rgba(246, 246, 243, 0.14), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.95);
+}
+.ai-phone__bar { display: flex; align-items: center; gap: 0.625rem; padding: 2.125rem 1rem 0.75rem; border-radius: 2.25rem 2.25rem 0 0; background: #151515; border-bottom: 1px solid rgba(246, 246, 243, 0.07); }
+.ai-phone__back { display: grid; place-items: center; width: 1.25rem; color: var(--ink-soft); }
+.ai-phone__back svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ai-phone__ava { display: grid; place-items: center; width: 2.125rem; height: 2.125rem; border-radius: 50%; font-weight: 600; font-size: 0.9375rem; color: var(--on-accent); background: var(--signal); }
+.ai-phone__who { display: grid; line-height: 1.25; }
+.ai-phone__who b { font-size: 0.875rem; font-weight: 500; color: var(--ink); }
+.ai-phone__who span { font-size: 0.75rem; color: var(--ink-mute); }
+.ai-phone__chat { position: relative; padding: 0.75rem 0.75rem 1.125rem; border-radius: 0 0 2.25rem 2.25rem; background: #0d0d0d; }
+.ai-phone__day { width: max-content; margin: 0 auto 0.625rem; padding: 0.1875rem 0.625rem; border-radius: 62.4375rem; font-size: 0.6875rem; color: var(--ink-soft); background: rgba(255, 255, 255, 0.06); }
+.ai-phone__push { position: absolute; left: 0.625rem; right: 0.625rem; top: 0.5rem; z-index: 4; opacity: 0; }
+.ai-msg { position: relative; padding: 0.375rem 0.75rem 0.5rem; border-radius: 1rem 1rem 1rem 0.25rem; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); font-size: 0.7812rem; line-height: 1.45; color: var(--ink); }
+.ai-row { position: relative; padding: 0.625rem 0; border-bottom: 1px solid rgba(246, 246, 243, 0.06); }
+.ai-row:last-child { border-bottom: 0; }
+.ai-row__v { display: grid; grid-template-columns: 1.125rem minmax(0, 1fr); column-gap: 0.375rem; align-items: baseline; }
+.ai-row--plain .ai-row__v { grid-template-columns: minmax(0, 1fr); padding-left: 1.5rem; color: var(--ink-soft); }
+.ai-row__v b { font-weight: 600; }
+.ai-row__v u { color: #8fc8ff; text-decoration-color: rgba(143, 200, 255, 0.5); }
+.ai-row__n { display: grid; place-items: center; width: 1.0625rem; height: 1.0625rem; border-radius: 50%; font-family: var(--font-mono); font-size: 0.625rem; font-style: normal; font-weight: 500; line-height: 1; color: var(--on-accent); background: var(--signal); transform: translateY(2px); }
+.ai-msg__time { text-align: right; font-size: 0.6562rem; color: var(--ink-mute); }
+.ai-msg__kb { margin-top: 0.375rem; padding: 0.5625rem 0.75rem; border-radius: 0.75rem; font-size: 0.7812rem; text-align: center; color: var(--ink); background: rgba(255, 255, 255, 0.07); }
+/* the notes, on wide screens: a column to the right of the phone, each on a hairline from its row */
+.ai-row__note {
+  position: absolute;
+  left: calc(100% + 4.125rem);
+  top: 0.5625rem;
+  width: 16.25rem;
+  padding-left: 0.75rem;
+  font-size: 0.8438rem;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+.ai-row--two { padding-bottom: 1.25rem; } /* its note runs to two lines */
+.ai-row__note::before { content: ""; position: absolute; right: 100%; top: 0.7em; width: 3.875rem; height: 1px; background: linear-gradient(90deg, rgba(218, 255, 2, 0.6), rgba(246, 246, 243, 0.25)); }
+.ai-row__note::after { content: ""; position: absolute; left: -4.125rem; top: calc(0.7em - 2.5px); width: 0.3125rem; height: 0.3125rem; border-radius: 50%; background: var(--signal); }
+.ai-tg__sample { margin-left: 2px; }
+.ai-tg .ai-replay { position: absolute; left: 16.25rem; bottom: -0.25rem; }
+
+/* the table in one line: a card beside the phone */
+.ai-keep { grid-column: 9 / -1; align-self: center; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 1rem; align-items: center; padding: 1.125rem 1.25rem; border-radius: 1rem; border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.012)); font-size: var(--fs-body-s); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+.ai-keep__ico { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.ai-keep__ico svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* the mock window (the assistant page's schedule) */
+.ai-sheet__win { border-radius: 0.75rem; border: 1px solid rgba(246, 246, 243, 0.12); background: #121212; overflow: hidden; box-shadow: 0 2.5rem 4.375rem -2.5rem rgba(0, 0, 0, 0.95); }
+.ai-sheet__bar { display: flex; align-items: center; gap: 0.5rem; height: 2.125rem; padding: 0 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); }
+.ai-sheet__bar > i { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(246, 246, 243, 0.16); }
+.ai-sheet__bar > span:not(.ai-sample) { margin-left: 0.375rem; padding: 0.25em 0.8em; border-radius: 0.375rem; font-size: 0.6875rem; color: var(--ink-mute); background: rgba(255, 255, 255, 0.04); white-space: nowrap; }
+.ai-sheet__bar .ai-sample { margin-left: auto; font-size: 0.6562rem; }
+
+/* ==========================================================================
+   6 · Кому ще може підійти: the trades as tags (.ai-tags, with the assistant page) and a closing line (ivory)
+   ========================================================================== */
+.ai-fit__end { margin-top: var(--rhythm-s); font-size: var(--fs-lead); font-weight: 300; color: var(--ink-dark-soft); }
+
+/* ==========================================================================
+   The sticky request bar (phones), after the first screen, hidden again at the form
+   ========================================================================== */
+.ai-sticky { display: none; }
+
+/* ==========================================================================
+   Widths
+   ========================================================================== */
+@media (max-width: 1279px) {
+  .ai-tg,
+  .ai-keep { grid-column: 1 / -1; }
+  .ai-keep { justify-self: start; max-width: 35rem; }
+}
+@media (max-width: 1100px) {
+  .ai-time__label { grid-column: 1 / span 4; }
+  .ai-time__bar,
+  .ai-time__scale { grid-column: 5 / -1; }
+  .ai-time__text { grid-column: 5 / -1; margin-top: 0.875rem; }
+  .ai-time__row { padding: 1.375rem 0; }
+  .ai-time .ai-replay { grid-column: 1 / -1; }
+  .ai-deck { grid-column: 1 / -1; }
+  .ai-pad { grid-column: 2 / span 9; margin-top: 2.125rem; }
+}
+@media (max-width: 860px) {
+  .ai-hero__copy,
+  .ai-hero__visual { grid-column: 1 / -1; }
+  .ai-hero__visual { margin-top: 3.5rem; }
+  .ai-hero__title { max-width: 16ch; }
+}
+
+/* ---------- 5 · up to 720 px the notes no longer fit beside the phone: the message reads by itself (it is in
+   the page's language), so the notes and their numbers go ---------- */
+@media (max-width: 720px) {
+  .ai-tg { padding-right: 0; justify-items: center; }
+  .ai-phone { width: min(21.25rem, 100%); }
+  .ai-row__n,
+  .ai-row__note { display: none; }
+  .ai-row__v { grid-template-columns: minmax(0, 1fr); }
+  .ai-row--plain .ai-row__v { padding-left: 0; }
+  .ai-tg .ai-replay { position: static; }
+  .ai-tg__sample { justify-self: center; }
+}
+
+/* ---------- phones ---------- */
+@media (max-width: 600px) {
+  .ai-sec { padding-top: 4.5rem; }
+  .ai-sec.section--ivory { padding-bottom: 4.5rem; }
+  #contact { padding-bottom: 5.5rem; }
+  .s-head { margin-bottom: 2rem; }
+  .s-head__meta { margin-bottom: 1rem; }
+  .footer { padding-top: 4.5rem; }
+
+  .ai-hero { padding-top: calc(var(--topbar-h) + 1.75rem); padding-bottom: 3rem; }
+  .ai-hero__title { font-size: clamp(2.05rem, 9.4vw, 2.5rem); line-height: 1.04; }
+  .ai-hero__lead { margin-top: 1rem; font-size: 1rem; }
+  .ai-chips { margin-top: 1.125rem; gap: 0.375rem; }
+  .ai-chips li { min-height: 1.75rem; padding: 0 0.625rem; font-size: 0.7188rem; }
+  .ai-hero__actions { gap: 0.25rem 1.375rem; margin-top: 1.5rem; }
+  .ai-hero__actions .btn--primary { --h: 3.375rem; gap: 1.25rem; padding: 0 1.2rem 0 1.4rem; font-size: 1rem; }
+  .ai-hero__visual { margin-top: 2.25rem; gap: 0.625rem; }
+
+  .ai-time__row { grid-template-columns: minmax(0, 1fr); padding: 1.25rem 0; }
+  .ai-time__label { grid-column: 1; display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
+  .ai-time__label span { font-size: 1.5rem; }
+  .ai-time__bar,
+  .ai-time__text,
+  .ai-time__scale { grid-column: 1 / -1; }
+  .ai-time__bar { height: 2.75rem; }
+  .ai-time__text { margin-top: 0.75rem; }
+  .ai-time__scale { display: none; }
+  .ai-time__free { padding-left: 0.625rem; font-size: 0.75rem; }
+  .ai-total { margin-top: 1.75rem; font-size: 1.6rem; }
+
+  .ai-foot { margin-top: 1.25rem; }
+
+  /* 4 · the ads in a column, compact (no row to swipe): the ad's title and the verdict */
+  .ai-cards { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+  .ai-ad { gap: 0.25rem; padding: 0.75rem 0.875rem; border-radius: 0.875rem; }
+  .ai-ad__src,
+  .ai-ad__meta,
+  #decide .ai-foot { display: none; }
+  .ai-ad__t { font-size: 1rem; }
+  .ai-ad__verdict { margin-top: 0.375rem; padding-top: 0.5rem; }
+  .ai-pad { grid-column: 1 / -1; margin-top: 0.25rem; padding: 1.125rem 1.125rem 1rem 2.5rem; transform: rotate(-0.6deg); }
+  .ai-pad__lines { font-size: 0.8125rem; }
+  .ai-pad { background: linear-gradient(90deg, transparent 1.6875rem, rgba(210, 86, 28, 0.55) 1.6875rem 1.75rem, transparent 1.75rem), #fcfcfa; }
+
+  .ai-sheet__bar > span:not(.ai-sample) { display: none; }
+
+  .faq-wrap,
+  .contact { row-gap: 1.75rem; }
+  .faq__item summary { padding: 1rem 0; }
+  .ai-row,
+  .ai-row--two { padding: 0.5rem 0; }
+  .ai-manager { row-gap: 2rem; }
+  .ai-keep { padding: 0.875rem 1rem; column-gap: 0.875rem; grid-template-columns: 2.5rem minmax(0, 1fr); }
+  .ai-keep__ico { width: 2.5rem; height: 2.5rem; }
+  .ai-time__row { padding: 1.125rem 0; }
+  /* phones: fewer words: the route's footnote goes */
+  #how .ai-foot { display: none; }
+  .ai-total { margin-top: 1.5rem; }
+
+  .ai-sticky {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 55;
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem calc(0.75rem + env(safe-area-inset-bottom));
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(130%);
+    transition: transform 0.45s var(--ease-out), opacity 0.3s;
+  }
+  .ai-sticky .btn { width: 100%; max-width: 26.25rem; justify-content: space-between; pointer-events: auto; box-shadow: 0 0.875rem 2.125rem -0.5rem rgba(0, 0, 0, 0.7); }
+  .ai-sticky.is-on { opacity: 1; transform: none; }
+}
+@media (max-width: 374px) {
+  .ai-chips li { font-size: 0.6875rem; }
+  .ai-hero__actions .btn--primary { width: 100%; justify-content: space-between; }
+}
+
+
+
+/* ==========================================================================
+   Start frames: a scene waiting to play (.is-pre, js/ai-page.js) holds what it will bring in.
+   Without motion these classes are never set: the final frame shows.
+   ========================================================================== */
+.ai-time.is-pre .ai-time__bar i,
+.ai-time.is-pre .ai-time__free,
+.ai-decide.is-pre .ai-stamp,
+.ai-decide.is-pre .ai-ad__verdict > span:last-child,
+.ai-decide.is-pre .ai-ad__lit,
+.ai-decide.is-pre .ai-pad__lines li,
+.ai-tg.is-pre .ai-msg,
+.ai-tg.is-pre .ai-msg__kb,
+.ai-tg.is-pre .ai-row__note,
+.ai-tg.is-pre .ai-row__n { opacity: 0.35; }
+.ai-decide.is-pre .ai-ad[data-verdict="no"] .ai-ad__t { opacity: 1; }
+
+/* ==========================================================================
+   /ai-avtomatyzatsiia/ — the AI page's own blocks: a to-do list on the first screen, the letter's way (ivory),
+   the services as a price list, the two examples as doors (ivory), quick picks in the form
+   ========================================================================== */
+.ai-hero__title--auto { max-width: 24ch; font-size: clamp(2.2rem, 3.4vw, 3.6rem); }
+#services { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
+
+/* breadcrumbs (the case page): AI-автоматизація / Кейс, in the eyebrow's place */
+.ai-crumbs { display: flex; align-items: center; gap: 0.625rem; margin-bottom: clamp(1.25rem, 3.4vh, 2rem); font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ai-crumbs a { display: inline-flex; align-items: center; min-height: 2.75rem; margin-block: -0.875rem; color: var(--ink-soft); text-decoration: underline; text-decoration-color: rgba(210, 86, 28, 0.75); text-underline-offset: 0.1875rem; }
+.ai-crumbs a:hover { color: var(--ink); }
+.ai-crumbs [aria-current] { color: var(--ink); }
+
+/* «AI-автоматизація» never breaks at its hyphen */
+#how-title .hl { white-space: nowrap; }
+
+/* ---------- 1 · hero: the case chip in outline; the to-do window ---------- */
+main[data-ai-page="ai"] .ai-hero__actions { flex-direction: column; align-items: flex-start; row-gap: 0.875rem; }
+
+.ai-todo { display: grid; justify-items: end; gap: 0.375rem; width: min(28.75rem, 100%); }
+.ai-todo__win { width: 100%; border-radius: 1rem; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.95); }
+.ai-todo__bar { height: 2.75rem; padding: 0 0.75rem 0 1rem; }
+.ai-todo__bar > span:not(.ai-sample) { display: inline-block; margin-left: 0.5rem; padding: 0.3em 0.85em; font-size: 0.75rem; color: var(--ink-soft); }
+.ai-todo__list { padding: 0.25rem 0; }
+.ai-todo__row { position: relative; isolation: isolate; display: grid; grid-template-columns: 1.75rem minmax(0, 1fr) auto; column-gap: 0.875rem; align-items: center; min-height: 3.75rem; padding: 0.625rem 1.25rem 0.625rem 1.125rem; }
+.ai-todo__row + .ai-todo__row { border-top: 1px solid rgba(246, 246, 243, 0.07); }
+.ai-todo__n { position: relative; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font: 500 0.75rem/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-mute); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.28); }
+.ai-todo__fill { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; font-style: normal; color: var(--on-accent); background: var(--signal); }
+.ai-todo__row--you .ai-todo__fill { background: var(--ember); }
+.ai-todo__t { font-size: 0.9375rem; line-height: 1.35; color: var(--ink); text-wrap: pretty; opacity: 0.7; }
+.ai-todo__row--you .ai-todo__t { opacity: 1; }
+.ai-todo__who { justify-self: end; font: 400 0.75rem/1.2 var(--font-mono); letter-spacing: 0.02em; white-space: nowrap; color: var(--ink-soft); }
+.ai-todo__who > [aria-hidden] { color: var(--signal); }
+.ai-todo__row--you .ai-todo__who { font-weight: 500; color: var(--ember-ink); }
+.ai-todo__hl { position: absolute; inset: 0; z-index: -1; background: rgba(210, 86, 28, 0.08); }
+.ai-todo .ai-replay { margin-right: -0.875rem; }
+
+/* 2 · the letter's way: sections/ai-page/letter-flow.css (LetterFlow) */
+.section--ivory .ai-sample { color: var(--ink-dark-mute); box-shadow: inset 0 0 0 1px var(--line-dark); }
+
+
+/* ---------- 3 · the services: a price list, no frames ---------- */
+.ai-do__sum { font-weight: 500; color: var(--ink); }
+.ai-do__foot { max-width: 72ch; margin-top: var(--rhythm-s); font-size: var(--fs-small); font-weight: 300; line-height: 1.6; color: var(--ink-mute); text-wrap: pretty; }
+.ai-do__foot .link { display: flex; align-items: center; gap: 0.375rem; width: max-content; min-height: 2.75rem; margin-top: 2px; color: var(--ink-soft); }
+.ai-do__foot .link svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- 4 · the doors (ivory) ---------- */
+.ai-doors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--col-gap); }
+.ai-door { display: grid; grid-template-columns: 17.5rem minmax(0, 1fr); column-gap: 2rem; align-items: stretch; padding: 1.5rem; border-radius: var(--radius-lg); color: var(--ink-dark); text-decoration: none; background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1), 0 1.875rem 3.75rem -2.625rem rgba(60, 45, 30, 0.45); transition: box-shadow var(--dur) var(--ease-out); }
+.ai-door__media { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; justify-items: center; gap: 0.75rem; }
+.ai-door__still { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 0.875rem; background: #0d0d0d; box-shadow: 0 0 0 1px rgba(15, 14, 13, 0.14); outline: 1px solid rgba(255, 255, 255, 0.06); outline-offset: -1px; }
+.ai-door__body { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; padding-top: 2px; }
+.ai-door__k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 0.75rem; }
+.ai-door__tag { display: inline-flex; align-items: center; height: 1.5rem; padding: 0 0.625rem; border-radius: 62.4375rem; font: 500 0.6875rem/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+.ai-door__tag--case { color: var(--card-ivory); background: var(--ink-dark); }
+.ai-door__tag--ex { color: var(--ink-dark); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.45); }
+.ai-door__m { font-size: var(--fs-small); color: var(--ink-dark-mute); }
+.ai-door__t { margin: 0.25rem 0 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; text-wrap: balance; }
+.ai-door__t b { font-weight: 400; color: var(--ember-deep); }
+.ai-door__p { max-width: 38ch; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-dark-soft); text-wrap: pretty; }
+.ai-door__go { display: inline-flex; align-items: center; margin-top: auto; font-size: var(--fs-body-s); font-weight: 500; }
+.ai-door__go svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
+.ai-door:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 0.25rem; border-radius: var(--radius-lg); }
+@media (hover: hover) {
+  .ai-door:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3), 0 1.875rem 3.75rem -2.375rem rgba(60, 45, 30, 0.55); }
+  .ai-door:hover .ai-door__go svg { transform: translate(0.1875rem, -0.1875rem); }
+}
+.ai-doors__sample { display: none; }
+
+/* ---------- 5 · the form's quick picks ---------- */
+.ai-picks { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2px 0 0.25rem; }
+.ai-pick { position: relative; display: inline-flex; align-items: center; gap: 0.375rem; height: 2.25rem; padding: 0 0.875rem 0 0.75rem; border: 0; border-radius: 62.4375rem; font: 400 0.7812rem/1 var(--font-mono); letter-spacing: 0.01em; color: var(--ink-soft); background: transparent; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.18); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: box-shadow var(--dur-fast), color var(--dur-fast), background-color var(--dur-fast); }
+.ai-pick::before { content: "+"; content: "+" / ""; display: inline-block; width: 1ch; text-align: center; color: var(--ink-mute); }
+.ai-pick::after { content: ""; position: absolute; inset: -0.25rem 0; }
+.ai-pick[aria-pressed="true"] { color: var(--ink); background: rgba(210, 86, 28, 0.12); box-shadow: inset 0 0 0 1px var(--ember); }
+.ai-pick[aria-pressed="true"]::before { content: "✓"; content: "✓" / ""; color: var(--ember-ink); }
+.ai-pick:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.1875rem; border-radius: 62.4375rem; }
+@media (hover: hover) {
+  .ai-pick:not([aria-pressed="true"]):hover { color: var(--ink); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.4); }
+}
+
+/* ---------- widths ---------- */
+@media (max-width: 1279px) {
+  .ai-door { grid-template-columns: 15rem minmax(0, 1fr); column-gap: 1.75rem; }
+}
+@media (max-width: 1100px) {
+  .ai-door { grid-template-columns: 9.375rem minmax(0, 1fr); column-gap: 1.25rem; padding: 1.25rem; }
+  .ai-door__still { border-radius: 0.625rem; }
+  .ai-door__sample { display: none; }
+  .ai-doors__sample { display: flex; justify-content: flex-end; margin-top: 0.75rem; }
+}
+@media (max-width: 860px) {
+  .ai-hero__visual { margin-top: 3rem; }
+  .ai-todo { width: min(32.5rem, 100%); }
+  .ai-doors { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .ai-door { grid-template-columns: 12.5rem minmax(0, 1fr); column-gap: 1.5rem; padding: 1.25rem; }
+  .ai-door__still { border-radius: 0.75rem; }
+}
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-hero__title--auto { font-size: clamp(1.85rem, 8.2vw, 2.2rem); }
+  #services { padding-bottom: 4.5rem; }
+
+  .ai-todo { width: 100%; }
+  .ai-todo__bar { flex-wrap: wrap; height: auto; min-height: 2.5rem; padding: 0.4375rem 0.625rem 0.4375rem 0.75rem; row-gap: 0.375rem; }
+  .ai-todo__bar > i { display: none; }
+  .ai-todo__bar > span:not(.ai-sample) { display: inline-block; margin-left: 0; font-size: 0.7188rem; }
+  .ai-todo__list { padding: 2px 0; }
+  .ai-todo__row { grid-template-columns: 1.625rem minmax(0, 1fr) auto; column-gap: 0.75rem; min-height: 2.75rem; padding: 0.5625rem 0.875rem 0.5625rem 0.75rem; }
+  .ai-todo__n { width: 1.625rem; height: 1.625rem; font-size: 0.7188rem; }
+  .ai-todo__t { font-size: 0.875rem; }
+  .ai-todo__who { font-size: 0.7188rem; }
+
+
+  .ai-do__foot { margin-top: 1.125rem; font-size: 0.8125rem; }
+
+  .ai-doors { gap: 0.625rem; }
+  .ai-door { grid-template-columns: 6rem minmax(0, 1fr); column-gap: 0.875rem; padding: 0.875rem; border-radius: 1.125rem; }
+  .ai-door__still { border-radius: 0.625rem; }
+  .ai-door__sample,
+  .ai-door__p { display: none; }
+  .ai-door__body { gap: 0.5rem; padding-top: 0; }
+  .ai-door__k { gap: 0.375rem 0.5rem; }
+  .ai-door__tag { height: 1.375rem; padding: 0 0.5rem; font-size: 0.6875rem; letter-spacing: 0.1em; }
+  .ai-door__m { font-size: var(--fs-caption); }
+  .ai-door__t { margin: 0; font-size: var(--fs-h4); line-height: 1.25; }
+  .ai-door__go { font-size: 0.8438rem; }
+  .ai-door__go svg { width: 0.875rem; height: 0.875rem; }
+
+  main[data-ai-page="ai"] #f-contact-hint { display: none; }
+  main[data-ai-page="ai"] #contact textarea { min-height: 4.75rem; }
+  main[data-ai-page="ai"] #contact .lead-form { padding: 1.25rem; }
+  .ai-picks { gap: 0.5rem 0.375rem; }
+  .ai-pick { padding: 0 0.75rem 0 0.625rem; font-size: 0.75rem; }
+}
+@media (max-width: 374px) {
+  .ai-pick { padding: 0 0.625rem 0 0.5625rem; font-size: 0.7188rem; }
+}
+
+
+/* ==========================================================================
+   /ai-avtomatyzatsiia/ · the premium pass (owner, 2026-10-12): a centred first screen with a short line to
+   remember, service cards that open a panel each, the examples as buttons, the AI calculator
+   ========================================================================== */
+
+/* ---------- 1 · the first screen, centred: what the page is about in two lines that rise once, today's list; the stone behind ---------- */
+.ai-hero--center { padding-top: calc(var(--topbar-h) + clamp(4rem, 10vh, 7rem)); padding-bottom: 0; text-align: center; background: var(--bg); }
+.ai-hero--center .ai-hero__in { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+.ai-hero--center .ai-hero__copy,
+.ai-hero--center .ai-hero__visual { grid-column: 1; }
+.ai-hero--center .ai-hero__copy { display: grid; justify-items: center; }
+.ai-hero--center .ai-hero__copy > * { grid-column: 1; }
+.ai-hero--center .ai-hero__title--auto { max-width: none; font-size: clamp(2.5rem, min(4.75vw, calc(var(--vh, 1vh) * 7.6)), 5.4rem); line-height: 1; letter-spacing: -0.04em; text-wrap: initial; }
+/* «AI-автоматизація» never breaks at its hyphen */
+.ai-hero--center .ai-hero__title .hl { white-space: nowrap; }
+/* each line rises out of its own mask (CSS, below: ai-line-in); the padding keeps the descenders inside it */
+.ai-l { display: block; overflow: hidden; overflow: clip; padding: 0.04em 0.08em 0.14em; margin: -0.04em -0.08em -0.14em; }
+.ai-l > .tone { display: inline-block; }
+.ai-hero--center .ai-hero__lead { max-width: 46ch; margin-inline: auto; color: var(--ink); text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 0 0.5rem rgba(0, 0, 0, 0.85), 0 1px 1.125rem rgba(0, 0, 0, 0.95); }
+/* the words over the stone's bright chrome: a soft dark halo keeps them clear (static, drawn once) */
+.ai-hero--center .ai-hero__title { filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.55)) drop-shadow(0 2px 1.25rem rgba(0, 0, 0, 0.75)); }
+main[data-ai-page="ai"] .ai-hero--center .ai-hero__actions { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.875rem 1.125rem; }
+.ai-hero--center .ai-hero__visual { position: relative; isolation: isolate; width: 100%; margin-top: clamp(3.25rem, 8vh, 5.5rem); padding-bottom: clamp(4rem, 10vh, 7rem); justify-items: center; }
+.ai-hero--center .ai-todo { width: min(37.5rem, 100%); text-align: left; }
+/* the main page's first-screen background (css/style.css .hero__bg / .hero__glow): its dark light, a soft glow and
+   the stone (a still of it, img/ai/lock-stone.webp = img/stone.webp); grain over it, the words over all.
+   Static: it comes in once with the words (CSS: ai-stone-in) */
+.ai-hero__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(120% 95% at 70% 56%, #161616 0%, #0c0c0c 52%, #070707 100%); }
+/* the stone stands behind the whole text block, as the first screen's background (owner, 2026-10-12: twice the size it
+   was, in the middle); a soft light behind it, as on the main page. Its size follows the title's font (.ai-hero__head
+   carries the same clamp as the title) */
+.ai-hero__head { position: relative; font-size: clamp(2.5rem, min(4.75vw, calc(var(--vh, 1vh) * 7.6)), 5.4rem); }
+/* its centre is the text block's (the title, the lead and the button): half the title's height plus 1.6 em below it */
+.ai-hero__rock { position: absolute; z-index: -1; left: 50%; top: calc(50% + 1.6em); width: 0; height: 0; pointer-events: none; }
+.ai-hero__glow { position: absolute; left: 0; top: 0; width: 16em; aspect-ratio: 1; border-radius: 50%; transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(255, 246, 232, 0.09), rgba(255, 246, 232, 0.03) 55%, rgba(255, 246, 232, 0) 100%); }
+.ai-hero__stone { position: absolute; left: 0; top: 0; width: 6em; max-width: none; height: auto; translate: -50% -50%; rotate: -8deg; opacity: 0.55; filter: blur(1px) brightness(0.8); }
+/* the live stone (js/ai-stone.js): a square canvas around the same point; the stone fills about two thirds of it */
+.ai-hero__canvas { position: absolute; left: 0; top: 0; width: 11.6em; height: 11.6em; translate: -50% -50%; opacity: 0; pointer-events: none; transition: opacity 0.9s ease-out; }
+/* the live stone has drawn (three/ai-stone): it takes over from the still */
+.ai-hero__rock.is-live .ai-hero__canvas { opacity: 0.8; }
+.ai-hero__rock.is-live .ai-hero__stone { opacity: 0; transition: opacity 0.9s ease-out; }
+/* the lead runs right across the stone's middle, where its chrome is brightest: a soft dark band under those lines
+   (over the still and the canvas, the last thing in the box), the stone stays whole above and below it */
+.ai-hero__rock::after { content: ""; position: absolute; left: 0; top: 0.5em; width: 13.5em; height: 3.4em; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, rgba(10, 10, 10, 0.66), rgba(10, 10, 10, 0.42) 60%, rgba(10, 10, 10, 0)); pointer-events: none; }
+main[data-ai-page="ai"] .ai-hero--center::before { z-index: 1; }
+.ai-hero--center .ai-hero__in { z-index: 2; }
+
+/* ---------- 1 → 2 · the second block slides over the first, as on the main page (owner, 2026-10-12; the AI page and the
+   case page: a first screen marked data-cover): the first screen pins once its bottom reaches the screen's bottom
+   (--hero-h: its height, js/ai-page.js), the block after it rises over it like a sheet; the first screen dims under
+   it. The dimming is a scroll-driven CSS animation (no script, no frames at rest); where it isn't supported the sheet
+   still slides over ---------- */
+html.ai-stick .ai-hero[data-cover] { position: sticky; top: min(0px, calc(100vh - var(--hero-h, 100vh))); top: min(0px, calc(100svh - var(--hero-h, 100svh))); z-index: 0; }
+/* the page after the first screen (layout/page PageShell) rides over it; its own background goes, so the first
+   block's rounded corners show the pinned screen behind them; the dark blocks carry their own */
+html.ai-stick .ai-hero[data-cover] + .page { z-index: 1; background: transparent; }
+html.ai-stick .ai-hero[data-cover] + .page > .section { position: relative; z-index: 1; }
+/* the dark blocks after it keep their own black (the pinned first screen must not show through them) */
+html.ai-stick .ai-hero[data-cover] + .page > .section:not(.section--ivory) { background: var(--bg); }
+html.ai-stick .ai-hero[data-cover] + .page > .section:first-of-type { border-radius: clamp(1.25rem, 2.4vw, 2rem) clamp(1.25rem, 2.4vw, 2rem) 0 0; box-shadow: 0 -1.5rem 4.375rem -1rem rgba(0, 0, 0, 0.8); }
+@keyframes ai-hero-cover { to { opacity: 0.3; transform: scale(0.96); } }
+@supports (animation-timeline: view()) and (timeline-scope: --a) {
+  @media (prefers-reduced-motion: no-preference) {
+    html.ai-stick main { timeline-scope: --ai-cover; }
+    html.ai-stick .ai-hero[data-cover] + .page > .section:first-of-type { view-timeline: --ai-cover block; }
+    html.ai-stick .ai-hero[data-cover] .ai-hero__in { transform-origin: 50% 30%; animation: ai-hero-cover linear both; animation-timeline: --ai-cover; animation-range: entry 0% entry 100%; }
+  }
+}
+
+/* ---------- 3 · the services: four cards, a short scene each (no glow: the owner, 2026-10-12), «Детальніше» opens the panel ---------- */
+.ai-svcs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.ai-svc {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 1.375rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, #161616 0%, #0f0f0f 100%);
+  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.09), 0 2.5rem 4.375rem -3.125rem rgba(0, 0, 0, 0.9);
+  transition: transform var(--dur) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) { .ai-svc:hover { transform: translateY(-0.25rem); } }
+.ai-svc__art { position: relative; height: 11rem; margin: 0.5rem 0.5rem 0; border-radius: 1rem; overflow: hidden; text-align: left; background: radial-gradient(80% 90% at 50% 100%, rgba(246, 246, 243, 0.05), transparent 70%), #0b0b0b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); }
+.ai-svc__body { display: flex; flex-direction: column; flex: 1; gap: 0.625rem; padding: 1.25rem 1.25rem 1.25rem; }
+.ai-svc__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
+.ai-svc__p { margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+.ai-svc__facts { align-self: flex-start; margin: 0.25rem 0 0; padding: 0.375rem 0.6875rem; border-radius: 62.4375rem; font: 400 0.75rem/1.2 var(--font-mono); white-space: nowrap; color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.22); }
+.ai-svc__facts--talk { padding-inline: 0; white-space: normal; box-shadow: none; }
+.ai-svc__note { margin: -0.25rem 0 0 0.6875rem; font: 400 0.7188rem/1.3 var(--font-mono); color: var(--ink-mute); }
+.ai-svc__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: auto; padding-top: 0.75rem; }
+.ai-svc__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 2.75rem;
+  padding: 0 0.5625rem 0 1.125rem;
+  border: 0;
+  border-radius: 62.4375rem;
+  font: 500 var(--fs-small)/1 var(--font-sans);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.ai-svc__more i { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; color: var(--on-accent); background: var(--ink); transition: transform var(--dur) var(--ease-out); }
+.ai-svc__more svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.ai-svc__more:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.1875rem; }
+/* «Дивитися кейс»: a button of its own; on a pointer it grows a little and fills with ember */
+.ai-svc__case { --h: 2.75rem; height: 2.75rem; transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
+@media (hover: hover) {
+  .ai-svc__more:hover { background: rgba(255, 255, 255, 0.1); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.34); }
+  .ai-svc__more:hover i { transform: rotate(90deg); }
+  .ai-svc__case:hover { transform: scale(1.05); }
+}
+.ai-svcs__end { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1rem; }
+
+/* the cards' scenes · 1 a site form sends, the Telegram message drops in */
+.ai-mf { position: absolute; left: 1rem; top: 1.125rem; width: 46%; display: grid; gap: 0.4375rem; padding: 0.75rem; border-radius: 0.625rem; background: #161616; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08); }
+.ai-mf i { height: 0.8125rem; border-radius: 0.25rem; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12); }
+.ai-mf__btn { width: 62%; height: 0.9375rem; border-radius: 62.4375rem; background: var(--ember); }
+.ai-mp { position: absolute; left: 26%; right: 0.875rem; bottom: 1rem; display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); column-gap: 0.625rem; align-items: center; padding: 0.625rem 0.75rem; border-radius: 0.875rem; background: rgba(36, 36, 36, 0.94); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1), 0 1.125rem 1.875rem -0.875rem #000; font-size: 0.75rem; line-height: 1.3; }
+.ai-mp__ico { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; color: var(--on-accent); background: var(--signal); }
+.ai-mp__ico svg { width: 0.9375rem; height: 0.9375rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform: translateX(-1px); }
+.ai-mp__txt { display: grid; min-width: 0; }
+.ai-mp__txt > * { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ai-mp__txt b { font-weight: 500; color: var(--ink); }
+.ai-mp__txt span { color: var(--ink-soft); }
+.ai-mp__dot { position: absolute; right: -0.1875rem; top: -0.1875rem; width: 0.625rem; height: 0.625rem; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 0.1875rem #0b0b0b; }
+/* · 2 a question, the assistant's answer, the request in the CRM */
+.ai-svc__art--crm { display: grid; align-content: center; gap: 0.5rem; padding: 0.875rem 1rem; }
+.ai-mb { max-width: 84%; margin: 0; padding: 0.5rem 0.75rem; border-radius: 0.875rem; font-size: 0.7812rem; line-height: 1.35; }
+.ai-mb--in { justify-self: start; border-bottom-left-radius: 0.25rem; color: var(--ink); background: #232323; }
+.ai-mb--bot { justify-self: end; border-bottom-right-radius: 0.25rem; color: var(--ink); background: rgba(218, 255, 2, 0.1); box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.34); }
+.ai-mc { justify-self: center; display: inline-flex; align-items: center; gap: 0.5rem; margin: 0.25rem 0 0; padding: 0.375rem 0.75rem; border-radius: 62.4375rem; font: 400 0.7188rem/1 var(--font-mono); color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
+.ai-mc i { width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: var(--signal); }
+/* · 3 a letter, its row in the table */
+.ai-mm { position: absolute; left: 0.875rem; top: 0.875rem; width: 64%; max-width: 14.375rem; padding: 0.625rem 0.75rem; border-radius: 0.625rem; rotate: -3deg; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1), 0 0.875rem 1.625rem -0.875rem #000; font-size: 0.75rem; }
+.ai-mm__from { display: flex; align-items: center; gap: 0.375rem; margin: 0 0 0.25rem; font-weight: 500; color: var(--ink); }
+.ai-mm__from svg { width: 0.8125rem; height: 0.8125rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ai-mm__b { margin: 0; overflow: hidden; line-height: 1.35; white-space: nowrap; text-overflow: ellipsis; color: var(--ink-soft); }
+.ai-mt { position: absolute; right: 0.875rem; bottom: 0.875rem; width: 70%; max-width: 16.25rem; border-radius: 0.625rem; overflow: hidden; background: #141414; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1); }
+.ai-mt__sk,
+.ai-mt__row { display: grid; grid-template-columns: 1.15fr 1fr 0.6fr; column-gap: 0.5rem; align-items: center; min-height: 1.625rem; margin: 0; padding: 0 0.625rem; }
+.ai-mt__sk + .ai-mt__sk,
+.ai-mt__row { border-top: 1px solid rgba(246, 246, 243, 0.06); }
+.ai-mt__sk i { height: 0.3125rem; border-radius: 0.1875rem; background: rgba(246, 246, 243, 0.12); }
+.ai-mt__row { position: relative; font: 500 0.6875rem/1 var(--font-mono); white-space: nowrap; color: var(--ink); background: rgba(218, 255, 2, 0.07); }
+.ai-mt__row > span { overflow: hidden; text-overflow: ellipsis; }
+.ai-mt__bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--signal); transform-origin: 50% 0; }
+/* · 4 the case's way: about 50 ads, the ones that fit, Telegram */
+.ai-svc__art--flow { display: grid; place-items: center; padding: 0 0.625rem; }
+.ai-mfl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; margin: 0; padding: 0; list-style: none; }
+.ai-mfl__s { position: relative; display: grid; justify-items: center; align-content: start; gap: 0.625rem; }
+.ai-mfl__n { position: relative; z-index: 1; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; font-size: 1rem; color: var(--ink); background: #1c1c1c; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.14); }
+.ai-mfl__s:first-child .ai-mfl__n { align-content: center; gap: 0.1875rem; }
+.ai-mfl__s:first-child .ai-mfl__n i { width: 1.125rem; height: 0.1875rem; border-radius: 2px; background: rgba(246, 246, 243, 0.5); }
+.ai-mfl__n--ok,
+.ai-mfl__n--tg { font-weight: 600; color: var(--on-accent); background: var(--signal); box-shadow: 0 0 1.375rem rgba(218, 255, 2, 0.22); }
+.ai-mfl__n svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform: translateX(-1px); }
+.ai-mfl__c { font: 400 0.6875rem/1.25 var(--font-mono); text-align: center; color: var(--ink-soft); }
+.ai-mfl__seg { position: absolute; top: 1.375rem; right: calc(50% + 1.375rem); width: calc(100% - 2.75rem); height: 1px; background: rgba(246, 246, 243, 0.14); }
+.ai-mfl__seg b { position: absolute; inset: 0; background: var(--signal); transform-origin: 0 50%; }
+
+/* ---------- 3 · the service panels (native <dialog>: in the middle on wide screens, a sheet from below on phones) ---------- */
+html.ai-modal { overflow: hidden; }
+.ai-dlg { width: min(55rem, calc(100vw - 3rem)); max-width: none; max-height: calc(100dvh - 3rem); margin: auto; padding: 0; border: 0; color: var(--ink); background: transparent; overflow: visible; }
+.ai-dlg::backdrop { background: rgba(6, 6, 6, 0.76); }
+.ai-dlg__panel {
+  position: relative;
+  max-height: calc(100dvh - 3rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border-radius: 1.625rem;
+  text-align: left;
+  background: radial-gradient(120% 60% at 50% 0%, #1c1c1c, #111 62%);
+  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12), 0 5rem 7.5rem -2.5rem #000;
+}
+.ai-dlg__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.ai-dlg__k { margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ai-dlg__x { flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; margin: -0.5rem -0.5rem -0.5rem 0; border: 0; border-radius: 50%; color: var(--ink); background: rgba(255, 255, 255, 0.06); cursor: pointer; transition: background-color var(--dur-fast), transform var(--dur) var(--ease-out); }
+.ai-dlg__x svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.ai-dlg__x:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (hover: hover) { .ai-dlg__x:hover { background: rgba(255, 255, 255, 0.12); transform: rotate(90deg); } }
+.ai-dlg__t { margin: 0; font-size: clamp(1.6rem, 2.4vw, 2.2rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.025em; text-wrap: balance; }
+.ai-dlg__lead { max-width: 58ch; margin: 0.75rem 0 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+.ai-dlg__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; margin-top: 1.625rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.ai-dlg__h { margin: 0 0 1rem; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ai-dlg__steps { margin: 0; padding: 0; list-style: none; }
+.ai-dlg__step { position: relative; display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); column-gap: 0.875rem; padding-bottom: 1.125rem; }
+.ai-dlg__step:not(:last-child)::before { content: ""; position: absolute; left: 0.8438rem; top: 2rem; bottom: 0.25rem; width: 1px; background: var(--line); }
+.ai-dlg__n { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font: 500 0.75rem/1 var(--font-mono); color: var(--on-accent); background: var(--signal); }
+.ai-dlg__step--person .ai-dlg__n { background: var(--ember); }
+.ai-dlg__step p { margin: 2px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.ai-dlg__who { display: block; margin-bottom: 2px; font: 400 0.6875rem/1.3 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); }
+.ai-dlg__step--person .ai-dlg__who { color: var(--ember-ink); }
+.ai-dlg__inc { display: grid; gap: 0.625rem; margin: 0; padding: 0; list-style: none; }
+.ai-dlg__inc li,
+.ai-calc__inc li { position: relative; padding-left: 1.625rem; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
+.ai-dlg__inc li::before,
+.ai-calc__inc li::before { content: "✓"; position: absolute; left: 0; top: 0.1em; display: grid; place-items: center; width: 1.0625rem; height: 1.0625rem; border-radius: 50%; font-size: 0.625rem; font-weight: 600; color: var(--on-accent); background: var(--signal); }
+.ai-dlg__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.375rem 0.625rem; margin: 1.25rem 0 0; padding: 0.875rem 1rem; border-radius: 0.875rem; font: 400 0.7812rem/1.3 var(--font-mono); color: var(--ink-soft); background: rgba(255, 255, 255, 0.04); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08); }
+.ai-dlg__sum { font: 300 1.9rem/1 var(--font-sans); letter-spacing: -0.02em; color: var(--ink); }
+.ai-dlg__once { text-transform: uppercase; letter-spacing: var(--track-caps); font-size: 0.6875rem; color: var(--ink-mute); }
+.ai-dlg__wk { margin-left: auto; white-space: nowrap; }
+.ai-dlg__price--talk { display: block; margin-top: 1rem; font-family: var(--font-sans); font-size: var(--fs-small); line-height: 1.45; }
+.ai-dlg__note { margin: 0.625rem 0 0; font: 400 0.7188rem/1.45 var(--font-mono); color: var(--ink-mute); }
+.ai-dlg__link { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; margin-top: 2px; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(210, 86, 28, 0.75); text-underline-offset: 0.1875rem; }
+.ai-dlg__link svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ai-dlg__link:hover { color: var(--ember-ink); }
+/* the examples in the «Складне» panel: two big buttons */
+.ai-dlg__door {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.25rem;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  margin-bottom: 0.625rem;
+  padding: 0.875rem 1rem;
+  border-radius: 1rem;
+  color: var(--ink);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12);
+  transition: background-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+}
+.ai-dlg__tag { grid-column: 1; justify-self: start; padding: 0.25rem 0.5rem; border-radius: 62.4375rem; font: 500 0.625rem/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.32); }
+.ai-dlg__tag--case { color: var(--on-accent); background: var(--ink); box-shadow: none; }
+.ai-dlg__dt { grid-column: 1; font-size: var(--fs-body-s); line-height: 1.35; }
+.ai-dlg__dt b { font-weight: 400; color: var(--ember-ink); }
+.ai-dlg__door svg { grid-column: 2; grid-row: 1 / span 2; width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
+@media (hover: hover) {
+  .ai-dlg__door:hover { background: rgba(210, 86, 28, 0.14); box-shadow: inset 0 0 0 1px var(--ember); transform: translateY(-2px); }
+  .ai-dlg__door:hover svg { transform: translate(2px, -2px); }
+}
+.ai-dlg__foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.625rem; margin-top: 1.375rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+
+/* ---------- 4 · the examples' buttons: a pill that fills with ember and grows a little when the card is pointed at ---------- */
+.ai-door__go {
+  align-self: flex-start;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  padding: 0 1.125rem;
+  border-radius: 62.4375rem;
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.35);
+  transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+}
+@media (hover: hover) {
+  .ai-door:hover .ai-door__go { color: var(--on-accent); background: var(--ember); box-shadow: none; transform: scale(1.05); }
+}
+.ai-door:focus-visible .ai-door__go { color: var(--on-accent); background: var(--ember); box-shadow: none; }
+
+/* ---------- 5 · the calculator: option cards (the chosen one in ivory, as on the main page) and the sum beside ---------- */
+.ai-calc { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: start; }
+.ai-calc__opts { grid-column: 1 / span 7; display: grid; gap: 1.875rem; }
+.ai-calc__sum { grid-column: 8 / -1; position: sticky; top: calc(var(--topbar-h) + 1.5rem); }
+.ai-calc__g { display: grid; gap: 0.625rem; min-width: 0; margin: 0; padding: 0; border: 0; }
+.ai-calc__l { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin-bottom: 0.75rem; padding: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ai-calc__lm { letter-spacing: 0.02em; text-transform: none; }
+.ai-opt {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 1rem;
+  row-gap: 0.25rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  box-shadow: inset 0 0 0 1px var(--border);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.ai-opt input,
+.ai-chk input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ai-opt__t { grid-column: 1; font-size: 1.12rem; font-weight: 400; line-height: 1.25; color: var(--ink); }
+.ai-opt__d { grid-column: 1; font-size: var(--fs-body); font-weight: 300; line-height: 1.45; color: var(--ink-soft); }
+.ai-opt__p { grid-column: 2; grid-row: 1 / span 2; font-size: 1.12rem; white-space: nowrap; color: var(--ink); }
+.ai-opt__p .ai-opt__talk { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+@media (hover: hover) { .ai-opt:not(.is-on):hover { box-shadow: inset 0 0 0 1px var(--border-strong); } }
+.ai-opt.is-on { background: var(--ink); box-shadow: none; }
+.ai-opt.is-on :is(.ai-opt__t, .ai-opt__p, .ai-opt__p .ai-opt__talk) { color: var(--on-accent); }
+.ai-opt.is-on .ai-opt__d { color: rgba(15, 14, 13, 0.72); }
+.ai-opt.is-focus,
+.ai-chk.is-focus { outline: 2px solid var(--ink); outline-offset: 0.1875rem; }
+.ai-calc__chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.ai-chk { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0 1rem 0 0.8125rem; border-radius: 62.4375rem; font-size: var(--fs-small); color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.2); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--dur-fast), box-shadow var(--dur-fast), color var(--dur-fast); }
+.ai-chk::before { content: "+"; content: "+" / ""; width: 1ch; text-align: center; color: var(--ink-mute); }
+.ai-chk.is-on { color: var(--ink); background: rgba(210, 86, 28, 0.12); box-shadow: inset 0 0 0 1px var(--ember); }
+.ai-chk.is-on::before { content: "✓"; content: "✓" / ""; color: var(--ember-ink); }
+@media (hover: hover) { .ai-chk:not(.is-on):hover { color: var(--ink); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.42); } }
+.ai-calc__card { padding: clamp(1.375rem, 2.4vw, 2rem); border-radius: 1.5rem; background: radial-gradient(120% 70% at 100% 0%, #1d1d1d, #111 60%); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12), 0 3.75rem 6.25rem -3.125rem #000; }
+.ai-calc__k { display: flex; justify-content: space-between; gap: 0.75rem; margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ai-calc__weeks { letter-spacing: 0.02em; text-transform: none; white-space: nowrap; color: var(--ink-soft); }
+.ai-calc__name { margin: 0.875rem 0 0; font-size: var(--fs-h4); line-height: 1.25; color: var(--ink); text-wrap: balance; }
+.ai-calc__price { display: flex; align-items: baseline; gap: 0.625rem; margin: 1rem 0 0; }
+.ai-calc__price b { font: 300 clamp(3rem, 4.4vw, 4.2rem)/1 var(--font-sans); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--ink); }
+.ai-calc__price b.is-talk { font-size: clamp(1.8rem, 2.4vw, 2.2rem); }
+.ai-calc__price span { font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ai-calc__x { margin: 0.625rem 0 0; font: 400 0.7812rem/1.4 var(--font-mono); color: var(--ember-ink); }
+.ai-calc__inc { margin-top: 1.125rem; border-top: 1px solid var(--line); }
+.ai-calc__inc summary { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 3rem; cursor: pointer; list-style: none; font-size: var(--fs-small); color: var(--ink); }
+.ai-calc__inc summary::-webkit-details-marker { display: none; }
+.ai-calc__inc summary svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; transition: transform var(--dur) var(--ease-out); }
+.ai-calc__inc[open] summary svg { transform: rotate(45deg); }
+.ai-calc__inc-h { margin: 0.25rem 0 0.625rem; font: 400 0.6875rem/1.3 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); }
+.ai-calc__inc ul { display: grid; gap: 0.5rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.ai-calc__inc li { font-size: 0.8438rem; }
+.ai-calc__note { margin: 0.375rem 0 0; font: 400 0.7188rem/1.45 var(--font-mono); color: var(--ink-mute); }
+.ai-calc__send { width: 100%; justify-content: space-between; margin-top: 1.375rem; }
+.ai-calc__send:disabled { opacity: 0.45; cursor: not-allowed; }
+.ai-calc__fine { margin: 0.625rem 0 0; font-size: var(--fs-caption); color: var(--ink-mute); }
+.ai-calc__tol { margin: 0.875rem 0 0; padding-top: 0.875rem; border-top: 1px solid var(--line); font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-mute); text-wrap: pretty; }
+/* the calculation in the form, once sent from the calculator */
+.ai-att { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.375rem 0.875rem; margin-bottom: 1.375rem; padding: 0.75rem 0.5rem 0.75rem 1rem; border-radius: 0.875rem; background: rgba(210, 86, 28, 0.1); box-shadow: inset 0 0 0 1px rgba(210, 86, 28, 0.5); }
+.ai-att[hidden] { display: none; }
+.ai-att__t { margin: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
+.ai-att__t b { font-weight: 500; color: var(--ink); }
+.ai-att__x { min-height: 2.75rem; padding: 0 0.625rem; border: 0; font: 400 var(--fs-small)/1 var(--font-sans); color: var(--ink-soft); text-decoration: underline; text-underline-offset: 0.1875rem; background: none; cursor: pointer; }
+.ai-att__x:hover { color: var(--ink); }
+
+/* ---------- the premium pass · widths ---------- */
+@media (max-width: 1180px) {
+  .ai-svcs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1100px) {
+  .ai-calc__opts,
+  .ai-calc__sum { grid-column: 1 / -1; }
+  .ai-calc__sum { position: static; margin-top: 2rem; }
+}
+@media (max-width: 860px) {
+  .ai-dlg__grid { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+}
+@media (max-width: 600px) {
+  .ai-hero--center { padding-top: calc(var(--topbar-h) + 3.25rem); padding-bottom: 0; }
+  /* both lines stay whole down to 360 px (the longest, «для малого бизнеса», is about 9.3 em) */
+  main[data-ai-page="ai"] .ai-hero--center .ai-hero__title--auto { font-size: min(clamp(2.35rem, 10.5vw, 3.4rem), calc((100vw - 2 * var(--gutter)) / 9.4)); }
+  .ai-hero--center .ai-hero__lead { max-width: 34ch; }
+  main[data-ai-page="ai"] .ai-hero--center .ai-hero__actions { flex-direction: column; gap: 0.75rem; }
+  .ai-hero--center .ai-hero__visual { margin-top: 2.5rem; padding-bottom: 3.5rem; }
+  .ai-hero__head { font-size: min(clamp(2.35rem, 10.5vw, 3.4rem), calc((100vw - 2 * var(--gutter)) / 9.4)); }
+  .ai-hero__stone { width: 6.8em; opacity: 0.5; }
+  .ai-hero__canvas { width: 12.4em; height: 12.4em; }
+
+  .ai-svcs { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+  .ai-svc { border-radius: 1.25rem; }
+  .ai-svc__art { height: 8.5rem; margin: 0.375rem 0.375rem 0; border-radius: 0.875rem; }
+  .ai-svc__art--crm { gap: 0.375rem; padding: 0.625rem 0.875rem; }
+  .ai-mb { padding: 0.4375rem 0.6875rem; }
+  .ai-mm { top: 0.625rem; }
+  .ai-mt { bottom: 0.625rem; }
+  .ai-mt__sk,
+  .ai-mt__row { min-height: 1.375rem; }
+  .ai-svc__body { padding: 0.875rem 1rem 1rem; gap: 0.5rem; }
+  .ai-svc__t { font-size: var(--fs-h4); }
+  .ai-svc__acts { padding-top: 0.5rem; }
+
+  .ai-dlg { width: 100%; max-width: 100%; max-height: 92dvh; margin: auto 0 0; }
+  .ai-dlg__panel { max-height: 92dvh; padding: 0.75rem 1.125rem calc(1.125rem + env(safe-area-inset-bottom)); border-radius: 1.5rem 1.5rem 0 0; }
+  .ai-dlg__panel::before { content: ""; display: block; width: 2.5rem; height: 0.25rem; margin: 0 auto 0.625rem; border-radius: 2px; background: rgba(246, 246, 243, 0.2); }
+  .ai-dlg__head { margin-bottom: 0.625rem; }
+  .ai-dlg__t { font-size: 1.5rem; }
+  .ai-dlg__grid { margin-top: 1.125rem; padding-top: 1.125rem; gap: 1.25rem; }
+  .ai-dlg__step { padding-bottom: 0.875rem; }
+  .ai-dlg__foot { margin-top: 1.125rem; padding-top: 1rem; }
+  .ai-dlg__foot .btn { flex: 1 1 100%; justify-content: space-between; }
+
+  .ai-door__go { min-height: 2.375rem; padding: 0 0.875rem; }
+
+  .ai-opt { padding: 0.875rem 1rem; border-radius: 0.875rem; }
+  .ai-opt__t,
+  .ai-opt__p { font-size: 1rem; }
+  .ai-calc__opts { gap: 1.5rem; }
+  .ai-calc__card { padding: 1.375rem 1.125rem; border-radius: 1.25rem; }
+  .ai-calc__price b { font-size: 2.8rem; }
+}
+@media (max-width: 374px) {
+  .ai-svc__more { padding-left: 0.875rem; }
+  .ai-chk { padding: 0 0.8125rem 0 0.6875rem; font-size: 0.8125rem; }
+}
+
+/* the first screen's words come in once, from CSS on the first paint: no script to wait for, so the title is there as
+   soon as its font (the owner's mask rise). The service cards' scenes hold their start until they play */
+@keyframes ai-line-in { from { transform: translateY(104%); } }
+@keyframes ai-rise-in { from { opacity: 0; transform: translateY(0.875rem); } }
+@keyframes ai-stone-in { from { opacity: 0; transform: scale(0.92) rotate(-5deg); } }
+html.motion main[data-ai-page="ai"] .ai-hero--center .ai-l > .tone { animation: ai-line-in 0.8s var(--ease-out) 0.05s backwards; }
+html.motion main[data-ai-page="ai"] .ai-hero--center .ai-l + .ai-l > .tone { animation-delay: 0.16s; }
+html.motion main[data-ai-page="ai"] .ai-hero--center .ai-hero__lead { animation: ai-rise-in 0.65s var(--ease-out) 0.3s backwards; }
+html.motion main[data-ai-page="ai"] .ai-hero--center .ai-hero__actions { animation: ai-rise-in 0.65s var(--ease-out) 0.4s backwards; }
+html.motion main[data-ai-page="ai"] .ai-hero--center .ai-hero__stone { animation: ai-stone-in 1.4s var(--ease-out) 0.1s backwards; }
+.ai-svc__art--tg.is-pre :is(.ai-mp, .ai-mp__dot),
+.ai-svc__art--crm.is-pre :is(.ai-mb, .ai-mc),
+.ai-svc__art--mail.is-pre :is(.ai-mm, .ai-mt__row),
+.ai-svc__art--flow.is-pre .ai-mfl__s:first-child .ai-mfl__n i { opacity: 0; }
+.ai-svc__art--mail.is-pre .ai-mt__bar { transform: scaleY(0); }
+.ai-svc__art--flow.is-pre .ai-mfl__seg b { transform: scaleX(0); }
+.ai-svc__art--flow.is-pre .ai-mfl__s + .ai-mfl__s .ai-mfl__n { opacity: 0.25; }
+.ai-svc__art--flow.is-pre .ai-mfl__s + .ai-mfl__s .ai-mfl__c { opacity: 0.35; }
+.ai-svc__art.is-warm :is(.ai-mf__btn, .ai-mp, .ai-mp__dot, .ai-mb, .ai-mc, .ai-mm, .ai-mt__row, .ai-mt__bar, .ai-mfl__n, .ai-mfl__n i, .ai-mfl__c, .ai-mfl__seg b) { will-change: opacity, transform; }
+
+
+/* start frames of the AI page's scenes (js/ai-page.js). The final frame is the CSS above, so these only
+   need to outrank it, never !important. The to-do list holds its start until the script runs, too */
+:is(.ai-todo.is-pre, html.motion:not(.ai-go):not(.is-ready) .ai-todo) :is(.ai-todo__fill, .ai-todo__who, .ai-todo__hl) { opacity: 0; }
+:is(.ai-todo.is-pre, html.motion:not(.ai-go):not(.is-ready) .ai-todo) .ai-todo__t { opacity: 1; }
+.ai-todo.is-warm :is(.ai-todo__fill, .ai-todo__who, .ai-todo__hl, .ai-todo__t),
+
+
+/* a scene waiting for its turn and playing (.is-warm, js/ai-page.js) keeps its hidden parts on their own
+   layers, drawn ahead: when it starts, the frame only has to show them (the Telegram message is the heaviest:
+   text and emoji). At rest the class is gone, and the layers with it */
+.ai-tg.is-warm .ai-msg,
+.ai-tg.is-warm .ai-msg__kb,
+.ai-tg.is-warm .ai-row__note,
+.ai-tg.is-warm .ai-row__n { will-change: opacity, transform; }
+
+/* ==========================================================================
+   /keisy/poshuk-zamovlen/ — the case: its first screen (a film) and its quieter, more premium setting
+   ========================================================================== */
+main[data-ai-page="case"] .ai-hero__title { max-width: 15ch; font-size: clamp(2.5rem, min(4.75vw, calc(var(--vh, 1vh) * 7.6)), 5.4rem); }
+/* a fine grain over the first screen (static: drawn once, never repainted) */
+main:is([data-ai-page="ai"], [data-ai-page="case"]) .ai-hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--stone-tex); background-size: 37.5rem 37.5rem; opacity: 0.05; }
+main:is([data-ai-page="ai"], [data-ai-page="case"]) .ai-hero__in { position: relative; }
+/* the robot's morning: a 4:5 film in a frame; its poster holds the place until it plays (no shift) */
+.ai-hero--film .ai-hero__visual { justify-items: center; }
+.ai-film { position: relative; width: min(26.25rem, 100%); aspect-ratio: 4 / 5; border-radius: 1.75rem; overflow: hidden; background: #0d0d0d; box-shadow: 0 0 0 1px rgba(246, 246, 243, 0.12), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.95); }
+.ai-film__video { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 1100px) {
+}
+@media (max-width: 600px) {
+  main[data-ai-page="case"] .ai-hero__title { font-size: clamp(2.35rem, 10.5vw, 3.4rem); }
+  .ai-film { width: min(21.25rem, 100%); border-radius: 1.5rem; }
+  /* 3 · the steps as rows: the number, the title, its line */
+}
+
+/* ---------- case · 2 · Про кейс (owner, 2026-10-12: the first screen's words in a block of their own): the case in one
+   paragraph, set large, and its facts beside it ---------- */
+.s-head--meta { margin-bottom: clamp(1.75rem, 4vh, 2.75rem); }
+.ai-about { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); row-gap: 2.25rem; align-items: start; }
+.ai-about__text { grid-column: 1 / span 7; margin: 0; font-size: clamp(1.4rem, 2.05vw, 2.05rem); font-weight: 300; line-height: 1.35; letter-spacing: -0.015em; color: var(--ink-dark); text-wrap: pretty; }
+.ai-about__facts { grid-column: 9 / -1; margin: 0; border-top: 1px solid var(--line-dark); }
+.ai-about__f { display: grid; grid-template-columns: 7.2em minmax(0, 1fr); column-gap: 0.875rem; padding: 0.8125rem 0; border-bottom: 1px solid var(--line-dark); }
+.ai-about__f dt { padding-top: 0.2em; font: 400 var(--fs-label)/1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+.ai-about__f dd { margin: 0; font-size: var(--fs-body); line-height: 1.45; color: var(--ink-dark); }
+.ai-about__f--made dd { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; }
+.ai-about__f--made dd::before { content: ""; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: var(--ember); }
+
+/* ---------- case · 4 · Як робот відбирає замовлення: a bento of the four steps, each card with a short scene of its own
+   (owner, 2026-10-12: the cards of words were «просто анимированный текст»; the idea: 21st.dev's feature bentos and
+   reactbits' Magic Bento, built here in CSS with the page's own scenes) ---------- */
+.ai-bento { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.ai-bc {
+  grid-column: span 5;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 1.375rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, #161616 0%, #0f0f0f 100%);
+  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.09), 0 2.5rem 4.375rem -3.125rem rgba(0, 0, 0, 0.9);
+  transition: transform var(--dur) var(--ease-out);
+}
+.ai-bc--wide { grid-column: span 7; }
+@media (hover: hover) and (pointer: fine) { .ai-bc:hover { transform: translateY(-0.25rem); } }
+.ai-bc__text { display: grid; grid-template-columns: 1.875rem minmax(0, 1fr); column-gap: 0.875rem; row-gap: 0.375rem; padding: 1.375rem 1.5rem 1.375rem; }
+.ai-bc__n { grid-row: 1 / span 2; display: grid; place-items: center; width: 1.875rem; height: 1.875rem; border-radius: 50%; font: 500 0.7812rem/1 var(--font-mono); color: var(--on-accent); background: var(--signal); }
+.ai-bc__t { margin: 0.25rem 0 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
+.ai-bc__p { grid-column: 2; max-width: 54ch; margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+.ai-bc__art { position: relative; height: 13.75rem; margin: auto 0.5rem 0.5rem; border-radius: 1rem; overflow: hidden; background: radial-gradient(80% 90% at 50% 100%, rgba(246, 246, 243, 0.05), transparent 70%), #0b0b0b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); }
+.ai-bento__end { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1rem; }
+
+/* 1 · the three sources, and the morning's ads landing in a stack */
+.ai-bc__art--src { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: clamp(1.25rem, 3vw, 2.5rem); padding: 0 clamp(1.125rem, 2.4vw, 2rem); }
+.ai-src { display: grid; gap: 0.625rem; margin: 0; padding: 0; list-style: none; }
+.ai-src__s { position: relative; padding: 0.5rem 0.875rem 0.5rem 1.75rem; border-radius: 62.4375rem; font: 400 0.75rem/1 var(--font-mono); white-space: nowrap; color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
+.ai-src__s::before { content: ""; position: absolute; left: 0.75rem; top: 50%; width: 0.4375rem; height: 0.4375rem; margin-top: -0.2188rem; border-radius: 50%; background: var(--signal); }
+.ai-src__deck { position: relative; height: 10.375rem; }
+.ai-src__ad { position: absolute; display: grid; gap: 0.1875rem; margin: 0; padding: 0.6875rem 0.875rem; border-radius: 0.75rem; font-size: 0.7812rem; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1), 0 1rem 1.625rem -1rem #000; }
+.ai-src__ad:nth-child(1) { top: 0; left: 0; right: 12%; rotate: -2deg; }
+.ai-src__ad:nth-child(2) { top: 3.375rem; left: 6%; right: 6%; rotate: 1.2deg; }
+.ai-src__ad:nth-child(3) { top: 6.75rem; left: 12%; right: 0; }
+.ai-src__ad > * { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ai-src__ad b { font-weight: 500; color: var(--ink); }
+.ai-src__ad span { font: 400 0.6875rem/1.2 var(--font-mono); color: var(--ink-mute); }
+.ai-src__count { position: absolute; left: clamp(1.125rem, 2.4vw, 2rem); top: 1rem; padding: 0.375rem 0.75rem; border-radius: 62.4375rem; font: 500 0.75rem/1 var(--font-mono); color: var(--on-accent); background: var(--signal); }
+
+/* 2 · the 100 km circle around Dresden (far ones fall out) and a repeat crossed out */
+.ai-bc__art--map { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 1.125rem; padding: 0 1.375rem; }
+.ai-map { position: relative; width: 11.875rem; aspect-ratio: 1; }
+.ai-map__ring { position: absolute; inset: 14%; border-radius: 50%; border: 1px dashed rgba(218, 255, 2, 0.55); background: radial-gradient(closest-side, rgba(218, 255, 2, 0.08), transparent); }
+.ai-map__km { position: absolute; left: 74%; top: 8%; font: 400 0.6875rem/1 var(--font-mono); color: var(--signal); }
+.ai-map__city { position: absolute; left: 50%; top: 50%; width: 0.625rem; height: 0.625rem; margin: -0.3125rem; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 0.25rem rgba(246, 246, 243, 0.14); }
+.ai-map__name { position: absolute; left: 50%; top: calc(50% + 0.75rem); translate: -50% 0; font: 400 0.6875rem/1 var(--font-mono); color: var(--ink-soft); }
+.ai-map__pin { position: absolute; width: 0.5625rem; height: 0.5625rem; margin: -0.2812rem; border-radius: 50%; }
+.ai-map__pin--in { background: var(--signal); box-shadow: 0 0 0.625rem rgba(218, 255, 2, 0.5); }
+.ai-map__pin--out { display: grid; place-items: center; width: 1rem; height: 1rem; margin: -0.5rem; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.22); }
+.ai-map__pin--out b { font-size: 0.5625rem; font-weight: 400; line-height: 1; color: var(--ink-mute); }
+.ai-dup { position: relative; display: grid; gap: 0.375rem; justify-self: start; max-width: 11.875rem; margin: 0; padding: 0.625rem 0.75rem; border-radius: 0.625rem; font-size: 0.75rem; color: var(--ink-mute); background: #171717; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08); }
+.ai-dup b { justify-self: start; padding: 0.1875rem 0.4375rem; border-radius: 62.4375rem; font: 400 0.6562rem/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.2); }
+.ai-dup__line { position: absolute; left: 0.625rem; right: 0.625rem; top: 1.125rem; height: 1px; background: rgba(246, 246, 243, 0.55); transform-origin: 0 50%; }
+
+/* 3 · the foreman's questions get ticked, then the sum and the score */
+.ai-bc__art--check { display: grid; align-content: center; gap: 1rem; padding: 0 clamp(1.125rem, 2.4vw, 1.75rem); }
+.ai-check { display: grid; gap: 0.6875rem; margin: 0; padding: 0; list-style: none; }
+.ai-check__q { display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; line-height: 1.3; color: var(--ink); }
+.ai-check__box { position: relative; flex: none; width: 1.375rem; height: 1.375rem; border-radius: 0.375rem; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.25); }
+.ai-check__box b { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 700; color: var(--on-accent); background: var(--signal); }
+.ai-check__out { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2px 0 0 2.125rem; }
+.ai-check__sum,
+.ai-check__score { padding: 0.4375rem 0.75rem; border-radius: 62.4375rem; font: 500 0.7812rem/1 var(--font-mono); white-space: nowrap; }
+.ai-check__sum { color: var(--ink); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.22); }
+.ai-check__score { color: var(--on-accent); background: var(--signal); }
+
+/* 4 · the message to the manager, and its row in the table */
+.ai-bc__art--send { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; column-gap: 1.25rem; padding: 0 clamp(1.125rem, 2.4vw, 1.75rem); }
+.ai-send__sheet { border-radius: 0.75rem; overflow: hidden; background: #141414; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1); }
+.ai-send__k { display: flex; align-items: center; gap: 0.5rem; margin: 0; padding: 0.5625rem 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); font: 400 0.6875rem/1 var(--font-mono); color: var(--ink-mute); }
+.ai-send__k svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.ai-send__row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; column-gap: 0.75rem; margin: 0; padding: 0.6875rem 0.75rem; font: 500 0.7188rem/1.2 var(--font-mono); white-space: nowrap; color: var(--ink); background: rgba(218, 255, 2, 0.07); }
+.ai-send__row > span:first-of-type { overflow: hidden; text-overflow: ellipsis; }
+.ai-send__bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--signal); transform-origin: 50% 0; }
+
+@media (max-width: 1100px) {
+  .ai-about__text,
+  .ai-about__facts { grid-column: 1 / -1; }
+  .ai-about__facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--col-gap); }
+  .ai-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ai-bc { grid-column: span 1; }
+  .ai-bc--wide { grid-column: 1 / -1; }
+}
+@media (max-width: 860px) {
+  .ai-bento { grid-template-columns: minmax(0, 1fr); }
+  .ai-about__facts { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .ai-about__text { font-size: 1.2rem; line-height: 1.4; }
+  .ai-about__f { grid-template-columns: 6.6em minmax(0, 1fr); padding: 0.6875rem 0; }
+  .ai-bc { border-radius: 1.25rem; }
+  .ai-bc__text { grid-template-columns: 1.625rem minmax(0, 1fr); column-gap: 0.75rem; padding: 1rem 1rem 1rem; }
+  .ai-bc__n { width: 1.625rem; height: 1.625rem; font-size: 0.7188rem; }
+  .ai-bc__t { margin-top: 2px; font-size: var(--fs-h4); }
+  .ai-bc__art { height: auto; min-height: 11.25rem; margin: 0 0.375rem 0.375rem; border-radius: 0.875rem; padding-block: 1.125rem; }
+  .ai-bc__art--src { grid-template-columns: minmax(0, 1fr); row-gap: 0.875rem; }
+  .ai-src { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+  .ai-src__s { padding: 0.375rem 0.625rem 0.375rem 1.375rem; font-size: 0.6875rem; }
+  .ai-src__s::before { left: 0.5625rem; width: 0.375rem; height: 0.375rem; margin-top: -0.1875rem; }
+  .ai-src__deck { height: 9.75rem; }
+  .ai-src__ad:nth-child(2) { top: 3rem; }
+  .ai-src__ad:nth-child(3) { top: 6rem; }
+  .ai-src__count { position: static; justify-self: start; order: -1; }
+  .ai-bc__art--map { grid-template-columns: auto minmax(0, 1fr); column-gap: 0.75rem; padding: 0.75rem 0.875rem; }
+  .ai-map { width: 9.375rem; }
+  .ai-bc__art--send { grid-template-columns: minmax(0, 1fr); row-gap: 0.75rem; }
+}
+
+/* start frames of the bento's scenes (js/ai-page.js) */
+.ai-bc__art--src.is-pre :is(.ai-src__s, .ai-src__ad, .ai-src__count),
+.ai-bc__art--map.is-pre :is(.ai-map__ring, .ai-map__km, .ai-map__pin, .ai-dup b),
+.ai-bc__art--check.is-pre :is(.ai-check__box b, .ai-check__sum, .ai-check__score),
+.ai-bc__art--send.is-pre :is(.ai-send__push, .ai-send__row) { opacity: 0; }
+.ai-bc__art--map.is-pre .ai-dup__line { transform: scaleX(0); }
+.ai-bc__art--send.is-pre .ai-send__bar { transform: scaleY(0); }
+.ai-bc__art.is-warm :is(.ai-src__s, .ai-src__ad, .ai-src__count, .ai-map__ring, .ai-map__km, .ai-map__pin, .ai-dup b, .ai-dup__line, .ai-check__box b, .ai-check__sum, .ai-check__score, .ai-send__push, .ai-send__row, .ai-send__bar) { will-change: opacity, transform; }
+
+/* ==========================================================================
+   /keisy/ai-asystent/ — the assistant example (a beauty salon): its own blocks
+   ========================================================================== */
+
+/* hero: a longer title than the case's, a little smaller; the booking chat in the visual's place */
+.ai-hero__title--asst { max-width: 15ch; font-size: clamp(2.5rem, min(4.75vw, calc(var(--vh, 1vh) * 7.6)), 5.4rem); }
+/* the two case pages' section titles: a size smaller than the other pages' (the owner: «очень большие заголовки») */
+.ai-hero--chat .ai-hero__visual { justify-items: center; }
+/* before the chat plays in on arrival (js/ai-page.js; the head script lets it show after 3.5 s regardless) */
+html.motion:not(.ai-go):not(.is-ready) .ai-hero .ai-bub { opacity: 0; }
+
+/* the chat: a phone, the sample chip and «↻ Ще раз» under it */
+.ai-chat { position: relative; display: grid; grid-template-columns: max-content max-content; justify-content: center; align-items: center; column-gap: 0.375rem; row-gap: 0.75rem; }
+/* the phone's width is set in px and vw: a % width here would size the max-content columns by itself (and widen the page) */
+.ai-chat .ai-phone { grid-column: 1 / -1; width: 20.625rem; max-width: calc(100vw - 2 * var(--gutter)); }
+.ai-chat__list { display: grid; gap: 0.375rem; padding: 0.75rem 0.625rem 1rem; }
+.ai-say { position: relative; display: flex; }
+.ai-say--in { justify-content: flex-end; }
+/* a message: the assistant's on the left (grey), the client's on the right (ember: a person) */
+.ai-bub { max-width: 86%; padding: 0.4375rem 0.6875rem 0.375rem; border-radius: 1rem 1rem 1rem 0.3125rem; font-size: 0.8125rem; line-height: 1.42; color: var(--ink); background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); transform-origin: 0 100%; text-wrap: pretty; }
+.ai-say--in .ai-bub { border-radius: 1rem 1rem 0.3125rem 1rem; background: #3a1d0f; box-shadow: inset 0 0 0 1px rgba(210, 86, 28, 0.35); transform-origin: 100% 100%; }
+.ai-bub time { float: right; margin: 0.3125rem 0 -0.1875rem 0.625rem; font-size: 0.6562rem; line-height: 1.6; font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+/* «typing…»: over the place of the answer, gone in the final frame */
+.ai-typing { position: absolute; left: 0; top: 0; display: inline-flex; gap: 0.25rem; padding: 0.75rem 0.8125rem; border-radius: 1rem 1rem 1rem 0.3125rem; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); opacity: 0; transform-origin: 0 100%; }
+.ai-typing i { width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--ink-mute); }
+
+/* 2 · how the assistant finds the time: four steps (who acts, what happens) beside one master's Saturday */
+.ai-find { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); row-gap: 1.75rem; align-items: center; }
+.ai-howto { grid-column: 1 / span 5; display: grid; gap: 0.625rem; }
+.ai-howto__step { display: grid; grid-template-columns: 2rem minmax(0, 1fr); column-gap: 1rem; align-items: start; padding: 1rem 1.125rem; border-radius: 1rem; border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.012)); }
+/* the number says who acts: the assistant in signal (the system), the client in ember (a person) */
+.ai-howto__n { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 500; color: var(--on-accent); background: var(--signal); }
+.ai-howto__step--person .ai-howto__n { background: var(--ember); }
+.ai-howto p { display: grid; gap: 0.1875rem; font-size: var(--fs-body); font-weight: 300; line-height: 1.45; color: var(--ink); }
+.ai-howto b { font-family: var(--font-mono); font-size: var(--fs-label); font-weight: 400; letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ai-day { grid-column: 7 / -1; }
+.ai-find .ai-replay { grid-column: 7 / -1; justify-self: end; margin-top: -1rem; }
+.ai-book__bar > span:not(.ai-sample) { display: inline-block; }
+.ai-day__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; padding: 0.875rem 1rem 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); }
+.ai-day__head > b { font-size: 0.9375rem; font-weight: 500; color: var(--ink); }
+.ai-day__who { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.7812rem; color: var(--ink-soft); }
+.ai-day__ava { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; font-size: 0.6875rem; font-style: normal; font-weight: 600; color: var(--ink); background: #2a2a2a; }
+.ai-day__grid { --row: 1.5rem; display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); column-gap: 0.625rem; padding: 0.875rem 1rem 1.125rem; }
+.ai-day__hours { display: grid; grid-template-rows: repeat(8, calc(var(--row) * 2)); font-family: var(--font-mono); font-size: 0.6562rem; line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+/* the day: 16 half-hour rows on a ruled ground (a line every hour) */
+.ai-day__col { display: grid; grid-template-rows: repeat(16, var(--row)); min-width: 0; background: repeating-linear-gradient(180deg, rgba(246, 246, 243, 0.08) 0 1px, transparent 1px calc(var(--row) * 2)); }
+/* every slot sits in the column's one track (two slots share 14:30: auto-placement would open a second track) */
+.ai-slot { grid-column: 1; position: relative; display: grid; align-content: center; gap: 2px; min-width: 0; margin: 2px 0; padding: 0.375rem 0.75rem; border-radius: 0.5rem; font-size: 0.7812rem; line-height: 1.25; color: var(--ink-mute); background: #1c1c1c; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08); }
+.ai-slot--free { color: var(--ink-soft); background: #121212; box-shadow: none; border: 1px dashed rgba(246, 246, 243, 0.35); }
+.ai-slot--free b { font-weight: 500; color: var(--ink); }
+/* the booking the assistant made: signal (the system); the free window it took fades out under it */
+.ai-slot--new { color: var(--ink-soft); background: linear-gradient(rgba(218, 255, 2, 0.13), rgba(218, 255, 2, 0.13)), #1c1c1c; box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.65); }
+.ai-slot--new b { font-size: 0.8438rem; font-weight: 500; color: var(--ink); }
+.ai-slot__by { justify-self: start; margin-top: 2px; padding: 1px 0.4375rem; border-radius: 0.25rem; font-family: var(--font-mono); font-size: 0.6562rem; font-style: normal; letter-spacing: 0.04em; color: var(--on-accent); background: var(--signal); }
+.ai-slot--was { opacity: 0; }
+/* what each step points at: the free windows glow (2), the client's pick is framed in ember (3), the booking rings (4) */
+.ai-slot__glow,
+.ai-slot__pick,
+.ai-slot__ring { position: absolute; inset: -1px; border-radius: inherit; opacity: 0; pointer-events: none; }
+.ai-slot__glow { border: 1px solid var(--signal); box-shadow: 0 0 0 0.1875rem rgba(218, 255, 2, 0.12), 0 0 1.125rem rgba(218, 255, 2, 0.25); }
+.ai-slot__pick { border: 2px solid var(--ember); box-shadow: 0 0 0 0.25rem rgba(210, 86, 28, 0.2); }
+.ai-slot__ring { border: 1px solid var(--signal); }
+
+/* 3 · when a person is needed: four steps on a line of time (a column on phones) */
+.ai-strip { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--col-gap); }
+.ai-strip::before { content: ""; position: absolute; left: 0; right: 0; top: 0.4375rem; height: 1px; background: var(--line); }
+.ai-strip__step { position: relative; display: grid; grid-template-rows: auto 1fr; gap: 1rem; }
+/* the dot sits on the line; the time and who act go under it (the line never runs through the words) */
+.ai-strip__when { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 0.625rem; row-gap: 0.875rem; font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: 0.04em; color: var(--ink-mute); }
+.ai-strip__when::before { content: ""; grid-column: 1 / -1; position: relative; width: 0.9375rem; height: 0.9375rem; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.ai-strip__when time { font-variant-numeric: tabular-nums; color: var(--ink); }
+.ai-strip__step:not(.ai-strip__step--person, .ai-strip__step--late) .ai-strip__when::before { box-shadow: inset 0 0 0 0.25rem var(--bg), inset 0 0 0 0.5625rem var(--signal); }
+.ai-strip__step--person .ai-strip__when::before,
+.ai-strip__step--late .ai-strip__when::before { box-shadow: inset 0 0 0 0.25rem var(--bg), inset 0 0 0 0.5625rem var(--ember); }
+.ai-strip__step--late .ai-strip__when { color: var(--ember-ink); }
+.ai-strip__card { display: grid; align-content: start; gap: 0.75rem; padding: 0.875rem; border-radius: 1rem; border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.012)); }
+.ai-strip .ai-bub { max-width: 100%; }
+/* the 15 minutes run out (ember: the person still has to answer) */
+.ai-strip__timer { position: relative; height: 0.25rem; border-radius: 2px; overflow: hidden; background: rgba(246, 246, 243, 0.1); }
+.ai-strip__timer i { position: absolute; inset: 0; border-radius: inherit; background: var(--ember); transform-origin: 0 50%; }
+.ai-push__app--late { background: var(--ember); }
+.ai-strip__end { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.5rem; margin-top: var(--rhythm-s); }
+.ai-strip__end .ai-foot { margin: 0; }
+
+/* 4 · who else books clients for a time: tags on ivory (no signal here) */
+.ai-tags { display: flex; flex-wrap: wrap; gap: 0.625rem; }
+.ai-tags li { display: inline-flex; align-items: center; min-height: 3rem; padding: 0 1.25rem; border-radius: 62.4375rem; font-size: var(--fs-body); color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.12), 0 1.5rem 2.5rem -2.125rem rgba(60, 45, 30, 0.5); }
+
+/* the link to the other example (both case pages, after the questions): in its own container, outside the FAQ's
+   grid, so the FAQ's sticky title never slides over it */
+.ai-more { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1.125rem; margin-top: var(--rhythm-m); padding: 1.375rem 1.625rem; border-radius: 1.125rem; border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.012)); color: var(--ink); text-decoration: none; transition: border-color var(--dur) var(--ease-out); }
+.ai-more:hover { border-color: rgba(246, 246, 243, 0.3); }
+.ai-more__k { padding: 0.3125rem 0.5625rem; border-radius: 62.4375rem; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: var(--track-caps); text-transform: uppercase; white-space: nowrap; color: var(--on-accent); background: var(--signal); }
+.ai-more__t { font-size: var(--fs-h4); font-weight: 300; line-height: 1.3; color: var(--ink-soft); text-wrap: balance; }
+.ai-more__t b { font-weight: 400; color: var(--ink); }
+.ai-more svg { width: 1.375rem; height: 1.375rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
+.ai-more:hover svg { transform: translate(0.1875rem, -0.1875rem); }
+
+@media (max-width: 1100px) {
+  .ai-howto,
+  .ai-day,
+  .ai-find .ai-replay { grid-column: 1 / -1; }
+  .ai-howto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ai-find .ai-replay { margin-top: -0.75rem; }
+  .ai-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1.75rem; }
+  .ai-strip::before { display: none; }
+}
+@media (max-width: 720px) {
+  .ai-chat .ai-replay { padding-inline: 0.625rem; }
+}
+@media (max-width: 600px) {
+  .ai-hero__title--asst { font-size: clamp(2.35rem, 10.5vw, 3.4rem); }
+  .ai-bub { font-size: 0.8438rem; }
+  /* phones: the steps as plain rows (who acts, inline), so the steps and the schedule fit one screen */
+  .ai-howto { grid-template-columns: minmax(0, 1fr); gap: 0; border-top: 1px solid var(--line); }
+  .ai-howto__step { grid-template-columns: 1.625rem minmax(0, 1fr); column-gap: 0.75rem; align-items: center; padding: 0.5625rem 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: none; }
+  .ai-howto__n { width: 1.625rem; height: 1.625rem; font-size: 0.75rem; }
+  .ai-howto p { display: block; font-size: var(--fs-body); line-height: 1.45; }
+  .ai-howto b { margin-right: 0.375rem; font-size: 0.6875rem; letter-spacing: 0.1em; }
+  .ai-find { row-gap: 1.125rem; }
+  .ai-book__bar > i { display: none; }
+  .ai-book__bar > span:not(.ai-sample) { display: inline-block; margin-left: 0; }
+  .ai-book__bar { flex-wrap: wrap; height: auto; min-height: 2.5rem; padding-block: 0.4375rem; row-gap: 0.375rem; } /* the chip goes under the date when they don't fit */
+  .ai-day__head { padding: 0.75rem 0.75rem 0.625rem; }
+  .ai-day__head > b { font-size: 0.875rem; }
+  .ai-day__grid { --row: 1.1875rem; grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: 0.5rem; padding: 0.625rem 0.75rem 0.75rem; }
+  .ai-day__head { flex-direction: column; align-items: flex-start; gap: 0.375rem; }
+  .ai-day__who { font-size: 0.75rem; }
+  .ai-day__hours { font-size: 0.5938rem; }
+  .ai-slot { padding: 0.1875rem 0.625rem; border-radius: 0.4375rem; font-size: 0.75rem; line-height: 1.2; }
+  .ai-slot--new { gap: 1px; }
+  .ai-slot--new b { font-size: 0.8125rem; }
+  /* the steps stand up: a line of time on the left, each step beside its dot */
+  .ai-strip { grid-template-columns: minmax(0, 1fr); row-gap: 1.375rem; padding-left: 1.625rem; }
+  .ai-strip::before { display: block; left: 0.4375rem; right: auto; top: 0.5rem; bottom: 0.5rem; width: 1px; height: auto; }
+  .ai-strip__step { gap: 0.625rem; }
+  .ai-strip__when::before { position: absolute; left: -1.625rem; top: 0; }
+  .ai-strip__when { position: relative; min-height: 0.9375rem; }
+  .ai-strip__card { padding: 0.75rem; border-radius: 0.875rem; }
+  .ai-tags { gap: 0.5rem; }
+  .ai-tags li { min-height: 2.5rem; padding: 0 0.875rem; font-size: var(--fs-small); }
+  .ai-more { grid-template-columns: minmax(0, 1fr) auto; gap: 0.625rem 0.875rem; margin-top: 2.5rem; padding: 1rem 1rem 1.125rem; }
+  .ai-more__k { grid-column: 1 / -1; justify-self: start; }
+  .ai-more__t { font-size: 1.05rem; }
+}
+
+
+/* start frames of the assistant's scenes, and their layers while they wait and play */
+.ai-chat.is-pre .ai-bub,
+.ai-find.is-pre .ai-slot--new,
+.ai-strip.is-pre .ai-strip__when,
+.ai-strip.is-pre .ai-strip__card,
+.ai-strip.is-pre .ai-strip__timer i { opacity: 0; }
+.ai-find.is-pre .ai-slot--was { opacity: 1; }
+.ai-find.is-pre .ai-howto__step { opacity: 0.35; }
+.ai-chat.is-warm .ai-bub,
+.ai-chat.is-warm .ai-typing { will-change: opacity, transform; }

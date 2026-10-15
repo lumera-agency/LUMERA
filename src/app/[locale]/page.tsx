@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Preloader } from "@/components/fx/preloader/Preloader";
 import { SmoothScroll } from "@/components/fx/smooth-scroll/SmoothScroll";
 import { Topbar } from "@/components/layout/topbar/Topbar";
 import { MenuSheet } from "@/components/layout/menu/MenuSheet";
@@ -26,6 +27,14 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const t = await getTranslations();
   return (
     <>
+      {/* the main page's own: the AI pages (ads land there) open without it */}
+      <Preloader
+        brand="Lumera Studio"
+        note={t("preloader.note")}
+        words={t("preloader.words")}
+        stages={t("preloader.stages")}
+        images={[1, 2, 3, 4].map((n) => `/img/what/what-${n}-${locale === "ru" ? "ru" : "uk"}.webp`)}
+      />
       <SmoothScroll />
       <main>
         <Hero />
