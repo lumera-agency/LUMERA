@@ -916,7 +916,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   let cube = null, cubeP = null, on3d = false, arrived = false, waitIO = null, waitT = 0, hintT = 0;
   const theme = () => ((builtV2 ? v2Of(prev)?.meta : null)?.cube || (prev?.design === 'custom' ? 'dark' : 'light'));
   // the page's colour behind the cube (the light skin's room is tinted with it); the dark skin's page
-  const BG = { landing: '#efe9df', corporate: phone ? '#c8c7c3' : '#e2e1dd', ecommerce: '#f1eae1' };
+  const BG = { landing: '#efe9df', corporate: phone ? '#c8c7c3' : '#e2e1dd', ecommerce: '#FFFFFF' };
   const NAVY = '#22337a';
   // (the studio's Авторський: the cover's navy where the cube stands, in front of the masthead)
   const bg = () => (builtV2 ? v2Of(prev)?.meta : null)?.bg || (theme() === 'dark' ? (prev?.format === 'landing' ? NAVY : '#0b0a09') : BG[prev?.format] || '#ebe8e1');

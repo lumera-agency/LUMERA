@@ -15,6 +15,7 @@ import "@/components/layout/header/header.css";
 import "@/components/ai/ai.css";
 import "./sites-pv.css";
 import "./clinic/clinic.css";
+import "./shop/shop.css";
 import "./sites.css";
 import "./sites-next.css";
 
