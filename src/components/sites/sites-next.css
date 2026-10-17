@@ -12,3 +12,8 @@
    page it reached into the footer and stopped half-way down the chrome LUMERA, a visible band (the owner, 15 Oct). Here
    the footer sits above it: one even black from its top to the very bottom */
 body:has(main[data-ai-page="sites"]) .footer { position: relative; z-index: 2; }
+
+/* the shop sample on phones: while its pinned bar is up (the product's price and «У кошик», or the cart's total), the
+   frame's pill rides above it instead of covering it (the shop sets --sh-pin on the frame, its bar's height) */
+.pvw__you { translate: 0 calc(-1 * var(--sh-pin, 0px)); transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out), translate 0.5s var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .pvw__you { transition: none; } }

@@ -23,6 +23,7 @@ import { STRINGS } from './strings.js';
 import { mountPreview } from '@/components/sites/runtime/sites-pv.js';
 import '@/components/sites/sites-pv.css';
 import '@/components/sites/clinic/clinic.css';
+import '@/components/sites/shop/shop.css';
 
 const escU = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const CHEV = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 1.5L5.5 4 3 6.5"/></svg>';
