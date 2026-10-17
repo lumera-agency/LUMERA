@@ -19,7 +19,10 @@
  */
 import { BUNDLES, PRICING, DEFAULT_CONFIG, normalize, isAvailable, applyBundle, optionPrice, calculateProject, money, addonTag, hasAds } from './engine.js';
 import { STRINGS } from './strings.js';
-import { mountPreview } from './preview.js';
+// the preview: the «Дизайн і сайти» page's sample sites (owner, 17 Oct 2026: the same four examples here; one design level)
+import { mountPreview } from '@/components/sites/runtime/sites-pv.js';
+import '@/components/sites/sites-pv.css';
+import '@/components/sites/clinic/clinic.css';
 
 const escU = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const CHEV = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 1.5L5.5 4 3 6.5"/></svg>';
@@ -29,7 +32,7 @@ const PLUSI = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" strok
 const GO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const CLOSE = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
 const BOOL = ['advancedMotion', 'threeDHero', 'secondLanguage', 'adsManagement'];
-const CHIPS = ['format', 'design', 'look', 'growth', 'leads']; // the editor's groups (their heads: #cfg-l-…)
+const CHIPS = ['format', 'look', 'growth', 'leads']; // the editor's groups (their heads: #cfg-l-…)
 const phoneMQ = window.matchMedia('(max-width: 700px)');
 // pd8 4.4: up to 1100 px «Що входить у ціну» opens the bottom sheet (≥1101: the card flips to the face)
 const sheetMQ = window.matchMedia('(max-width: 1100px)');
@@ -41,7 +44,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   el.innerHTML = template(t);
   const ref = (n) => el.querySelector(`[data-ref="${n}"]`);
   const all = (sel) => [...el.querySelectorAll(sel)];
-  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches });
+  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto } });
   const sheet = ref('sheet');
   const bar = ref('bar');
   const editor = ref('editor');
@@ -314,7 +317,6 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     // the add-ons that grow with the site show their price for the chosen format
     ref('price-secondLanguage').textContent = addonTag(optionPrice('secondLanguage', null, cfg));
     ref('price-advancedMotion').textContent = addonTag(optionPrice('advancedMotion', null, cfg));
-    ref('price-design-custom').textContent = addonTag(optionPrice('design', 'custom', cfg));
     for (const g of all('[data-new-only]')) g.classList.toggle('is-off', cfg.format === 'existing');
     // the existing-site path: its two notes (the bundles' note cell, the leads group's fine print)
     ref('notes').dataset.state = cfg.format === 'existing' ? 'existing' : 'site';
@@ -342,7 +344,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     ref('build').classList.toggle('is-mine', mine);
     ref('build-name').textContent = mine ? t.buildMine + ' · ' + once : t.build[0];
     ref('build-sub').textContent = mine ? name : t.build[1];
-    ref('pnote').textContent = t.previewNote[cfg.format !== 'existing' ? cfg.design : cfg.growth === 'analytics' ? 'existingStats' : 'existing'];
+    ref('pnote').textContent = t.previewNote[cfg.format !== 'existing' ? 'site' : cfg.growth === 'analytics' ? 'existingStats' : 'existing'];
 
     // breakdown: the same list in both hosts (face ≥701, sheet ≤700)
     const html = breakdown(t, p);
@@ -356,7 +358,6 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     preview.update(cfg);
     ref('preview').setAttribute('aria-label', t.preview.aria([
       cfg.format === 'existing' ? t.preview.theirs : t.options.format[cfg.format][0],
-      cfg.format !== 'existing' && t.options.design[cfg.design][0],
       cfg.format !== 'existing' && cfg.advancedMotion && t.options.advancedMotion[0],
       cfg.format !== 'existing' && cfg.threeDHero && t.options.threeDHero[0],
       cfg.format !== 'existing' && cfg.secondLanguage && t.options.secondLanguage[0],
@@ -433,13 +434,12 @@ function template(t) {
   const card = (group, value, [name, sub], tag) =>
     '<button type="button" class="cfg-card" role="radio" aria-checked="false" data-group="' + group + '" data-value="' + value + '">'
     + '<span class="cfg-card__t"><span class="cfg-card__name">' + escU(name) + '</span><span class="cfg-card__sub">' + escU(sub) + '</span></span>'
-    + '<span class="cfg-card__b"><span class="cfg-price"' + (group === 'design' && value === 'custom' ? ' data-ref="price-design-custom"' : '') + '>' + escU(tag) + '</span><span class="cfg-radio" aria-hidden="true"></span></span></button>';
+    + '<span class="cfg-card__b"><span class="cfg-price">' + escU(tag) + '</span><span class="cfg-radio" aria-hidden="true"></span></span></button>';
   const row = (kind, group, value, [name, sub], tag, reason = '') =>
     '<button type="button" class="cfg-row" role="' + kind + '" aria-checked="false" data-group="' + group + '"' + (value ? ' data-value="' + value + '"' : '') + '>'
     + '<span class="' + (kind === 'switch' ? 'cfg-switch' : 'cfg-radio') + '" aria-hidden="true"></span>'
     + '<span class="cfg-row__t"><span class="cfg-row__name">' + escU(name) + (reason ? '<span class="cfg-tag cfg-row__why">' + escU(reason) + '</span>' : '') + '</span><span class="cfg-row__sub">' + escU(sub) + '</span></span>'
     + '<span class="cfg-price"' + (['secondLanguage', 'advancedMotion'].includes(group) ? ' data-ref="price-' + group + '"' : '') + '>' + escU(tag) + '</span></button>';
-  const once = (n) => (n ? addonTag(n) : t.included);
   const head = (id, label, newOnly) => '<p class="cfg-label" id="' + id + '"><span>' + escU(label) + '</span>' + (newOnly ? '<span class="cfg-tag">' + escU(t.newSiteOnly) + '</span>' : '') + '</p>';
   const breakPanel = (id, titleTag) => '<' + titleTag + ' class="cfg-mono cfg-break__t" id="' + id + '" tabindex="-1">' + escU(t.breakdown.title) + '</' + titleTag + '><div data-break-list></div>';
 
@@ -473,15 +473,9 @@ function template(t) {
       <div class="cfg-tune__body" id="cfg-tune" data-ref="tune-body" hidden>
         <div class="cfg__group">
           ${head('cfg-l-format', t.groups.format)}
-          <div class="cfg__cards cfg__cards--4" role="radiogroup" aria-labelledby="cfg-l-format">
-            ${['landing', 'corporate', 'ecommerce'].map((v) => card('format', v, o.format[v], money(optionPrice('format', v)))).join('')}
+          <div class="cfg__cards cfg__cards--5" role="radiogroup" aria-labelledby="cfg-l-format">
+            ${['landing', 'landingPlus', 'corporate', 'ecommerce'].map((v) => card('format', v, o.format[v], money(optionPrice('format', v)))).join('')}
             ${card('format', 'existing', o.format.existing, t.noBuild)}
-          </div>
-        </div>
-        <div class="cfg__group" data-new-only>
-          ${head('cfg-l-design', t.groups.design, true)}
-          <div class="cfg__cards" role="radiogroup" aria-labelledby="cfg-l-design">
-            ${['essential', 'custom'].map((v) => card('design', v, o.design[v], once(optionPrice('design', v)))).join('')}
           </div>
         </div>
         <div class="cfg__group cfg__group--list" data-new-only role="group" aria-labelledby="cfg-l-look">

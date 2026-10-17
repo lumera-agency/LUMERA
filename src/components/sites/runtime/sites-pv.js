@@ -1,4 +1,6 @@
 /* «Дизайн і сайти» (Next): copied from the static page's js/sites-pv.js (the working folder); the configurator engine is the bundled one. */
+/* Since 17 Oct 2026 also the main page's configurator preview (configurator.js): its own preview.js and the old samples
+   are gone, so this module is the one sample engine of the site. */
 /* «Дизайн і сайти» (/dyzain-i-saity): a copy of the main page's configurator module
  * src/components/sections/pricing/configurator/preview.js (14 Oct 2026), so this page shows the same sample sites.
  * Changes here: module paths; «Лендінг+» (format landingPlus: the studio with four more blocks on Базовий, the whole issue on Авторський, the plain landing a shorter issue); the intent hooks read this page's form. The original stays the main page's; edit the two together. */

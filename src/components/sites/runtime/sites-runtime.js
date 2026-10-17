@@ -42,8 +42,8 @@ const stringsReady = Promise.resolve(STRINGS);
 
 /* ---------- the numbers ---------- */
 const FORMATS = ['landing', 'landingPlus', 'corporate', 'ecommerce'];
-// Лендінг+: the owner's OK, 14 Oct 2026 ($700). Not in engine.js yet: at the merge it goes into PRICING
-// (formats.landingPlus and a landingPlus key in design.custom, advancedMotion, secondLanguage)
+// Лендінг+: the owner's OK, 14 Oct 2026 ($700). In engine.js since 17 Oct (the main page's configurator has it);
+// this stays the fallback, like FALLBACK below
 const LANDING_PLUS = { price: 700, weeks: [2, 3], design: [300, 1], motion: [200, 0.5], lang: [100, 0] };
 // engine.js as of 14 Oct 2026, used only if it can't be read: [price, weeks]
 const FALLBACK = {
@@ -60,7 +60,7 @@ function readEngine(e) {
   const P = e?.PRICING;
   if (!P) return;
   const per = (v, f) => (typeof v === 'object' && v !== null ? v[f] ?? v.landing : v);
-  for (const f of ['landing', 'corporate', 'ecommerce']) {
+  for (const f of ['landing', 'landingPlus', 'corporate', 'ecommerce']) {
     try {
       const n = (v) => { if (!Number.isFinite(v)) throw new Error('not a number'); return v; };
       TABLE[f] = {

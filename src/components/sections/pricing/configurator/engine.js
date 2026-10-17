@@ -29,7 +29,7 @@
  */
 
 /**
- * @typedef {'landing'|'corporate'|'ecommerce'|'existing'} SiteFormat
+ * @typedef {'landing'|'landingPlus'|'corporate'|'ecommerce'|'existing'} SiteFormat
  * @typedef {'essential'|'custom'} DesignLevel
  * @typedef {'none'|'analytics'|'googleAds'|'googleAdsAi'} GrowthOption
  * @typedef {'none'|'lead'|'crmAi'} AutomationOption
@@ -58,6 +58,8 @@ export const PRICING = {
   // weeks: [min, max] for the format alone; null = not known yet (no estimate shown)
   formats: {
     landing:   { price: 500,  weeks: [1, 2] },
+    // the owner, 17 Oct: «Лендінг+» (one page, 9–10 blocks), as on /dyzain-i-saity
+    landingPlus: { price: 700, weeks: [2, 3] },
     corporate: { price: 900,  weeks: [3, 4] },
     ecommerce: { price: 1500, weeks: [4, 6] },
     // NEW · «У мене вже є сайт»: we don't build a site, so no site options (its weeks: calculateTimeline)
@@ -67,15 +69,15 @@ export const PRICING = {
   // custom design and motion grow with the site (owner's review, 9 Oct): more pages, more to design
   design: {
     essential: { price: 0, weeks: 0 }, // built on a template
-    custom:    { price: { landing: 200, corporate: 400, ecommerce: 600 }, weeks: { landing: 1, corporate: 1.5, ecommerce: 2 } }, // individual
+    custom:    { price: { landing: 200, landingPlus: 300, corporate: 400, ecommerce: 600 }, weeks: { landing: 1, landingPlus: 1, corporate: 1.5, ecommerce: 2 } }, // individual (not offered on the main page since 17 Oct)
   },
-  advancedMotion: { price: { landing: 150, corporate: 250, ecommerce: 300 }, weeks: { landing: 0.5, corporate: 1, ecommerce: 1 } },
+  advancedMotion: { price: { landing: 150, landingPlus: 200, corporate: 250, ecommerce: 300 }, weeks: { landing: 0.5, landingPlus: 0.5, corporate: 1, ecommerce: 1 } },
   threeDHero:     { price: 400, weeks: 1 },
 
   // more pages → more to translate
   secondLanguage: {
-    price: { landing: 100, corporate: 150, ecommerce: 200 },
-    weeks: { landing: 0, corporate: 0.5, ecommerce: 0.5 },
+    price: { landing: 100, landingPlus: 100, corporate: 150, ecommerce: 200 },
+    weeks: { landing: 0, landingPlus: 0, corporate: 0.5, ecommerce: 0.5 },
   },
 
   // one-time setups, done in parallel with development: no extra weeks. The key order is the UI's order;
@@ -196,7 +198,8 @@ export function lineItems(cfg) {
   const lines = [];
   if (cfg.format !== 'existing') {
     lines.push(once('format.' + cfg.format, PRICING.formats[cfg.format].price));
-    lines.push(once('design.' + cfg.design, perFormat(PRICING.design[cfg.design].price, cfg.format))); // «Базовий» shows as «включено»
+    // one design level since 17 Oct (the owner): the samples are the design the price buys, so no design line
+    if (cfg.design !== 'essential') lines.push(once('design.' + cfg.design, perFormat(PRICING.design[cfg.design].price, cfg.format)));
     if (cfg.advancedMotion) lines.push(once('advancedMotion', perFormat(PRICING.advancedMotion.price, cfg.format)));
     if (cfg.threeDHero) lines.push(once('threeDHero', PRICING.threeDHero.price));
     if (cfg.secondLanguage) lines.push(once('secondLanguage', PRICING.secondLanguage.price[cfg.format]));
