@@ -45,6 +45,9 @@ export default async function CasePage({ params }: PageProps<"/[locale]/keisy/po
       nav={nav}
       footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: "Lumera Studio" }]}
       cta={{ href: "#contact", text: t("aiCommon.cta.want") }}
+      // the topbar's own short word (as on the AI page and the main page): the long one pushed the menu button off
+      // phones up to 375 px wide
+      barCta={{ href: "#contact", text: t("ai.topbar.cta") }}
       claim={t("ai.foot.claim")}
     >
       <CaseHero />

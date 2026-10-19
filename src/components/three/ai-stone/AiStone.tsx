@@ -109,11 +109,19 @@ export default function AiStone({ host }: { host: HTMLElement }) {
           gl.toneMappingExposure = 1.12;
         }}
       >
-        <Stone coarse={coarse} onLive={() => host.classList.add("is-live")} />
+        <Stone coarse={coarse} onLive={() => stillSettled(host).then(() => host.classList.add("is-live"))} />
         <Resume running={visible} />
       </Canvas>
     </div>
   );
+}
+
+/** The still's own entrance (CSS ai-stone-in) has to end before the cross-fade: started during it, the entrance would
+ *  run straight to the new opacity and drop the still at once, while the live stone is only beginning to fade in. */
+function stillSettled(host: HTMLElement) {
+  const still = host.querySelector<HTMLElement>(".ai-hero__stone");
+  const running = still?.getAnimations().filter((a) => a.playState === "running") ?? [];
+  return Promise.all(running.map((a) => a.finished.catch(() => undefined))).then(() => undefined);
 }
 
 function Stone({ coarse, onLive }: { coarse: boolean; onLive: () => void }) {

@@ -11,12 +11,13 @@
 import { useEffect, useState } from "react";
 import FluxLines from "./FluxLines";
 
-export function HeroFlux() {
+/** `under`: the block that slides over the pinned first screen; the lines rest while it covers it (the AI page: #how). */
+export function HeroFlux({ under = "#formats" }: { under?: string } = {}) {
   const [covered, setCovered] = useState(false);
   // (read once on the client: the component mounts after hydration, so the first render already knows the screen)
   const [dpr] = useState(() => (typeof matchMedia === "function" && matchMedia("(max-width: 600px)").matches ? 0.85 : 1));
   useEffect(() => {
-    const next = document.querySelector<HTMLElement>("#formats");
+    const next = document.querySelector<HTMLElement>(under);
     if (!next) return;
     let raf = 0;
     const check = () => {
@@ -32,7 +33,7 @@ export function HeroFlux() {
       removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [under]);
   return (
     <FluxLines
       colors={["#f06200", "#f16300", "#f06200"]}

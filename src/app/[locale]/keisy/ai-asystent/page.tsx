@@ -52,6 +52,9 @@ export default async function AssistantPage({ params }: PageProps<"/[locale]/kei
       nav={nav}
       footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: "Lumera Studio" }]}
       cta={{ href: "#contact", text: t("asst.cta") }}
+      // the topbar's own short word (as on the AI page and the main page): the long one pushed the menu button off
+      // phones up to 375 px wide
+      barCta={{ href: "#contact", text: t("ai.topbar.cta") }}
       claim={t("ai.foot.claim")}
     >
       <AsstHero />

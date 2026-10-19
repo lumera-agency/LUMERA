@@ -134,9 +134,11 @@ export function LetterFlow({ copy }: { copy: FlowCopy }) {
             const s = gsap.utils.selector(step);
             const fill = s(".flow__fill");
             const spark = s(".flow__spark");
+            const line = s(".flow__wire")[0] as HTMLElement;
             const tl = gsap.timeline();
+            // the spark moves by transform (no layout work while it runs): from the wire's start to its end
             tl.fromTo(fill, along === "x" ? { scaleX: 0 } : { scaleY: 0 }, { ...(along === "x" ? { scaleX: 1 } : { scaleY: 1 }), duration: 0.7, ease: "power2.inOut" })
-              .fromTo(spark, { opacity: 0, [along === "x" ? "left" : "top"]: "0%" }, { opacity: 1, [along === "x" ? "left" : "top"]: "100%", duration: 0.7, ease: "power2.inOut" }, "<")
+              .fromTo(spark, { opacity: 0, [along]: 0 }, { opacity: 1, [along]: () => (along === "x" ? line.offsetWidth : line.offsetHeight), duration: 0.7, ease: "power2.inOut" }, "<")
               .to(spark, { opacity: 0, duration: 0.2 });
             return tl;
           };

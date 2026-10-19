@@ -3,12 +3,14 @@ import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich } from "@/components/ai/rich";
 import { Replay, Sample } from "@/components/ai/parts";
 import { AiStoneSlot } from "@/components/ai/AiStoneSlot";
+import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
 
 /**
  * 1 · the first screen, centred: what the page is about, plainly (two lines that rise once, CSS), the request button,
  * then today's to-do list (three tasks done by the system, one left to you; scene «todo»). Far behind the words, the
- * main page's stone: a still that the live 3D stone replaces once it has drawn (three/ai-stone, AiStoneSlot). It pins, and
- * the page slides over it (data-cover).
+ * main page's stone: a still that the live 3D stone replaces once it has drawn (three/ai-stone, AiStoneSlot). The ground is
+ * the «Дизайн і сайти» page's (the owner, 19 Oct 2026): its FluxLines on pure black, resting once block 2 covers the
+ * screen. It pins, and the page slides over it (data-cover).
  */
 export async function Hero() {
   const t = await getTranslations("ai");
@@ -20,8 +22,8 @@ export async function Hero() {
   ];
   return (
     <section className="ai-hero ai-hero--center" id="top" aria-labelledby="ai-title" data-cover="">
-      {/* the main page's first-screen background: its dark light (the stone is behind the words, below) */}
-      <div className="ai-hero__bg" aria-hidden="true" />
+      {/* the sites page's first-screen background: the fluid lines on black (the stone is behind the words, below) */}
+      <div className="ai-hero__bg" aria-hidden="true"><HeroFlux under="#how" /></div>
       <div className="ai-hero__in">
         <div className="ai-hero__copy">
           <div className="ai-hero__head">
