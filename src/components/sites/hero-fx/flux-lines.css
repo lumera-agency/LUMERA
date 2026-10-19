@@ -30,3 +30,12 @@
   background: linear-gradient(rgb(0 0 0 / 0), #000);
   pointer-events: none;
 }
+
+/* while block 2 slides over the pinned first screen, the lines dim with its words and stone (ai.css: ai-hero-cover on
+   .ai-hero__in; the background is its sibling, so it gets the same timeline here) */
+@keyframes st-bg-cover { to { opacity: 0.3; } }
+@supports (animation-timeline: view()) and (timeline-scope: --a) {
+  @media (prefers-reduced-motion: no-preference) {
+    html.ai-stick main[data-ai-page="sites"] .ai-hero[data-cover] .ai-hero__bg { animation: st-bg-cover linear both; animation-timeline: --ai-cover; animation-range: entry 0% entry 100%; }
+  }
+}

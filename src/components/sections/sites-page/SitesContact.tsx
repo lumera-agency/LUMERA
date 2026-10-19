@@ -75,7 +75,9 @@ export async function SitesContact() {
           </div>
           <div className="field">
             <label htmlFor="f-contact">{t("contact.field.label.2")}</label>
-            <input id="f-contact" name="contact" type="text" autoComplete="tel" required aria-describedby="f-contact-hint f-contact-err" />
+            {/* (QA 19 Oct, S-24) a phone, a Telegram name or an email: no single kind, so the browser offers what it has
+                rather than phone numbers only */}
+            <input id="f-contact" name="contact" type="text" autoComplete="on" required aria-describedby="f-contact-hint f-contact-err" />
             <p className="field__hint" id="f-contact-hint">{t("contact.field.hint")}</p>
             <p className="field__err" id="f-contact-err" hidden>{t("contact.field.err.2")}</p>
           </div>

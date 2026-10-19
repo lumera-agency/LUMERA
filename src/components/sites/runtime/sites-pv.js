@@ -828,6 +828,8 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   function closeFull() {
     if (!ph) return;
     document.removeEventListener('keydown', onFullKey);
+    // (moving the frame back drops the focus to <body>; it returns to the button if it was in the frame or already lost)
+    const refocus = el.contains(document.activeElement) || document.activeElement === document.body;
     const back = () => {
       fullAnim = null;
       el.classList.remove('is-full');
@@ -839,6 +841,8 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
       if (matchMedia('(max-width: 600px)').matches) fx.free();
       fx.pill();
       fullLabel();
+      // (QA 19 Oct, S-11) the frame came back into the page and the focus with it: on «На весь екран», where it was
+      if (refocus) fullBtn.focus({ preventScroll: true });
     };
     if (reducedMotion) { back(); return; }
     fullAnim?.cancel();
@@ -1013,7 +1017,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   // the first live arrival on a touch screen: «Покрутіть пальцем» for 2 s (once per session)
   function onState(s) {
     if (s !== 'live' || !touch || reducedMotion) return;
-    try { if (sessionStorage.getItem('pvHint3d')) return; sessionStorage.setItem('pvHint3d', '1'); } catch (e) { /* private mode: show it */ }
+    try { if (sessionStorage.getItem('pvHint3d')) return; sessionStorage.setItem('pvHint3d', '1'); } catch { /* private mode: show it */ }
     clearTimeout(hintT);
     hintT = setTimeout(() => { obj.classList.add('is-hint'); hintT = setTimeout(() => obj.classList.remove('is-hint'), 2300); }, 300);
   }

@@ -51,6 +51,9 @@ export default async function SitesPage({ params }: PageProps<"/[locale]/dyzain-
         <SitesHow />
         <SitesFaq facts={facts} />
         <SitesContact />
+        {/* (QA 19 Oct, S-15) the main page's PageShell fades in blocks marked data-sr (ScrollReveals); this page has its own
+            scenes and none, and GSAP warned «target not found» on the empty list. One empty, unseen mark keeps it quiet */}
+        <i data-sr="" hidden aria-hidden="true" />
       </PageShell>
     </SitesShell>
   );
