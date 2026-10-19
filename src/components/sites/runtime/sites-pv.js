@@ -753,7 +753,7 @@ function storySteps(C, cfg) {
    (rb-anim.js), «Друга мова» (.pv-lx), the 3D slot ([data-obj]) and the tour work on them unchanged */
 const H = { esc, ICO, I, lx, lxh, wds, nums, words, shine, STAR, header, footer, form, objSlot, cubeImg, CUBELINE, ROOMS, DESK, soft, initials, stars, concept, noArea, cards3, steps4 };
 
-export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = false, phone = false, labels = {} }) {
+export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = false, phone = false, labels = {}, onFull = null, full = false }) {
   const P = t.preview;
   const C = SITE[lang] || SITE.uk;
   const EN = SITE.en;
@@ -780,7 +780,72 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   let prev = null;
   let page = 0;
   let markT = 0;
-  const fx = createFx(el, { reducedMotion, onLive: () => syncCube(), onPage: (i) => showPage(i), labels });
+  const fx = createFx(el, { reducedMotion, onLive: () => syncCube(), onPage: (i) => showPage(i), labels, full: full ? () => openFull() : null });
+
+  /* ---------- the whole screen (owner, 18 Oct: on a phone the sample is small to scroll in its frame). The frame's bar
+     has «На весь екран» (on a phone the pill offers it too). The frame moves to <body> for the time (the page's blocks
+     contain their layout, so a fixed frame inside them would stay in the block), a placeholder keeps its place, the
+     page under it holds still and the visitor has the sample at once. «Закрити» or Esc put it back; on a phone the
+     sample then gives the page its finger back (the tour again). Only opacity/transform move; reduced motion: none. ---------- */
+  const fullBtn = document.createElement('button');
+  fullBtn.type = 'button';
+  fullBtn.className = 'pvw__full';
+  // only where the page asks for it (full: true, the sites page); the main page's configurator keeps its frame in place
+  if (full) el.querySelector('.pvw__chrome').append(fullBtn);
+  const ICO_FULL = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg>';
+  const ICO_X = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>';
+  let ph = null;
+  let fullAnim = null;
+  function fullLabel() {
+    const on = !!ph;
+    const word = on ? labels.close || 'Закрити' : labels.full || 'На весь екран';
+    fullBtn.innerHTML = `${on ? ICO_X : ICO_FULL}<span>${esc(word)}</span>`;
+    fullBtn.setAttribute('aria-label', word); // (a phone shows only the corners in the frame's bar)
+    fullBtn.setAttribute('aria-expanded', String(on));
+    el.style.setProperty('--full-w', `${fullBtn.offsetWidth}px`);
+  }
+  fullLabel();
+  const onFullKey = (e) => { if (e.key === 'Escape') closeFull(); };
+  function openFull() {
+    if (ph) return;
+    fullAnim?.cancel();
+    ph = document.createElement('div');
+    ph.className = 'pvw-ph';
+    ph.style.height = `${el.offsetHeight}px`;
+    el.before(ph);
+    document.body.append(el);
+    el.classList.add('is-full');
+    el.setAttribute('data-lenis-prevent', '');
+    document.documentElement.classList.add('pv-full');
+    onFull?.(true);
+    fx.take();
+    fx.pill();
+    fullLabel();
+    if (!reducedMotion) fullAnim = el.animate([{ opacity: 0, transform: 'scale(0.97)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+    fullBtn.focus({ preventScroll: true });
+    document.addEventListener('keydown', onFullKey);
+  }
+  function closeFull() {
+    if (!ph) return;
+    document.removeEventListener('keydown', onFullKey);
+    const back = () => {
+      fullAnim = null;
+      el.classList.remove('is-full');
+      el.removeAttribute('data-lenis-prevent');
+      document.documentElement.classList.remove('pv-full');
+      ph.replaceWith(el);
+      ph = null;
+      onFull?.(false);
+      if (matchMedia('(max-width: 600px)').matches) fx.free();
+      fx.pill();
+      fullLabel();
+    };
+    if (reducedMotion) { back(); return; }
+    fullAnim?.cancel();
+    fullAnim = el.animate([{ opacity: 1 }, { opacity: 0, transform: 'scale(0.985)' }], { duration: 180, easing: 'ease-in' });
+    fullAnim.onfinish = back;
+  }
+  fullBtn.addEventListener('click', () => (ph ? closeFull() : openFull()));
 
   /* ---------- the Авторський landing's faces (Playfair Display 900 / italic 400, Sofia Sans Extra Condensed
      500–800; css/configurator.css R11): never on the page's own load path. They are fetched in idle time

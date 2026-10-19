@@ -18,6 +18,7 @@ import "./clinic/clinic.css";
 import "./shop/shop.css";
 import "./sites.css";
 import "./sites-next.css";
+import "./sites-hero.css";
 
 type Props = {
   nav: readonly NavLink[];

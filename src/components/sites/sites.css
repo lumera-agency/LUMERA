@@ -55,8 +55,6 @@ main[data-ai-page="sites"] .field textarea { caret-color: var(--ember-ink); }
 /* ==========================================================================
    1 · the first screen
    ========================================================================== */
-.st-hero__from { max-width: 84ch; margin: 14px auto 0; font: 400 12.5px/1.6 var(--font-mono); letter-spacing: 0.01em; color: var(--ink-soft); text-wrap: balance; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9); }
-.st-hero__from b { font-weight: 500; color: var(--ink); }
 main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clamp(24px, 3.6vh, 36px); }
 
 /* the sample site on a computer and a phone: one group of fixed proportions (CLS 0); the phone over the window's corner */
@@ -505,7 +503,6 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
   .st-stage__t { font-size: 1.6rem; }
   .st-stage__acts { row-gap: 8px; }
               .st-stage__acts .btn { flex: 1 1 100%; justify-content: space-between; }
-  .st-hero__from { max-width: 34ch; font-size: 12px; }
   .st-hero .ai-hero__visual { margin-top: 36px; padding-bottom: 48px; }
   .st-show { aspect-ratio: 350 / 330; }
   .st-show .st-show__desk { width: 88%; }
@@ -548,7 +545,6 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 html.motion main[data-ai-page="sites"] .ai-hero--center .ai-l > .tone { animation: ai-line-in 0.8s var(--ease-out) 0.05s backwards; }
 html.motion main[data-ai-page="sites"] .ai-hero--center .ai-l + .ai-l > .tone { animation-delay: 0.16s; }
 html.motion main[data-ai-page="sites"] .ai-hero--center .ai-hero__lead { animation: ai-rise-in 0.65s var(--ease-out) 0.3s backwards; }
-html.motion main[data-ai-page="sites"] .ai-hero--center .st-hero__from { animation: ai-rise-in 0.65s var(--ease-out) 0.36s backwards; }
 html.motion main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { animation: ai-rise-in 0.65s var(--ease-out) 0.42s backwards; }
 html.motion main[data-ai-page="sites"] .ai-hero--center .ai-hero__stone { animation: ai-stone-in 1.4s var(--ease-out) 0.1s backwards; }
 
@@ -644,6 +640,35 @@ html:not(.motion) .st-build { display: none; }
 }
 .pvw[data-user] .pv-vp { cursor: default; }
 @media (prefers-reduced-motion: reduce) { .pvw__you { transition: none; } }
+
+/* ==========================================================================
+   the whole screen (owner, 18 Oct: on a phone the sample is small to scroll in its frame; js/sites-pv.js). The frame's
+   bar carries «На весь екран» (on a phone the pill offers it too); the frame then covers the screen, moved to <body>,
+   the page under it still; «Закрити» or Esc put it back
+   ========================================================================== */
+.pvw__full { position: relative; flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 1.5rem; padding: 0 0.625rem 0 0.5rem; border: 0; border-radius: 999px; background: rgba(246, 246, 243, 0.1); color: #f6f6f3; font: 400 0.6563rem/1 var(--pv-mono); white-space: nowrap; cursor: pointer; transition: background-color 0.2s ease; }
+.pvw__full::after { content: ""; position: absolute; inset: -8px -4px; }
+.pvw__full svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.pvw__full:focus-visible { outline: 2px solid #f6f6f3; outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) { .pvw__full:hover { background: rgba(246, 246, 243, 0.2); } }
+.pvw__mark { right: calc(var(--full-w, 0px) + 1.25rem); }
+@media (max-width: 600px) {
+  .pvw__chrome { justify-content: space-between; }
+  .pvw__url { display: none; }
+  .pvw__full { height: 1.375rem; font-size: 0.625rem; }
+  /* in the frame only the corners: the pill under the sample says it in words */
+  .pvw:not(.is-full) .pvw__full { width: 1.75rem; padding: 0; justify-content: center; }
+  .pvw:not(.is-full) .pvw__full span { display: none; }
+}
+/* on a phone the pill's offer: the same corners as the bar's button */
+.pvw__you.is-full-ask::before { width: 12px; height: 12px; border-radius: 0; box-shadow: none; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10'/%3E%3C/svg%3E") center / contain no-repeat; }
+html.pv-full, html.pv-full body { overflow: hidden; }
+html.pv-full :is(.to-top, .ai-sticky, .st-sumbar) { visibility: hidden; }
+.pvw.is-full { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; max-width: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; overscroll-behavior: none; }
+.pvw.is-full .pvw__chrome { flex: none; height: calc(2.75rem + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); touch-action: none; }
+.pvw.is-full .pvw__full { height: 1.875rem; padding: 0 0.875rem 0 0.75rem; font-size: 0.75rem; background: rgba(246, 246, 243, 0.14); }
+.pvw.is-full .pv-vp { flex: 1 1 auto; min-height: 0; height: auto; }
+.pvw.is-full .pvw__you { bottom: calc(14px + env(safe-area-inset-bottom)); }
 
 /* iOS 26 Safari: a fixed bar docked to the bottom edge makes Safari fill the strip under its own toolbar with the bar's
    colour (the owner saw an ember band under the iPhone's toolbar, 15 Oct: the kit's .ai-sticky sits at bottom: 0 with
