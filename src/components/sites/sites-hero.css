@@ -228,8 +228,10 @@ main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }
    the still is a frame of that same pose at the canvas' own size (img/sites/hero-stone.webp 920², -1600 1600², transparent), so when
    the live one takes over (after the still's entrance) nothing on screen changes: no cross-fade, no jump */
 .st-hg .ai-hero__stone { width: 11.6em; rotate: 0deg; opacity: 0.96; filter: none; }
-.st-hg .ai-hero__canvas,
-.st-hg .ai-hero__rock.is-live .ai-hero__stone { transition: none; }
+/* (20 Oct) the live stone dissolves in over the still in a third of a second (it lies on top of it), then the still
+   goes: any small difference between the two never shows as a jump, and there is never a frame without a stone */
+.st-hg .ai-hero__canvas { transition: opacity 0.35s ease-out; }
+.st-hg .ai-hero__rock.is-live .ai-hero__stone { transition: opacity 0s linear 0.4s; }
 .st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 0.96; }
 /* its entrance: a fade with a short rise, no scale (a stone that grows on arrival read as «it grows») */
 @keyframes st-stone-in { from { opacity: 0; transform: translateY(0.4em); } }

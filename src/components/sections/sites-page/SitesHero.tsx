@@ -47,18 +47,23 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
               <i className="ai-hero__glow" />
               {/* the still: the live stone's rest pose at the canvas' size (920 and 1600 px, QA 19 Oct N-07: 920 was soft on a
                   3× phone and a tablet); sizes ≈ the canvas' width (11.6 em of --hg-st, sites-hero.css), never below 0 on a low
-                  screen (where the stone keeps its smallest size) */}
-              <img
-                className="ai-hero__stone"
-                src="/img/sites/hero-stone.webp"
-                srcSet="/img/sites/hero-stone.webp 920w, /img/sites/hero-stone-1600.webp 1600w"
-                sizes="(max-width: 760px) and (max-height: 700px) 300px, (max-width: 760px) calc(145vh - 680px), (max-height: 640px) 310px, calc(145vh - 580px)"
-                width={920}
-                height={920}
-                alt=""
-                decoding="async"
-                fetchPriority="high"
-              />
+                  screen (where the stone keeps its smallest size). A phone draws the live stone simpler (coarse geometry, a
+                  1.5× canvas): its still is a frame of that phone render (800 px, the canvas' own pixels), so the swap is
+                  invisible there too (the owner, 20 Oct: «баг при загрузке» = the smooth desktop still turning grainy) */}
+              <picture>
+                <source media="(pointer: coarse) and (max-width: 760px)" srcSet="/img/sites/hero-stone-m.webp" width={800} height={800} />
+                <img
+                  className="ai-hero__stone"
+                  src="/img/sites/hero-stone.webp"
+                  srcSet="/img/sites/hero-stone.webp 920w, /img/sites/hero-stone-1600.webp 1600w"
+                  sizes="(max-width: 760px) and (max-height: 700px) 300px, (max-width: 760px) calc(145vh - 680px), (max-height: 640px) 310px, calc(145vh - 580px)"
+                  width={920}
+                  height={920}
+                  alt=""
+                  decoding="async"
+                  fetchPriority="high"
+                />
+              </picture>
               <SitesStoneSlot />
             </div>
           </div>
