@@ -36,6 +36,18 @@ type Props = {
  * its own), phone menu, footer with the chrome LUMERA and the button back up; the page's own behaviour on top
  * (AiRuntime). On phones the request button stays at hand once the first screen has passed (.ai-sticky).
  */
+/** Where the button back up steps aside: the page's controls that can sit in its corner */
+const TO_TOP_QUIET = [
+  ".footer",
+  ".ai-sticky.is-on",
+  ".ai-calc__send",
+  ".ai-calc label",
+  ".ai-door",
+  ".ai-replay",
+  "#faq summary",
+  ".lead-form :is(input:not([tabindex='-1']), textarea, button, label)",
+  ".ai-pick",
+].join(", ");
 /** The faces the first screen is set in: fetched with the page, so the words never re-wrap once the font comes in
  *  (the main page hides that moment under its preloader; these pages have none) */
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
@@ -62,7 +74,9 @@ export async function AiShell({ page, nav, footerLinks, cta, barCta, claim, stri
       </div>
       <Footer claim={claim} links={footerLinks} cta={cta} />
       <MenuSheet links={nav} cta={cta} home={home} />
-      <BackToTop label={t("footer.up.span")} quiet=".footer, .ai-sticky.is-on, .ai-calc__send" />
+      {/* it steps aside wherever a control of the page sits in its corner (the FAQ rows, the form, the calculator's
+          options, the doors, «Ще раз»): a tap there must never send the page up */}
+      <BackToTop label={t("footer.up.span")} quiet={TO_TOP_QUIET} />
       <AiRuntime strings={strings} />
     </>
   );

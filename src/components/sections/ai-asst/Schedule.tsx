@@ -1,11 +1,12 @@
 import { getTranslations } from "next-intl/server";
 import { aiRich } from "@/components/ai/rich";
 
-/** 2 · Розклад: how the assistant finds the time, four steps beside one master's Saturday (scene «sched»). */
+/** 2 · Розклад: how the assistant finds the time, four steps beside one master's Saturday (scene «sched»). Ivory, as
+ *  block 4 (the owner, 19 Oct 2026). */
 export async function Schedule() {
   const t = await getTranslations();
   return (
-    <section className="section ai-sec" id="schedule" aria-labelledby="schedule-title">
+    <section className="section section--ivory ai-sec" id="schedule" aria-labelledby="schedule-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta"><span className="s-head__index">2</span><span>{t("asst.sched.meta")}</span></p>
@@ -13,7 +14,7 @@ export async function Schedule() {
           <p className="s-head__intro">{t("asst.sched.intro")}</p>
         </header>
         <div className="ai-find" data-scene="sched">
-          {/* the story, step by step: who acts (the client: ember, the assistant: signal) and what happens;
+          {/* the story, step by step: who acts (the client: ember, the assistant: ink on the ivory) and what happens;
                each step lights up together with its moment in the schedule beside it */}
           <ol className="ai-howto">
             <li className="ai-howto__step ai-howto__step--person"><span className="ai-howto__n" aria-hidden="true">1</span><p><b>{t("asst.find.client")}</b><span>{t("asst.find.1")}</span></p></li>

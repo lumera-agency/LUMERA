@@ -1266,6 +1266,22 @@ html.motion:not(.ai-go):not(.is-ready) .ai-hero .ai-bub { opacity: 0; }
 }
 
 
+/* the assistant · 2 on ivory (the owner, 19 Oct 2026: «блок 2 … заливку как в блоке 4»). The steps are white cards on
+   the ivory; who acts: the client in ember, the assistant in ink (no signal on ivory). The schedule stays a dark screen
+   (a picture of the salon's program): its own light ink and its signal booking live inside that window */
+.section--ivory .ai-howto__step { border: 0; background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1), 0 1.5rem 2.5rem -2.125rem rgba(60, 45, 30, 0.5); }
+.section--ivory .ai-howto__n { color: #fcfcfa; background: var(--ink-dark); }
+.section--ivory .ai-howto__step--person .ai-howto__n { color: var(--on-accent); background: var(--ember); }
+.section--ivory .ai-howto p { color: var(--ink-dark); }
+.section--ivory .ai-howto b { color: var(--ink-dark-mute); }
+.section--ivory .ai-howto__step--person b { color: var(--ember-deep); }
+.section--ivory .ai-day { color: var(--ink); border-color: transparent; box-shadow: 0 0 0 1px rgba(15, 14, 13, 0.14), 0 1.875rem 3.75rem -2.25rem rgba(60, 45, 30, 0.55); }
+.section--ivory .ai-sheet__win .ai-sample { color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.14); }
+@media (max-width: 600px) {
+  .section--ivory .ai-howto { border-top-color: var(--line-dark); }
+  .section--ivory .ai-howto__step { background: none; box-shadow: none; border-bottom: 1px solid var(--line-dark); }
+}
+
 /* start frames of the assistant's scenes, and their layers while they wait and play */
 .ai-chat.is-pre .ai-bub,
 .ai-find.is-pre .ai-slot--new,
@@ -1276,3 +1292,45 @@ html.motion:not(.ai-go):not(.is-ready) .ai-hero .ai-bub { opacity: 0; }
 .ai-find.is-pre .ai-howto__step { opacity: 0.35; }
 .ai-chat.is-warm .ai-bub,
 .ai-chat.is-warm .ai-typing { will-change: opacity, transform; }
+
+/* ==========================================================================
+   Pure black instead of «smoke» (the owner, 19 Oct 2026). The AI page: «в Hero точно такой же фон, как на странице
+   дизайн и сайты», black in the blocks; the two cases the same day: «в кейсах … тоже замени дымный фон на черный» and
+   the band behind the footer's LUMERA (the main page's film grain, one screen tall, ended across it). The ground of
+   all three is #000: the page, its dark blocks, the footer; the main page's moving grain and its «bridge» glow are off
+   (rules here, so the main page's own page.css stays as it was). The AI page's first screen is the sites page's: its
+   FluxLines (hero-fx, Hero.tsx) on #000, the stone keeps its soft glow, as there; the cases' first screens are plain
+   black. The dark cards and the stages of their scenes are flat #000 and keep their hairline edge, so they still read.
+   The dark halo under the AI page's lead stays (it keeps the words readable over the stone). Mock-ups (phones, chats,
+   pushes) keep their own greys: they are pictures of screens.
+   ========================================================================== */
+:root:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) { --bg: #000; }
+body:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) { background: #000; }
+body:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) :is(.page, .footer) { background: #000; }
+body:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) :is(.page__grain, .page__bridge) { display: none; }
+main.ai:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero { background: #000; }
+main.ai:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero::before { content: none; }
+main.ai:is([data-ai-page="case"], [data-ai-page="asst"]) :is(.ai-ad, .ai-bc, .ai-bc__art) { background: #000; }
+main[data-ai-page="ai"] :is(.ai-hero, .ai-hero__bg) { background: #000; }
+main[data-ai-page="ai"] .ai-hero::before { content: none; }
+/* the lines take the first screen and fade out towards the to-do list below (as flux-lines.css does on the sites page);
+   on phones the first screen is shorter than the screen, so they fade out by its end, where block 2 comes in */
+main[data-ai-page="ai"] .ai-hero__bg .flux-lines-container { position: absolute; inset: 0 0 auto; height: min(100svh, 100%); }
+main[data-ai-page="ai"] .ai-hero__bg .flux-lines-container::after { content: ""; position: absolute; inset: auto 0 0; height: 12rem; background: linear-gradient(rgb(0 0 0 / 0), #000); pointer-events: none; }
+main[data-ai-page="ai"] :is(.ai-ad, .ai-svc, .ai-svc__art, .ai-calc__card) { background: #000; }
+main[data-ai-page="ai"] .ai-dlg__panel { background: #000; }
+/* the panel's head with × stays at its top while the panel scrolls (a tall panel on a phone): the way out never scrolls
+   away. On the panel's black, with a short fade under it */
+main[data-ai-page="ai"] .ai-dlg__head { position: sticky; top: 0; z-index: 2; margin-top: -0.75rem; padding-top: 0.75rem; background: #000; }
+main[data-ai-page="ai"] .ai-dlg__head::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 0.75rem; background: linear-gradient(#000, rgb(0 0 0 / 0)); pointer-events: none; }
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-dlg__head { margin-top: -0.625rem; padding-top: 0.625rem; }
+}
+/* while block 2 slides over the first screen, the lines dim with the words (the same scroll-driven animation): bright
+   lines through faded words read as a fault */
+@supports (animation-timeline: view()) and (timeline-scope: --a) {
+  @media (prefers-reduced-motion: no-preference) {
+    html.ai-stick main[data-ai-page="ai"] .ai-hero[data-cover] .ai-hero__bg { animation: ai-hero-dim linear both; animation-timeline: --ai-cover; animation-range: entry 0% entry 100%; }
+  }
+}
+@keyframes ai-hero-dim { to { opacity: 0.3; } }
