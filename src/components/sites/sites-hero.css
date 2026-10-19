@@ -1,0 +1,198 @@
+/*
+ * «Дизайн і сайти»: the first screen, «Плакат» (SitesHero.tsx; the owner's pick, 18 Oct 2026). One screen set as a
+ * poster on a 12-column grid: four corner blocks round a large centred stone.
+ *
+ * The one rule: no word crosses the stone. The stone has its own grid area (.st-hg__stone, a box about the size of its
+ * silhouette); everything in it is sized from that box in em, so the still, the live stone's canvas and the glow scale
+ * with it. Sizes come from the screen (cqi of the words' column, vh), never from a measurement: CLS 0.
+ * Kept from the earlier first screen: the backdrop and its grain (sites.css), the lime button, ember on «сайтів», the
+ * mock below, the pin, the entrance (CSS, once; without motion, the final frame).
+ */
+
+/* ---------- the frame ---------- */
+main[data-ai-page="sites"] .st-hg {
+  /* the H1's measures in its own em (the real faces, below): line 1 «Дизайн і розробка» (desktop) and «і розробка», the
+     widest line once it breaks (a phone), set the size; --hg-th, its height, sets what the stone's box has left */
+  --hg-l1: 8.85;
+  --hg-l2: 5.25; /* (the mono word: 5.01) */
+  --hg-th: 2.11;
+  padding-top: calc(var(--topbar-h) + clamp(1.5rem, 5.2vh, 3.75rem));
+  text-align: left;
+}
+html:lang(ru) main[data-ai-page="sites"] .st-hg { --hg-l1: 10.2; --hg-l2: 6.6; } /* «и разработка» 6.5 */
+/* the words' column: the full width (not hugging its widest line) and a size container, so type and stone are sized
+   from it */
+.st-hg .ai-hero__copy { justify-self: stretch; width: 100%; max-width: 92rem; margin-inline: auto; container-type: inline-size; }
+.st-hg .st-hg__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); justify-items: stretch; align-items: start; }
+.st-hg .st-hg__grid > * { grid-column: 1 / -1; min-width: 0; }
+
+/* the H1: its own size; no dark halo (nothing behind its words now) */
+.st-hg .st-hg__title { margin: 0; max-width: none; font-size: var(--hg-fs); line-height: 0.96; letter-spacing: -0.04em; text-wrap: initial; filter: none; }
+
+/* ==========================================================================
+   The H1, «Дизайн і код» (t5 of nine, the owner's pick, 19 Oct 2026; SitesHero.tsx Title): each word in the face of
+   what it means. «Дизайн» in Source Serif 4 italic (the lead's face), «розробка» in IBM Plex Mono lowercase, as code (it
+   types in once behind an ember caret), «сайтів» in Geologica 800, ember (the result). Sizes matched on the x-height
+   (serif 1.12, mono 0.97), so the line reads as one sentence. A grid with columns in em («Дизайн» 3.37 in the serif,
+   «і» 0.21, RU «и» 0.57): offsets never come from a measurement, so a late face moves nothing (CLS 0). Weights outside
+   a face's declared range are set with font-variation-settings (the files carry the whole axis: nothing new is fetched)
+   ========================================================================== */
+/* the first screen's three faces under names of their own with font-display: block (the same files the page loads
+   anyway, the Cyrillic ones preloaded: nothing new is fetched): until a face has come its words wait unseen instead of
+   showing a stand-in face that would then be swapped and move them (with motion the entrance hides that moment anyway;
+   without motion this keeps the H1 still: a cold load without motion measured CLS 0.0027 before, ≤ 0.001 after, the
+   rest from the topbar and the lead) */
+@font-face { font-family: "St Hero Sans"; font-style: normal; font-weight: 100 900; font-display: block; src: url("/fonts/geologica-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "St Hero Sans"; font-style: normal; font-weight: 100 900; font-display: block; src: url("/fonts/geologica-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "St Hero Serif"; font-style: italic; font-weight: 300 600; font-display: block; src: url("/fonts/sites/source-serif-4-italic-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "St Hero Serif"; font-style: italic; font-weight: 300 600; font-display: block; src: url("/fonts/sites/source-serif-4-italic-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "St Hero Mono"; font-style: normal; font-weight: 400; font-display: block; src: url("/fonts/ibm-plex-mono-400-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "St Hero Mono"; font-style: normal; font-weight: 400; font-display: block; src: url("/fonts/ibm-plex-mono-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+main[data-ai-page="sites"] .st-hg { --t5-a: 3.369em; --t5-i: 0.211em; }
+html:lang(ru) main[data-ai-page="sites"] .st-hg { --t5-i: 0.573em; }
+.st-h1 {
+  font-family: "St Hero Sans", var(--font-sans);
+  display: grid; grid-template-columns: var(--t5-a) var(--t5-i) max-content; grid-template-areas: "a i b" "s s s";
+  gap: 0.07em 0.2em; align-items: baseline; justify-content: start; /* (a little air above the heavy «сайтів») */
+}
+/* a mask: the part rises out of it */
+.st-h1__m { display: block; overflow: hidden; overflow: clip; padding: 0.04em 0.08em 0.14em; margin: -0.04em -0.08em -0.14em; }
+.st-h1__m > .tone { display: inline-block; }
+.st-h1__a { grid-area: a; padding-right: 0.16em; margin-right: -0.16em; font-family: "St Hero Serif", "Source Serif 4", Georgia, serif; font-size: 1.12em; font-style: italic; font-weight: 400; font-variation-settings: normal; letter-spacing: -0.01em; }
+.st-h1__i { grid-area: i; font-variation-settings: "wght" 300; color: var(--ink-soft); }
+.st-h1__b { grid-area: b; font-family: "St Hero Mono", var(--font-mono); font-size: 0.97em; font-weight: 400; font-variation-settings: normal; letter-spacing: -0.02em; }
+.st-h1__s { grid-area: s; font-variation-settings: "wght" 800; letter-spacing: -0.05em; }
+/* the caret: an ember bar from the cap height to the baseline, one mono letter (0.58 em) per step; unseen at rest */
+.st-h1__code { position: relative; }
+.st-h1__caret { position: absolute; left: 0.02em; top: 0.13em; width: 0.08em; height: 0.76em; background: var(--ember); opacity: 0; pointer-events: none; }
+/* desktop: the grid counts the H1 as two lines of 0.96 (1.92 em), so the lead's rows keep their size and the lead its
+   place; what the H1 has more hangs into the stone's row, whose box is smaller by that much (--hg-th in --hg-st) */
+@media (min-width: 761px) {
+  .st-hg .st-hg__title { margin-bottom: calc((1.92 - var(--hg-th)) * 1em); }
+}
+.st-hg .ai-hero__lead { max-width: 30ch; margin: 0; text-align: left; text-shadow: none; text-wrap: pretty; }
+
+/* the stone's box: the size of its silhouette (the still is 6 em wide, 7.2 em tall, turned 8°: 7 × 8 em) */
+.st-hg .st-hg__stone { position: relative; display: block; width: 7em; height: 8em; font-size: calc(var(--hg-st) / 8); pointer-events: none; }
+.st-hg .ai-hero__rock { display: block; left: 50%; top: 50%; }
+.st-hg .ai-hero__rock::after { content: none; }
+/* it is the object now, not a backdrop: whole and clear (today: 0.55 and blurred behind the words) */
+.st-hg .ai-hero__stone { width: 6em; opacity: 0.94; filter: none; }
+.st-hg .ai-hero__canvas { width: 11.6em; height: 11.6em; }
+.st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 0.96; }
+.st-hg .ai-hero__glow { width: 15em; background: radial-gradient(closest-side, rgb(255 246 232 / 0.1), rgb(255 246 232 / 0.035) 55%, rgb(255 246 232 / 0) 100%); }
+
+/* the prices: hero.from as three items (number, format, «від», sum) */
+.st-hg .st-hg__px { margin: 0; padding: 0; list-style: none; font: 400 0.8125rem/1.45 var(--font-mono); letter-spacing: 0.01em; color: var(--ink-soft); }
+.st-hg__pi { display: flex; align-items: baseline; column-gap: 0.9em; min-width: 0; }
+.st-hg__pn { flex: none; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+.st-hg__pt { min-width: 0; }
+.st-hg__pp { margin-left: auto; white-space: nowrap; }
+.st-hg__from { color: var(--ink-mute); }
+.st-hg__pp b { font-weight: 500; color: var(--ink); }
+
+/* a mono label on a column start (the grid's furniture), its number first */
+.st-hg .st-hg__k { display: flex; align-items: baseline; gap: 0.9em; margin: 0; font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute); }
+.st-hg__k span { color: var(--ink-soft); letter-spacing: 0.06em; }
+
+/* the button: clear air above «02 Ціни» (the owner, 19 Oct: «кнопка сидит прямо на ценах»); this rule outranks the
+   AI hero's own margins, so the space is set here */
+main[data-ai-page="sites"] .st-hg .ai-hero__actions { margin: 0 0 clamp(2rem, 4vh, 2.5rem); }
+
+/* ==========================================================================
+   «Плакат»: one screen. The H1 top left; «01 Формати» and the lead top right; the stone
+   in the middle, from under the H1 to the poster's foot; bottom left the button over «02 Ціни» and the prices (on the
+   H1's left edge). Hairline labels and corner marks as furniture
+   ========================================================================== */
+.st-hg {
+  --hg-pad: clamp(1.25rem, 4vh, 2.5rem);
+  --hg-fs: clamp(2.5rem, min(calc(66cqi / var(--hg-l1)), 10.4vh), 7rem);
+  --hg-st: clamp(13rem, calc(100svh - var(--topbar-h) - 2 * var(--hg-pad) - var(--hg-fs) * var(--hg-th) - 3.5rem), 40rem);
+  padding-top: calc(var(--topbar-h) + var(--hg-pad));
+}
+.st-hg .st-hg__grid { position: relative; grid-template-rows: auto auto minmax(0, 1fr) auto auto auto; min-height: calc(100svh - var(--topbar-h) - 2 * var(--hg-pad)); }
+.st-hg .st-hg__title { grid-column: 1 / 9; grid-row: 1 / 3; }
+.st-hg .st-hg__k--lead { grid-column: 9 / -1; grid-row: 1; padding-top: 0.75rem; border-top: 1px solid var(--line); }
+.st-hg .st-hg__lead { grid-column: 9 / -1; grid-row: 2; margin-top: 0.875rem; }
+.st-hg .st-hg__stone { grid-column: 4 / 10; grid-row: 3 / 7; justify-self: center; align-self: end; margin-top: 1.5rem; }
+.st-hg .st-hg__acts { grid-column: 1 / 5; grid-row: 4; justify-self: start; }
+.st-hg .st-hg__k--px { grid-column: 1 / 4; grid-row: 5; padding-top: 0.75rem; border-top: 1px solid var(--line); }
+.st-hg .st-hg__px { grid-column: 1 / 4; grid-row: 6; margin-top: 0.75rem; }
+.st-hg .st-hg__pi { padding: 0.3rem 0; }
+
+/* the lead as the clinic sample's manifesto: Geologica light, a picture pill after each format, the end in Source
+   Serif 4 italic (sites-pv.css @font-face); ember stays the H1's */
+.st-hg .st-hg__mani { max-width: none; font-size: clamp(1.25rem, 1.7vw, 1.625rem); font-weight: 300; line-height: 1.34; letter-spacing: -0.015em; color: var(--ink-soft); }
+.st-hg__nb { white-space: nowrap; }
+.st-hg__ser { font-family: "Source Serif 4", Georgia, serif; font-size: 1.08em; font-style: italic; font-weight: 400; letter-spacing: -0.01em; color: var(--ink); }
+/* clinic.css .cl-mani__pill */
+.st-hg__pill { display: inline-block; width: 1.9em; height: 0.78em; overflow: hidden; vertical-align: -0.04em; border-radius: 99em; background: #1c1c1c; }
+.st-hg__pill img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* the poster's corner marks (furniture): a short cross at each corner of the words' field */
+.st-hg__mark { position: absolute; width: 0.875rem; height: 0.875rem; pointer-events: none; }
+.st-hg__mark::before,
+.st-hg__mark::after { content: ""; position: absolute; left: 50%; top: 50%; background: rgb(246 246 243 / 0.3); translate: -50% -50%; }
+.st-hg__mark::before { width: 100%; height: 1px; }
+.st-hg__mark::after { width: 1px; height: 100%; }
+.st-hg__mark { translate: -50% -50%; }
+.st-hg__mark--tl,
+.st-hg__mark--bl { left: calc(var(--gutter) * -0.5); }
+.st-hg__mark--tr,
+.st-hg__mark--br { left: calc(100% + var(--gutter) * 0.5); }
+.st-hg__mark--tl,
+.st-hg__mark--tr { top: calc(var(--hg-pad) * -0.5); }
+.st-hg__mark--bl,
+.st-hg__mark--br { top: calc(100% + var(--hg-pad) * 0.5); }
+
+/* ---------- the entrance: once, from the first paint (the lines, the lead and the button: sites.css) ---------- */
+html.motion main[data-ai-page="sites"] .st-hg .st-hg__k { animation: ai-rise-in 0.5s var(--ease-out) 0.26s backwards; }
+html.motion main[data-ai-page="sites"] .st-hg .st-hg__px { animation: ai-rise-in 0.6s var(--ease-out) 0.36s backwards; }
+html.motion main[data-ai-page="sites"] .st-hg .st-hg__mark { animation: st-hg-fade 0.8s var(--ease-out) 0.5s backwards; }
+/* the pills scale in once, after the lead's words, one after another */
+html.motion main[data-ai-page="sites"] .st-hg .st-hg__pill { animation: st-hg-pill 0.8s var(--ease-out) calc(0.62s + var(--i, 1) * 0.09s) backwards; }
+@keyframes st-hg-pill { from { opacity: 0; transform: scale(0.3); } }
+@keyframes st-hg-fade { from { opacity: 0; } }
+/* the H1: «Дизайн», «і» rise out of their masks; «розробка» types (55 ms a letter, the caret ahead of it, gone once it
+   has typed); «сайтів» rises as the typing ends. Every part starts unseen for the first frames, so a face that lands a
+   frame late is never seen to move */
+html.motion main[data-ai-page="sites"] .st-hg .st-h1__m > .tone:not(.st-h1__code) { animation: st-h1-in 0.8s var(--ease-out) 0.1s backwards; }
+html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__i > .tone { animation-delay: 0.16s; }
+html.motion main[data-ai-page="sites"] .st-hg .st-h1__k { animation: st-hg-fade 0.01s linear calc(0.36s + var(--i) * 0.055s) backwards; }
+html.motion main[data-ai-page="sites"] .st-hg .st-h1__caret {
+  animation: st-h1-caret calc(var(--n) * 0.055s) steps(var(--n), jump-start) 0.36s forwards, st-h1-caretshow calc(var(--n) * 0.055s + 0.5s) linear 0.3s;
+}
+html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { animation-duration: 0.85s; animation-delay: calc(0.3s + var(--n) * 0.055s); }
+@keyframes st-h1-in { from { opacity: 0; transform: translateY(104%); } 25% { opacity: 1; } }
+@keyframes st-h1-caret { from { transform: translateX(0); } to { transform: translateX(calc(var(--n) * 0.58em)); } }
+@keyframes st-h1-caretshow { from, 88% { opacity: 1; } to { opacity: 0; } }
+
+/* ==========================================================================
+   A phone (and a narrow tablet)
+   ========================================================================== */
+@media (max-width: 760px) {
+  .st-hg .st-hg__grid { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+  .st-hg .ai-hero__lead { font-size: 1rem; }
+
+  /* g3: the poster on a phone: the H1 top left, the lead right under it, the stone, the button (all in the first
+     screen); then «02 Ціни» and the prices. The stone takes what the first screen has left */
+  .st-hg { --hg-pad: 1rem; --hg-thm: 3.14; --hg-fs: min(calc(100cqi / var(--hg-l2)), 7.2svh, 3.5rem); --hg-st: clamp(8.5rem, calc(100svh - var(--topbar-h) - var(--hg-pad) - var(--hg-fs) * var(--hg-thm) - 16.5rem), 20rem); }
+  /* the H1 in three lines: «Дизайн» / «і розробка» / «сайтів» */
+  .st-h1 { grid-template-columns: var(--t5-i) max-content; grid-template-areas: "a a" "i b" "s s"; }
+  .st-hg .st-hg__grid { grid-template-rows: none; min-height: 0; }
+  .st-hg .st-hg__title { grid-column: 1; grid-row: 1; }
+  .st-hg :is(.st-hg__k--lead, .st-hg__mark) { display: none; }
+  .st-hg .st-hg__lead { grid-column: 1; grid-row: 2; justify-self: end; max-width: 92%; margin-top: 0.875rem; text-align: right; }
+  .st-hg .st-hg__mani { font-size: 1.125rem; line-height: 1.36; }
+  .st-hg .st-hg__stone { grid-column: 1; grid-row: 3; justify-self: center; align-self: center; margin: 0.625rem 0 0.75rem; }
+  .st-hg .st-hg__acts { grid-column: 1; grid-row: 4; justify-self: stretch; }
+  main[data-ai-page="sites"] .st-hg .ai-hero__actions { align-items: stretch; margin: 0; }
+  .st-hg .st-hg__k--px { grid-column: 1; grid-row: 5; margin-top: 2rem; }
+  .st-hg .st-hg__px { grid-column: 1; grid-row: 6; margin-top: 0.5rem; }
+  .st-hg .st-hg__pi { padding: 0.28rem 0; }
+}
+
+/* the ground (the owner, 19 Oct: «чёрный»): pure black under the fluid lines (hero-fx), without the old gradient and the
+   stone grain over it */
+.st-hero.st-hg .ai-hero__bg { background: #000; }
+main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }

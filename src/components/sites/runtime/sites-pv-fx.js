@@ -53,7 +53,7 @@
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const GLIDE = 'cubic-bezier(0.45, 0, 0.25, 1)';
 
-export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = {} } = {}) {
+export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = {}, full = null } = {}) {
   const vp = pvw.querySelector('.pv-vp');
   const site = () => vp.querySelector('.pv-site:not(.pv-site--old)');
   const still = reducedMotion || navigator.connection?.saveData === true;
@@ -151,13 +151,19 @@ export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = 
   you.type = 'button';
   you.className = 'pvw__you';
   pvw.append(you);
+  // (owner, 18 Oct: on a phone the sample is small to scroll in its frame) on a phone, before the tap, the pill offers
+  // the whole screen (sites-pv.js: the frame over the page); a tap on the sample itself still takes it in place
+  const fullAsk = () => !st.user && !!full && restMQ.matches && !pvw.classList.contains('is-full');
   function pill() {
     const user = st.user;
-    you.textContent = user ? (labels.auto || 'Автопрокрутка') : (labels.take || 'Гортайте й натискайте самі');
+    const ask = fullAsk();
+    you.textContent = user ? (labels.auto || 'Автопрокрутка') : ask ? (labels.full || 'На весь екран') : (labels.take || 'Гортайте й натискайте самі');
     you.classList.toggle('is-user', user);
+    you.classList.toggle('is-full-ask', ask);
   }
   pill();
-  you.addEventListener('click', () => (st.user ? release() : takeover()));
+  restMQ.addEventListener?.('change', pill);
+  you.addEventListener('click', () => (st.user ? release() : fullAsk() ? full() : takeover()));
   // (15 Oct, the phone audit: a finger landing on the sample took it at once, so the next 12–13 swipes scrolled the
   // sample instead of the page) a mouse takes the sample on a press; a finger or a pen only on a tap (no movement), so
   // a swipe over the sample always scrolls the page
@@ -486,6 +492,10 @@ export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = 
   document.addEventListener('visibilitychange', sync);
 
   return {
+    // the whole screen (sites-pv.js): the visitor has the sample at once; closing it on a phone gives the page back
+    take: () => takeover(),
+    free: () => release(),
+    pill: () => pill(),
     set(s) {
       const was = st.motion;
       Object.assign(st, { motion: s.motion, quiet: !!s.quiet, tour: s.tour, lang2: s.lang2, cart: s.cart, story: s.story, chat: !!s.chat });

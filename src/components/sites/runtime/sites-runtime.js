@@ -15,6 +15,7 @@ import * as ENGINE from '@/components/sections/pricing/configurator/engine.js';
 import { STRINGS } from '@/components/sections/pricing/configurator/strings.js';
 import { leadForm, goToForm as glideToForm } from '@/components/sections/contact/lead-form.js';
 import { restorePlace, restoreScroll } from '@/lib/boot';
+import { getLenis } from '@/lib/scroll';
 import { SPRING, slideIn, rollNumber } from './sites-rb.js';
 import { spotlight, initTilt, mountGlide, beam, beamOnView, deltaChip } from './fx-page.js';
 import { mountHow } from './fx-how.js';
@@ -846,7 +847,7 @@ function mountSamples() {
   const host = $('[data-pv]');
   if (!host || !pvModule || !strings) return null;
   try {
-    return pvModule.mountPreview(host, { t: strings, lang: lang(), assets: PV_ASSETS, reducedMotion: !motion, phone: phoneMQ.matches, labels: { take: t('sites.pv.take', 'Гортайте й натискайте самі'), auto: t('sites.pv.auto', 'Автопрокрутка') } });
+    return pvModule.mountPreview(host, { t: strings, lang: lang(), assets: PV_ASSETS, reducedMotion: !motion, phone: phoneMQ.matches, labels: { take: t('sites.pv.take', 'Гортайте й натискайте самі'), auto: t('sites.pv.auto', 'Автопрокрутка'), full: t('sites.pv.full', 'На весь екран'), close: t('sites.pv.close', 'Закрити') }, full: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
   } catch (error) {
     console.warn('[samples] the sample sites are not available.', error);
     host.closest('[data-pv-box]')?.setAttribute('hidden', '');
