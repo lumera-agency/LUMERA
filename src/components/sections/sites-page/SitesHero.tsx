@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { preload } from "react-dom";
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
-import { AiStoneSlot } from "@/components/ai/AiStoneSlot";
+import { SitesStoneSlot } from "@/components/sites/hero-fx/SitesStoneSlot";
 import type { SitesFacts } from "@/components/sites/facts";
 import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
 
@@ -12,7 +12,7 @@ import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
  * poster on a 12-column grid, so no word ever crosses the stone. The H1 top left, «Дизайн і код» (the owner's pick of
  * nine settings, 19 Oct: see Title); «01 Формати» and the lead top right
  * (set like the clinic sample's manifesto: a picture pill after each format, the end in Source Serif 4 italic); the
- * stone large in the middle (the still, then the live stone: AiStoneSlot), in its own grid area; bottom left the lime
+ * stone large in the middle (the still, then the live stone: SitesStoneSlot), in its own grid area; bottom left the lime
  * button over «02 Ціни» and the three prices (from the engine: data-fprice). (No «Формати й ціни ↓»: the topbar has
  * «Формати» and «Ціна»; the owner, 19 Oct.) Below:
  * the sample site «Ваш бренд» on a computer and a phone, assembled block by block once (scene «build»). It pins; block
@@ -45,8 +45,21 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
           <div className="st-hg__stone" aria-hidden="true">
             <div className="ai-hero__rock">
               <i className="ai-hero__glow" />
-              <img className="ai-hero__stone" src="/img/ai/lock-stone.webp" width={520} height={626} alt="" decoding="async" fetchPriority="high" />
-              <AiStoneSlot />
+              {/* the still: the live stone's rest pose at the canvas' size (920 and 1600 px, QA 19 Oct N-07: 920 was soft on a
+                  3× phone and a tablet); sizes ≈ the canvas' width (11.6 em of --hg-st, sites-hero.css), never below 0 on a low
+                  screen (where the stone keeps its smallest size) */}
+              <img
+                className="ai-hero__stone"
+                src="/img/sites/hero-stone.webp"
+                srcSet="/img/sites/hero-stone.webp 920w, /img/sites/hero-stone-1600.webp 1600w"
+                sizes="(max-width: 760px) and (max-height: 700px) 300px, (max-width: 760px) calc(145vh - 680px), (max-height: 640px) 310px, calc(145vh - 580px)"
+                width={920}
+                height={920}
+                alt=""
+                decoding="async"
+                fetchPriority="high"
+              />
+              <SitesStoneSlot />
             </div>
           </div>
           <div className="ai-hero__actions st-hg__acts">

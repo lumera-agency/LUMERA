@@ -1152,3 +1152,68 @@ html:not(.motion) :is(.st-bd__trk b, .st-hw::after, .st-hseg::before, .st-hw__ti
   .st-hw__more[aria-expanded="true"] i { color: var(--ivory); background: var(--ink-dark); box-shadow: none; transform: rotate(45deg); }
   .st-hw__more:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; border-radius: 6px; }
 }
+
+/* ==========================================================================
+   a phone on its side (601–860 px wide, a low screen; QA 19 Oct, S-01): the pinned strip was taller than the screen
+   and covered all five stages. Here the board sits under the heading as on a phone held upright, sized so it fits the
+   screen, and goes through its five states once by itself while it is on screen (fx-how.js, the same query); a tap on
+   the ribbon shows a state. Phones held upright and tablets keep their layouts
+   ========================================================================== */
+@media (max-width: 860px) and (max-height: 600px) {
+  .st-bd { position: relative; top: auto; z-index: auto; width: 100%; max-width: calc((100svh - var(--topbar-h) - 112px) * 2); margin-inline: auto; }
+  .st-bd__seg { pointer-events: auto; min-height: 44px; padding: 8px 0 4px; }
+}
+
+/* ==========================================================================
+   QA 19 Oct 2026 (S-03, S-10, S-12, S-13, S-16): small fixes across the page
+   ========================================================================== */
+/* S-03: a question a link leads to («Сайт уже є?» from block 2) stops under the topbar, not behind it */
+main[data-ai-page="sites"] .faq__item[id] { scroll-margin-top: calc(var(--topbar-h) + 24px); }
+
+/* S-10: «Детальніше»: wherever the panel scrolls (a phone's sheet, a low screen, a tablet held upright), its head with the
+   «×» stays at the top. The head reaches over the panel's side padding (the black under it hides what scrolls by) and
+   keeps its place at rest; a panel that fits does not move at all */
+/* (--dlg-px, --dlg-pt: the panel's own side and top padding, ai.css; the head sticks to the panel's very top edge, which
+   is its top padding above where sticky stops by itself; --dlg-hd: the room it covers above its words at rest) */
+.st-dlg { --dlg-px: clamp(1.5rem, 3vw, 2.25rem); --dlg-pt: clamp(1.5rem, 3vw, 2.25rem); --dlg-hd: var(--dlg-pt); }
+.st-dlg .ai-dlg__head { position: sticky; top: calc(-1 * var(--dlg-pt)); z-index: 3; margin: calc(-1 * var(--dlg-hd)) calc(-1 * var(--dlg-px)) 0.5rem; padding: var(--dlg-hd) var(--dlg-px) 0.5rem; background: #000; }
+@media (max-width: 600px) {
+  /* (the sheet: its grab bar moves into the head, in the same place, so it stays at the top with the «×») */
+  .st-dlg { --dlg-px: 1.125rem; --dlg-pt: 0.75rem; --dlg-hd: 0.75rem; }
+  .st-dlg .ai-dlg__panel::before { content: none; }
+  .st-dlg .ai-dlg__head { margin-bottom: 0.125rem; padding-top: 1.625rem; }
+  .st-dlg .ai-dlg__head::before { content: ""; position: absolute; left: 50%; top: 0.75rem; width: 2.5rem; height: 0.25rem; margin-left: -1.25rem; border-radius: 2px; background: rgba(246, 246, 243, 0.2); }
+}
+
+/* S-12: every control on the page is at least 44 px to a finger (the hit area, where the drawn control is smaller: a
+   transparent ::after centred on it) */
+.pvw__full::after { inset: calc(50% - 22px) min(-4px, calc(50% - 22px)); }
+/* (the frame clips its bar: on a touch screen the bar itself is 44 px, so «На весь екран» gets its whole height) */
+@media (pointer: coarse) { .pvw.st-pvw:not(.is-full) .pvw__chrome { height: 44px; } }
+.pvw__you::after { inset: calc(50% - 22px) 0; }
+main[data-ai-page="sites"] .ai-pick::after { inset: calc(50% - 22px) 0; }
+.st-show__replay { min-height: 44px; }
+.st-hseg__o::after { content: ""; position: absolute; inset: calc(50% - 22px) 0; }
+
+/* S-13: on a phone (held upright or on its side) no word is under 12 px: the sample chips, «від», the block lists under
+   the samples, block 4's labels, the quick picks, «На весь екран» */
+@media (max-width: 600px), (max-width: 932px) and (max-height: 500px) {
+  main[data-ai-page="sites"] .ai-sample,
+  main[data-ai-page="sites"] :is(.st-win__bar, .st-dev__bar, .st-bd__bar) .ai-sample { font-size: 12px; }
+  .st-stage__from,
+  .st-ruler li,
+  .st-pv__list li,
+  .st-hw__yk,
+  .st-hw__h,
+  .st-hw-time__calc,
+  .st-bd__sl,
+  main[data-ai-page="sites"] .ai-pick,
+  .pvw__full { font-size: 12px; }
+  .st-hw-list[data-fold] .st-hw__more { font-size: 12px; }
+}
+
+/* S-16: the four format cards are one height (the tallest one's, sites-runtime.js evenStages), so another format never
+   moves the page under the card; a shorter one keeps the spare room at its foot */
+@media (max-width: 960px) { .st-stage { align-content: start; } }
+/* (the moment of the measure: no picture starts loading, the phone still gets only the open format's stills) */
+.st-measure .st-stage :is(*, *::before, *::after) { background-image: none !important; }

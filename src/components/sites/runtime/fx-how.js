@@ -34,6 +34,9 @@ export function mountHow({ motion }) {
   const rows = [...list.querySelectorAll('.st-hw')];
   const narrow = matchMedia('(max-width: 860px)');
   const phone = matchMedia('(max-width: 600px)');
+  // (QA 19 Oct, S-01) the board is not pinned on a phone, held upright or on its side (a low screen up to 860 px wide):
+  // there it plays its five states by itself and the ribbon shows a state (sites.css, the same query)
+  const solo = matchMedia('(max-width: 600px), (max-width: 860px) and (max-height: 600px)');
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const q = (sel) => vp.querySelector(sel);
 
@@ -137,7 +140,7 @@ export function mountHow({ motion }) {
   };
 
   /* ---------- the reading line ---------- */
-  const lineY = () => (narrow.matches && !phone.matches ? board.getBoundingClientRect().bottom + 24 : window.innerHeight * 0.45);
+  const lineY = () => (narrow.matches && !solo.matches ? board.getBoundingClientRect().bottom + 24 : window.innerHeight * 0.45);
   const done = (row) => {
     if (row.classList.contains('is-done')) return;
     row.classList.add('is-done');
@@ -159,7 +162,7 @@ export function mountHow({ motion }) {
       active = a;
       rows.forEach((row, i) => row.classList.toggle('is-active', i + 1 === a));
     }
-    if (!hover && !phone.matches) setStage(Math.max(1, active));
+    if (!hover && !solo.matches) setStage(Math.max(1, active));
   };
   const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
   // the scroll is listened to only while the block is near the screen
@@ -187,7 +190,7 @@ export function mountHow({ motion }) {
   segs.forEach((seg, i) => {
     seg.addEventListener('click', () => {
       // phones: the ribbon shows that state on the board itself (the board is not pinned over the rows there)
-      if (phone.matches) {
+      if (solo.matches) {
         stopTour();
         setStage(i + 1);
         return;
@@ -214,7 +217,7 @@ export function mountHow({ motion }) {
     setStage(shown + 1);
     tour = setTimeout(step, STEP);
   };
-  if (phone.matches) {
+  if (solo.matches) {
     if (!motion) {
       toured = true;
       setStage(5);

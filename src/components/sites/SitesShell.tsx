@@ -33,6 +33,24 @@ type Props = {
   children: React.ReactNode;
 };
 
+/** Where the button back up steps aside (anything matching that overlaps it): see BackToTop below. */
+const TO_TOP_QUIET = [
+  ".footer",
+  ".ai-sticky.is-on",
+  ".st-sumbar.is-on",
+  "#faq",
+  "#contact",
+  ".st-rail",
+  ".st-stage__acts",
+  ".st-fmts__end",
+  ".st-sum",
+  ".ai-calc__send",
+  ".st-bd__rib",
+  ".st-hw-end__acts",
+  ".st-show__replay",
+  "[data-quiet]",
+].join(", ");
+
 /** The faces the first screen is set in: fetched with the page, so the words never re-wrap once the font comes in */
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
 
@@ -75,7 +93,11 @@ export async function SitesShell({ nav, footerLinks, cta, barCta, claim, strings
       </div>
       <Footer claim={claim} links={footerLinks} cta={cta} />
       <MenuSheet links={nav} cta={cta} home={home} />
-      <BackToTop label={t("footer.up.span")} quiet=".footer, .ai-sticky.is-on, .st-sumbar.is-on, .ai-calc__send" />
+      {/* it steps aside wherever the page has controls in its corner (QA 19 Oct, S-02: it sat on the questions' pluses, the
+          fields' right edge, «Надіслати заявку», the cards' «Обговорити»): the footer, the bars, the questions, the form,
+          block 2's tabs and card buttons, the price card, block 4's ribbon and end, the sample's «Ще раз»; on narrow screens
+          all of block 3 (its controls run edge to edge: data-quiet, the runtime's initToTop) */}
+      <BackToTop label={t("footer.up.span")} quiet={TO_TOP_QUIET} />
       <SitesRuntime strings={strings} />
     </>
   );

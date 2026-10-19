@@ -120,6 +120,7 @@ async function boot() {
   initPicks();
   initFaq();
   initSticky();
+  initToTop();
   initCover();
   initScenes();
   initDialogs();
@@ -230,7 +231,7 @@ function initPicks() {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       pickFormat(link.dataset.pickFormat);
-      goToForm();
+      goToForm(byKeys(e));
     });
   }
   // «Сайт уже є? Можемо оновити його»: the answer opens
@@ -242,10 +243,21 @@ function pickFormat(what) {
   if (pick.getAttribute('aria-pressed') !== 'true') pick.click();
   else if (FORMATS.includes(what)) setAttached(formatLine(what));
 }
-// the main page's glide to the form (lead-form.js): the page's smooth scroll, the name field focused with a mouse
-function goToForm() {
+// the main page's glide to the form (lead-form.js): the page's smooth scroll, the name field focused with a mouse.
+// (QA 19 Oct, S-23) From the keyboard (a click with no pointer behind it: detail 0) the name takes the focus on any
+// screen too, so the next key types the name instead of staying in block 2; a tap on a phone never opens its keyboard
+function goToForm(kb = false) {
   glideToForm(!motion);
+  if (!kb || fineMQ.matches) return; // (with a mouse and a keyboard lead-form.js focuses it itself)
+  const field = $('#f-name');
+  let tries = 0;
+  const focus = () => {
+    field?.focus({ preventScroll: true });
+    if (field && document.activeElement !== field && ++tries < 30) setTimeout(focus, 150);
+  };
+  setTimeout(focus, motion ? 400 : 0);
 }
+const byKeys = (e) => e?.detail === 0;
 
 /* ---------- 5 · questions: the main page's FAQ (FaqList animates the answers) ---------- */
 function initFaq() {
@@ -264,6 +276,25 @@ function initFaq() {
 // the main page's button back up (BackToTop) steps aside from the bars in its corner, checking on scroll: a bar that
 // comes or goes between two scroll events tells it
 const nudgeToTop = () => window.dispatchEvent(new Event('scroll'));
+
+/* ---------- (QA 19 Oct, S-02) the button back up steps aside over the page's controls in its corner (SitesShell's quiet
+   list: the questions, the form, block 2's tabs and buttons, the price card…). On narrow screens and phones on their
+   side block 3's controls run from edge to edge, so all of block 3 is marked (data-quiet). The button checks itself
+   only on a scroll, so a change of the page without one (an answer opens, «Що входить у ціну» opens and moves the
+   price's button, another format) asks it again ---------- */
+function initToTop() {
+  const narrow = window.matchMedia('(max-width: 860px), (max-width: 932px) and (max-height: 500px)');
+  const block3 = $('#design');
+  const mark = () => block3?.toggleAttribute('data-quiet', narrow.matches);
+  mark();
+  narrow.addEventListener('change', () => { mark(); nudgeToTop(); });
+  let queued = 0;
+  const later = () => {
+    if (!queued) queued = requestAnimationFrame(() => { queued = 0; nudgeToTop(); });
+  };
+  document.addEventListener('toggle', later, true); // <details> do not bubble it: caught on the way down
+  if (typeof ResizeObserver === 'function') new ResizeObserver(later).observe($('#main') || document.body);
+}
 
 /* ---------- phones: «Обговорити проєкт» stays at hand once the first screen has passed, not in block 3 (its sum bar
    takes the place) and not at the form ---------- */
@@ -627,7 +658,8 @@ function initDialogs() {
     for (const talk of $$('[data-pick-format]', dlg)) {
       talk.addEventListener('click', (e) => {
         e.preventDefault();
-        close(dlg, () => { pickFormat(talk.dataset.pickFormat); goToForm(); });
+        const kb = byKeys(e);
+        close(dlg, () => { pickFormat(talk.dataset.pickFormat); goToForm(kb); });
       });
     }
     // «Порахувати з дизайном»: to block 3, with this format chosen
@@ -791,13 +823,13 @@ function initCalc() {
 
   renderCalc(false);
 
-  out.send.addEventListener('click', () => {
+  out.send.addEventListener('click', (e) => {
     const r = renderCalc(false);
     const summary = [r.title, r.extras.join(', '), `${r.priceText} ${text('sites.once', 'разово')}`, r.weeks].filter(Boolean).join(' · ');
     const pick = lead.picks?.find((p) => p.dataset.pick === state.format);
     pressPick(pick || null);
     setAttached(summary, r.lines.join('\n'));
-    goToForm();
+    goToForm(byKeys(e));
   });
 }
 
@@ -866,8 +898,9 @@ function initTabs() {
   const stageOf = (f) => $(`.st-stage[data-fmt="${f}"]`, room);
   // (15 Oct) phones take the 600-px copies of the page-long stills (…-s.jpg). The stills carry their address in
   // data-src (the dictionary's, per language) and get it here, so a phone never starts the big copy first (the phone
-  // audit: the first still came twice, 0.5 MB more, 1.3 MB in Russian)
-  const phone = phoneMQ.matches;
+  // audit: the first still came twice, 0.5 MB more, 1.3 MB in Russian). (QA 19 Oct, S-20) So do narrow tablets and
+  // phones on their side, up to 860 px: the same copies, the open format's first, another's as its tab is pressed
+  const phone = narrowMQ.matches;
   for (const img of $$('.st-dev__img[data-src]', room)) {
     const desk = img.closest('.st-dev__desk');
     img.src = phone && desk ? img.dataset.src.replace(/\.jpg$/, '-s.jpg') : img.dataset.src;
@@ -902,6 +935,7 @@ function initTabs() {
     const items = plus ? words('sites.pv.lp.n.all').map((w, i) => [w, add.includes(i)]) : words(corp ? 'sites.pv.c' : 'sites.pv.l.n').map((w) => [w, false]);
     ol.replaceChildren(...items.map(([w, add]) => Object.assign(document.createElement('li'), { textContent: w, className: add ? 'is-add' : '' })));
   }
+  evenStages(room);
   let shown = state.format;
   glide = OG ? null : mountGlide($('.st-rail', room));
   let placed = false;
@@ -946,6 +980,39 @@ function initTabs() {
     });
   }
   syncTabs();
+}
+
+/* ---------- 2 · (QA 19 Oct, S-16) the four format cards one height: the tallest one's at this width, so another format
+   never moves what is under the card. Measured with each card shown in turn, in one go (nothing paints between, no
+   picture starts loading); again when the width changes and once the fonts are in ---------- */
+function evenStages(room) {
+  const stages = $$('.st-stage', room);
+  if (stages.length < 2) return;
+  const even = () => {
+    let tallest = 0;
+    // (while a hidden card is shown for the measure its pictures must not start: the stills are CSS backgrounds,
+    // which a shown element fetches at once; .st-measure turns them off for that moment, sites.css)
+    room.classList.add('st-measure');
+    for (const stage of stages) {
+      const hidden = stage.hidden;
+      stage.style.minHeight = '';
+      stage.hidden = false;
+      tallest = Math.max(tallest, stage.getBoundingClientRect().height); // (fractional: equal to the tallest to the subpixel)
+      stage.hidden = hidden;
+    }
+    room.classList.remove('st-measure');
+    for (const stage of stages) stage.style.minHeight = `${tallest}px`;
+  };
+  even();
+  let width = window.innerWidth;
+  let timer = 0;
+  window.addEventListener('resize', () => {
+    if (window.innerWidth === width) return;
+    width = window.innerWidth;
+    clearTimeout(timer);
+    timer = setTimeout(even, 150);
+  });
+  document.fonts?.ready.then(even);
 }
 
 /* ---------- 2 · a format chosen: its stage's words come in (the title out of its mask, the ticks one by one as
@@ -1044,7 +1111,7 @@ function initHow() {
   $('[data-how-cta]')?.addEventListener('click', (e) => {
     e.preventDefault();
     if (touched && lead.pack && !lead.pack.value) pickFormat(fmt);
-    goToForm();
+    goToForm(byKeys(e));
   });
 }
 

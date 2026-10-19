@@ -7,7 +7,8 @@
  * shaders and the same behaviour (WebGL2, one full-screen triangle, a cursor magnet, a click swirl, an intro fade; it
  * draws only while visible and the tab is shown, and stops when nothing moves). Changes: the `paused` prop also stops
  * the frame loop (here: while block 2 covers the pinned hero); the line core's smoothstep runs with its edges in order
- * (reversed edges are undefined in GLSL: ANGLE on Metal painted the whole canvas white); an `fps` cap.
+ * (reversed edges are undefined in GLSL: ANGLE on Metal painted the whole canvas white); an `fps` cap; while
+ * paused, the pointer no longer wakes it.
  *
  * ---------------------------------------------------------------------------------------------------------
  * MIT + Commons Clause License Condition v1.0
@@ -459,6 +460,7 @@ export default function FluxLines({
     };
 
     const onPointerMove = (event: PointerEvent) => {
+      if (settingsRef.current.paused) return; // (this page) covered by block 2: a mouse anywhere must not redraw it
       const wasInside = pointer.inside;
       locate(event);
       if (pointer.inside && !wasInside && magnet.active < 0.05) {

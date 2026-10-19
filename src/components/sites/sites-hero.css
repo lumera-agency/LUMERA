@@ -176,7 +176,7 @@ html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { anima
 
   /* g3: the poster on a phone: the H1 top left, the lead right under it, the stone, the button (all in the first
      screen); then «02 Ціни» and the prices. The stone takes what the first screen has left */
-  .st-hg { --hg-pad: 1rem; --hg-thm: 3.14; --hg-fs: min(calc(100cqi / var(--hg-l2)), 7.2svh, 3.5rem); --hg-st: clamp(8.5rem, calc(100svh - var(--topbar-h) - var(--hg-pad) - var(--hg-fs) * var(--hg-thm) - 16.5rem), 20rem); }
+  .st-hg { --hg-pad: 1rem; --hg-thm: 3.14; --hg-fs: min(calc(100cqi / var(--hg-l2)), 7.2svh, 3.5rem); --hg-st: clamp(8.5rem, calc(100svh - var(--topbar-h) - var(--hg-pad) - var(--hg-fs) * var(--hg-thm) - 13.75rem), 25.5rem); } /* (19 Oct: «чуть побольше», then «маленький»: the stone takes what the first screen has left above the button, up to 408) */
   /* the H1 in three lines: «Дизайн» / «і розробка» / «сайтів» */
   .st-h1 { grid-template-columns: var(--t5-i) max-content; grid-template-areas: "a a" "i b" "s s"; }
   .st-hg .st-hg__grid { grid-template-rows: none; min-height: 0; }
@@ -192,7 +192,50 @@ html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { anima
   .st-hg .st-hg__pi { padding: 0.28rem 0; }
 }
 
+/* ==========================================================================
+   A tablet held upright (761–1024 px wide, taller than wide; QA 19 Oct, S-05 and N-02): the poster's columns were too
+   narrow for the stone, so it lay under the button and the prices were squeezed into three columns. Here the poster runs
+   down the screen as on a phone, with a tablet's room: the H1 across the whole width in its two lines, «01 Формати» and
+   the lead on the right, the stone large and alone in its row, then the button bottom left and «02 Ціни» with the prices
+   bottom right. Still one screen; the stone takes what the words leave (--hg-st, from the screen, never measured)
+   ========================================================================== */
+@media (min-width: 761px) and (max-width: 1024px) and (orientation: portrait) {
+  .st-hg {
+    --hg-pad: clamp(1.25rem, 3vh, 2.5rem);
+    --hg-fs: min(calc(96cqi / var(--hg-l1)), 8.4svh, 7rem);
+    --hg-st: clamp(16rem, calc(100svh - var(--topbar-h) - 2 * var(--hg-pad) - var(--hg-fs) * var(--hg-th) - 20.5rem), 40rem);
+  }
+  .st-hg .st-hg__grid { grid-template-rows: auto auto auto minmax(0, 1fr) auto auto; }
+  .st-hg .st-hg__title { grid-column: 1 / -1; grid-row: 1; margin-bottom: 0; }
+  .st-hg .st-hg__k--lead { grid-column: 6 / -1; grid-row: 2; margin-top: 1.75rem; }
+  .st-hg .st-hg__lead { grid-column: 6 / -1; grid-row: 3; }
+  .st-hg .st-hg__stone { grid-column: 1 / -1; grid-row: 4; justify-self: center; align-self: center; margin: 1.5rem 0 2rem; }
+  .st-hg .st-hg__acts { grid-column: 1 / 7; grid-row: 5 / 7; align-self: end; }
+  main[data-ai-page="sites"] .st-hg .ai-hero__actions { margin: 0; }
+  .st-hg .st-hg__k--px { grid-column: 7 / -1; grid-row: 5; }
+  .st-hg .st-hg__px { grid-column: 7 / -1; grid-row: 6; }
+}
+
+/* (N-02) the words and the button lie above the stone's box: where the box reaches under them, a tap is theirs */
+.st-hg :is(.st-hg__px, .st-hg__k, .st-hg__acts) { position: relative; z-index: 1; }
+
 /* the ground (the owner, 19 Oct: «чёрный»): pure black under the fluid lines (hero-fx), without the old gradient and the
    stone grain over it */
 .st-hero.st-hg .ai-hero__bg { background: #000; }
 main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }
+
+/* the stone (19 Oct, «не должен увеличиваться при скролле»): the live stone keeps one pose (hero-fx/SitesStone.tsx) and
+   the still is a frame of that same pose at the canvas' own size (img/sites/hero-stone.webp 920², -1600 1600², transparent), so when
+   the live one takes over (after the still's entrance) nothing on screen changes: no cross-fade, no jump */
+.st-hg .ai-hero__stone { width: 11.6em; rotate: 0deg; opacity: 0.96; filter: none; }
+.st-hg .ai-hero__canvas,
+.st-hg .ai-hero__rock.is-live .ai-hero__stone { transition: none; }
+.st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 0.96; }
+/* its entrance: a fade with a short rise, no scale (a stone that grows on arrival read as «it grows») */
+@keyframes st-stone-in { from { opacity: 0; transform: translateY(0.4em); } }
+html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: st-stone-in; }
+
+/* a sideways drag on the stone turns it (SitesStone.tsx); vertical swipes still scroll the page and two fingers still zoom
+   it (N-03); no grey flash on a tap (iOS) */
+.st-hg .st-hg__stone { pointer-events: auto; touch-action: pan-y pinch-zoom; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) and (pointer: fine) { .st-hg .st-hg__stone { cursor: grab; } .st-hg .st-hg__stone:active { cursor: grabbing; } }
