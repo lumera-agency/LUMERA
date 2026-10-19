@@ -1276,3 +1276,15 @@ html.motion:not(.ai-go):not(.is-ready) .ai-hero .ai-bub { opacity: 0; }
 .ai-find.is-pre .ai-howto__step { opacity: 0.35; }
 .ai-chat.is-warm .ai-bub,
 .ai-chat.is-warm .ai-typing { will-change: opacity, transform; }
+
+/* ==========================================================================
+   The AI page in pure black (the owner, 19 Oct 2026: «полностью чёрный фон», as on «Дизайн і сайти»; page.css sets
+   the ground). The first screen loses its light, glow and grain; the dark cards are flat #000 and keep their hairline
+   edge, so they still read. The dark halo under the lead stays (it keeps the words readable over the stone). The cases
+   (data-ai-page case / asst) keep their look.
+   ========================================================================== */
+main[data-ai-page="ai"] :is(.ai-hero, .ai-hero__bg) { background: #000; }
+main[data-ai-page="ai"] .ai-hero__glow { display: none; }
+main[data-ai-page="ai"] .ai-hero::before { content: none; }
+main[data-ai-page="ai"] :is(.ai-ad, .ai-svc, .ai-calc__card) { background: #000; }
+main[data-ai-page="ai"] .ai-dlg__panel { background: #000; }

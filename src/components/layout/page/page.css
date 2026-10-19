@@ -405,3 +405,13 @@
   80%  { transform: translate3d(5%, 4%, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
+
+/* ==========================================================================
+   The AI page (main[data-ai-page="ai"]) in pure black instead of «smoke» (the owner, 19 Oct 2026; as on «Дизайн і
+   сайти», sites-next.css). The page's ground, so every dark block, is flat #000; the moving film grain and the bridge
+   glow are off. The main page and the two cases keep their look.
+   ========================================================================== */
+:root:has(main[data-ai-page="ai"]) { --bg: #000; }
+body:has(main[data-ai-page="ai"]) { background: #000; }
+body:has(main[data-ai-page="ai"]) :is(.page, .footer) { background: #000; }
+body:has(main[data-ai-page="ai"]) :is(.page__grain, .page__bridge) { display: none; }
