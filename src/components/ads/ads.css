@@ -1,0 +1,801 @@
+/*
+ * «Реклама й аналітика» (/reklama-i-analityka): this page's own blocks. The kit (tokens, sections and heads, buttons,
+ * topbar, footer, FAQ, form) is the main page's; the first screen's frame, the mock windows' bar, «Ще раз», the sticky
+ * bar, the quick picks and the reveal are the AI pages' (ai/ai.css, loaded before this file). Colour logic as on the
+ * whole site: signal #daff02 = the system's answer (ticks, the ad that is ours, the lit way of a request), never on
+ * ivory; ember = the person (buttons, a tap, the person's step, each heading's key word).
+ */
+
+/* ==========================================================================
+   The page: pure black, as the sibling pages since 19 Oct (their rules in ai.css name their own pages)
+   ========================================================================== */
+:root:has(main[data-ai-page="ads"]) { --bg: #000; }
+body:has(main[data-ai-page="ads"]) { background: #000; }
+body:has(main[data-ai-page="ads"]) :is(.page, .footer) { background: #000; }
+body:has(main[data-ai-page="ads"]) :is(.page__grain, .page__bridge) { display: none; }
+/* (no weight: a class on the element always wins; 20 Oct, the reset had outranked .ad-facts' margin) */
+:where(main[data-ai-page="ads"]) :where(ul) { margin: 0; padding: 0; list-style: none; }
+:where(main[data-ai-page="ads"]) :where(h3) { margin: 0; }
+
+/* ==========================================================================
+   1 · the first screen (the owner's redesign, 20 Oct): the sibling pages' FluxLines on black; the words on the left,
+   the way of a request on the right (the three networks → their lines → «Ваш сайт» → the week's requests); stacked
+   below 1101 px
+   ========================================================================== */
+main[data-ai-page="ads"] :is(.ai-hero, .ai-hero__bg) { background: #000; }
+main[data-ai-page="ads"] .ai-hero__bg .flux-lines-container { position: absolute; inset: 0 0 auto; height: min(100svh, 100%); }
+main[data-ai-page="ads"] .ai-hero__bg .flux-lines-container::after { content: ""; position: absolute; inset: auto 0 0; height: 12rem; background: linear-gradient(rgb(0 0 0 / 0), #000); pointer-events: none; }
+main[data-ai-page="ads"] .ai-hero__in { position: relative; z-index: 2; }
+main[data-ai-page="ads"] .ai-hero__title { filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.55)) drop-shadow(0 2px 1.25rem rgba(0, 0, 0, 0.75)); }
+main[data-ai-page="ads"] .ai-hero__title .hl { white-space: nowrap; }
+main[data-ai-page="ads"] .ad-hero { padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5rem)); padding-bottom: clamp(3.5rem, 9vh, 6.5rem); }
+.ad-hero .ai-hero__in { align-items: center; }
+/* wide screens: the first screen fills the screen (the words and the way side by side are shorter than it) */
+@media (min-width: 1101px) { main[data-ai-page="ads"] .ad-hero { display: grid; align-content: center; min-height: min(100svh, 60rem); } }
+.ad-hero .ai-hero__copy { grid-column: 1 / span 6; }
+.ad-hero .ai-hero__visual { grid-column: 7 / -1; justify-items: stretch; }
+.ad-hero .ai-hero__title--auto { max-width: none; font-size: clamp(2.4rem, 3.5vw, 3.5rem); line-height: 1.02; letter-spacing: -0.04em; }
+.ad-hero .ai-hero__lead { max-width: 40ch; color: var(--ink); text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 0 0.5rem rgba(0, 0, 0, 0.85), 0 1px 1.125rem rgba(0, 0, 0, 0.95); }
+/* the words come in once, from CSS on the first paint (the AI page's rise), the way after them */
+html.motion main[data-ai-page="ads"] .ad-hero .ai-l > .tone { animation: ai-line-in 0.8s var(--ease-out) 0.05s backwards; }
+html.motion main[data-ai-page="ads"] .ad-hero .ai-l + .ai-l > .tone { animation-delay: 0.16s; }
+html.motion main[data-ai-page="ads"] .ad-hero .ai-hero__lead { animation: ai-rise-in 0.65s var(--ease-out) 0.3s backwards; }
+html.motion main[data-ai-page="ads"] .ad-hero .ai-hero__actions { animation: ai-rise-in 0.65s var(--ease-out) 0.4s backwards; }
+html.motion main[data-ai-page="ads"] .ad-hero__facts { animation: ai-rise-in 0.65s var(--ease-out) 0.45s backwards; }
+html.motion main[data-ai-page="ads"] .ad-hero .ai-hero__visual { animation: ai-rise-in 0.9s var(--ease-out) 0.35s backwards; }
+/* while block 2 slides over the pinned first screen, the lines dim with the words (the AI page's scroll-driven dim) */
+@supports (animation-timeline: view()) and (timeline-scope: --a) {
+  @media (prefers-reduced-motion: no-preference) {
+    html.ai-stick main[data-ai-page="ads"] .ai-hero[data-cover] .ai-hero__bg { animation: ai-hero-dim linear both; animation-timeline: --ai-cover; animation-range: entry 0% entry 100%; }
+  }
+}
+
+/* one line of confirmed facts under the button (mono, quiet) */
+.ad-hero__facts { max-width: 46ch; margin: 1.25rem 0 0; font: 400 0.8125rem/1.5 var(--font-mono); letter-spacing: 0.01em; color: var(--ink-soft); text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.9); }
+.ad-hero__facts b { font-weight: 500; color: var(--ink); }
+.ad-hero__f { white-space: nowrap; }
+
+/* the way of a request: one dark window, the networks on top, the lines, the site, the week's requests */
+.ad-fl { display: grid; justify-items: end; gap: 0.375rem; width: min(36rem, 100%); justify-self: end; }
+.ad-fl__win { --ln: rgba(246, 246, 243, 0.2); width: 100%; padding: 0.875rem 1rem 1rem; border-radius: 1.25rem; text-align: left; background: rgba(10, 10, 10, 0.92); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.09), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.95); }
+.ad-fl__top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0 0 0.75rem; font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.ai .ad-fl__src { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+.ad-fl__src li { padding: 0 0.25rem; }
+.ad-fl__chip { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.5rem; padding: 0.625rem 0.75rem; border-radius: 0.875rem; background: #141414; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1); }
+.ad-fl__ico { width: 1.375rem; height: 1.375rem; fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ad-fl__name { display: grid; min-width: 0; line-height: 1.2; }
+.ad-fl__name b { font-size: 0.875rem; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ad-fl__name small { font: 400 0.6875rem/1.3 var(--font-mono); color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ad-fl__n { display: grid; place-items: center; min-width: 1.75rem; height: 1.75rem; padding: 0 0.375rem; border-radius: 99px; font: 500 0.875rem/1 var(--font-mono); color: var(--on-accent, #111); background: var(--signal); }
+.ad-fl__n .ad-part__n { margin: 0; color: inherit; }
+/* the lines: down from each network, across, and down into the site (drawn as thin backgrounds at the chips' middles) */
+.ad-fl__bus { position: relative; height: 2.5rem; background: linear-gradient(var(--ln), var(--ln)) calc(100% / 6) 0 / 1px 50% no-repeat, linear-gradient(var(--ln), var(--ln)) 50% 0 / 1px 100% no-repeat, linear-gradient(var(--ln), var(--ln)) calc(500% / 6) 0 / 1px 50% no-repeat, linear-gradient(var(--ln), var(--ln)) 50% 50% / calc(200% / 3) 1px no-repeat; }
+.ad-fl__link { position: relative; height: 1.5rem; background: linear-gradient(var(--ln), var(--ln)) 50% 0 / 1px 100% no-repeat; }
+/* a light that runs along them: the carrier is the lines' own box, moved by translate (so its percentages are the box's) */
+.ad-fl__run { position: absolute; inset: 0; pointer-events: none; }
+.ad-fl__run b { position: absolute; top: 0; left: 50%; width: 0.5rem; height: 0.5rem; margin: -0.25rem 0 0 -0.25rem; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0.75rem var(--signal), 0 0 0 0.1875rem rgba(218, 255, 2, 0.2); opacity: 0; }
+.ad-fl__run[data-i="0"] b { left: calc(100% / 6); }
+.ad-fl__run[data-i="2"] b { left: calc(500% / 6); }
+.ad-fl__hub { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: max-content; max-width: 100%; margin: 0 auto; padding: 0.5rem 0.875rem 0.5rem 0.625rem; border-radius: 99px; font-size: 0.875rem; color: var(--ink); background: #141414; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
+.ad-fl__hub svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ad-fl__hub b { font-weight: 500; }
+.ad-fl__hub small { font: 400 0.6875rem/1 var(--font-mono); color: var(--ink-mute); }
+.ad-fl__box { border-radius: 1rem; background: #0e0e0e; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08); }
+.ad-fl__k { margin: 0; padding: 0.75rem 1.125rem 0.375rem; font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ad-fl .ai-replay { margin-right: -0.875rem; }
+
+/* the week's requests (the rows the first screen has had since round 1) */
+.ad-inbox__list { padding: 0.25rem 0; }
+.ad-inbox__row { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr) auto; column-gap: 0.875rem; align-items: center; min-height: 3.25rem; padding: 0.4375rem 1.25rem 0.4375rem 1.125rem; }
+.ad-inbox__row + .ad-inbox__row { border-top: 1px solid rgba(246, 246, 243, 0.07); }
+.ad-inbox__ava { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; color: var(--ink-soft); background: #1e1e1e; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08); }
+.ad-inbox__ava svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ad-inbox__s { display: none; }
+.ad-inbox__who { display: grid; gap: 1px; min-width: 0; }
+.ad-inbox__who b { font-size: 0.9375rem; font-weight: 500; line-height: 1.3; color: var(--ink); }
+.ad-inbox__who time { font: 400 0.75rem/1.2 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+.ad-inbox__src { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.3125rem 0.75rem 0.3125rem 0.375rem; border-radius: 62.4375rem; font: 400 0.75rem/1.2 var(--font-mono); white-space: nowrap; color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
+.ad-inbox__tick { display: grid; place-items: center; width: 1.125rem; height: 1.125rem; border-radius: 50%; font-size: 0.625rem; font-weight: 600; color: var(--on-accent); background: var(--signal); }
+.ad-part__n { display: inline-block; height: 1.2em; margin-left: -0.125rem; overflow: hidden; font-variant-numeric: tabular-nums; color: var(--ink); }
+.ad-part__strip { display: block; transform: translateY(calc(var(--n) * -100% / (var(--n) + 1))); }
+.ad-part__strip > span { display: block; height: 1.2em; line-height: 1.2em; }
+
+/* ==========================================================================
+   2 · Реклама (ivory): two cards, each a dark screen with its scene over the words
+   ========================================================================== */
+.ad-ch__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--col-gap); }
+.ad-card { display: flex; flex-direction: column; min-width: 0; border-radius: var(--radius-lg); color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1), 0 1.875rem 3.75rem -2.625rem rgba(60, 45, 30, 0.45); }
+.ad-card__media { position: relative; isolation: isolate; height: 27rem; margin: 0.5rem 0.5rem 0; border-radius: 1rem; overflow: hidden; color: var(--ink); background: #000; }
+.ad-card__media > .ai-replay { position: absolute; right: 0.375rem; bottom: 0.25rem; z-index: 5; color: var(--ink-mute); }
+.ad-card__media > .ai-replay:hover,
+.ad-card__media > .ai-replay:focus-visible { color: var(--ink); }
+.ad-card__media .ai-sample { color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.14); }
+.ad-card__body { display: flex; flex: 1; flex-direction: column; align-items: flex-start; gap: 0.875rem; padding: 1.625rem 1.75rem 1.75rem; }
+.ad-card__tag { font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); text-wrap: balance; }
+.ad-card__t { font-size: clamp(1.5rem, 2.1vw, 2rem); font-weight: 400; line-height: 1.12; letter-spacing: -0.025em; text-wrap: balance; }
+.ad-card__p { max-width: 46ch; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-dark-soft); text-wrap: pretty; }
+/* the foot: the price and a quiet button that takes this choice into the form (the review, 20 Oct: the reader decides
+   here, and there was nothing to press) */
+.ad-card__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.25rem; align-self: stretch; margin-top: auto; padding-top: 1.125rem; border-top: 1px solid var(--line-dark); }
+.ad-card__price { font-size: var(--fs-body-s); color: var(--ink-dark-soft); }
+.ad-card .btn--ghost { --btn-ink: var(--ink-dark); --btn-line: rgba(15, 14, 13, 0.32); }
+/* «↻ Ще раз» sits on the black mock-up inside the ivory card: its focus ring in signal, as on the dark blocks */
+.ad-card__media > .ai-replay:focus-visible { outline-color: var(--signal); }
+.ad-card__price b { font-weight: 500; color: var(--ink-dark); }
+.ad-card__price--talk { color: var(--ink-dark-soft); }
+
+/* the ticks (on ivory: ink with an ivory tick; on the dark blocks: signal) */
+.ad-checks { display: grid; gap: 0.5rem; }
+.ad-checks li { position: relative; padding-left: 1.75rem; font-size: var(--fs-body-s); line-height: 1.45; color: var(--ink-dark); text-wrap: pretty; }
+.ad-checks li::before { content: ""; position: absolute; left: 0; top: 0.1em; width: 1.125rem; height: 1.125rem; border-radius: 50%; background: var(--ink-dark) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23fcfcfa' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 0.75rem no-repeat; }
+
+/* a tap: a ring where the finger lands (the person: ember) */
+/* the person's finger (ember): it glides to the ad, presses and goes; at rest it is not there */
+.ad-finger { position: absolute; left: 0; top: 0; z-index: 6; width: 0.875rem; height: 0.875rem; margin: -0.4375rem 0 0 -0.4375rem; border-radius: 50%; background: var(--ember); box-shadow: 0 0 0 0.375rem rgba(210, 86, 28, 0.22), 0 0.5rem 1rem -0.25rem #000; opacity: 0; pointer-events: none; }
+/* the ad reaching the three who fit: thin signal beams that pass and fade (transient) */
+.ad-beam { position: absolute; left: 0; top: 0; z-index: 1; width: 1px; height: 1px; background: linear-gradient(90deg, rgba(218, 255, 2, 0.9), rgba(218, 255, 2, 0.25)); transform-origin: 0 50%; opacity: 0; pointer-events: none; }
+.ad-tap { position: absolute; left: 70%; top: 50%; width: 2.75rem; height: 2.75rem; margin: -1.375rem 0 0 -1.375rem; border-radius: 50%; border: 2px solid var(--ember); opacity: 0; pointer-events: none; }
+/* «+1 заявка» */
+.ad-toast { position: absolute; left: 1rem; bottom: 1rem; z-index: 4; display: flex; align-items: center; gap: 0.625rem; max-width: calc(100% - 7.5rem); padding: 0.5625rem 0.875rem 0.5625rem 0.5625rem; border-radius: 0.875rem; font-size: 0.8125rem; line-height: 1.3; color: var(--ink-soft); background: rgba(28, 28, 28, 0.94); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1), 0 1rem 2rem -0.75rem #000; }
+.ad-toast b { font-weight: 500; color: var(--ink); }
+.ad-toast__ico { flex: none; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; color: var(--on-accent); background: var(--signal); }
+.ad-toast__ico svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* · the Google screen: the search field, the ad among the results */
+.ad-serp { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.ad-serp > .ai-sheet__bar { flex: none; }
+.ad-serp__in { display: grid; align-content: start; gap: 0.75rem; padding: 1.125rem 1.25rem; }
+.ad-serp__field { display: flex; align-items: center; gap: 0.625rem; height: 2.75rem; padding: 0 1.125rem; border-radius: 62.4375rem; font-size: 0.9375rem; color: var(--ink); background: #161616; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
+.ad-serp__field > svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.8; stroke-linecap: round; }
+.ad-type { position: relative; white-space: pre; }
+.ad-type > i { font-style: normal; }
+/* the caret of the one who types (ember); at rest the field is left, so it is gone */
+.ad-type__caret { display: inline-block; width: 2px; height: 1.15em; margin-left: 1px; vertical-align: -0.2em; border-radius: 1px; background: var(--ember); opacity: 0; }
+.ad-serp__ad { position: relative; display: grid; gap: 0.25rem; padding: 0.875rem 1rem 0.9375rem; border-radius: 0.875rem; background: #111; box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.4); }
+/* Google's mark sits on its own line above the address */
+.ad-serp__site { display: grid; gap: 1px; font-size: 0.75rem; line-height: 1.35; color: var(--ink-soft); }
+.ad-serp__site b { font-weight: 600; color: var(--ink); }
+.ad-serp__head { font-size: 1.0625rem; line-height: 1.3; color: #9cc3ff; text-wrap: balance; }
+.ad-serp__desc { font-size: 0.8125rem; line-height: 1.4; color: var(--ink-soft); }
+.ad-serp__res { display: grid; gap: 0.625rem; }
+.ad-serp__links { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; margin-top: 0.3rem; font-size: 0.75rem; color: #9cc3ff; }
+.ad-serp__org { display: grid; gap: 0.15rem; padding: 0.125rem 1rem; }
+.ad-serp__url { display: flex; align-items: center; gap: 0.45rem; font-size: 0.7rem; color: var(--ink-mute); }
+.ad-serp__url i { width: 0.875rem; height: 0.875rem; border-radius: 50%; background: rgba(246, 246, 243, 0.16); }
+.ad-serp__otitle { overflow: hidden; font-size: 0.9375rem; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; color: rgba(156, 195, 255, 0.72); }
+.ad-serp .ad-tap { left: 64%; top: 46%; }
+
+/* · the Facebook / Instagram screen: the people of a city, who the ad is shown to, the ad in the feed */
+.ad-feed { position: absolute; inset: 0; }
+.ad-feed > .ai-sample { position: absolute; top: 0.75rem; right: 0.75rem; z-index: 3; }
+/* the people of a city: each audience chip leaves some out (data-k 1 the city, 2 the age), three light up. At rest:
+   the left-out dim, the three in signal */
+.ad-crowd { position: absolute; left: 1.25rem; right: 16rem; top: 8.75rem; bottom: 4.75rem; }
+.ad-crowd__dot { position: absolute; left: var(--x); top: var(--y); width: 0.5rem; height: 0.5rem; margin: -0.25rem 0 0 -0.25rem; border-radius: 50%; background: rgba(246, 246, 243, 0.8); opacity: 0.55; }
+.ad-crowd__dot:is([data-k="1"], [data-k="2"]) { opacity: 0.14; transform: scale(0.7); }
+.ad-crowd__dot.is-fit { opacity: 1; }
+.ad-crowd__dot b { position: absolute; inset: -0.125rem; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 0.25rem rgba(218, 255, 2, 0.16); }
+.ad-aud { position: absolute; left: 1rem; top: 1rem; z-index: 2; display: grid; justify-items: start; gap: 0.5rem; max-width: calc(100% - 15.5rem); }
+.ad-aud__k { font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ad-aud__chips { display: grid; justify-items: start; gap: 0.375rem; }
+.ad-aud__chips li { padding: 0.375rem 0.75rem; border-radius: 0.875rem; font: 400 0.75rem/1.2 var(--font-mono); color: var(--ink); background: rgba(14, 14, 14, 0.88); box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.45); }
+.ad-post { position: absolute; right: 1rem; top: 2.75rem; z-index: 2; width: 13.25rem; border-radius: 1rem; overflow: hidden; background: #121212; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1), 0 1.75rem 3rem -1.25rem #000; }
+.ad-post__head { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 0.75rem; }
+.ad-post__ava { flex: none; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; color: var(--on-accent); background: var(--ink); }
+.ad-post__ava svg { width: 0.875rem; height: 0.875rem; fill: currentColor; }
+.ad-post__who { display: grid; line-height: 1.2; }
+.ad-post__who b { font-size: 0.75rem; font-weight: 600; color: var(--ink); }
+.ad-post__who span { font-size: 0.6562rem; color: var(--ink-mute); }
+.ad-post__img { display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden; background: radial-gradient(80% 90% at 50% 60%, #3a2216 0%, #170d08 55%, #0b0907 100%); }
+.ad-post__img img { width: 46%; height: auto; rotate: -10deg; filter: drop-shadow(0 0.875rem 1rem rgba(0, 0, 0, 0.6)); }
+.ad-post__cap { padding: 0.5rem 0.75rem 0.375rem; font-size: 0.7188rem; line-height: 1.35; color: var(--ink-soft); }
+.ad-post__cta { position: relative; display: flex; align-items: center; justify-content: space-between; margin: 0.25rem 0.625rem 0.625rem; padding: 0.5rem 0.625rem 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 500; color: var(--ink); background: rgba(255, 255, 255, 0.08); }
+.ad-post__cta svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ad-post__cta .ad-tap { left: 50%; }
+
+/* ==========================================================================
+   6 · Як працюємо (ivory), the owner's second pass of 20 Oct: one card, the setup time on top, five steps, each with a
+   small moving picture of what happens in it (drawn in CSS, sized in em by its tile). Wide: across; below 861: rows
+   ========================================================================== */
+.ad-track { padding: clamp(1.25rem, 2.4vw, 2.25rem); border-radius: var(--radius-lg); color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1), 0 1.875rem 3.75rem -2.625rem rgba(60, 45, 30, 0.45); }
+.ad-track__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.875rem; margin: 0 0 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--line-dark); }
+.ad-track__v { font-size: clamp(2rem, 3.2vw, 2.75rem); font-weight: 300; line-height: 1; letter-spacing: -0.035em; white-space: nowrap; }
+.ad-track__k { font: 400 var(--fs-label)/1.3 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+main.ai .ad-track__list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--col-gap); margin: 0; padding: 0; list-style: none; }
+.ad-track__step { position: relative; display: grid; align-content: start; gap: 1rem; min-width: 0; }
+/* a small arrow from each picture to the next */
+.ad-track__step + .ad-track__step::before { content: ""; position: absolute; left: calc(var(--col-gap) / -2 - 0.25rem); top: 2.95rem; width: 0.5rem; height: 0.5rem; border-top: 1.5px solid rgba(15, 14, 13, 0.4); border-right: 1.5px solid rgba(15, 14, 13, 0.4); transform: rotate(45deg); }
+.ad-track__pic { display: grid; place-items: center; height: 6.5rem; overflow: hidden; border-radius: 1rem; font-size: 1rem; background: #0b0b0b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); }
+.ad-track__txt { display: grid; align-content: start; gap: 0.375rem; min-width: 0; }
+.ad-track__t { display: flex; align-items: baseline; gap: 0.5rem; margin: 0; font-size: 1.125rem; font-weight: 400; line-height: 1.3; letter-spacing: -0.01em; }
+.ad-track__n { font: 400 var(--fs-label)/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-dark-mute); }
+.ad-track__p { margin: 0; font-size: var(--fs-body-s); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+.ad-track__tag { justify-self: start; margin: 0.25rem 0 0; padding: 0.3rem 0.6rem; border-radius: 99px; font: 400 0.75rem/1 var(--font-mono); color: var(--ink-dark-soft); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.25); }
+.ad-track__step--you .ad-track__tag { color: var(--ember-deep); box-shadow: inset 0 0 0 1px rgba(176, 70, 26, 0.55); }
+/* the pictures */
+.ad-sp { position: relative; display: flex; align-items: center; justify-content: center; }
+.ad-sp i, .ad-sp b { display: block; font-style: normal; }
+/* 1 · the call: you (ember) and us, the voices between */
+.ad-sp--call { gap: 0.55em; }
+.ad-sp__ava { width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 0.22em rgba(246, 246, 243, 0.1); }
+.ad-sp__ava--you { background: var(--ember); box-shadow: 0 0 0 0.22em rgba(210, 86, 28, 0.28); }
+.ad-sp__wave { display: flex; align-items: center; gap: 0.2em; height: 2.2em; }
+.ad-sp__wave b { width: 0.24em; border-radius: 0.2em; background: var(--signal); }
+.ad-sp__wave b:nth-child(1), .ad-sp__wave b:nth-child(5) { height: 0.6em; }
+.ad-sp__wave b:nth-child(2) { height: 1.3em; }
+.ad-sp__wave b:nth-child(3) { height: 2em; }
+.ad-sp__wave b:nth-child(4) { height: 1.1em; }
+/* 2 · the queries: two go in (signal), a useless one goes out (ember) */
+.ad-sp--kw { flex-direction: column; gap: 0.55em; }
+.ad-sp__q { position: relative; width: 6.2em; height: 1.15em; border-radius: 1em; background: rgba(246, 246, 243, 0.1); }
+.ad-sp__q::before { content: ""; position: absolute; left: 0.38em; top: 0.3em; width: 0.42em; height: 0.42em; border-radius: 50%; box-shadow: inset 0 0 0 0.09em rgba(246, 246, 243, 0.6); }
+.ad-sp__q::after { content: ""; position: absolute; left: 1.15em; right: 1.5em; top: 0.52em; height: 0.11em; border-radius: 0.1em; background: rgba(246, 246, 243, 0.4); }
+.ad-sp__chips { display: flex; gap: 0.3em; }
+.ad-sp__chips b { position: relative; width: 1.9em; height: 1em; border-radius: 1em; box-shadow: inset 0 0 0 0.09em var(--signal); }
+.ad-sp__chips b::before { content: "+"; position: absolute; left: 0.32em; top: 50%; transform: translateY(-54%); font: 600 0.8em/1 var(--font-mono); color: var(--signal); }
+.ad-sp__chips b::after { content: ""; position: absolute; left: 0.95em; right: 0.32em; top: 50%; height: 0.1em; margin-top: -0.05em; border-radius: 0.1em; background: rgba(246, 246, 243, 0.4); }
+.ad-sp__chips b.is-out { box-shadow: inset 0 0 0 0.09em var(--ember); }
+.ad-sp__chips b.is-out::before { content: "−"; color: var(--ember); }
+/* 3 · the test request: the form is filled, the tick lands */
+.ad-sp--rec { width: 5.4em; height: 3.5em; }
+.ad-sp__form { position: absolute; left: 0; top: 0; display: grid; align-content: center; gap: 0.32em; width: 4.4em; height: 3em; padding: 0 0.45em; border-radius: 0.45em; background: rgba(246, 246, 243, 0.08); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12); }
+.ad-sp__form b { height: 0.38em; border-radius: 0.15em; background: rgba(246, 246, 243, 0.22); transform-origin: 0 50%; }
+.ad-sp__form i { width: 1.6em; height: 0.5em; border-radius: 0.3em; background: var(--ember); }
+.ad-sp__ok { position: absolute; right: 0; bottom: 0; width: 1.45em; height: 1.45em; border-radius: 50%; background: var(--signal) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23111' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 0.95em no-repeat; box-shadow: 0 0 0 0.16em #0b0b0b; }
+/* 4 · the ad switched on */
+.ad-sp--live { gap: 0.6em; }
+.ad-sp__ad { display: grid; gap: 0.32em; width: 3.6em; padding: 0.5em 0.5em; border-radius: 0.45em; background: rgba(246, 246, 243, 0.08); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12); }
+.ad-sp__ad b { height: 0.3em; border-radius: 0.15em; background: rgba(246, 246, 243, 0.3); }
+.ad-sp__ad b:first-child { width: 55%; height: 0.24em; background: rgba(246, 246, 243, 0.55); }
+.ad-sp__sw { position: relative; width: 2.4em; height: 1.3em; border-radius: 1em; background: var(--signal); }
+.ad-sp__off { position: absolute; inset: 0; border-radius: inherit; background: #2c2c2a; opacity: 0; }
+.ad-sp__knob { position: absolute; left: 0.15em; top: 0.15em; width: 1em; height: 1em; border-radius: 50%; background: #0f0e0d; transform: translateX(1.1em); }
+/* 5 · the report: the bars, Google's highest */
+.ad-sp--rep { align-items: flex-end; gap: 0.38em; height: 3.2em; padding: 0 0.3em 0.08em; border-bottom: 1px solid rgba(246, 246, 243, 0.3); }
+.ad-sp--rep b { width: 1em; border-radius: 0.2em 0.2em 0 0; background: rgba(246, 246, 243, 0.42); transform-origin: 50% 100%; }
+.ad-sp--rep b:nth-child(1) { height: 2.9em; background: var(--signal); }
+.ad-sp--rep b:nth-child(2) { height: 1.3em; }
+.ad-sp--rep b:nth-child(3) { height: 0.9em; }
+
+/* ==========================================================================
+   3 · Аналітика (dark): wide screens get the live report (C), phones and narrow tablets one request's way (A)
+   ========================================================================== */
+.ad-an__desk { display: grid; }
+.ad-an__desk > .ai-replay,
+.ad-an__mob > .ai-replay { justify-self: end; margin-top: 0.375rem; }
+.ad-an__mob { display: none; }
+
+/* the digits on strips (React Bits' Counter): at rest each strip stands on its digit */
+.ad-count { display: inline-flex; font-variant-numeric: tabular-nums; }
+.ad-count__d { --lh: 1.2em; position: relative; display: inline-block; height: var(--lh); line-height: var(--lh); overflow: hidden; vertical-align: bottom; }
+.ad-count__sizer { display: block; visibility: hidden; }
+.ad-count__strip { position: absolute; inset: 0 0 auto; transform: translateY(calc(var(--d) * -10%)); }
+.ad-count__strip > span { display: block; height: var(--lh); text-align: center; }
+
+/* C · a light Google Analytics page on the dark (its own ink tokens; no signal on it, ember marks the newest request) */
+.ad-live { --paper: #fcfcfa; --p-ink: #0f0e0d; --p-soft: rgba(15, 14, 13, 0.72); --p-mute: rgba(15, 14, 13, 0.6); --p-line: rgba(15, 14, 13, 0.12); overflow: hidden; border-radius: 1.25rem; color: var(--p-ink); background: var(--paper); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1), 0 2.5rem 5rem -3rem #000; }
+.ad-live .ai-sample { margin-left: auto; color: var(--p-mute); box-shadow: inset 0 0 0 1px var(--p-line); }
+.ad-live__bar { display: flex; align-items: center; gap: 0.75rem; min-height: 3.5rem; margin: 0; padding: 0.625rem 1.5rem; border-bottom: 1px solid var(--p-line); }
+.ad-live__logo { flex: none; width: 1.25rem; height: 1.25rem; }
+.ad-live__logo rect:nth-child(1) { fill: rgba(15, 14, 13, 0.35); }
+.ad-live__logo rect:nth-child(2) { fill: rgba(15, 14, 13, 0.6); }
+.ad-live__logo rect:nth-child(3) { fill: #0f0e0d; }
+.ad-live__bar b { font-size: 0.9375rem; font-weight: 500; }
+.ad-live__crumb { font-size: 0.875rem; color: var(--p-mute); }
+.ad-live__body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.ad-live__k { font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--p-mute); }
+.ad-live__feed { padding: 1.25rem 1.5rem 1.5rem; border-right: 1px solid var(--p-line); }
+main.ai .ad-live__list { --row: 3.25rem; margin: 0.75rem 0 0; padding: 0; list-style: none; }
+.ad-live__row { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr) auto; align-items: center; column-gap: 1rem; height: var(--row); border-bottom: 1px solid rgba(15, 14, 13, 0.07); background: var(--paper); }
+.ad-live__row:last-child { border-bottom: 0; }
+.ad-live__time { position: relative; font: 400 0.75rem/1 var(--font-mono); color: var(--p-mute); }
+.ad-live__row:first-child .ad-live__time { color: var(--p-ink); }
+.ad-live__row:first-child .ad-live__time::before { content: ""; position: absolute; left: -0.875rem; top: 50%; width: 0.4375rem; height: 0.4375rem; margin-top: -0.21875rem; border-radius: 50%; background: var(--ember); }
+.ad-live__what { overflow: hidden; font-size: 0.9375rem; white-space: nowrap; text-overflow: ellipsis; }
+.ad-live__src { display: inline-flex; align-items: center; gap: 0.4rem; height: 1.625rem; padding: 0 0.625rem 0 0.5rem; border-radius: 0.35rem 0.8rem 0.8rem 0.35rem; font: 500 0.75rem/1 var(--font-mono); white-space: nowrap; color: var(--p-ink); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.22); }
+.ad-live__src b { font-weight: 500; }
+.ad-live__src i, .ad-live__tk i { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--p-ink); }
+.ad-live__src[data-src="insta"] i, .ad-live__t[data-src="insta"] :is(.ad-live__tk i, .ad-live__tb i) { background: rgba(15, 14, 13, 0.55); }
+.ad-live__src[data-src="fb"] i, .ad-live__t[data-src="fb"] :is(.ad-live__tk i, .ad-live__tb i) { background: rgba(15, 14, 13, 0.3); }
+.ad-live__sum { display: flex; flex-direction: column; padding: 1.25rem 1.5rem 1.5rem; }
+.ad-live__tot { display: grid; gap: 0.875rem; margin: 1rem 0 1.25rem; }
+.ad-live__t { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; row-gap: 0.5rem; margin: 0; }
+.ad-live__tk { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; }
+.ad-live__tv { position: relative; font-size: 1.625rem; font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+.ad-live__tb { grid-column: 1 / -1; height: 0.5rem; border-radius: 0.25rem; background: rgba(15, 14, 13, 0.06); }
+.ad-live__tb i { display: block; height: 100%; border-radius: inherit; background: var(--p-ink); transform-origin: 0 50%; }
+.ad-live__plus { position: absolute; right: calc(100% + 0.5rem); top: 50%; margin-top: -0.6875rem; padding: 0.2rem 0.45rem; border-radius: 0.3rem; font: 500 0.75rem/1.2 var(--font-mono); font-style: normal; letter-spacing: 0; color: #fff; background: var(--ember-btn); opacity: 0; pointer-events: none; }
+.ad-live__cpl { margin: auto 0 0; padding: 0.875rem 1rem; border-radius: 0.75rem; background: rgba(15, 14, 13, 0.04); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.08); }
+.ad-live__cpl b { display: block; font-size: 0.9375rem; font-weight: 400; }
+.ad-live__cpl span { display: block; margin-top: 0.2rem; font: 400 0.8125rem/1.35 var(--font-mono); color: var(--p-soft); }
+.ad-live__cpl small { display: block; margin-top: 0.2rem; font: 400 0.75rem/1.3 var(--font-mono); color: var(--p-mute); }
+.ad-live__note { margin: 0; padding: 0.75rem 1.5rem 0.875rem; border-top: 1px solid var(--p-line); font: 400 0.75rem/1.45 var(--font-mono); color: var(--p-mute); }
+/* how it works: three chips in a line (the label in signal: the system's mark, on the dark) */
+.ad-live__how { display: flex; flex-wrap: wrap; align-items: center; gap: 0.625rem 0.5rem; margin: 1.5rem 0 0; }
+.ad-live__how-k { margin-right: 0.75rem; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ad-live__chip { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.375rem; padding: 0.5rem 0.9rem; border-radius: 62.4375rem; font-size: 0.9375rem; line-height: 1.25; color: var(--ink); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.18); }
+.ad-live__chip--sys { color: var(--signal); background: rgba(218, 255, 2, 0.05); box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.55); }
+.ad-live__chip--sys i { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--signal); }
+.ad-live__arr { width: 1rem; height: 1rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ad-live__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.25rem 2rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+main.ai .ad-live__facts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.ad-live__facts li { display: inline-flex; align-items: center; min-height: 2.375rem; padding: 0.5rem 0.9rem; border-radius: 1.1875rem; font-size: 0.9375rem; line-height: 1.3; color: var(--ink-soft); background: rgba(246, 246, 243, 0.05); }
+.ad-live__facts b { margin-right: 0.35rem; font-weight: 500; color: var(--ink); }
+
+/* A · one request's way on a rail (Aceternity's Tracing Beam): three stills, each under its number and title */
+.ad-path { padding: 1rem 1rem 1.25rem; border-radius: 1.25rem; background: radial-gradient(90% 120% at 50% 0%, rgba(246, 246, 243, 0.035), rgba(246, 246, 243, 0) 70%), #050505; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1); }
+.ad-path__top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.ad-path__k { font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); }
+.ad-path__flow { position: relative; display: grid; row-gap: 1rem; }
+.ad-path__frame { position: relative; display: grid; gap: 0.5rem; margin: 0; padding-left: 2.25rem; }
+.ad-path__frame:not(:last-of-type)::before,
+.ad-path__seg { content: ""; position: absolute; left: calc(0.875rem - 1px); top: 2rem; bottom: -0.75rem; width: 2px; }
+.ad-path__frame:not(:last-of-type)::before { background: repeating-linear-gradient(180deg, rgba(246, 246, 243, 0.24) 0 2px, transparent 2px 6px); }
+.ad-path__seg i { position: absolute; inset: 0; background: var(--signal); box-shadow: 0 0 0.75rem rgba(218, 255, 2, 0.45); transform-origin: 50% 0; }
+.ad-path__cap p { margin: 0; padding-top: 0.2rem; font-size: 0.9375rem; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+.ad-path__cap b { display: block; font-weight: 500; color: var(--ink); }
+.ad-path__cap p span { display: block; margin-top: 0.125rem; }
+.ad-path__n { position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font: 500 0.75rem/1 var(--font-mono); color: var(--ink); background: #050505; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.35); }
+.ad-path__shot { position: relative; padding: 0.875rem; border-radius: 1rem; background: #0b0b0b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.09); }
+.ad-path__sk { margin-bottom: 0.75rem; font: 400 0.6875rem/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute); }
+/* the label: a luggage tag, the system's mark (signal) */
+.ad-path__tag { display: inline-flex; align-items: center; gap: 0.45rem; height: 1.75rem; padding: 0 0.65rem 0 0.5rem; border-radius: 0.35rem 0.875rem 0.875rem 0.35rem; font: 500 0.75rem/1 var(--font-mono); white-space: nowrap; color: var(--signal); background: #11140a; box-shadow: inset 0 0 0 1px var(--signal); }
+.ad-path__tag i { flex: none; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--signal); }
+.ad-path__sp { font-size: 0.75rem; color: var(--ink-mute); }
+.ad-path__sp b { font-weight: 500; color: var(--ink); }
+.ad-path__h { margin-top: 0.3rem; font-size: 0.9375rem; line-height: 1.3; color: #9cc3ff; }
+.ad-path__d { margin-top: 0.2rem; font-size: 0.8125rem; color: var(--ink-mute); }
+.ad-path__ad + .ad-path__tag { margin-top: 0.75rem; }
+.ad-path__url { display: flex; align-items: center; justify-content: space-between; gap: 0.625rem; height: 2.375rem; padding: 0 0.3125rem 0 0.75rem; border-radius: 0.625rem; font: 400 0.75rem/1 var(--font-mono); white-space: nowrap; color: var(--ink-soft); background: #151515; }
+.ad-path__url .ad-path__tag { height: 1.625rem; font-size: 0.6875rem; }
+.ad-path__fh { margin: 0.875rem 0 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--ink); }
+.ad-path__form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.375rem; margin-top: 0.625rem; }
+.ad-path__fh + .ad-path__form { margin-top: 0; }
+.ad-path__field { display: flex; align-items: center; min-width: 0; height: 2.25rem; padding: 0 0.75rem; overflow: hidden; border-radius: 0.5rem; font-size: 0.8125rem; white-space: nowrap; color: var(--ink); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
+.ad-path__fv { overflow: hidden; text-overflow: ellipsis; }
+.ad-path__send { position: relative; display: grid; place-items: center; height: 2.25rem; padding: 0 0.9rem; border-radius: 0.5rem; font-size: 0.8125rem; font-weight: 500; color: var(--on-accent); background: var(--ember); }
+.ad-path__tap { position: absolute; left: 50%; top: 50%; width: 2.75rem; height: 2.75rem; margin: -1.375rem 0 0 -1.375rem; border-radius: 50%; box-shadow: 0 0 0 2px var(--ember-ink); opacity: 0; pointer-events: none; }
+.ad-path__rec { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; padding: 0.5rem 0.75rem; border-radius: 0.625rem; font-size: 0.8125rem; color: var(--ink); background: rgba(218, 255, 2, 0.06); box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.28); }
+.ad-path__tick { flex: none; width: 1rem; height: 1rem; border-radius: 50%; background: var(--signal) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23111' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 0.7rem no-repeat; }
+main.ai .ad-path__rows { display: grid; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+.ad-path__row { position: relative; display: grid; grid-template-columns: 4.75rem minmax(0, 1fr) 1.75rem; align-items: center; column-gap: 0.75rem; min-height: 1.875rem; margin: 0 -0.5rem; padding: 0 0.5rem; border-radius: 0.5rem; }
+.ad-path__flash { position: absolute; inset: 0; border-radius: inherit; background: rgba(218, 255, 2, 0.08); box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.4); opacity: 0; }
+.ad-path__name { position: relative; font-size: 0.875rem; color: var(--ink); }
+.ad-path__bar { position: relative; height: 0.5rem; border-radius: 0.25rem; background: rgba(246, 246, 243, 0.07); }
+.ad-path__bar i { display: block; height: 100%; border-radius: inherit; background: rgba(246, 246, 243, 0.42); transform-origin: 0 50%; }
+.ad-path__row[data-src="google"] .ad-path__bar i { background: var(--signal); }
+.ad-path__row[data-src="fb"] .ad-path__bar i { background: rgba(246, 246, 243, 0.26); }
+.ad-path__v { position: relative; justify-self: end; font-size: 1.0625rem; font-weight: 500; color: var(--ink); }
+.ad-path__cpl { margin-top: 0.625rem; padding-top: 0.625rem; border-top: 1px solid rgba(246, 246, 243, 0.08); font: 400 0.6875rem/1.5 var(--font-mono); color: var(--ink-mute); }
+.ad-path__cpl b { font-weight: 400; color: var(--ink-soft); }
+/* the riders: only while the scene plays */
+.ad-path__run { position: absolute; left: 0; top: 0; z-index: 4; opacity: 0; pointer-events: none; }
+.ad-path__run--hit { padding: 0.4rem 0.7rem; border-radius: 62.4375rem; font: 500 0.75rem/1 var(--font-mono); white-space: nowrap; color: var(--on-accent); background: var(--signal); box-shadow: 0 0 1.5rem rgba(218, 255, 2, 0.4); }
+.ad-path__foot { margin-top: 0.5rem; }
+main.ai .ad-path__facts { margin: 0; padding: 0; list-style: none; }
+.ad-path__facts li { padding: 0.625rem 0 0.6875rem; border-top: 1px solid var(--line); }
+.ad-path__facts li:last-child { border-bottom: 1px solid var(--line); }
+.ad-path__ft { font-size: 1.0625rem; color: var(--ink); }
+.ad-path__ft b { font-weight: 500; }
+.ad-path__fp { margin-top: 0.125rem; font-size: 0.875rem; color: var(--ink-mute); }
+.ad-path__foot .btn { width: 100%; justify-content: space-between; margin-top: 1.25rem; }
+
+/* ==========================================================================
+   4 · Ціна (dark): three setups on shared lines, the add-ons as strips, the bundles with a site, the note
+   ========================================================================== */
+.ad-first { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem var(--col-gap); margin: var(--rhythm-s) 0 0; padding: 1.25rem 0 0; border-top: 1px solid var(--line); }
+.ad-first > div { display: grid; align-content: start; gap: 0.3rem; }
+.ad-first dt { font: 400 var(--fs-label)/1.3 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ad-first dd { margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+.ad-first dd b { font-weight: 500; color: var(--ink); }
+/* (each card spans the list's five rows as a subgrid: title, sum, text, list, footer stand on the same lines) */
+main.ai .ad-prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--card-gap); row-gap: 0; margin: 0; padding: 0; list-style: none; }
+.ad-pc { grid-row: span 5; display: grid; grid-template-rows: subgrid; row-gap: 0.875rem; min-width: 0; padding: 1.625rem 1.625rem 1.375rem; border-radius: var(--radius-lg); background: #000; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12); }
+/* «Що входить» folds only on phones; elsewhere the list is simply there */
+.ad-pc__more > summary { display: none; }
+.ad-pc__more { display: grid; align-content: start; gap: 0.75rem; }
+.ad-pc__more:not([open]) { gap: 0; }
+.ad-pc--featured { background: radial-gradient(120% 60% at 50% 0%, rgba(218, 255, 2, 0.06), rgba(218, 255, 2, 0) 70%), #000; box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.55), 0 2.5rem 4.5rem -3rem rgba(218, 255, 2, 0.18); }
+.ad-pc__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 0.75rem; }
+.ad-pc__t { font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
+.ad-pc__badge { padding: 0.3125rem 0.625rem; border-radius: 62.4375rem; font: 500 0.6875rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; color: var(--on-accent); background: var(--signal); }
+.ad-pc__sum { display: flex; align-items: baseline; gap: 0.625rem; }
+.ad-pc__sum b { font-size: clamp(2.4rem, 3.4vw, 3.25rem); font-weight: 300; line-height: 1; letter-spacing: -0.035em; color: var(--ink); }
+.ad-pc__sum span { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ad-pc__sum .ad-pc__talk { font-size: clamp(1.75rem, 2.4vw, 2.25rem); color: var(--ink-soft); letter-spacing: -0.02em; }
+.ad-pc__d { font-size: var(--fs-body); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+.ad-pc__inc { display: grid; gap: 0.5rem; padding-top: 0.875rem; border-top: 1px solid var(--line); }
+.ad-pc__inc li { position: relative; padding-left: 1.625rem; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
+.ad-pc__inc li::before { content: "✓"; content: "✓" / ""; position: absolute; left: 0; top: 0.1em; display: grid; place-items: center; width: 1.0625rem; height: 1.0625rem; border-radius: 50%; font-size: 0.625rem; font-weight: 600; color: var(--on-accent); background: var(--signal); }
+/* the signal ticks belong to the recommended card; the others take a quiet ring */
+.ad-pc:not(.ad-pc--featured) .ad-pc__inc li::before { color: var(--ink-soft); background: none; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.32); }
+.ad-pc__star { margin-left: 0.15em; color: var(--ink-mute); }
+.ad-pc__rest { justify-self: start; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.25rem; padding: 0; border: 0; font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); background: none; cursor: pointer; }
+.ad-pc__rest::after { content: "+"; content: "+" / ""; font-size: 0.875rem; color: var(--ink-mute); }
+.ad-pc__rest[aria-expanded="true"]::after { content: "−"; content: "−" / ""; }
+.ad-pc__rest:hover { color: var(--ink); }
+.ad-pc__inc:not(.is-open) .ad-pc__extra { display: none; }
+.ad-price__star { max-width: 72ch; margin-top: 0.875rem; font: 400 0.75rem/1.5 var(--font-mono); color: var(--ink-mute); text-wrap: pretty; }
+.ad-pc__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; align-self: end; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--line); }
+.ad-pc__wk { font: 400 0.75rem/1.2 var(--font-mono); color: var(--ink-mute); }
+/* (one grid for both strips: their sums and buttons stand in the same columns) */
+.ad-addons { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 0.625rem 2rem; margin-top: var(--card-gap); }
+/* «Можна додати» is the add-ons' own heading (a tracked label above their titles read as a kicker: Impeccable, 20 Oct) */
+.ad-addons__h { grid-column: 1 / -1; margin: 1rem 0 0.25rem; font-size: clamp(1.375rem, 2vw, 1.75rem); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); }
+.ad-addon { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; row-gap: 0.75rem; padding: 1.125rem 1.5rem; border-radius: 1.125rem; background: #000; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12); }
+.ad-addon__main { display: grid; justify-items: start; gap: 0.25rem; min-width: 0; }
+.ad-addon > .btn { justify-self: end; }
+.ad-addon__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
+.ad-addon__d { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
+.ad-addon__more > summary { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.25rem; font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); list-style: none; cursor: pointer; }
+.ad-addon__more > summary::-webkit-details-marker { display: none; }
+.ad-addon__more > summary::after { content: "+"; content: "+" / ""; font-size: 0.875rem; color: var(--ink-mute); }
+.ad-addon__more[open] > summary::after { content: "−"; content: "−" / ""; }
+.ad-addon__more > summary:hover { color: var(--ink); }
+.ad-addon__more .ad-pc__inc { padding-top: 0.25rem; border-top: 0; }
+.ad-addon__more .ad-pc__inc li::before { color: var(--ink-soft); background: none; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.32); }
+.ad-addon__sum { display: flex; align-items: baseline; gap: 0.5rem; white-space: nowrap; }
+.ad-addon__sum b { font-size: clamp(1.6rem, 2.2vw, 2rem); font-weight: 300; letter-spacing: -0.03em; color: var(--ink); }
+.ad-addon__sum span { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ad-addon__sum .ad-addon__talk { font-size: clamp(1.25rem, 1.7vw, 1.5rem); letter-spacing: -0.02em; color: var(--ink-soft); }
+.ad-bundles { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1rem 2rem; margin-top: var(--card-gap); padding: 1.25rem 1.5rem; border-radius: 1.25rem; border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.012)); }
+.ad-bundles__k { font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ad-bundles__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 2rem; }
+.ad-bundle { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; column-gap: 1rem; row-gap: 0.125rem; }
+.ad-bundle__t { font-size: var(--fs-body); font-weight: 500; color: var(--ink); }
+.ad-bundle__d { grid-column: 1; font-size: var(--fs-small); line-height: 1.4; color: var(--ink-mute); }
+.ad-bundle__v { grid-column: 2; grid-row: 1 / span 2; font-size: var(--fs-h4); font-weight: 300; white-space: nowrap; color: var(--ink); }
+.ad-bundle__go { grid-column: 1; display: inline-flex; align-items: center; gap: 0.4rem; justify-self: start; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(210, 86, 28, 0.75); text-underline-offset: 0.1875rem; }
+.ad-bundle__go svg { width: 0.8125rem; height: 0.8125rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
+.ad-bundle__go:hover { color: var(--ember-ink); }
+.ad-bundle__go:hover svg { transform: translate(0.125rem, -0.125rem); }
+.ad-bundles__calc { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(210, 86, 28, 0.75); text-underline-offset: 0.1875rem; white-space: nowrap; }
+.ad-bundles__calc svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
+.ad-bundles__calc:hover { color: var(--ember-ink); }
+.ad-bundles__calc:hover svg { transform: translate(0.125rem, -0.125rem); }
+.ad-price__note { max-width: 72ch; }
+
+
+/* (main.ai ol is reset by ai.css: the list's own spacing needs the same weight) */
+main.ai .ad-next { margin: var(--rhythm-s) 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.ad-next li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: baseline; padding: 0.75rem 0; border-bottom: 1px solid var(--line); }
+.ad-next li > span { font: 400 var(--fs-label)/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+.ad-next b { display: block; margin-bottom: 0.2rem; font-weight: 500; color: var(--ink); }
+.ad-next div > span { font-size: var(--fs-small); font-weight: 300; color: var(--ink-mute); }
+
+/* ==========================================================================
+   8 · beside the form: what the visitor gets (the sites page's list, signal ticks on the dark)
+   ========================================================================== */
+.ad-get { margin-top: 2rem; }
+.ad-get__h { margin: 0 0 0.875rem; font: 400 var(--fs-label)/1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.ad-get__list { display: grid; gap: 0.625rem; }
+.ad-get__list li { position: relative; padding-left: 1.75rem; font-size: var(--fs-body-s); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
+.ad-sure { display: none; }
+/* «Ще 5 питань»: phones only (wider screens show all ten) */
+.ad-faq-more { display: none; grid-column: 1 / -1; }
+/* the chosen plan's name takes the line, so the cross never drops to a line of its own (QA, 20 Oct) */
+main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
+.ad-get__list li::before { content: ""; position: absolute; left: 0; top: 0.1em; width: 1.125rem; height: 1.125rem; border-radius: 50%; background: var(--signal) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23111' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 0.75rem no-repeat; }
+
+/* ==========================================================================
+   Start frames: a scene waiting to play (.is-pre, runtime) holds what it will bring in. Without motion these classes are
+   never set: the final frame shows. The first screen's list holds its start until the script runs (or 3.5 s pass)
+   ========================================================================== */
+:is(.ad-fl.is-pre, html.motion:not(.ad-go):not(.is-ready) .ad-fl) :is(.ad-inbox__row, .ad-inbox__src) { opacity: 0; }
+:is(.ad-fl.is-pre, html.motion:not(.ad-go):not(.is-ready) .ad-fl) .ad-part__strip { transform: none; }
+.ad-serp.is-pre :is(.ad-type > i, .ad-serp__ad, .ad-serp__org, .ad-toast) { opacity: 0; }
+.ad-feed.is-pre :is(.ad-aud__k, .ad-aud__chips li, .ad-post, .ad-toast, .ad-crowd__dot b) { opacity: 0; }
+.ad-feed.is-pre .ad-crowd__dot { opacity: 0.55; transform: none; }
+.ad-track.is-pre .ad-sp__wave b { transform: scaleY(0.2); }
+.ad-track.is-pre :is(.ad-sp__chips b, .ad-sp__ok) { opacity: 0; }
+.ad-track.is-pre .ad-sp__form b { transform: scaleX(0); }
+.ad-track.is-pre .ad-sp__knob { transform: none; }
+.ad-track.is-pre .ad-sp__off { opacity: 1; }
+.ad-track.is-pre .ad-sp--rep b { transform: scaleY(0); }
+.ad-kase.is-pre .ad-kase__m { opacity: 0; }
+.ad-kase.is-pre .ad-count__strip { transform: none; }
+.ad-kase.is-pre .ad-kase__seg i.is-on { transform: scaleX(0); }
+.ad-kase.is-pre .ad-kase__shot[open] :is(.ad-case__win, .ad-case__ring) { opacity: 0; }
+.ad-live.is-pre { opacity: 0; }
+.ad-path.is-pre .ad-path__flow { opacity: 0; }
+/* a scene waiting or playing keeps its moving parts on their own layers (gone at rest) */
+.ad-fl.is-warm :is(.ad-inbox__row, .ad-inbox__src, .ad-part__strip, .ad-fl__run, .ad-fl__run b, .ad-fl__hub, .ad-fl__n),
+.ad-track.is-warm :is(.ad-sp__wave b, .ad-sp__chips b, .ad-sp__form b, .ad-sp__ok, .ad-sp__knob, .ad-sp__off, .ad-sp--rep b),
+.ad-kase.is-warm :is(.ad-kase__m, .ad-count__strip, .ad-kase__seg i, .ad-case__win, .ad-case__ring),
+.ad-serp.is-warm :is(.ad-serp__ad, .ad-toast, .ad-type__caret),
+.ad-serp.is-warm .ad-serp__org,
+.ad-feed.is-warm :is(.ad-crowd__dot, .ad-crowd__dot b, .ad-post, .ad-toast, .ad-aud__chips li),
+.ad-serp.is-warm .ad-finger,
+.ad-feed.is-warm :is(.ad-beam, .ad-finger),
+.ad-live.is-warm :is(.ad-live__row, .ad-count__strip, .ad-live__tb i, .ad-live__plus),
+.ad-path.is-warm :is(.ad-path__run, .ad-path__seg i, .ad-path__shot, .ad-count__strip) { will-change: transform, opacity; }
+
+/* ==========================================================================
+   Widths
+   ========================================================================== */
+@media (max-width: 1279px) {
+}
+@media (max-width: 1100px) {
+  /* «ще 2» only where the setups stand side by side: a stacked card lists every item */
+  .ad-pc__inc:not(.is-open) .ad-pc__extra { display: list-item; }
+  .ad-pc__rest { display: none; }
+  .ad-ch__grid { grid-template-columns: minmax(0, 1fr); }
+  .ad-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .ad-card__media { height: auto; min-height: 27rem; margin: 0.5rem 0 0.5rem 0.5rem; }
+  /* the setups stack: one card under another, each on its own lines */
+  main.ai .ad-prices { grid-template-columns: minmax(0, 1fr); row-gap: var(--card-gap); }
+  .ad-pc { grid-row: auto; grid-template-rows: none; }
+  .ad-bundles { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 860px) {
+  /* block 3: one request's way (A) instead of the live report (C) */
+  .ad-an__desk { display: none; }
+  .ad-an__mob { display: grid; }
+  /* the form's two lines above its button: what happens next, what is guaranteed (contact.next, FAQ 6) */
+  main.ai .ad-sure { display: grid; gap: 0.5rem; margin: 0.25rem 0 1.125rem; padding: 0; list-style: none; }
+  .ad-sure li { position: relative; padding-left: 1.625rem; font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
+  .ad-sure li::before { content: ""; position: absolute; left: 0; top: 0.12em; width: 1rem; height: 1rem; border-radius: 50%; background: var(--signal) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23111' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 0.6875rem no-repeat; }
+  /* the form's side column dissolves into the section's grid here (contact.css: display: contents): the head, the form,
+     then what happens next and what you get, each across the full width (20 Oct: «Що ви отримуєте» had landed in one
+     15 px column above the head) */
+  .contact .ad-next { grid-column: 1 / -1; order: 3; margin-top: var(--rhythm-m); }
+  .contact .ad-get { grid-column: 1 / -1; order: 4; margin-top: var(--rhythm-s); }
+  .ad-first { grid-template-columns: minmax(0, 1fr); }
+  .ad-card { display: flex; }
+  /* (its scenes are absolutely placed: the box keeps a height of its own, or it folds to 0 between 601 and 860 px) */
+  .ad-card__media { height: 27rem; min-height: 0; margin: 0.5rem 0.5rem 0; }
+  .ad-addons { grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; }
+  .ad-addon__main { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .ad-path__sk, .ad-path__fh, .ad-path__cap p span { display: none; }
+  .ad-path { padding: 0.875rem 0.875rem 1.125rem; border-radius: 1.125rem; }
+  /* the first screen, all of it in one phone screen (the owner, 20 Oct: the way ran under the fold and block 2 slid
+     over it): the title, two lines of lead, the button across, one line of facts, the way of a request. A 4 px rhythm:
+     tight inside a group (12), generous between groups (20–24). The prices are a scroll or the menu away. */
+  main[data-ai-page="ads"] .ad-hero { display: grid; align-content: start; min-height: 100svh; padding-top: calc(var(--topbar-h) + 1.25rem); padding-bottom: 1rem; }
+  main[data-ai-page="ads"] .ad-hero .ai-hero__title--auto { font-size: min(clamp(2.1rem, 9.6vw, 2.75rem), calc((100vw - 2 * var(--gutter)) / 10.2)); }
+  main[data-ai-page="ads"] .ad-hero .ai-hero__lead { max-width: 34ch; margin-top: 0.75rem; font-size: 0.9375rem; line-height: 1.5; color: var(--ink-soft); }
+  main[data-ai-page="ads"] .ad-hero .ai-hero__actions { margin-top: 1.25rem; }
+  main[data-ai-page="ads"] .ad-hero .ai-hero__actions .btn--primary { width: 100%; justify-content: space-between; }
+  main[data-ai-page="ads"] .ad-hero .ai-down { display: none; }
+  .ad-hero__facts { margin-top: 0.75rem; font: 400 0.8125rem/1.4 var(--font-sans); letter-spacing: 0; color: var(--ink-soft); }
+  main[data-ai-page="ads"] .ad-hero .ai-hero__visual { margin-top: 1.25rem; }
+  .ad-fl__win { padding: 0.625rem 0.5rem 0.5rem; border-radius: 1rem; }
+  .ad-fl__top { margin-bottom: 0.5rem; padding: 0 0.375rem; }
+  .ad-fl__src li { padding: 0 0.1875rem; }
+  .ad-fl__chip { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0.25rem 0.375rem; padding: 0.4375rem 0.4375rem 0.5rem 0.5625rem; border-radius: 0.75rem; }
+  .ad-fl__ico { width: 1.125rem; height: 1.125rem; }
+  .ad-fl__n { grid-column: 2; grid-row: 1; min-width: 1.375rem; height: 1.375rem; padding: 0 0.3rem; font-size: 0.75rem; }
+  .ad-fl__name { grid-column: 1 / -1; }
+  .ad-fl__name b { font-size: 0.8125rem; }
+  .ad-fl__name small { display: none; }
+  .ad-fl__bus { height: 1.5rem; }
+  .ad-fl__link { height: 0.875rem; }
+  .ad-fl__hub { gap: 0.375rem; padding: 0.375rem 0.75rem 0.375rem 0.5rem; font-size: 0.8125rem; }
+  .ad-fl__hub svg { width: 1.125rem; height: 1.125rem; }
+  .ad-fl__box { border-radius: 0.75rem; }
+  .ad-fl__k { padding: 0.5rem 0.75rem 0.125rem; }
+  /* the latest three requests, one line each */
+  .ad-fl .ad-inbox__row:nth-child(4) { display: none; }
+  .ad-fl .ad-inbox__row { grid-template-columns: minmax(0, 1fr) auto; min-height: 2.5rem; padding: 0.3125rem 0.625rem 0.3125rem 0.75rem; }
+  .ad-fl .ad-inbox__ava { display: none; }
+  .ad-fl .ad-inbox__who time { display: none; }
+  .ad-fl .ad-inbox__who b { overflow: hidden; font-size: 0.8125rem; white-space: nowrap; text-overflow: ellipsis; }
+  /* iOS Safari tints its bottom bar with a fixed element at the screen's foot: the hidden request button tinted it
+     ember on the first screen (the owner's iPhone, 20 Oct). Hidden, it is out of the picture; it fades out first */
+  main[data-ai-page="ads"] ~ .ai-sticky:not(.is-on) { visibility: hidden; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s linear 0.45s; }
+  .ad-inbox__row { grid-template-columns: 2rem minmax(0, 1fr) auto; column-gap: 0.625rem; min-height: 2.875rem; padding: 0.375rem 0.75rem; }
+  .ad-inbox__ava { width: 2rem; height: 2rem; font-size: 0.8125rem; }
+  .ad-inbox__who b { font-size: 0.875rem; }
+  .ad-inbox__src { gap: 0.375rem; padding: 0.25rem 0.5625rem 0.25rem 0.3125rem; font-size: 0.6875rem; }
+  .ad-inbox__tick { width: 1rem; height: 1rem; font-size: 0.5625rem; }
+
+  .ad-card__media { height: 23rem; margin: 0.375rem 0.375rem 0; border-radius: 0.875rem; }
+  .ad-card__body { gap: 0.75rem; padding: 1.25rem 1.125rem 1.375rem; }
+  .ad-card__p { font-size: var(--fs-body); }
+  .ad-serp__in { gap: 0.625rem; padding: 0.875rem 0.875rem; }
+  .ad-serp__field { height: 2.5rem; padding: 0 0.875rem; font-size: 0.875rem; }
+  .ad-serp__head { font-size: 0.9375rem; }
+  /* one ordinary result on phones, so «+1 заявка» lands under the results, never over them */
+  .ad-serp__org + .ad-serp__org { display: none; }
+  /* the long source label stays for screen readers (hidden from sight only: the short one is aria-hidden) */
+  .ad-inbox__l { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .ad-inbox__s { display: inline; }
+  /* a field or a question reached from the keyboard never hides under the sticky request button */
+  html:has(.ai-sticky.is-on) { scroll-padding-bottom: 5.5rem; }
+  .ad-addon__more > summary { min-height: 2.75rem; }
+  .ad-card__go { width: 100%; justify-content: space-between; }
+  .ad-toast { left: 0.75rem; bottom: 0.75rem; max-width: calc(100% - 6.75rem); }
+  /* the audience in a row across the top (a column would run under the ad), the ad below it on the right, without
+     its caption; «+1 заявка» floats over the ad's foot like a notification */
+  /* the audience sits under the sample chip (at 12 px the chip reached «Кому показуємо», Impeccable pass, 20 Oct) */
+  .ad-feed { --aud-h: 6.875rem; }
+  .ad-crowd { left: 0.75rem; right: 11.75rem; top: calc(var(--aud-h) + 0.75rem); bottom: 4.25rem; }
+  .ad-aud { left: 0.75rem; right: 0.75rem; top: 2.375rem; max-width: none; }
+  .ad-aud__chips { display: flex; flex-wrap: wrap; gap: 0.3125rem; }
+  .ad-aud__chips li { padding: 0.3125rem 0.625rem; font-size: 0.6875rem; }
+  .ad-post { right: 0.75rem; top: calc(var(--aud-h) + 0.5rem); width: 10.25rem; }
+  .ad-post__cap { display: none; }
+  .ad-post__img { aspect-ratio: 16 / 10; }
+  .ad-post__cta { margin-top: 0.5rem; }
+  .ad-feed > .ai-sample { top: 0.5rem; right: 0.5rem; }
+
+  #faq:not(.is-all) .faq__item--more { display: none; }
+  .ad-faq-more { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 3.25rem; margin-top: 0.5rem; padding: 0 0.25rem; border: 0; border-bottom: 1px solid var(--line); font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); background: none; cursor: pointer; }
+  .ad-faq-more::after { content: "+"; content: "+" / ""; font-size: 1rem; color: var(--ink-mute); }
+  #faq.is-all .ad-faq-more { display: none; }
+  /* the lists fold under «Що входить» (the recommended one stays open; runtime) */
+  .ad-pc__more > summary { display: flex; align-items: center; justify-content: space-between; min-height: 2.75rem; padding-top: 0.5rem; border-top: 1px solid var(--line); font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); list-style: none; cursor: pointer; }
+  .ad-pc__more > summary::-webkit-details-marker { display: none; }
+  .ad-pc__more > summary::after { content: "+"; content: "+" / ""; font-size: 1rem; color: var(--ink-mute); }
+  .ad-pc__more[open] > summary::after { content: "−"; content: "−" / ""; }
+  .ad-pc__more .ad-pc__inc { padding-top: 0; border-top: 0; }
+  /* folded from the first paint, before the runtime closes them, so nothing below moves (no-JS pages keep them open) */
+  html.js:not(.ad-go) .ad-pc__more[data-fold] > :not(summary) { display: none; }
+  html.js:not(.ad-go) .ad-pc__more[data-fold] > summary::after { content: "+"; content: "+" / ""; }
+  .ad-addon { row-gap: 0.5rem; padding: 1rem 1.125rem; }
+  .ad-addon .btn { grid-column: 1 / -1; width: 100%; justify-content: space-between; }
+  .ad-pc { padding: 1.375rem 1.125rem 1.125rem; border-radius: 1.25rem; }
+  .ad-pc__foot .btn { flex: 1 1 100%; justify-content: space-between; }
+  .ad-bundles { padding: 1.125rem; }
+  .ad-bundles__list { grid-template-columns: minmax(0, 1fr); }
+  .ad-bundles__calc { white-space: normal; }
+
+  .ad-get { margin-top: 1.5rem; }
+  main[data-ai-page="ads"] #f-contact-hint { display: none; }
+  main[data-ai-page="ads"] #contact textarea { min-height: 4.75rem; }
+  /* (the head already keeps its own space below: the form's own top margin doubled it, about 90 px of nothing) */
+  main[data-ai-page="ads"] #contact .lead-form { margin-top: 0.5rem; padding: 1.25rem; }
+}
+@media (max-width: 374px) {
+  .ad-inbox__src > span:last-child { max-width: 7.5rem; overflow: hidden; text-overflow: ellipsis; }
+  .ad-post { width: 9.75rem; }
+  .ad-aud__chips li { font-size: 0.625rem; }
+}
+
+/* ==========================================================================
+   4 · Кейс (ivory): one card with the numbers that matter (the owner's lighter pass, 20 Oct): the price of a request
+   large, requests, conversion, spend; what worked in one line; the account's screenshot beside them (folded on phones)
+   ========================================================================== */
+/* the switcher between the clients' cases: each tab carries its case's headline number (21st.dev «Logo Cloud Story
+   Tabs»), so the three results read before a tap; the selected one in ink. Phones swipe them as a row */
+.ad-kase-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.625rem; margin: 0 0 1rem; }
+.ad-kase-pick__b { display: grid; justify-items: start; align-content: start; gap: 0.25rem; min-width: 0; padding: 1rem 1.25rem 1.125rem; border: 0; border-radius: var(--radius-lg); text-align: left; color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.12); cursor: pointer; transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, transform 0.3s var(--ease-out); }
+.ad-kase-pick__n { font-size: var(--fs-body-s); font-weight: 400; color: var(--ink-dark-soft); }
+.ad-kase-pick__v { font-size: clamp(1.75rem, 2.6vw, 2.25rem); font-weight: 300; line-height: 1.05; letter-spacing: -0.03em; white-space: nowrap; }
+.ad-kase-pick__k { font: 400 0.75rem/1.35 var(--font-mono); color: var(--ink-dark-mute); }
+.ad-kase-pick__b:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transform: translateY(-2px); }
+.ad-kase-pick__b[aria-selected="true"] { color: var(--ivory); background: var(--ink-dark); box-shadow: 0 1.25rem 2.5rem -1.5rem rgba(15, 14, 13, 0.55); transform: none; }
+.ad-kase-pick__b[aria-selected="true"] :is(.ad-kase-pick__n, .ad-kase-pick__k) { color: rgba(246, 246, 243, 0.66); }
+.ad-kase-pick__b:focus-visible { outline: 2px solid var(--ember-deep); outline-offset: 2px; }
+/* «before → after»: the old number small and struck through above the new one */
+.ad-kase__ba { display: grid; justify-items: start; gap: 0.125rem; }
+.ad-kase__was { font: 400 0.875rem/1.2 var(--font-mono); letter-spacing: 0; color: var(--ink-dark-mute); text-decoration-thickness: 1px; }
+.ad-kase-panel[hidden] { display: none; }
+.ad-kase { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 1.25rem clamp(1.5rem, 3vw, 3rem); align-items: start; padding: clamp(1rem, 1.8vw, 1.75rem); border-radius: var(--radius-lg); color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1), 0 1.875rem 3.75rem -2.625rem rgba(60, 45, 30, 0.45); }
+.ad-kase__main { display: grid; gap: 0.875rem; min-width: 0; }
+.ad-kase__shot { grid-column: 2; grid-row: 1 / span 2; min-width: 0; }
+.ad-kase__end { display: grid; justify-items: start; gap: 1rem; grid-column: 1; }
+.ad-kase__who { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; font-size: var(--fs-body-s); color: var(--ink-dark-soft); }
+.ad-kase__chip { padding: 0.35rem 0.65rem; border-radius: 99px; font: 500 0.6875rem/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ivory); background: var(--ink-dark); }
+.ad-kase__per { margin: 0; font: 400 0.75rem/1.4 var(--font-mono); color: var(--ink-dark-mute); }
+.ad-kase__stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.625rem; margin: 0.25rem 0 0; }
+.ad-kase__m { display: grid; align-content: start; gap: 0.3rem; min-width: 0; padding: 0.875rem 1rem 1rem; border-radius: 0.875rem; background: #fff; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1); }
+.ad-kase__m--cpl { grid-column: 1 / -1; padding: 1.125rem 1.25rem 1.25rem; color: var(--ivory); background: var(--ink-dark); box-shadow: none; }
+.ad-kase__m--cr { grid-column: 1 / -1; }
+.ad-kase__k { font: 400 var(--fs-label)/1.3 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+.ad-kase__v { margin: 0; font-size: clamp(1.625rem, 2.4vw, 2.125rem); font-weight: 300; line-height: 1.05; letter-spacing: -0.03em; white-space: nowrap; }
+.ad-kase__m--cpl .ad-kase__v { font-size: clamp(2.75rem, 5vw, 3.75rem); }
+.ad-kase__s { margin: 0; font: 400 0.75rem/1.4 var(--font-mono); color: var(--ink-dark-mute); }
+.ad-kase__m--cpl :is(.ad-kase__k, .ad-kase__s) { color: rgba(246, 246, 243, 0.62); }
+.ad-kase__seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.25rem; margin-top: 0.5rem; }
+.ad-kase__seg i { height: 0.375rem; border-radius: 99px; background: rgba(15, 14, 13, 0.1); }
+.ad-kase__seg i.is-on { background: var(--ember-deep); transform-origin: 0 50%; }
+.ad-kase__how { margin: 0.25rem 0 0; font-size: var(--fs-body-s); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+.ad-kase__honest { margin: 0; padding: 0.875rem 1rem; border-radius: 0.875rem; font-size: var(--fs-body-s); line-height: 1.5; color: var(--ink-dark-soft); background: rgba(15, 14, 13, 0.05); text-wrap: pretty; }
+.ad-kase :is(.ad-kase__how, .ad-kase__honest) b { font-weight: 500; color: var(--ink-dark); }
+/* wide: the screenshot stands open beside the numbers, no toggle */
+.ad-kase__sum { display: none; }
+.ad-kase__shot .ad-case__cap { margin-top: 0.625rem; }
+.ad-count__c { display: inline-block; white-space: pre; }
+/* the account's window */
+.ad-case__win { width: 100%; min-width: 0; border-radius: 1rem; overflow: hidden; background: #0b0b0b; box-shadow: 0 2rem 3rem -2rem rgba(0, 0, 0, 0.45); }
+.ad-case__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.625rem 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.08); }
+.ad-case__bar > i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(246, 246, 243, 0.18); }
+.ad-case__host { margin-left: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 0.375rem; font: 400 0.75rem/1 var(--font-mono); color: var(--ink-soft); background: rgba(246, 246, 243, 0.06); }
+.ad-case__tabs { display: inline-flex; gap: 0.25rem; margin-left: auto; }
+.ad-case__tab { min-height: 2.25rem; padding: 0 0.75rem; border: 0; border-radius: 99px; font: 400 0.75rem/1 var(--font-mono); color: var(--ink-soft); background: transparent; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.18); cursor: pointer; transition: background-color 0.2s, color 0.2s; }
+.ad-case__tab[aria-selected="true"] { color: #111; background: var(--ink); box-shadow: none; }
+.ad-case__tab:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.ad-case__ok { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.6rem; border-radius: 99px; font: 400 0.6875rem/1 var(--font-mono); color: var(--ink); box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.55); }
+.ad-case__ok b { width: 0.875rem; height: 0.875rem; border-radius: 50%; background: var(--signal) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23111' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 0.625rem no-repeat; }
+.ad-case__pic { position: relative; background: #fff; }
+.ad-case__pic[hidden] { display: none; }
+.ad-case__pic:focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
+.ad-case__in { position: relative; }
+.ad-case__in img { display: block; width: 100%; height: auto; }
+.ad-case__ring { position: absolute; border-radius: 0.375rem; box-shadow: 0 0 0 2px var(--ink-dark), 0 0 0 5px rgba(255, 255, 255, 0.85); pointer-events: none; }
+.ad-case__swipe { display: none; }
+.ad-case__cap { font: 400 0.75rem/1.5 var(--font-mono); color: var(--ink-dark-mute); text-wrap: pretty; }
+
+/* the first screen from 901 to 1100 px: still side by side, the words in five columns, the way of a request in seven */
+@media (min-width: 901px) and (max-width: 1100px) {
+  main[data-ai-page="ads"] .ad-hero { display: grid; align-content: center; min-height: min(100svh, 60rem); }
+  .ad-hero .ai-hero__copy { grid-column: 1 / span 5; }
+  .ad-hero .ai-hero__visual { grid-column: 6 / -1; }
+  .ad-hero .ai-hero__title--auto { font-size: 2.25rem; }
+  .ad-hero .ai-hero__lead { max-width: 34ch; }
+  /* the networks in two rows (the mark and the count on top, the name under), so «Instagram» never cuts at 960 px */
+  .ad-fl__chip { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0.375rem; }
+  .ad-fl__n { grid-column: 2; grid-row: 1; }
+  .ad-fl__name { grid-column: 1 / -1; }
+}
+/* below 901 px: the words, then the way of a request under them */
+@media (max-width: 900px) {
+  .ad-hero .ai-hero__copy, .ad-hero .ai-hero__visual { grid-column: 1 / -1; }
+  .ad-hero .ai-hero__visual { margin-top: 2.5rem; }
+  .ad-fl { justify-self: start; width: min(38rem, 100%); }
+}
+
+/* the lighter pass (the owner, 20 Oct): the three new blocks narrower, and the phone page loses its secondary text */
+@media (max-width: 1100px) {
+  .ad-kase { grid-template-columns: minmax(0, 1fr); }
+  .ad-kase__shot, .ad-kase__end { grid-column: auto; grid-row: auto; }
+}
+@media (max-width: 860px) {
+  /* the steps as rows: the picture on the left, the words beside */
+  main.ai .ad-track__list { grid-template-columns: minmax(0, 1fr); gap: 0.875rem; }
+  .ad-track__step { grid-template-columns: 6rem minmax(0, 1fr); align-items: center; gap: 1rem; }
+  .ad-track__step + .ad-track__step::before { display: none; }
+  .ad-track__pic { height: 4.75rem; font-size: 0.72rem; border-radius: 0.875rem; }
+  .ad-track__txt { gap: 0.25rem; }
+}
+@media (max-width: 600px) {
+  .ad-track { padding: 1.25rem 1.125rem 1.375rem; }
+  .ad-track__head { margin-bottom: 1.375rem; padding-bottom: 1rem; }
+  .ad-track__step { grid-template-columns: 5.25rem minmax(0, 1fr); gap: 0.875rem; }
+  .ad-track__pic { height: 4.5rem; font-size: 0.66rem; }
+  .ad-track__t { font-size: 1.0625rem; }
+  /* the case: the screenshot folds under «Скриншот з акаунта» (runtime, as the price lists) */
+  .ad-kase { padding: 0.875rem; gap: 1rem; }
+  /* the switcher: a row to swipe, the next case peeking at the edge (React Bits' carousel), from edge to edge */
+  .ad-kase-pick { display: flex; gap: 0.5rem; margin: 0 calc(-1 * var(--gutter)) 0.75rem; padding: 0.125rem var(--gutter) 0.375rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+  .ad-kase-pick::-webkit-scrollbar { display: none; }
+  .ad-kase-pick__b { flex: 0 0 72%; scroll-snap-align: start; padding: 0.875rem 1rem 1rem; border-radius: 1rem; }
+  .ad-kase-pick__v { font-size: 1.75rem; }
+  .ad-kase__was { font-size: 0.8125rem; }
+  .ad-kase__who, .ad-kase__per { padding: 0 0.25rem; }
+  .ad-kase__m--cpl .ad-kase__v { font-size: 2.75rem; }
+  .ad-kase__v { font-size: 1.625rem; }
+  .ad-kase__sum { display: flex; align-items: center; justify-content: space-between; min-height: 2.75rem; padding: 0.5rem 0.25rem 0; border-top: 1px solid var(--line-dark); font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-soft); list-style: none; cursor: pointer; }
+  .ad-kase__sum::-webkit-details-marker { display: none; }
+  .ad-kase__sum::after { content: "+"; content: "+" / ""; font-size: 1rem; color: var(--ink-dark-mute); }
+  .ad-kase__shot[open] > .ad-kase__sum { margin-bottom: 0.75rem; }
+  .ad-kase__shot[open] > .ad-kase__sum::after { content: "−"; content: "−" / ""; }
+  html.js:not(.ad-go) .ad-kase__shot[data-fold] > :not(summary) { display: none; }
+  html.js:not(.ad-go) .ad-kase__shot[data-fold] > summary::after { content: "+"; content: "+" / ""; }
+  .ad-kase__end .btn { width: 100%; justify-content: space-between; }
+  .ad-case__pic { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .ad-case__in { width: 40rem; }
+  .ad-case__swipe { display: block; margin-top: 0.625rem; font: 400 0.6875rem/1 var(--font-mono); color: var(--ink-dark-mute); text-align: center; }
+  .ad-case__tabs { order: 3; width: 100%; margin-left: 0; }
+  .ad-case__ok { margin-left: auto; }
+  /* less text: the cards' paragraphs (their mock-ups and lists say it), the setups' one-liners, and under the form the
+     next steps and «Що ви отримуєте» (the two lines above the button say both) */
+  .ad-card__p, .ad-pc__d { display: none; }
+  #contact :is(.ad-next, .ad-get) { display: none; }
+  /* the setups: the week under each card is said in «Як працюємо»; the first month adds up the cards above it (what is
+     not included stays); under the request way «Доступ у вас» is the first promise of «Чому ми» */
+  .ad-pc__wk, .ad-first > div:first-child, .ad-path__facts li:nth-child(3) { display: none; }
+}
+
+/* readable small print (Impeccable, 20 Oct): the sample chips at 12 px everywhere on this page (the kit sets 10.5–11), and
+   the form's placeholders at 5.8:1 on its dark field (the main page's form sets 2.7:1) */
+main[data-ai-page="ads"] .ai-sample { font-size: 0.75rem; }
+main[data-ai-page="ads"] .field :is(input, textarea)::placeholder { color: rgba(246, 246, 243, 0.55); }
+
+/* the same space under every block that hands over to a block of the other colour (Impeccable layout pass, 21 Oct): the
+   kit gives the dark blocks no bottom space, so block 3's button and block 5's bundles sat on the seam with the ivory
+   block after them. Dark into dark (the questions into the form) keeps sharing the next block's top space */
+main[data-ai-page="ads"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }

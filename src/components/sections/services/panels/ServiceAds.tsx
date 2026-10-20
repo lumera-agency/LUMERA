@@ -1,11 +1,13 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { PRICES, presetLabelFor } from "../copy";
+import { aiHref } from "@/components/ai/links";
+import { PRICES } from "../copy";
 
-/** 3 · Реклама в Google: the search plan, the ad on the results page, the report. Markup ported 1:1 from website-v2; the clip is demos/timelines.js. */
+/** 3 · Реклама в Google: the search plan, the ad on the results page, the report. Markup ported 1:1 from website-v2; the clip is demos/timelines.js.
+ *  «Детальніше» opens the ads page (/reklama-i-analityka) instead of a card. */
 export async function ServiceAds() {
   const t = await getTranslations();
   const prices = PRICES;
-  const presetLabel = presetLabelFor(await getLocale(), t);
+  const locale = await getLocale();
   return (
     <article className="service" id="svc-3" data-sr="">
       <div className="service__demo">
@@ -268,39 +270,10 @@ export async function ServiceAds() {
         <p className="service__text">{t("services.service.text.3")}</p>
         <div className="service__foot">
           <p className="service__price">{t("services.price.3.text", prices)}</p>
-          <button type="button" className="service__more-btn" data-more="more-3" aria-haspopup="dialog">
+          {/* the ads page has it all (where the ads run, the analytics, the price, the steps): «Детальніше» opens it */}
+          <a className="service__more-btn service__more-link" href={aiHref(locale, "/reklama-i-analityka")}>
             <span>{t("services.more.label")}</span>
-          </button>
-          <dialog className="service__dialog" id="more-3" aria-labelledby="more-3-t">
-            <div className="service__dialog-in">
-              <h3 className="service__dialog-t" id="more-3-t">{t("services.service.meta.span.3")}</h3>
-              <dl className="service__more-list">
-                <div>
-                  <dt>{t("services.more.dt.what")}</dt>
-                  <dd>{t("services.more.3.what")}</dd>
-                </div>
-                <div>
-                  <dt>{t("services.more.dt.price")}</dt>
-                  <dd>{t("services.more.3.price", prices)}</dd>
-                </div>
-                <div>
-                  <dt>{t("services.more.dt.depends")}</dt>
-                  <dd>{t("services.more.3.depends")}</dd>
-                </div>
-                <div>
-                  <dt>{t("services.more.dt.includes")}</dt>
-                  <dd>{t("services.more.3.includes")}</dd>
-                </div>
-              </dl>
-              <p className="service__dialog-go">
-                <a className="link" href="#pricing" data-cfg-preset="existing" data-more-close="">{presetLabel("existing")}</a>
-              </p>
-              <p className="service__dialog-go service__dialog-go--alt">
-                <a className="link" href="#pricing" data-cfg-preset="siteAds" data-more-close="">{presetLabel("siteAds")}</a>
-              </p>
-              <button type="button" className="service__dialog-x" data-more-close="" aria-label={t("services.more.close")}>×</button>
-            </div>
-          </dialog>
+          </a>
         </div>
       </div>
     </article>
