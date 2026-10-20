@@ -389,7 +389,8 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
 @media (max-width: 760px) and (orientation: portrait) {
   /* a phone: the first screen is the words and the droplet, and at its foot the prices, then the button; the formats'
      line waits for block 2 (it says the same) */
-  main[data-ai-page="sites"] .st-hg { --hg-h: calc(100svh - var(--topbar-h) - 1.25rem); padding-top: calc(var(--topbar-h) + 0.5rem); }
+  /* (room above «ДИЗАЙН»: «Й»'s breve rises above the caps, it must not reach the topbar) */
+  main[data-ai-page="sites"] .st-hg { --hg-h: calc(100svh - var(--topbar-h) - 2.25rem); padding-top: calc(var(--topbar-h) + 1.5rem); }
   .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
   /* the words and the droplet at the top, under the topbar */
   .st-hg .st-hg__title,
