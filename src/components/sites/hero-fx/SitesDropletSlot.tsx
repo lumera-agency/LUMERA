@@ -1,0 +1,43 @@
+"use client";
+/*
+ * «Дизайн і сайти»: where the live droplet goes (SitesDroplet.tsx): only once the page has loaded and the browser is
+ * idle, so the first screen never waits for three.js; only on a computer (a wide screen with a mouse: the droplet's own
+ * rule, its photo and its worker are too much for a phone's first screen), never with reduced motion, Save-Data or
+ * without WebGL: then the still under it simply stays.
+ */
+import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { WebGLGate } from "@/components/three/lib/WebGLGate";
+
+const SitesDroplet = dynamic(() => import("./SitesDroplet"), { ssr: false });
+
+export function SitesDropletSlot() {
+  const mark = useRef<HTMLSpanElement>(null);
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (saveData || !matchMedia("(min-width: 768px) and (hover: hover)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let idle = 0;
+    const go = () => setHost(mark.current?.parentElement ?? null);
+    const later = () => {
+      idle = typeof requestIdleCallback === "function" ? requestIdleCallback(go, { timeout: 1500 }) : window.setTimeout(go, 200);
+    };
+    if (document.readyState === "complete") later();
+    else window.addEventListener("load", later, { once: true });
+    return () => {
+      window.removeEventListener("load", later);
+      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
+      clearTimeout(idle);
+    };
+  }, []);
+  return (
+    <>
+      <span ref={mark} hidden />
+      {host && (
+        <WebGLGate>
+          <SitesDroplet host={host} />
+        </WebGLGate>
+      )}
+    </>
+  );
+}

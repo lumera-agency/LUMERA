@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { preload } from "react-dom";
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
-import { SitesStoneSlot } from "@/components/sites/hero-fx/SitesStoneSlot";
+import { SitesDropletSlot } from "@/components/sites/hero-fx/SitesDropletSlot";
 import type { SitesFacts } from "@/components/sites/facts";
 import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
 
@@ -12,7 +12,8 @@ import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
  * poster on a 12-column grid, so no word ever crosses the stone. The H1 top left, «Дизайн і код» (the owner's pick of
  * nine settings, 19 Oct: see Title); «01 Формати» and the lead top right
  * (set like the clinic sample's manifesto: a picture pill after each format, the end in Source Serif 4 italic); the
- * stone large in the middle (the still, then the live stone: SitesStoneSlot), in its own grid area; bottom left the lime
+ * object large in the middle, the droplet of liquid metal (the owner, 20 Oct: in place of the stone; the still, then the
+ * live droplet: SitesDropletSlot), in its own grid area; bottom left the lime
  * button over «02 Ціни» and the three prices (from the engine: data-fprice). (No «Формати й ціни ↓»: the topbar has
  * «Формати» and «Ціна»; the owner, 19 Oct.) Below:
  * the sample site «Ваш бренд» on a computer and a phone, assembled block by block once (scene «build»). It pins; block
@@ -33,43 +34,42 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
   );
   return (
     <section className="ai-hero ai-hero--center st-hero st-hg" id="top" aria-labelledby="st-title" data-cover="">
-      <div className="ai-hero__bg" aria-hidden="true"><HeroFlux /></div>
+      <div className="ai-hero__bg" aria-hidden="true"><HeroFlux tone="mono" still /></div>
       <div className="ai-hero__in">
         <div className="ai-hero__copy st-hg__grid">
           <h1 className="s-head__title s-head__title--stone ai-hero__title st-hg__title" id="st-title">
             <Title raw={t.raw("hero.title") as string} />
           </h1>
-          {label(t("nav.formats"), "01", "lead")}
-          <PillLead raw={t.raw("hg.lead") as string} />
-          {/* the stone in its own box (decoration) */}
+          {/* the poster's corners (sites-hero.css): on a computer each a block of its own, upright their parts join the column */}
+          <div className="st-hg__corner st-hg__corner--tl">
+            {label(t("nav.formats"), "01", "lead")}
+            <PillLead raw={t.raw("hg.lead") as string} />
+          </div>
+          {/* the droplet in its own box (decoration) */}
           <div className="st-hg__stone" aria-hidden="true">
             <div className="ai-hero__rock">
               <i className="ai-hero__glow" />
-              {/* the still: the live stone's rest pose at the canvas' size (920 and 1600 px, QA 19 Oct N-07: 920 was soft on a
-                  3× phone and a tablet); sizes ≈ the canvas' width (11.6 em of --hg-st, sites-hero.css), never below 0 on a low
-                  screen (where the stone keeps its smallest size). A phone draws the live stone simpler (coarse geometry, a
-                  1.5× canvas): its still is a frame of that phone render (800 px, the canvas' own pixels), so the swap is
-                  invisible there too (the owner, 20 Oct: «баг при загрузке» = the smooth desktop still turning grainy) */}
-              <picture>
-                <source media="(pointer: coarse) and (max-width: 760px)" srcSet="/img/sites/hero-stone-m.webp" width={800} height={800} />
-                <img
-                  className="ai-hero__stone"
-                  src="/img/sites/hero-stone.webp"
-                  srcSet="/img/sites/hero-stone.webp 920w, /img/sites/hero-stone-1600.webp 1600w"
-                  sizes="(max-width: 760px) and (max-height: 700px) 300px, (max-width: 760px) calc(145vh - 680px), (max-height: 640px) 310px, calc(145vh - 580px)"
-                  width={920}
-                  height={920}
-                  alt=""
-                  decoding="async"
-                  fetchPriority="high"
-                />
-              </picture>
-              <SitesStoneSlot />
+              {/* the still: the droplet at rest, at the canvas' size and framing (square, centred on the body: 720 and 1072 px),
+                  so the live droplet dissolving in over it changes nothing; sizes ≈ the canvas' width (11.6 em of --hg-st,
+                  sites-hero.css), never below 0 on a low screen. Phones keep the still (SitesDropletSlot) */}
+              <img
+                className="ai-hero__stone"
+                src="/img/droplet/droplet-1072.webp"
+                srcSet="/img/droplet/droplet-720.webp 720w, /img/droplet/droplet-1072.webp 1072w"
+                sizes="(max-width: 760px) and (max-height: 700px) 300px, (max-width: 760px) calc(145vh - 680px), (max-height: 640px) 310px, calc(145vh - 580px)"
+                width={1072}
+                height={1072}
+                alt=""
+                decoding="async"
+                fetchPriority="high"
+              />
+              <SitesDropletSlot />
             </div>
           </div>
           <div className="ai-hero__actions st-hg__acts">
             <ButtonLink href="#contact" variant="primary">{t("cta")}</ButtonLink>
           </div>
+          <div className="st-hg__corner st-hg__corner--bl">
           {label(t("hg.px"), "02", "px")}
           {/* the three formats: number, name, «від», the sum (from the engine; the runtime refills data-fprice) */}
           <ul className="st-hg__px">
@@ -83,6 +83,7 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
               </li>
             ))}
           </ul>
+          </div>
           <i className="st-hg__mark st-hg__mark--tl" aria-hidden="true" />
           <i className="st-hg__mark st-hg__mark--tr" aria-hidden="true" />
           <i className="st-hg__mark st-hg__mark--bl" aria-hidden="true" />

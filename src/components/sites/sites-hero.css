@@ -78,7 +78,7 @@ html:lang(ru) main[data-ai-page="sites"] .st-hg { --t5-i: 0.573em; }
 .st-hg .ai-hero__rock::after { content: none; }
 /* it is the object now, not a backdrop: whole and clear (today: 0.55 and blurred behind the words) */
 .st-hg .ai-hero__stone { width: 6em; opacity: 0.94; filter: none; }
-.st-hg .ai-hero__canvas { width: 11.6em; height: 11.6em; }
+.st-hg .ai-hero__canvas { width: 9.4em; height: 9.4em; }
 .st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 0.96; }
 .st-hg .ai-hero__glow { width: 15em; background: radial-gradient(closest-side, rgb(255 246 232 / 0.1), rgb(255 246 232 / 0.035) 55%, rgb(255 246 232 / 0) 100%); }
 
@@ -224,20 +224,175 @@ html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { anima
 .st-hero.st-hg .ai-hero__bg { background: #000; }
 main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }
 
-/* the stone (19 Oct, «не должен увеличиваться при скролле»): the live stone keeps one pose (hero-fx/SitesStone.tsx) and
-   the still is a frame of that same pose at the canvas' own size (img/sites/hero-stone.webp 920², -1600 1600², transparent), so when
-   the live one takes over (after the still's entrance) nothing on screen changes: no cross-fade, no jump */
-.st-hg .ai-hero__stone { width: 11.6em; rotate: 0deg; opacity: 0.96; filter: none; }
-/* (20 Oct) the live stone dissolves in over the still in a third of a second (it lies on top of it), then the still
-   goes: any small difference between the two never shows as a jump, and there is never a frame without a stone */
+/* the droplet (the owner, 20 Oct: in place of the stone; hero-fx/SitesDroplet.tsx, three/droplet): the still is the
+   droplet at rest at the canvas' own size and framing (img/droplet/droplet-*.webp, square, transparent), so when the live
+   one takes over (after the still's entrance) nothing on screen changes. Whole and clear: liquid metal, not a backdrop */
+/* --droplet-roll: the droplet turned in the picture plane (clockwise), the still by CSS and the live one by the same
+   (SitesDroplet reads it) */
+.st-hg { --droplet-roll: -7deg; } /* (Figma «Website», Frame 10: the reference photo turned −137.9°, the traced form −130.8°) */
+.st-hg .ai-hero__stone { width: 9.4em; rotate: var(--droplet-roll); opacity: 1; filter: none; }
+/* (20 Oct, «поменьше и чуть повыше») a fifth smaller than the stone's canvas, and on a computer a little above the box's
+   middle, nearer the words' line than the screen's foot */
+@media (min-width: 761px) {
+  .st-hg .ai-hero__rock { top: calc(50% - 1.4em); }
+}
+/* the live droplet dissolves in over the still in a third of a second (it lies on top of it), then the still goes: any
+   small difference between the two never shows as a jump, and there is never a frame without it */
 .st-hg .ai-hero__canvas { transition: opacity 0.35s ease-out; }
 .st-hg .ai-hero__rock.is-live .ai-hero__stone { transition: opacity 0s linear 0.4s; }
-.st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 0.96; }
-/* its entrance: a fade with a short rise, no scale (a stone that grows on arrival read as «it grows») */
+.st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 1; }
+/* its entrance: a fade with a short rise, no scale (an object that grows on arrival reads as «it grows») */
 @keyframes st-stone-in { from { opacity: 0; transform: translateY(0.4em); } }
 html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: st-stone-in; }
 
-/* a sideways drag on the stone turns it (SitesStone.tsx); vertical swipes still scroll the page and two fingers still zoom
-   it (N-03); no grey flash on a tap (iOS) */
-.st-hg .st-hg__stone { pointer-events: auto; touch-action: pan-y pinch-zoom; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
-@media (hover: hover) and (pointer: fine) { .st-hg .st-hg__stone { cursor: grab; } .st-hg .st-hg__stone:active { cursor: grabbing; } }
+/* the corners' wrappers: their parts are the grid's items wherever the poster is not a sheet (below) */
+.st-hg .st-hg__corner { display: contents; }
+
+/* ==========================================================================
+   The poster as a sheet (Figma «Website», Frame 10; the owner, 20 Oct 2026): a computer, and any screen at least as wide
+   as tall. The whole first screen is one sheet in the frame's proportions, 1810 × 900 px of the frame (its content box),
+   scaled as a picture is, centred, the room around it left as margin: the composition is the same on every screen, it
+   never spreads apart. --u is one frame px (across, and every size); down it may stretch up to a fifth (--v), so a
+   squarer screen keeps less empty room; --ox / --oy are the sheet's margins inside the words' column.
+   On the sheet (the owner's pick of two, 20 Oct: the grid of the earlier sketch «A», Frame 10's type): «ДИЗАЙН» large on
+   the right (Helvetica Neue Bold Italic 225, tracking −8 %), «И РАЗРАБОТКА» a line under it on the right edge (72),
+   «САЙТОВ.» large bottom left in lime (Helvetica Neue Medium 225), the droplet in the middle between them, in front
+   (turned −7°). Cap heights, frame px: «ДИЗАЙН» 80–240, «И РАЗРАБОТКА» 330–381, «САЙТОВ.» 540–700. Corners: the
+   formats with their pictures and the button under them top left, the prices in three columns along the foot, a cross
+   outside each corner. The H1 still reads «Дизайн і розробка сайтів» (its plain sentence); the four words are its
+   visible parts, each in its own mask. --w-b: «РОЗРОБКА» / «РАЗРАБОТКА» in its em, so «И» sits right before it
+   ========================================================================== */
+@media (min-width: 761px) and (min-aspect-ratio: 1/1) and (min-height: 501px) {
+  main[data-ai-page="sites"] .st-hg {
+    /* the first screen under the topbar, less the hero's own top padding and room for the crosses below */
+    --hg-h: calc(100svh - var(--topbar-h) - clamp(1.5rem, 5.2vh, 3.75rem) - 1.5 * var(--hg-pad));
+    --u: min(calc(100cqi / 1810), calc(var(--hg-h) / 900));
+    --v: min(calc(var(--hg-h) / 900), calc(var(--u) * 1.2));
+    --ox: calc((100cqi - 1810 * var(--u)) / 2);
+    --oy: calc((var(--hg-h) - 900 * var(--v)) / 2);
+    --w-b: 5.24;
+  }
+  html:lang(ru) main[data-ai-page="sites"] .st-hg { --w-b: 6.05; }
+  .st-hg .st-hg__grid { display: block; position: relative; height: var(--hg-h); min-height: 0; }
+  /* the corners */
+  .st-hg .st-hg__corner { display: block; position: absolute; z-index: 3; }
+  .st-hg .st-hg__corner--tl { left: var(--ox); top: var(--oy); width: max(15rem, calc(466 * var(--u))); }
+  .st-hg .st-hg__corner--bl { left: var(--ox); bottom: var(--oy); width: max(38rem, calc(820 * var(--u))); }
+  .st-hg .st-hg__lead { margin-top: 0.875rem; font-size: max(1rem, calc(26 * var(--u))); }
+  /* the button under the formats */
+  .st-hg .st-hg__acts { position: absolute; z-index: 3; left: var(--ox); top: calc(var(--oy) + max(200 * var(--v), 8.5rem)); margin: 0; }
+  /* the prices along the foot: three columns on one line, a dot where each starts */
+  .st-hg .st-hg__k--px { padding-top: 0; border-top: 0; }
+  .st-hg .st-hg__px { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 1.25rem; margin-top: 0.75rem; border-top: 1px solid rgb(246 246 243 / 0.22); }
+  .st-hg .st-hg__pi { position: relative; display: block; padding: 1.1rem 0 0; }
+  .st-hg .st-hg__pi::before { content: ""; position: absolute; left: 0; top: -0.22rem; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--ink); }
+  .st-hg .st-hg__pn { display: block; }
+  .st-hg .st-hg__pt { display: block; margin: 0.35rem 0 0.15rem; font: 500 1rem/1.3 var(--font-sans); color: var(--ink); white-space: nowrap; }
+  .st-hg .st-hg__pp { display: block; margin-left: 0; }
+  main[data-ai-page="sites"] .st-hg .ai-hero__actions { margin: 0; }
+  .st-hg__mark--tl,
+  .st-hg__mark--bl { left: calc(var(--ox) - var(--gutter) * 0.5); }
+  .st-hg__mark--tr,
+  .st-hg__mark--br { left: calc(100% - var(--ox) + var(--gutter) * 0.5); }
+  .st-hg__mark--tl,
+  .st-hg__mark--tr { top: calc(var(--oy) - var(--hg-pad) * 0.5); }
+  .st-hg__mark--bl,
+  .st-hg__mark--br { top: calc(var(--oy) + 900 * var(--v) + var(--hg-pad) * 0.5); }
+  .st-hg__mark { z-index: 3; }
+  /* the words: a layer over the sheet, each word placed in frame px */
+  .st-hg .st-hg__title { position: absolute; grid-area: auto; inset: 0; z-index: 1; margin: 0; font-size: calc(100 * var(--u)); line-height: normal; letter-spacing: 0; pointer-events: none; }
+  .st-h1 { display: block; position: absolute; inset: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; text-transform: uppercase; }
+  .st-h1__m { position: absolute; padding: 0 0.22em 0.12em 0.04em; margin: 0 -0.22em -0.12em -0.04em; white-space: nowrap; }
+  .st-h1__a,
+  .st-h1__i,
+  .st-h1__b { font-family: inherit; font-style: italic; font-weight: 700; font-variation-settings: normal; color: #fff; }
+  .st-h1__a { right: var(--ox); top: calc(var(--oy) + 22 * var(--v)); font-size: 2.25em; letter-spacing: -0.08em; padding-right: 0.22em; margin-right: -0.22em; }
+  .st-h1__i { right: calc(var(--ox) + (var(--w-b) + 0.3) * 72 * var(--u)); top: calc(var(--oy) + 312 * var(--v)); font-size: 0.72em; letter-spacing: -0.07em; }
+  .st-h1__b { right: var(--ox); top: calc(var(--oy) + 312 * var(--v)); font-size: 0.72em; letter-spacing: -0.07em; }
+  /* (never down on the prices: on a small sheet they keep their size in rem, so the word stays above their room) */
+  .st-h1__s { left: calc(var(--ox) + 230 * var(--u)); top: min(calc(var(--oy) + 483 * var(--v)), calc(var(--oy) + 900 * var(--v) - 10.5rem - 225 * var(--u))); font-size: 2.25em; font-style: normal; font-weight: 500; font-variation-settings: normal; letter-spacing: -0.07em; color: #d0ff00; }
+  .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
+  .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
+  .st-h1__s .tone::after { content: "."; }
+  .st-h1__caret { display: none; }
+  /* the droplet: in front of the words, where the frame has it, at its size (a 700 px canvas) */
+  .st-hg .st-hg__stone { position: absolute; grid-area: auto; left: calc(var(--ox) + 850 * var(--u)); top: calc(var(--oy) + 400 * var(--v)); width: 0; height: 0; margin: 0; z-index: 2; font-size: calc(700 / 9.4 * var(--u)); }
+  .st-hg .ai-hero__rock { top: 50%; }
+}
+
+/* ==========================================================================
+   The poster upright (a phone, a tablet held upright, any screen taller than wide; the owner's pick of four, 20 Oct): the
+   words close together, «ДИЗАЙН» large on the right, «И РАЗРАБОТКА» a line under it on the right, «САЙТОВ.» large on the
+   left, lime; the droplet (its still, mirrored: the live one stays on computers) large in the middle between them, just
+   touching «ДИЗАЙН» and «САЙТОВ.». On a phone the first screen is that and, at its foot, the prices and the button. Under the poster: the formats, the button, the prices. One sheet too: --pu
+   is one px of a 358 px column (a 390 px phone), never more than the screen's height allows, and the words keep that
+   column's width, so the poster is the same on every upright screen
+   ========================================================================== */
+@media (max-width: 760px), (min-width: 761px) and (max-aspect-ratio: 999/1000), (orientation: landscape) and (max-height: 500px) {
+  main[data-ai-page="sites"] .st-hg {
+    --hg-h: calc(100svh - var(--topbar-h) - 2 * var(--hg-pad));
+    /* the words' sheet: what the screen's height leaves above the prices and the button (≈ 16 rem) */
+    --pu: min(calc(100cqi / 358), calc((var(--hg-h) - 18rem) / 458));
+  }
+  .st-hg .st-hg__grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; min-height: 0; }
+  .st-hg .st-hg__title { grid-column: 1; grid-row: 1; justify-self: center; width: calc(358 * var(--pu)); position: relative; z-index: 1; margin: 0; font-size: calc(58 * var(--pu)); line-height: 0.9; letter-spacing: 0; }
+  .st-h1 { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "a a a" ". i b" "s s s"; align-items: baseline; gap: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; text-transform: uppercase; }
+  /* (the masks leave room above the caps: the lines are set tight, «Й»'s breve rises above them) */
+  .st-h1__m { padding: 0.22em 0.22em 0.12em 0.04em; margin: -0.22em -0.22em -0.12em -0.04em; white-space: nowrap; }
+  .st-h1__a,
+  .st-h1__i,
+  .st-h1__b { font-family: inherit; font-style: italic; font-weight: 700; font-variation-settings: normal; color: #fff; }
+  /* the room under «И РАЗРАБОТКА» is the droplet's */
+  .st-h1__a { justify-self: end; font-size: 1.5em; letter-spacing: -0.08em; }
+  .st-h1__i { margin-right: 0.3em; font-size: 0.44em; letter-spacing: -0.07em; }
+  .st-h1__b { font-size: 0.44em; letter-spacing: -0.07em; }
+  .st-h1__i,
+  .st-h1__b { margin-top: calc(6 * var(--pu)); margin-bottom: calc(234 * var(--pu)); }
+  .st-h1__s { justify-self: start; font-size: 1.36em; font-style: normal; font-weight: 500; font-variation-settings: normal; letter-spacing: -0.07em; color: #d0ff00; }
+  .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
+  .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
+  .st-h1__s .tone::after { content: "."; }
+  .st-h1__caret { display: none; }
+  /* the droplet's still in the middle, mirrored (its high lobe on the left, away from «И РАЗРАБОТКА»): it just touches
+     «ДИЗАЙН» above and «САЙТОВ.» below, every word stays readable */
+  .st-hg .st-hg__stone { grid-column: 1; grid-row: 1; justify-self: center; align-self: start; width: 0; height: 0; margin: calc(262 * var(--pu)) calc(36 * var(--pu)) 0 0; z-index: 2; font-size: calc(38 * var(--pu)); }
+  .st-hg .ai-hero__stone { scale: -1 1; }
+  .st-hg .ai-hero__rock { top: 0; }
+  .st-hg .st-hg__k--lead { display: none; }
+  .st-hg .st-hg__lead { grid-column: 1; grid-row: 2; justify-self: start; max-width: 30ch; margin-top: calc(26 * var(--pu)); text-align: left; }
+  .st-hg .st-hg__acts { grid-column: 1; grid-row: 3; justify-self: stretch; margin-top: 1.5rem; }
+  .st-hg .st-hg__k--px { grid-column: 1; grid-row: 4; margin-top: 2.25rem; }
+  .st-hg .st-hg__px { grid-column: 1; grid-row: 5; margin-top: 0.5rem; }
+}
+@media (min-width: 761px) and (max-aspect-ratio: 999/1000) {
+  /* a wide upright screen (a tablet, a tall window): the column keeps the poster's width, the formats and the prices
+     side by side under it */
+  .st-hg .st-hg__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); max-width: calc(440 * var(--pu)); margin-inline: auto; }
+  .st-hg :is(.st-hg__title, .st-hg__stone) { grid-column: 1 / -1; }
+  .st-hg .st-hg__lead { grid-column: 1 / 7; grid-row: 2 / 4; }
+  .st-hg .st-hg__acts { grid-column: 1 / 7; grid-row: 4; justify-self: start; }
+  .st-hg .st-hg__k--px { grid-column: 8 / -1; grid-row: 2; margin-top: calc(26 * var(--pu)); }
+  .st-hg .st-hg__px { grid-column: 8 / -1; grid-row: 3; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  /* a phone turned sideways: the words sized from the screen's height, the rest in a column under them */
+  main[data-ai-page="sites"] .st-hg { --pu: min(calc(100cqi / 358), calc((100svh - var(--topbar-h) - 2rem) / 340)); }
+  .st-hg :is(.st-hg__lead, .st-hg__acts, .st-hg__k--px, .st-hg__px) { justify-self: center; width: min(100%, 30rem); }
+  .st-hg .st-hg__mark { display: none; }
+}
+@media (max-width: 760px) and (orientation: portrait) {
+  /* a phone: the first screen is the words and the droplet, and at its foot the prices, then the button; the formats'
+     line waits for block 2 (it says the same) */
+  main[data-ai-page="sites"] .st-hg { padding-top: calc(var(--topbar-h) + var(--hg-pad)); }
+  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1.75rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
+  /* the words and the droplet at the top, under the topbar */
+  .st-hg .st-hg__title,
+  .st-hg .st-hg__stone { grid-row: 1; align-self: start; }
+  .st-hg .st-hg__title { margin-top: 0.5rem; }
+  .st-hg .st-hg__lead { display: none; }
+  .st-hg .st-hg__k--px { grid-row: 3; margin-top: 0; }
+  .st-hg .st-hg__px { grid-row: 4; font-size: 0.9375rem; }
+  .st-hg .st-hg__pi { padding: 0.4rem 0; }
+  /* (the phone's old rule zeroes the actions' margins: this one is as strong) */
+  main[data-ai-page="sites"] .st-hg .ai-hero__actions.st-hg__acts { grid-row: 5; margin: 2rem 0 0; }
+}
