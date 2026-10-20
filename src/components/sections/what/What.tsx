@@ -13,7 +13,7 @@ export const DIRECTIONS = [
 ] as const;
 
 /** Directions with a page of their own: the row opens it instead of scrolling to the panel. */
-const PAGES: Partial<Record<string, string>> = { "svc-1": "/dyzain-i-saity", "svc-4": "/ai-avtomatyzatsiia" };
+const PAGES: Partial<Record<string, string>> = { "svc-1": "/dyzain-i-saity", "svc-4": "/ai-avtomatyzatsiia", "svc-3": "/reklama-i-analityka" };
 
 /** 2 · Що ми робимо: four directions as one big list; over a row its picture follows the cursor. */
 export async function What() {

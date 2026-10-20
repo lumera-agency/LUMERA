@@ -9,7 +9,7 @@ import "../globals.css";
 import "@/components/layout/page/page.css";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
-const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites"];
+const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads"];
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumera-seven-eta.vercel.app";
 
 export function generateStaticParams() {
