@@ -32,10 +32,14 @@ type Props = {
   awake: boolean;
   /** radians: the body turned in the picture plane (counter-clockwise), to sit in a composition */
   roll?: number;
+  /** mirrored left to right (before the roll), as the page's still may be */
+  mirror?: boolean;
+  /** the canvas' pixel ratio at most (a phone draws at 1.5) */
+  maxDpr?: number;
   onReady?: () => void;
 };
 
-export default function DropletScene({ active, interactive, awake, roll = 0, onReady }: Props) {
+export default function DropletScene({ active, interactive, awake, roll = 0, mirror = false, maxDpr = 2, onReady }: Props) {
   const tilt = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
   const uniforms = useMemo(() => createDropletUniforms(), []);
@@ -43,7 +47,7 @@ export default function DropletScene({ active, interactive, awake, roll = 0, onR
   return (
     <Canvas
       // MSAA anti-aliases the outline (the surface is opaque); full DPR up to 2: the look lives on the photo's sharpness
-      dpr={[1, 2]}
+      dpr={[1, maxDpr]}
       frameloop={active ? "always" : "never"}
       camera={{ fov: FOV, position: [0, 0, CAMERA_Z], near: CAMERA_Z - 600, far: CAMERA_Z + 600 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
@@ -51,10 +55,12 @@ export default function DropletScene({ active, interactive, awake, roll = 0, onR
       {/* turns around its own centre, which sits at the canvas' centre */}
       <group ref={tilt}>
         <group rotation={[0, 0, roll]}>
-          <group ref={body} position={[-BODY_CENTER[0], -BODY_CENTER[1], 0]}>
-            <Suspense fallback={null}>
-              {geometry && <Body geometry={geometry} uniforms={uniforms} onReady={onReady} />}
-            </Suspense>
+          <group scale={[mirror ? -1 : 1, 1, 1]}>
+            <group ref={body} position={[-BODY_CENTER[0], -BODY_CENTER[1], 0]}>
+              <Suspense fallback={null}>
+                {geometry && <Body geometry={geometry} uniforms={uniforms} onReady={onReady} />}
+              </Suspense>
+            </group>
           </group>
         </group>
       </group>

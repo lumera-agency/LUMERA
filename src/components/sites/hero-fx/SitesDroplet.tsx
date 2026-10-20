@@ -17,8 +17,11 @@ export default function SitesDroplet({ host }: { host: HTMLElement }) {
   const [visible, setVisible] = useState(false);
   const [interactive] = useState(() => matchMedia("(hover: hover) and (pointer: fine)").matches);
   const [awake, setAwake] = useState(false);
-  // its turn in the picture plane: the page's CSS sets it (--droplet-roll on the hero, the still turns by the same)
+  // its turn in the picture plane and its mirroring: the page's CSS sets them (--droplet-roll, --droplet-mirror on the
+  // hero), the still is turned and mirrored by the same
   const [roll] = useState(() => (-parseFloat(getComputedStyle(host).getPropertyValue("--droplet-roll")) || 0) * (Math.PI / 180));
+  const [mirror] = useState(() => parseFloat(getComputedStyle(host).getPropertyValue("--droplet-mirror")) < 0);
+  const [maxDpr] = useState(() => (matchMedia("(pointer: coarse)").matches ? 1.5 : 2));
 
   useEffect(() => {
     const el = box.current;
@@ -71,7 +74,7 @@ export default function SitesDroplet({ host }: { host: HTMLElement }) {
 
   return (
     <div ref={box} className="ai-hero__canvas" aria-hidden="true">
-      <DropletScene active={visible} interactive={interactive} awake={awake} roll={roll} onReady={takeOver} />
+      <DropletScene active={visible} interactive={interactive} awake={awake} roll={roll} mirror={mirror} maxDpr={maxDpr} onReady={takeOver} />
     </div>
   );
 }

@@ -229,8 +229,8 @@ main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }
    one takes over (after the still's entrance) nothing on screen changes. Whole and clear: liquid metal, not a backdrop */
 /* --droplet-roll: the droplet turned in the picture plane (clockwise), the still by CSS and the live one by the same
    (SitesDroplet reads it) */
-.st-hg { --droplet-roll: -7deg; } /* (Figma «Website», Frame 10: the reference photo turned −137.9°, the traced form −130.8°) */
-.st-hg .ai-hero__stone { width: 9.4em; rotate: var(--droplet-roll); opacity: 1; filter: none; }
+.st-hg { --droplet-roll: -7deg; --droplet-mirror: 1; } /* (Figma «Website», Frame 10: the reference photo turned −137.9°, the traced form −130.8°) */
+.st-hg .ai-hero__stone { width: 9.4em; rotate: var(--droplet-roll); scale: var(--droplet-mirror) 1; opacity: 1; filter: none; }
 /* (20 Oct, «поменьше и чуть повыше») a fifth smaller than the stone's canvas, and on a computer a little above the box's
    middle, nearer the words' line than the screen's foot */
 @media (min-width: 761px) {
@@ -332,10 +332,15 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   main[data-ai-page="sites"] .st-hg {
     --hg-h: calc(100svh - var(--topbar-h) - 2 * var(--hg-pad));
     /* the words' sheet: what the screen's height leaves above the prices and the button (≈ 16 rem) */
-    --pu: min(calc(100cqi / 358), calc((var(--hg-h) - 18rem) / 458));
+    /* the room for the words and the droplet: the screen under the topbar less the prices and the button (≈ 15 rem).
+       --pu sizes the words from the column's width (they span it), smaller only when the room is short; the droplet's
+       room between them (--gap) gives way first, from 200 pu down to 150 pu (Safari's bars take a phone's height) */
+    --avail: calc(var(--hg-h) - 15rem);
+    --pu: min(calc(100cqi / 380), calc(var(--avail) / 374));
+    --gap: clamp(calc(150 * var(--pu)), calc(var(--avail) - 224 * var(--pu)), calc(200 * var(--pu)));
   }
   .st-hg .st-hg__grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; min-height: 0; }
-  .st-hg .st-hg__title { grid-column: 1; grid-row: 1; justify-self: center; width: calc(358 * var(--pu)); position: relative; z-index: 1; margin: 0; font-size: calc(58 * var(--pu)); line-height: 0.9; letter-spacing: 0; }
+  .st-hg .st-hg__title { grid-column: 1; grid-row: 1; justify-self: stretch; width: auto; position: relative; z-index: 1; margin: 0; font-size: calc(58 * var(--pu)); line-height: 0.9; letter-spacing: 0; }
   .st-h1 { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "a a a" ". i b" "s s s"; align-items: baseline; gap: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; text-transform: uppercase; }
   /* (the masks leave room above the caps: the lines are set tight, «Й»'s breve rises above them) */
   .st-h1__m { padding: 0.22em 0.22em 0.12em 0.04em; margin: -0.22em -0.22em -0.12em -0.04em; white-space: nowrap; }
@@ -347,16 +352,16 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-h1__i { margin-right: 0.3em; font-size: 0.44em; letter-spacing: -0.07em; }
   .st-h1__b { font-size: 0.44em; letter-spacing: -0.07em; }
   .st-h1__i,
-  .st-h1__b { margin-top: calc(6 * var(--pu)); margin-bottom: calc(234 * var(--pu)); }
+  .st-h1__b { margin-top: calc(6 * var(--pu)); margin-bottom: var(--gap); }
   .st-h1__s { justify-self: start; font-size: 1.36em; font-style: normal; font-weight: 500; font-variation-settings: normal; letter-spacing: -0.07em; color: #d0ff00; }
   .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
   .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
   .st-h1__s .tone::after { content: "."; }
   .st-h1__caret { display: none; }
-  /* the droplet's still in the middle, mirrored (its high lobe on the left, away from «И РАЗРАБОТКА»): it just touches
-     «ДИЗАЙН» above and «САЙТОВ.» below, every word stays readable */
-  .st-hg .st-hg__stone { grid-column: 1; grid-row: 1; justify-self: center; align-self: start; width: 0; height: 0; margin: calc(262 * var(--pu)) calc(36 * var(--pu)) 0 0; z-index: 2; font-size: calc(38 * var(--pu)); }
-  .st-hg .ai-hero__stone { scale: -1 1; }
+  /* the droplet in the middle of the room between the words, mirrored, a little larger than the room: it just overlaps
+     «И РАЗРАБОТКА» above and «САЙТОВ.» below, every word stays readable */
+  .st-hg .st-hg__stone { grid-column: 1; grid-row: 1; justify-self: center; align-self: start; width: 0; height: 0; margin: calc(107 * var(--pu) + var(--gap) * 0.47) 0 0 calc(22 * var(--pu)); z-index: 2; font-size: calc(var(--gap) * 0.2); }
+  .st-hg { --droplet-mirror: -1; }
   .st-hg .ai-hero__rock { top: 0; }
   .st-hg .st-hg__k--lead { display: none; }
   .st-hg .st-hg__lead { grid-column: 1; grid-row: 2; justify-self: start; max-width: 30ch; margin-top: calc(26 * var(--pu)); text-align: left; }
@@ -379,16 +384,18 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   main[data-ai-page="sites"] .st-hg { --pu: min(calc(100cqi / 358), calc((100svh - var(--topbar-h) - 2rem) / 340)); }
   .st-hg :is(.st-hg__lead, .st-hg__acts, .st-hg__k--px, .st-hg__px) { justify-self: center; width: min(100%, 30rem); }
   .st-hg .st-hg__mark { display: none; }
+  /* the words keep a phone's column in the middle (the screen is wide, they are sized from its height) */
+  .st-hg .st-hg__title { justify-self: center; width: calc(358 * var(--pu)); }
 }
 @media (max-width: 760px) and (orientation: portrait) {
   /* a phone: the first screen is the words and the droplet, and at its foot the prices, then the button; the formats'
      line waits for block 2 (it says the same) */
-  main[data-ai-page="sites"] .st-hg { padding-top: calc(var(--topbar-h) + var(--hg-pad)); }
-  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1.75rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
+  main[data-ai-page="sites"] .st-hg { --hg-h: calc(100svh - var(--topbar-h) - 1.25rem); padding-top: calc(var(--topbar-h) + 0.5rem); }
+  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
   /* the words and the droplet at the top, under the topbar */
   .st-hg .st-hg__title,
   .st-hg .st-hg__stone { grid-row: 1; align-self: start; }
-  .st-hg .st-hg__title { margin-top: 0.5rem; }
+  .st-hg .st-hg__title { margin-top: 0; }
   .st-hg .st-hg__lead { display: none; }
   .st-hg .st-hg__k--px { grid-row: 3; margin-top: 0; }
   .st-hg .st-hg__px { grid-row: 4; font-size: 0.9375rem; }

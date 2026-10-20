@@ -1,9 +1,8 @@
 "use client";
 /*
  * «Дизайн і сайти»: where the live droplet goes (SitesDroplet.tsx): only once the page has loaded and the browser is
- * idle, so the first screen never waits for three.js; only on a computer (a wide screen with a mouse: the droplet's own
- * rule, its photo and its worker are too much for a phone's first screen), never with reduced motion, Save-Data or
- * without WebGL: then the still under it simply stays.
+ * idle, so the first screen never waits for three.js; on a phone too (the owner, 20 Oct: it flows there, the finger
+ * doesn't pull it); never with reduced motion, Save-Data or without WebGL: then the still under it simply stays.
  */
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
@@ -16,7 +15,7 @@ export function SitesDropletSlot() {
   const [host, setHost] = useState<HTMLElement | null>(null);
   useEffect(() => {
     const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    if (saveData || !matchMedia("(min-width: 768px) and (hover: hover)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (saveData || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let idle = 0;
     const go = () => setHost(mark.current?.parentElement ?? null);
     const later = () => {
