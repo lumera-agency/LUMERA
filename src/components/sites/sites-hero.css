@@ -358,10 +358,9 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
   .st-h1__s .tone::after { content: "."; }
   .st-h1__caret { display: none; }
-  /* the droplet in the middle of the room between the words, mirrored, a little larger than the room: it just overlaps
-     «И РАЗРАБОТКА» above and «САЙТОВ.» below, every word stays readable */
-  .st-hg .st-hg__stone { grid-column: 1; grid-row: 1; justify-self: center; align-self: start; width: 0; height: 0; margin: calc(107 * var(--pu) + var(--gap) * 0.47) 0 0 calc(22 * var(--pu)); z-index: 2; font-size: calc(var(--gap) * 0.2); }
-  .st-hg { --droplet-mirror: -1; }
+  /* the droplet in the middle of the room between the words, in the computer's own pose, a little larger than the room:
+     it just overlaps «И РАЗРАБОТКА» above and «САЙТОВ.» below, every word stays readable */
+  .st-hg .st-hg__stone { grid-column: 1; grid-row: 1; justify-self: center; align-self: start; width: 0; height: 0; margin: calc(107 * var(--pu) + var(--gap) * 0.58) calc(24 * var(--pu)) 0 0; z-index: 2; font-size: calc(var(--gap) * 0.2); }
   .st-hg .ai-hero__rock { top: 0; }
   .st-hg .st-hg__k--lead { display: none; }
   .st-hg .st-hg__lead { grid-column: 1; grid-row: 2; justify-self: start; max-width: 30ch; margin-top: calc(26 * var(--pu)); text-align: left; }
