@@ -48,6 +48,7 @@ export function startAds() {
   initMore();
   initFaqMore();
   initCaseTabs();
+  initCaseStack();
   initSticky();
   initCover();
   initScenes();
@@ -233,7 +234,7 @@ function initCaseTabs() {
     shot?.addEventListener('toggle', () => { if (shot.open && motion) caseShot(shot, 0, (el, k, o) => el.animate(k, { fill: 'backwards', easing: OUT, ...o })); });
   }
   const picks = $$('[data-case-pick]');
-  tablist(picks, (pick, focus = false) => {
+  const choosePick = (pick, focus = false) => {
     for (const p of picks) {
       const on = p === pick;
       p.setAttribute('aria-selected', String(on));
@@ -249,7 +250,105 @@ function initCaseTabs() {
       row.scrollTo({ left: x, behavior: motion ? 'smooth' : 'instant' });
     }
     if (focus) pick.focus({ preventScroll: true });
+  };
+  tablist(picks, choosePick);
+  pickCase = (id) => { const pick = picks.find((p) => p.dataset.casePick === id); if (pick) choosePick(pick); };
+}
+
+/** shows the details of the case the phones' stack has on top (set by initCaseTabs) */
+let pickCase = () => {};
+
+/* ---------- 4 · phones: the cases as a stack of short cards (React Bits «Stack»): a swipe or the arrows send the top
+   card away (to the left, it tucks under the pile) or bring the bottom one back on top; the new top card's numbers roll
+   up and the details below follow it ---------- */
+function initCaseStack() {
+  const stack = $('.ad-kstack');
+  if (!stack) return;
+  const order = $$('.ad-kstack__card', stack);
+  const dots = $$('[data-case-dot]', stack);
+  let busy = false;
+  const place = () => order.forEach((card, i) => { card.dataset.pos = String(i); card.setAttribute('aria-hidden', String(i > 0)); });
+  const sync = () => {
+    const id = order[0].dataset.caseCard;
+    dots.forEach((d) => d.classList.toggle('is-on', d.dataset.caseDot === id));
+    pickCase(id);
+  };
+  const roll = (card) => {
+    if (!motion) return;
+    $$('.ad-count__strip', card).forEach((strip, j) => {
+      const d = Number(strip.parentElement.style.getPropertyValue('--d')) || 0;
+      strip.animate([{ transform: 'translateY(0%)' }, { transform: `translateY(${-d * 10}%)` }], { duration: 900 + j * 60, delay: 140, easing: SOFT, fill: 'backwards' });
+    });
+  };
+  const go = (dir, from = '') => {
+    if (busy) return;
+    if (dir > 0) {
+      // the top card flies off to the left, then slips in under the pile
+      const top = order.shift();
+      order.push(top);
+      order.slice(0, -1).forEach((card, i) => { card.dataset.pos = String(i); });
+      if (!motion) { top.style.transform = ''; place(); sync(); return; }
+      busy = true;
+      top.classList.add('is-thrown');
+      const fly = top.animate([{ transform: from || 'none', opacity: 1 }, { transform: 'translateX(-115%) rotate(-9deg)', opacity: 0 }], { duration: 320, easing: EXIT, fill: 'forwards' });
+      roll(order[0]);
+      sync();
+      fly.onfinish = () => {
+        top.classList.remove('is-thrown');
+        top.style.transform = '';
+        place();
+        fly.cancel();
+        top.animate([{ offset: 0, transform: 'translateY(2.5rem) scale(0.85)', opacity: 0 }], { duration: 420, easing: SOFT });
+        busy = false;
+      };
+    } else {
+      // the bottom card comes back on top from the left
+      const back = order.pop();
+      order.unshift(back);
+      order.forEach((card) => { card.style.transform = ''; });
+      place();
+      if (motion) {
+        back.animate([{ offset: 0, transform: 'translateX(-115%) rotate(-9deg)', opacity: 0 }], { duration: 460, easing: SOFT });
+        roll(back);
+      }
+      sync();
+    }
+  };
+  $$('[data-kstack-go]', stack).forEach((btn) => btn.addEventListener('click', () => go(Number(btn.dataset.kstackGo))));
+  // a swipe on the top card (the page keeps its vertical scroll: touch-action pan-y)
+  let drag = null;
+  stack.addEventListener('pointerdown', (e) => {
+    const card = e.target.closest('.ad-kstack__card');
+    if (!card || card !== order[0] || busy) return;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, card, on: false };
   });
+  stack.addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x;
+    const dy = e.clientY - drag.y;
+    if (!drag.on) {
+      if (Math.abs(dx) < 8) return;
+      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
+      drag.on = true;
+      drag.card.classList.add('is-drag');
+      try { drag.card.setPointerCapture(e.pointerId); } catch { /* a pointer the browser no longer tracks */ }
+    }
+    drag.dx = dx;
+    drag.card.style.transform = `translateX(${dx}px) rotate(${(dx / 24).toFixed(2)}deg)`;
+  });
+  const end = () => {
+    if (!drag) return;
+    const { card, dx, on } = drag;
+    drag = null;
+    card.classList.remove('is-drag');
+    if (!on) return;
+    if (Math.abs(dx) > 70) { go(dx < 0 ? 1 : -1, card.style.transform); return; }
+    const was = card.style.transform;
+    card.style.transform = '';
+    if (motion) card.animate([{ transform: was }, { transform: 'none' }], { duration: 380, easing: SOFT });
+  };
+  stack.addEventListener('pointerup', end);
+  stack.addEventListener('pointercancel', end);
 }
 
 /** parts a tap has just shown: they rise into place one after another */
@@ -339,7 +438,7 @@ let current = null;
 const queue = [];
 
 function initScenes() {
-  const defs = { hero: playHero, google: playGoogle, meta: playMeta, live: playLive, path: playPath, case: playCase, how: playHow };
+  const defs = { hero: playHero, google: playGoogle, meta: playMeta, live: playLive, path: playPath, case: playCase, kstack: playStack, how: playHow };
   for (const el of $$('[data-scene]')) {
     const play = defs[el.dataset.scene];
     if (!play) continue;
@@ -894,6 +993,21 @@ function caseShot(shot, at, run) {
     run(ring, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: at + 600 + i * 160 });
     run(ring, [{ transform: 'scale(1.12)' }, { transform: 'none' }], { duration: 560, delay: at + 600 + i * 160, easing: SPRING });
   });
+}
+
+/* ---------- 4 · phones: the stack deals itself in (the cards land on the pile one by one), the top card's numbers roll
+   up, then it leans to the left once and back, so the next case shows its edge. About 2.4 s ---------- */
+function playStack(scene) {
+  const cards = $$('.ad-kstack__card', scene.el).sort((a, b) => Number(a.dataset.pos) - Number(b.dataset.pos));
+  cards.slice().reverse().forEach((card, i) =>
+    anim(scene, card, [{ offset: 0, opacity: 0, transform: 'translateY(2.5rem) scale(0.9) rotate(-4deg)' }], { duration: 640, delay: 80 + i * 140, easing: SOFT }));
+  const top = cards[0];
+  $$('.ad-count__strip', top).forEach((strip, j) => {
+    const d = Number(strip.parentElement.style.getPropertyValue('--d')) || 0;
+    anim(scene, strip, [{ transform: 'translateY(0%)' }, { transform: `translateY(${-d * 10}%)` }], { duration: 1000 + j * 60, delay: 560, easing: SOFT });
+  });
+  anim(scene, $('.ad-kstack__nav', scene.el), [{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: 640 });
+  anim(scene, top, [{ transform: 'none' }, { transform: 'translateX(-1.75rem) rotate(-2deg)', offset: 0.45 }, { transform: 'none' }], { duration: 900, delay: 1500, easing: MOVE, fill: 'none' });
 }
 
 /* ---------- 6 · how we work, picture by picture: the voices of the call rise and settle, the queries come in (the useless

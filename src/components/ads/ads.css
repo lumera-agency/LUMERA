@@ -658,17 +658,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
    4 · Кейс (ivory): one card with the numbers that matter (the owner's lighter pass, 20 Oct): the price of a request
    large, requests, conversion, spend; what worked in one line; the account's screenshot beside them (folded on phones)
    ========================================================================== */
-/* the switcher between the clients' cases: each tab carries its case's headline number (21st.dev «Logo Cloud Story
-   Tabs»), so the three results read before a tap; the selected one in ink. Phones swipe them as a row */
-.ad-kase-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.625rem; margin: 0 0 1rem; }
-.ad-kase-pick__b { display: grid; justify-items: start; align-content: start; gap: 0.25rem; min-width: 0; padding: 1rem 1.25rem 1.125rem; border: 0; border-radius: var(--radius-lg); text-align: left; color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.12); cursor: pointer; transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, transform 0.3s var(--ease-out); }
-.ad-kase-pick__n { font-size: var(--fs-body-s); font-weight: 400; color: var(--ink-dark-soft); }
-.ad-kase-pick__v { font-size: clamp(1.75rem, 2.6vw, 2.25rem); font-weight: 300; line-height: 1.05; letter-spacing: -0.03em; white-space: nowrap; }
-.ad-kase-pick__k { font: 400 0.75rem/1.35 var(--font-mono); color: var(--ink-dark-mute); }
-.ad-kase-pick__b:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transform: translateY(-2px); }
-.ad-kase-pick__b[aria-selected="true"] { color: var(--ivory); background: var(--ink-dark); box-shadow: 0 1.25rem 2.5rem -1.5rem rgba(15, 14, 13, 0.55); transform: none; }
-.ad-kase-pick__b[aria-selected="true"] :is(.ad-kase-pick__n, .ad-kase-pick__k) { color: rgba(246, 246, 243, 0.66); }
-.ad-kase-pick__b:focus-visible { outline: 2px solid var(--ember-deep); outline-offset: 2px; }
 /* «before → after»: the old number small and struck through above the new one */
 .ad-kase__ba { display: grid; justify-items: start; gap: 0.125rem; }
 .ad-kase__was { font: 400 0.875rem/1.2 var(--font-mono); letter-spacing: 0; color: var(--ink-dark-mute); text-decoration-thickness: 1px; }
@@ -759,11 +748,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .ad-track__t { font-size: 1.0625rem; }
   /* the case: the screenshot folds under «Скриншот з акаунта» (runtime, as the price lists) */
   .ad-kase { padding: 0.875rem; gap: 1rem; }
-  /* the switcher: a row to swipe, the next case peeking at the edge (React Bits' carousel), from edge to edge */
-  .ad-kase-pick { display: flex; gap: 0.5rem; margin: 0 calc(-1 * var(--gutter)) 0.75rem; padding: 0.125rem var(--gutter) 0.375rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none; }
-  .ad-kase-pick::-webkit-scrollbar { display: none; }
-  .ad-kase-pick__b { flex: 0 0 72%; scroll-snap-align: start; padding: 0.875rem 1rem 1rem; border-radius: 1rem; }
-  .ad-kase-pick__v { font-size: 1.75rem; }
   .ad-kase__was { font-size: 0.8125rem; }
   .ad-kase__who, .ad-kase__per { padding: 0 0.25rem; }
   .ad-kase__m--cpl .ad-kase__v { font-size: 2.75rem; }
@@ -799,3 +783,70 @@ main[data-ai-page="ads"] .field :is(input, textarea)::placeholder { color: rgba(
    kit gives the dark blocks no bottom space, so block 3's button and block 5's bundles sat on the seam with the ivory
    block after them. Dark into dark (the questions into the form) keeps sharing the next block's top space */
 main[data-ai-page="ads"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
+
+/* ==========================================================================
+   4 · Кейси: a stack of short dark cards (React Bits «Stack»; phones, then wide screens too, the owner, 21 Oct): each
+   card the case's name, period, headline number in signal and two small ones; the top card is swiped (a finger or the
+   mouse) or sent away with the arrows and tucks under the pile; the case's details (what was done, the screenshot, the
+   honest line, the button) follow it: beside the stack on wide screens, under it on phones and tablets
+   ========================================================================== */
+.ad-kase-pick { display: none; }
+.ad-kgrid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; }
+.ad-kase-panel { grid-column: 2; grid-row: 1; min-width: 0; }
+.ad-kstack { grid-column: 1; grid-row: 1; display: grid; gap: 1rem; min-width: 0; position: sticky; top: calc(var(--topbar-h) + 1.5rem); }
+.ad-kstack__pile { position: relative; height: 25.5rem; }
+.ad-kstack__card { position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column; height: 24rem; padding: 1.5rem 1.625rem 1.625rem; border-radius: var(--radius-lg); color: var(--ivory); background: var(--ink-dark); box-shadow: 0 1.75rem 3rem -1.75rem rgba(15, 14, 13, 0.65); transform-origin: 50% 100%; transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s var(--ease-out); touch-action: pan-y; -webkit-user-select: none; user-select: none; cursor: grab; }
+.ad-kstack__card[data-pos="0"] { z-index: 3; }
+.ad-kstack__card[data-pos="1"] { z-index: 2; transform: translateY(0.75rem) scale(0.95); opacity: 0.7; }
+.ad-kstack__card[data-pos="2"] { z-index: 1; transform: translateY(1.5rem) scale(0.9); opacity: 0.45; }
+.ad-kstack__card.is-drag { transition: none; cursor: grabbing; }
+.ad-kstack__card.is-thrown { z-index: 4; }
+/* the cards under the top one show only their edges (their words would read through the peek) */
+.ad-kstack__card > * { transition: opacity 0.3s var(--ease-out); }
+.ad-kstack__card:not([data-pos="0"]):not(.is-thrown) > * { opacity: 0; }
+.ad-kstack__top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0; }
+.ad-kstack__chip { padding: 0.3rem 0.6rem; border-radius: 99px; font: 500 0.75rem/1 var(--font-mono); letter-spacing: 0.04em; color: var(--ink-dark); background: var(--ivory); }
+.ad-kstack__of { font: 400 0.75rem/1 var(--font-mono); color: rgba(246, 246, 243, 0.62); }
+.ad-kstack__name { margin: 1.125rem 0 0; font-size: clamp(1.25rem, 1.8vw, 1.625rem); font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; }
+.ad-kstack__when { margin: 0.25rem 0 0; font: 400 0.75rem/1.3 var(--font-mono); color: rgba(246, 246, 243, 0.62); }
+.ad-kstack__v { margin: 1rem 0 0; font-size: clamp(2.75rem, 4.4vw, 4rem); font-weight: 300; line-height: 1; letter-spacing: -0.035em; white-space: nowrap; color: var(--signal); }
+.ad-kstack__k { margin: 0.375rem 0 0; font: 400 0.8125rem/1.35 var(--font-mono); color: rgba(246, 246, 243, 0.72); }
+.ad-kstack__mini { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: auto 0 0; padding-top: 1rem; border-top: 1px solid rgba(246, 246, 243, 0.14); }
+.ad-kstack__mini dt { font: 400 0.75rem/1.3 var(--font-mono); color: rgba(246, 246, 243, 0.62); }
+.ad-kstack__mini dd { margin: 0.25rem 0 0; font-size: clamp(1.25rem, 1.8vw, 1.625rem); font-weight: 300; line-height: 1.1; white-space: nowrap; }
+.ad-kstack .ad-kase__was { font-size: 0.75rem; color: rgba(246, 246, 243, 0.5); }
+.ad-kstack__nav { display: flex; align-items: center; justify-content: space-between; }
+.ad-kstack__btn { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.2); cursor: pointer; transition: box-shadow 0.25s, transform 0.25s var(--ease-out); }
+.ad-kstack__btn:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.45); transform: translateY(-1px); }
+.ad-kstack__btn:focus-visible { outline: 2px solid var(--ember-deep); outline-offset: 2px; }
+.ad-kstack__btn svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ad-kstack__dots { display: flex; gap: 0.25rem; }
+.ad-kstack__dots i { width: 1.5rem; height: 0.375rem; border-radius: 99px; background: rgba(15, 14, 13, 0.18); transform: scaleX(0.34); transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.4s; }
+.ad-kstack__dots i.is-on { background: var(--ink-dark); transform: none; }
+/* the details card: the name, period and numbers are on the stack already; one column, the screenshot in the middle */
+.ad-kase { grid-template-columns: minmax(0, 1fr); }
+.ad-kase__main > :is(.ad-kase__who, .ad-kase__per, .ad-kase__stats) { display: none; }
+.ad-kase__shot, .ad-kase__end { grid-column: auto; grid-row: auto; }
+.ad-kstack.is-pre :is(.ad-kstack__card, .ad-kstack__nav) { opacity: 0; }
+.ad-kstack.is-pre .ad-count__strip { transform: none; }
+.ad-kstack.is-warm :is(.ad-kstack__card, .ad-count__strip) { will-change: transform, opacity; }
+@media (max-width: 900px) {
+  .ad-kgrid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .ad-kase-panel, .ad-kstack { grid-column: 1; grid-row: auto; }
+  .ad-kstack { position: static; }
+  .ad-kstack { width: min(34rem, 100%); }
+}
+@media (max-width: 600px) {
+  .ad-kstack { width: auto; gap: 0.875rem; }
+  .ad-kstack__pile { height: 19.5rem; }
+  .ad-kstack__card { height: 18rem; padding: 1rem 1.125rem 1.125rem; border-radius: 1.25rem; box-shadow: 0 1.5rem 2.5rem -1.5rem rgba(15, 14, 13, 0.65); }
+  .ad-kstack__name { margin-top: 0.875rem; font-size: 1.25rem; }
+  .ad-kstack__when { margin-top: 0.125rem; }
+  .ad-kstack__v { margin-top: 0.75rem; font-size: 2.75rem; }
+  .ad-kstack__k { margin-top: 0.25rem; font-size: 0.75rem; }
+  .ad-kstack__mini { gap: 0.75rem; padding-top: 0.75rem; }
+  .ad-kstack__mini dd { font-size: 1.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ad-kstack__card, .ad-kstack__dots i { transition: none; }
+}
