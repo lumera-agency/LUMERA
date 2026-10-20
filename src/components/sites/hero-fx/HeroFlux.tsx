@@ -14,8 +14,18 @@ import FluxLines from "./FluxLines";
 /** The first screen counts as covered once less than this much of it shows under the topbar (px; QA 19 Oct, N-05). */
 const COVER_EDGE = 20;
 
-/** `under`: the block that slides over the pinned first screen; the lines rest while it covers it (the AI page: #how). */
-export function HeroFlux({ under = "#formats" }: { under?: string } = {}) {
+/** The lines' colours: ember (the AI page) or black and white (the sites page, the owner, 20 Oct). */
+const TONES = {
+  ember: ["#f06200", "#f16300", "#f06200"],
+  mono: ["#f6f6f3", "#8c8c8a", "#f6f6f3"],
+};
+
+/**
+ * `under`: the block that slides over the pinned first screen; the lines rest while it covers it (the AI page: #how).
+ * `tone`: the lines' colours. `still`: the lines don't answer the pointer (no magnet, no click swirl; the sites page,
+ * the owner, 20 Oct: the droplet is what answers it there).
+ */
+export function HeroFlux({ under = "#formats", tone = "ember", still = false }: { under?: string; tone?: keyof typeof TONES; still?: boolean } = {}) {
   const [covered, setCovered] = useState(false);
   // (read once on the client: the component mounts after hydration, so the first render already knows the screen)
   const [dpr] = useState(() => (typeof matchMedia === "function" && matchMedia("(max-width: 600px)").matches ? 0.85 : 1));
@@ -45,13 +55,13 @@ export function HeroFlux({ under = "#formats" }: { under?: string } = {}) {
   }, [under]);
   return (
     <FluxLines
-      colors={["#f06200", "#f16300", "#f06200"]}
+      colors={TONES[tone]}
       glow={2}
       rimWidth={0.2}
       lineWidth={0.4}
       flowDirection="down"
-      mouseInteraction
-      clickSwirl
+      mouseInteraction={!still}
+      clickSwirl={!still}
       speed={0.15}
       turbulence={1.2}
       sharpness={5.8}
