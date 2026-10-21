@@ -1,0 +1,250 @@
+/*
+ * The AI page's own blocks (sections/ai-page; the owner's rework, 21 Oct 2026: the result first, the proof before the
+ * explanation, open prices). Everything here is scoped to main[data-ai-page="ai"]: components/ai/ai.css is shared with
+ * the cases, the sites page and the ads page. The lineup's cards reuse ai.css's service cards (.ai-svc) and their
+ * scenes; the price calculator reuses its .ai-calc. Phase 1 lays the blocks out; phase 3 sets the final weights.
+ */
+
+/* ---------- 1 · the first screen: the words alone over the stone (the to-do list went), the screen's full height ---------- */
+main[data-ai-page="ai"] .ai-hero--center { display: grid; align-content: center; min-height: 100svh; padding-bottom: clamp(4rem, 10vh, 7rem); }
+main[data-ai-page="ai"] .ai-hero__lead2 { display: block; color: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-hero__audit { margin: 1.125rem 0 0; font-size: var(--fs-small); color: var(--ink-soft); text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 0 0.5rem rgba(0, 0, 0, 0.85); }
+main[data-ai-page="ai"] .ai-hero__loss { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; color: var(--ink); text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.85); }
+/* the stone: its still and its live render in one box at 0.8 (so the dissolve never thickens it); the still is the
+   live stone's first frame at the canvas' size, so the canvas dissolves in over it in a third of a second, then the
+   still goes (the owner, 21 Oct 2026: «сначала картинка, потом 3D») */
+main[data-ai-page="ai"] .ai-hero__stone-box { position: absolute; left: 0; top: 0; opacity: 0.8; }
+main[data-ai-page="ai"] .ai-hero__stone { width: 11.6em; height: 11.6em; rotate: none; opacity: 1; filter: none; }
+main[data-ai-page="ai"] .ai-hero__canvas { opacity: 0; transition: opacity 0.35s ease-out; }
+main[data-ai-page="ai"] .ai-hero__stone-box.is-live .ai-hero__canvas { opacity: 1; }
+main[data-ai-page="ai"] .ai-hero__stone-box.is-live .ai-hero__stone { opacity: 0; transition: opacity 0s linear 0.4s; }
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-hero__stone { width: 12.4em; height: 12.4em; opacity: 1; }
+}
+main[data-ai-page="ai"] .ai-hero__loss svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+/* phones: each of the title's two lines stays whole («Що у вашому бізнесі», «до сих пор вручную?» are longer than the
+   old lines): the size follows the column's width */
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-hero--center .ai-hero__title--auto { font-size: min(clamp(2rem, 9.5vw, 3.2rem), calc((100vw - 2 * var(--gutter)) / 10.8)); }
+}
+
+/* ---------- 2 · Кейс (ivory, the sheet over the first screen): who and what, the morning before and after, the screenshots ---------- */
+main[data-ai-page="ai"] .ai-proof__lead { display: grid; gap: 0.875rem; max-width: 46rem; margin-top: var(--rhythm-s); }
+main[data-ai-page="ai"] .ai-proof__k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+main[data-ai-page="ai"] .ai-proof__tag { padding: 0.35em 0.75em; border-radius: 62.4375rem; color: #fcfcfa; background: var(--ink-dark); }
+main[data-ai-page="ai"] .ai-proof__text { margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+/* before (muted, a hairline frame) and after (a white card, the accent) */
+main[data-ai-page="ai"] .ai-split__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: stretch; margin-top: var(--rhythm-m); }
+main[data-ai-page="ai"] .ai-split__col { display: grid; grid-template-rows: auto 1fr auto; gap: 1.5rem; padding: clamp(1.5rem, 3vw, 2.5rem); border-radius: var(--radius-lg); }
+main[data-ai-page="ai"] .ai-split__col--now { color: var(--ink-dark-mute); box-shadow: inset 0 0 0 1px var(--line-dark); }
+main[data-ai-page="ai"] .ai-split__col--next { color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.08), 0 2rem 3.5rem -2.5rem rgba(60, 45, 30, 0.5); }
+main[data-ai-page="ai"] .ai-split__k { margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; }
+main[data-ai-page="ai"] .ai-split__col--next .ai-split__k { color: var(--ember-deep); }
+main[data-ai-page="ai"] .ai-split__rows { display: grid; align-content: start; gap: 0.875rem; margin: 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .ai-split__row { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); column-gap: 1rem; align-items: baseline; font-size: var(--fs-body); line-height: 1.45; }
+main[data-ai-page="ai"] .ai-split__t { font: 400 var(--fs-label)/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
+/* the case's numbers, once: the block's largest type (phase 3 sets the final scale against the titles) */
+main[data-ai-page="ai"] .ai-split__total { display: grid; gap: 0.375rem; margin: 0; padding-top: 1.25rem; border-top: 1px solid var(--line-dark); }
+main[data-ai-page="ai"] .ai-split__total b { font-size: clamp(3rem, 7vw, 6.5rem); font-weight: 400; line-height: 0.95; letter-spacing: -0.045em; white-space: nowrap; }
+main[data-ai-page="ai"] .ai-split__total span { font-size: var(--fs-body); }
+main[data-ai-page="ai"] .ai-split__col--next .ai-split__total b { color: var(--ember-deep); }
+/* the audit's line and the button on the left, the two demos on the right at their own width (22rem each: the scheme's
+   type stays 11–13 px); below 1200 px the demos go under the text, side by side, and on phones one under the other */
+main[data-ai-page="ai"] .ai-proof__grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--rhythm-s) var(--col-gap); align-items: start; margin-top: var(--rhythm-m); }
+main[data-ai-page="ai"] .ai-proof__audit { max-width: 40ch; margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-dark); }
+/* «Читати кейс»: a filled button (the owner, 21 Oct 2026: «виділити»), ember on the ivory, white type 4.6:1 */
+main[data-ai-page="ai"] .ai-proof__go { --btn-bg: var(--ember-btn); --btn-ink: #fff; --btn-wave: #0f0e0d; --btn-glow: rgb(194 77 24 / 0.45); margin-top: 1.5rem; }
+main[data-ai-page="ai"] .ai-proof__ex-go svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+main[data-ai-page="ai"] .ai-proof__shots { display: grid; grid-template-columns: repeat(2, minmax(0, 22rem)); justify-content: start; gap: 1rem; }
+main[data-ai-page="ai"] .ai-shot { display: grid; gap: 0.625rem; margin: 0; }
+main[data-ai-page="ai"] .ai-shot__cap { font: 400 var(--fs-label)/1.3 var(--font-mono); letter-spacing: 0.06em; color: var(--ink-dark-mute); }
+main[data-ai-page="ai"] .ai-shot__note { letter-spacing: 0.02em; }
+main[data-ai-page="ai"] .ai-shot { grid-template-rows: minmax(0, 1fr) auto; }
+/* side by side, the captions take two lines' room each, so a caption that wraps (Russian) never shortens its window */
+@media (min-width: 601px) { main[data-ai-page="ai"] .ai-shot__cap { min-height: 2.6em; } }
+
+/* the two demos: dark windows on the ivory (pictures of screens: signal lives inside them) */
+main[data-ai-page="ai"] .ai-demo { display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-md); color: var(--ink); background: #0d0d0d; box-shadow: 0 0 0 1px rgba(15, 14, 13, 0.14), 0 1.875rem 3.75rem -2.25rem rgba(60, 45, 30, 0.55); }
+main[data-ai-page="ai"] .ai-proof__shots { align-items: stretch; }
+main[data-ai-page="ai"] .ai-demo__bar { display: flex; flex: none; align-items: center; gap: 0.4375rem; height: 2.125rem; padding: 0 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); font-size: 0.6875rem; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-demo__bar i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(246, 246, 243, 0.16); }
+main[data-ai-page="ai"] .ai-demo__bar span { margin-left: 0.25rem; }
+
+/* «Схема робота» (SVG, 300 × 360) */
+main[data-ai-page="ai"] .ai-scheme { display: block; width: 100%; height: auto; margin: auto 0; font-family: var(--font-sans); }
+main[data-ai-page="ai"] .ai-scheme text { font-size: 11px; fill: var(--ink-soft); text-anchor: middle; }
+main[data-ai-page="ai"] .ai-scheme__count rect { fill: var(--signal); }
+main[data-ai-page="ai"] .ai-scheme__count text { font: 500 10.5px var(--font-mono); fill: var(--on-accent); }
+main[data-ai-page="ai"] .ai-scheme__wire { fill: none; stroke: rgba(246, 246, 243, 0.22); stroke-width: 1.5; }
+main[data-ai-page="ai"] .ai-scheme__wire--out { stroke: rgba(218, 255, 2, 0.45); }
+main[data-ai-page="ai"] .ai-scheme__src rect { fill: #1a1a1a; stroke: rgba(246, 246, 243, 0.14); }
+main[data-ai-page="ai"] .ai-scheme__src text { fill: var(--ink); }
+main[data-ai-page="ai"] .ai-scheme__box { fill: #141414; stroke: rgba(218, 255, 2, 0.55); stroke-width: 1.2; }
+main[data-ai-page="ai"] .ai-scheme text.ai-scheme__title { font-size: 13px; font-weight: 500; text-anchor: start; fill: var(--ink); }
+main[data-ai-page="ai"] .ai-scheme__check text { font-size: 11.5px; text-anchor: start; fill: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-scheme__dot-off { fill: none; stroke: rgba(246, 246, 243, 0.3); }
+main[data-ai-page="ai"] .ai-scheme__tick { transform-box: fill-box; transform-origin: center; }
+main[data-ai-page="ai"] .ai-scheme__tick circle { fill: var(--signal); }
+main[data-ai-page="ai"] .ai-scheme__tick path { fill: none; stroke: var(--on-accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop { font-size: 10.5px; fill: var(--ink-mute); opacity: 0; }
+main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop--far { text-anchor: start; }
+main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop--dup { text-anchor: end; }
+main[data-ai-page="ai"] .ai-scheme__out rect { fill: #1a1a1a; stroke: rgba(246, 246, 243, 0.16); }
+main[data-ai-page="ai"] .ai-scheme__out--tg rect:not(.ai-scheme__ring) { stroke: var(--signal); }
+main[data-ai-page="ai"] .ai-scheme text.ai-scheme__out-t { font-size: 12px; font-weight: 500; fill: var(--ink); }
+main[data-ai-page="ai"] .ai-scheme text.ai-scheme__out-s { font-size: 10.5px; fill: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-scheme__ring { fill: none; stroke: var(--signal); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+main[data-ai-page="ai"] .ai-scheme text.ai-scheme__plus { font: 600 12px var(--font-mono); fill: var(--signal); text-anchor: start; }
+main[data-ai-page="ai"] .ai-scheme__ad { fill: #f6f6f3; opacity: 0; }
+main[data-ai-page="ai"] .ai-scheme__go { fill: var(--signal); opacity: 0; }
+
+/* «Що приходить щодня» (the bot's chat) */
+main[data-ai-page="ai"] .ai-feed__bar { display: flex; flex: none; align-items: center; gap: 0.625rem; padding: 0.625rem 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); background: #151515; }
+main[data-ai-page="ai"] .ai-feed__ava { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font-size: 0.8125rem; font-weight: 600; color: var(--on-accent); background: var(--signal); }
+main[data-ai-page="ai"] .ai-feed__who { display: grid; line-height: 1.2; }
+main[data-ai-page="ai"] .ai-feed__who b { font-size: 0.8125rem; font-weight: 500; }
+main[data-ai-page="ai"] .ai-feed__who span { font-size: 0.6875rem; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-feed__chat { display: grid; flex: 1; align-content: start; gap: 0.5rem; padding: 0.75rem; }
+main[data-ai-page="ai"] .ai-feed__day { justify-self: center; margin: 0 0 0.25rem; padding: 0.2rem 0.625rem; border-radius: 62.4375rem; font-size: 0.6875rem; color: var(--ink-mute); background: rgba(255, 255, 255, 0.05); }
+main[data-ai-page="ai"] .ai-feed__msg { justify-self: start; max-width: 94%; padding: 0.5rem 0.6875rem 0.4375rem; border-radius: 0.875rem 0.875rem 0.875rem 0.25rem; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); }
+main[data-ai-page="ai"] .ai-feed__t { margin: 0; font-size: 0.75rem; font-weight: 500; line-height: 1.35; color: var(--ink); }
+main[data-ai-page="ai"] .ai-feed__b { margin: 0.125rem 0 0; font-size: 0.75rem; line-height: 1.4; color: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-feed__f { display: flex; justify-content: space-between; gap: 0.75rem; margin: 0.3125rem 0 0; font-size: 0.6875rem; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-feed__f u { color: #8cc4ff; text-decoration-color: rgba(140, 196, 255, 0.5); }
+
+/* the loops: CSS only, while the demo is on the screen (InView: .is-on); the markup above is the final frame */
+@media (prefers-reduced-motion: no-preference) {
+  main[data-ai-page="ai"] .ai-demo:not(.is-on) * { animation-play-state: paused !important; }
+  main[data-ai-page="ai"] .ai-scheme__ad--1 { animation: ai-sch-ad1 7s linear infinite; }
+  main[data-ai-page="ai"] .ai-scheme__ad--2 { animation: ai-sch-ad2 7s linear infinite; }
+  main[data-ai-page="ai"] .ai-scheme__ad--3 { animation: ai-sch-ad3 7s linear infinite; }
+  main[data-ai-page="ai"] .ai-scheme__check--1 .ai-scheme__tick { animation: ai-sch-tick1 7s var(--ease-out) infinite; }
+  main[data-ai-page="ai"] .ai-scheme__check--2 .ai-scheme__tick { animation: ai-sch-tick2 7s var(--ease-out) infinite; }
+  main[data-ai-page="ai"] .ai-scheme__check--3 .ai-scheme__tick { animation: ai-sch-tick3 7s var(--ease-out) infinite; }
+  main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop--far { animation: ai-sch-far 7s ease-out infinite; }
+  main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop--dup { animation: ai-sch-dup 7s ease-out infinite; }
+  main[data-ai-page="ai"] .ai-scheme__go--tg { animation: ai-sch-go-tg 7s linear infinite; }
+  main[data-ai-page="ai"] .ai-scheme__go--sheet { animation: ai-sch-go-sheet 7s linear infinite; }
+  main[data-ai-page="ai"] .ai-scheme__ring { animation: ai-sch-ring 7s ease-out infinite; }
+  main[data-ai-page="ai"] .ai-scheme text.ai-scheme__plus { animation: ai-sch-plus 7s ease-out infinite; }
+  main[data-ai-page="ai"] .ai-feed__msg--1 { animation: ai-feed-1 7.5s var(--ease-out) infinite; }
+  main[data-ai-page="ai"] .ai-feed__msg--2 { animation: ai-feed-2 7.5s var(--ease-out) infinite; }
+  main[data-ai-page="ai"] .ai-feed__msg--3 { animation: ai-feed-3 7.5s var(--ease-out) infinite; }
+}
+/* three ads come down their wires into the selection */
+@keyframes ai-sch-ad1 { 0% { opacity: 0; transform: translate(0, 0); } 2% { opacity: 1; } 6% { transform: translate(0, 30px); } 14% { transform: translate(98px, 30px); } 18% { opacity: 1; transform: translate(98px, 60px); } 19%, 100% { opacity: 0; transform: translate(98px, 60px); } }
+@keyframes ai-sch-ad2 { 0%, 6% { opacity: 0; transform: translate(0, 0); } 8% { opacity: 1; } 18% { opacity: 1; transform: translate(0, 60px); } 19%, 100% { opacity: 0; transform: translate(0, 60px); } }
+@keyframes ai-sch-ad3 { 0%, 10% { opacity: 0; transform: translate(0, 0); } 12% { opacity: 1; } 15% { transform: translate(0, 30px); } 22% { transform: translate(-98px, 30px); } 25% { opacity: 1; transform: translate(-98px, 60px); } 26%, 100% { opacity: 0; transform: translate(-98px, 60px); } }
+/* the checks tick one by one */
+@keyframes ai-sch-tick1 { 0%, 26% { opacity: 0; transform: scale(0.4); } 30%, 100% { opacity: 1; transform: none; } }
+@keyframes ai-sch-tick2 { 0%, 31% { opacity: 0; transform: scale(0.4); } 35%, 100% { opacity: 1; transform: none; } }
+@keyframes ai-sch-tick3 { 0%, 36% { opacity: 0; transform: scale(0.4); } 40%, 100% { opacity: 1; transform: none; } }
+/* the far one and the repeat drop out */
+@keyframes ai-sch-far { 0%, 28% { opacity: 0; transform: translate(6px, 0); } 31%, 46% { opacity: 1; transform: none; } 52%, 100% { opacity: 0; transform: none; } }
+@keyframes ai-sch-dup { 0%, 33% { opacity: 0; transform: translate(-6px, 0); } 36%, 50% { opacity: 1; transform: none; } 56%, 100% { opacity: 0; transform: none; } }
+/* the right one goes to Telegram and to the table */
+@keyframes ai-sch-go-tg { 0%, 42% { opacity: 0; transform: translate(0, 0); } 43% { opacity: 1; } 46% { transform: translate(0, 26px); } 52% { transform: translate(-60px, 26px); } 55% { opacity: 1; transform: translate(-60px, 54px); } 56%, 100% { opacity: 0; transform: translate(-60px, 54px); } }
+@keyframes ai-sch-go-sheet { 0%, 42% { opacity: 0; transform: translate(0, 0); } 43% { opacity: 1; } 46% { transform: translate(0, 26px); } 52% { transform: translate(60px, 26px); } 55% { opacity: 1; transform: translate(60px, 54px); } 56%, 100% { opacity: 0; transform: translate(60px, 54px); } }
+@keyframes ai-sch-ring { 0%, 55% { opacity: 0; transform: none; } 58% { opacity: 1; transform: none; } 70%, 100% { opacity: 0; transform: scale(1.1); } }
+@keyframes ai-sch-plus { 0%, 56% { opacity: 0; transform: translate(0, 4px); } 60%, 92% { opacity: 1; transform: none; } 98%, 100% { opacity: 0; transform: none; } }
+/* the bot's messages arrive one after another, stay, and the morning starts again */
+@keyframes ai-feed-1 { 0%, 4% { opacity: 0; transform: translateY(14px) scale(0.98); } 10%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes ai-feed-2 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(0.98); } 28%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes ai-feed-3 { 0%, 40% { opacity: 0; transform: translateY(14px) scale(0.98); } 46%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+
+/* the salon: an example, quieter than the case, between two thin lines */
+main[data-ai-page="ai"] .ai-proof__ex { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.75rem 1.5rem; margin-top: var(--rhythm-m); padding: 1.125rem 0; border-block: 1px solid var(--line-dark); color: var(--ink-dark-soft); text-decoration: none; }
+main[data-ai-page="ai"] .ai-proof__ex-k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.625rem; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+main[data-ai-page="ai"] .ai-proof__ex-tag { padding: 0.35em 0.75em; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); }
+main[data-ai-page="ai"] .ai-proof__ex-t { font-size: var(--fs-body); line-height: 1.4; }
+main[data-ai-page="ai"] .ai-proof__ex-go { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: var(--fs-small); }
+@media (hover: hover) { main[data-ai-page="ai"] .ai-proof__ex:hover { color: var(--ink-dark); } }
+@media (max-width: 1199px) {
+  main[data-ai-page="ai"] .ai-proof__grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 860px) {
+  main[data-ai-page="ai"] .ai-proof__ex { grid-template-columns: minmax(0, 1fr) auto; }
+  main[data-ai-page="ai"] .ai-proof__ex-k { grid-column: 1 / -1; }
+}
+@media (max-width: 760px) {
+  main[data-ai-page="ai"] .ai-split__grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-proof__shots { grid-template-columns: minmax(0, 22rem); gap: 1.5rem; }
+}
+
+/* a dark block right before an ivory one gets the same air below its last line as above its title (the audit and the
+   niches' last line had touched the ivory edge: the owner, 21 Oct 2026) */
+main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
+
+/* ---------- the pause: one phrase, a lot of air ---------- */
+main[data-ai-page="ai"] .ai-pause { display: grid; align-items: center; min-height: 80svh; padding-block: clamp(6rem, 18vh, 12rem); }
+main[data-ai-page="ai"] .ai-pause__text { max-width: 22ch; margin: 0 auto; font-size: var(--fs-display); font-weight: 300; line-height: 1.12; letter-spacing: -0.03em; text-align: center; color: var(--ink-mute); text-wrap: balance; }
+main[data-ai-page="ai"] .ai-pause__b { font-weight: 400; color: var(--ink); }
+/* BlurText's words move on their own (fx/BlurText) */
+main[data-ai-page="ai"] .blur-text__w { display: inline-block; }
+
+/* ---------- 3 · Ніші: three businesses to recognise yourself in ---------- */
+main[data-ai-page="ai"] .ai-niches__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .ai-niche { display: grid; align-content: start; gap: 0.75rem; padding: clamp(1.25rem, 2.4vw, 2rem); border-radius: var(--radius-lg); background: #000; box-shadow: inset 0 0 0 1px var(--border-strong); }
+main[data-ai-page="ai"] .ai-niche__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
+main[data-ai-page="ai"] .ai-niche__p { margin: 0; font-size: var(--fs-body); color: var(--ink); }
+main[data-ai-page="ai"] .ai-niche__list { display: grid; gap: 0.5rem; margin: 0.25rem 0 0; padding: 1rem 0 0; border-top: 1px solid var(--line); list-style: none; }
+main[data-ai-page="ai"] .ai-niche__list li { position: relative; padding-left: 1.125rem; font-size: var(--fs-body); font-weight: 300; line-height: 1.5; color: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-niche__list li::before { content: ""; position: absolute; left: 0; top: 0.75em; width: 0.375rem; height: 1px; background: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-niches__more { margin: var(--rhythm-s) 0 0; font-size: var(--fs-body); color: var(--ink-soft); }
+@media (max-width: 860px) {
+  main[data-ai-page="ai"] .ai-niches__list { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- 5 · the lineup: the free part, four products, the audit ---------- */
+main[data-ai-page="ai"] .ai-offer__inc { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 1.25rem var(--col-gap); margin-top: var(--rhythm-m); padding: clamp(1.25rem, 2.4vw, 2rem); border-radius: 1.375rem; box-shadow: inset 0 0 0 1px var(--border-strong); }
+main[data-ai-page="ai"] .ai-offer__inc-k { margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-offer__inc-t { margin: 0.625rem 0 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
+main[data-ai-page="ai"] .ai-offer__inc-p { max-width: 52ch; margin: 0.5rem 0 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-offer__inc-art { height: 9rem; margin: 0; }
+main[data-ai-page="ai"] .ai-offer__list { margin: 1rem 0 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .ai-offer__n { margin: 0; font: 400 var(--fs-label)/1 var(--font-mono); color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-offer__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin: 0; }
+main[data-ai-page="ai"] .ai-offer__sum { font-size: var(--fs-h4); font-weight: 400; color: var(--ink); }
+main[data-ai-page="ai"] .ai-offer__sum--talk { font-size: var(--fs-body); color: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-offer__wk { font: 400 var(--fs-label)/1.2 var(--font-mono); white-space: nowrap; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-offer__monthly { margin: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-offer__infra { color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-offer__card--bare .ai-svc__body { padding-top: 1.5rem; }
+main[data-ai-page="ai"] .ai-offer__audit { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto; align-items: center; gap: 1rem var(--col-gap); margin-top: var(--rhythm-s); padding: clamp(1.25rem, 2.4vw, 2rem); border-radius: 1.375rem; box-shadow: inset 0 0 0 1px var(--border-strong); scroll-margin-top: calc(var(--topbar-h) + 1rem); }
+main[data-ai-page="ai"] .ai-offer__audit-t { margin: 0 0 0.375rem; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
+main[data-ai-page="ai"] .ai-offer__audit-p { margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+@media (max-width: 1100px) {
+  main[data-ai-page="ai"] .ai-offer__audit { grid-template-columns: minmax(0, 1fr); justify-items: start; }
+}
+@media (max-width: 760px) {
+  main[data-ai-page="ai"] .ai-offer__inc { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- 6 · Наші умови: plain text on the ivory, no cards ---------- */
+main[data-ai-page="ai"] .ai-terms__text { display: block; max-width: 44ch; margin: var(--rhythm-m) 0 0; font-size: var(--fs-h4); font-weight: 300; line-height: 1.5; color: var(--ink-dark); text-wrap: pretty; }
+
+/* ---------- 7 · the price calculator: two groups now (the lineup, the site) ---------- */
+main[data-ai-page="ai"] .ai-pcalc .ai-calc__note + .ai-calc__note { margin-top: 0.375rem; }
+
+/* ---------- 8 · Що не входить: a plain list on thin lines ---------- */
+main[data-ai-page="ai"] .ai-out__list { display: grid; max-width: 56rem; margin: var(--rhythm-m) 0 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
+main[data-ai-page="ai"] .ai-out__item { padding: 1.125rem 0; border-bottom: 1px solid var(--line); font-size: var(--fs-lead); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
+
+/* ---------- phones: the request bar at the bottom (components/ai: .ai-sticky). Safari on iOS 26 paints its bottom
+   toolbar in the colour of a fixed bar docked to the bottom edge across the whole width: it showed ember there even
+   while the bar was hidden (the owner's screenshot, 21 Oct 2026). Here the bar floats clear of the edges (1rem from
+   the sides, above the safe area) and, when hidden, is gone for the browser too (visibility, once it has slid away) ---------- */
+@media (max-width: 600px) {
+  body:has(main[data-ai-page="ai"]) .ai-sticky {
+    left: 1rem;
+    right: 1rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    padding: 0;
+    visibility: hidden;
+    transform: translateY(calc(100% + 0.75rem + env(safe-area-inset-bottom)));
+    transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s linear 0.45s;
+  }
+  body:has(main[data-ai-page="ai"]) .ai-sticky.is-on { visibility: visible; transform: none; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s; }
+}

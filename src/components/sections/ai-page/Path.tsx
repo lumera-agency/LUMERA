@@ -2,8 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { aiRich } from "@/components/ai/rich";
 import { LetterFlow, type FlowCopy } from "./LetterFlow";
 
-/** 2 · Як це працює: one letter's way through the program, as a live scheme (LetterFlow: React and GSAP) (ivory). */
-export async function Path() {
+/** Як це працює (after the niches since 21 Oct 2026): one letter's way through the program, as a live scheme (LetterFlow: React and GSAP) (ivory). */
+export async function Path({ index }: { index: number }) {
   const t = await getTranslations("ai");
   const c = await getTranslations("aiCommon");
   const copy: FlowCopy = {
@@ -33,7 +33,7 @@ export async function Path() {
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
-            <span className="s-head__index">2</span>
+            <span className="s-head__index">{index}</span>
             <span>{t("nav.how")}</span>
           </p>
           <h2 className="s-head__title" id="how-title" data-split="">
@@ -41,7 +41,7 @@ export async function Path() {
           </h2>
           <p className="s-head__intro">{t("how.intro")}</p>
         </header>
-        <LetterFlow copy={copy} />
+        <LetterFlow copy={copy} loop />
       </div>
     </section>
   );

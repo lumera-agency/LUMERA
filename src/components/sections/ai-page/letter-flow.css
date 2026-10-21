@@ -43,7 +43,9 @@
 .flow__fields { display: grid; gap: 0.5rem; margin: 0; padding-top: 0.625rem; border-top: 1px solid var(--line-dark); }
 .flow__field { display: grid; grid-template-columns: 4.25rem minmax(0, 1fr); align-items: baseline; column-gap: 0.5rem; }
 .flow__field dt { font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dark-mute); }
-.flow__field dd { position: relative; justify-self: start; margin: 0; padding: 0.0625rem 0.375rem 0.125rem; font-weight: 500; white-space: nowrap; }
+/* a value wraps inside its card when the card is narrow (320 px phones, the four columns at 1024 px: «до 15 листопада»
+   had run out of it); its highlight follows the lines */
+.flow__field dd { position: relative; justify-self: start; margin: 0; padding: 0.0625rem 0.375rem 0.125rem; font-weight: 500; text-wrap: balance; }
 .flow__mark { position: absolute; inset: 0; z-index: 0; border-radius: 0.25rem 0.25rem 0 0; background: rgba(210, 86, 28, 0.1); box-shadow: inset 0 -2px 0 var(--ember-deep); transform-origin: 0 50%; }
 .flow__v { position: relative; font-variant-numeric: tabular-nums; }
 

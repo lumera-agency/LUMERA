@@ -9,7 +9,9 @@
  * (Swipe Toast) and the call to Olena follows.
  *
  * GSAP (lib/gsap) on transform, opacity and text: once as the block comes into view (wide screens) or step by step
- * as the wire reaches each one (phones), again with «↻ Ще раз»; nothing runs at rest. Reduced motion: the final
+ * as the wire reaches each one (phones), again with «↻ Ще раз»; nothing runs at rest. With `loop` (the AI page, the
+ * owner, 21 Oct 2026) it runs again and again while it is on the screen, resting on its last frame between runs, and
+ * waits off the screen; no «Ще раз» then. Reduced motion: the final
  * frame. The markup is the final frame, so the page reads the same without the script.
  */
 import { useRef, useState } from "react";
@@ -56,7 +58,10 @@ const ICONS = {
   ),
 };
 
-export function LetterFlow({ copy }: { copy: FlowCopy }) {
+/** the scheme's rest on its last frame before it runs again, when it loops (s) */
+const LOOP_REST = 2.4;
+
+export function LetterFlow({ copy, loop = false }: { copy: FlowCopy; loop?: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const [run, setRun] = useState(0); // «↻ Ще раз»: a new run of the whole scheme
   const keys = ["mail", "ai", "table", "tg"] as const;
@@ -155,16 +160,20 @@ export function LetterFlow({ copy }: { copy: FlowCopy }) {
 
           if (wide) {
             // one run, left to right, as the block comes into view
-            const master = gsap.timeline({ paused: true, onComplete: () => replay?.classList.add("is-on") });
+            const master = gsap.timeline({ paused: true, repeat: loop ? -1 : 0, repeatDelay: LOOP_REST, onComplete: () => replay?.classList.add("is-on") });
             master.add(scene(0)).add(wire(0, "x"), "-=0.2").add(scene(1), "-=0.15").add(wire(1, "x"), "-=0.1").add(scene(2), "-=0.15").add(wire(2, "x"), "-=0.1").add(scene(3), "-=0.15");
             if (run) master.play();
+            // looping (the AI page, the owner, 21 Oct 2026): it runs while the block is on the screen and waits off it
+            else if (loop) ScrollTrigger.create({ trigger: el, start: "top 72%", end: "bottom 12%", onToggle: (self) => void (self.isActive ? master.play() : master.pause()) });
             else ScrollTrigger.create({ trigger: el, start: "top 72%", once: true, onEnter: () => void master.play() });
           } else {
             // phones: each step plays as it comes up; the wire below it fills with the scroll
             const steps = q(".flow__step");
             steps.forEach((step, i) => {
               const tl = scene(i).pause();
+              if (loop) tl.repeat(-1).repeatDelay(LOOP_REST);
               if (run) gsap.delayedCall(i * 0.9, () => void tl.play());
+              else if (loop) ScrollTrigger.create({ trigger: step, start: "top 78%", end: "bottom 10%", onToggle: (self) => void (self.isActive ? tl.play() : tl.pause()) });
               else ScrollTrigger.create({ trigger: step, start: "top 78%", once: true, onEnter: () => void tl.play() });
               if (i < steps.length - 1) {
                 gsap.fromTo(
@@ -182,7 +191,7 @@ export function LetterFlow({ copy }: { copy: FlowCopy }) {
       );
       return () => mm.revert();
     },
-    { scope: root, dependencies: [run] },
+    { scope: root, dependencies: [run, loop] },
   );
 
   const card = (i: number) => {
@@ -273,9 +282,11 @@ export function LetterFlow({ copy }: { copy: FlowCopy }) {
       </ol>
       <div className="flow__end">
         <span className="ai-sample">{copy.sample}</span>
-        <button className="ai-replay flow__replay" type="button" aria-label={copy.replayLabel} onClick={() => setRun((n) => n + 1)}>
-          <span aria-hidden="true">↻</span> <span>{copy.replay}</span>
-        </button>
+        {!loop && (
+          <button className="ai-replay flow__replay" type="button" aria-label={copy.replayLabel} onClick={() => setRun((n) => n + 1)}>
+            <span aria-hidden="true">↻</span> <span>{copy.replay}</span>
+          </button>
+        )}
       </div>
     </div>
   );
