@@ -6,6 +6,8 @@ import { ButtonLink } from "@/components/ui/button/Button";
 import { SitesDropletSlot } from "@/components/sites/hero-fx/SitesDropletSlot";
 import type { SitesFacts } from "@/components/sites/facts";
 import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
+import { TitleFx } from "@/components/sites/hero-fx/TitleFx";
+import { SitesBubble } from "@/components/sites/hero-fx/SitesBubble";
 
 /**
  * 1 · the first screen, «Плакат» (the owner's pick, 18 Oct 2026, after «текст залазил на объект»): one screen set as a
@@ -39,6 +41,7 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
         <div className="ai-hero__copy st-hg__grid">
           <h1 className="s-head__title s-head__title--stone ai-hero__title st-hg__title" id="st-title">
             <Title raw={t.raw("hero.title") as string} />
+            <TitleFx />
           </h1>
           {/* the poster's corners (sites-hero.css): on a computer each a block of its own, upright their parts join the column */}
           <div className="st-hg__corner st-hg__corner--tl">
@@ -91,6 +94,8 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
         </div>
         <Show t={t} />
       </div>
+      {/* the soap bubble over the first screen (decoration): after the pointer, on a phone floating by itself */}
+      <SitesBubble />
     </section>
   );
 }

@@ -5,7 +5,7 @@
  * The one rule: no word crosses the stone. The stone has its own grid area (.st-hg__stone, a box about the size of its
  * silhouette); everything in it is sized from that box in em, so the still, the live stone's canvas and the glow scale
  * with it. Sizes come from the screen (cqi of the words' column, vh), never from a measurement: CLS 0.
- * Kept from the earlier first screen: the backdrop and its grain (sites.css), the lime button, ember on «сайтів», the
+ * Kept from the earlier first screen: the backdrop and its grain (sites.css), the button and «сайтів» in ember (lime till 21 Oct), the
  * mock below, the pin, the entrance (CSS, once; without motion, the final frame).
  */
 
@@ -48,6 +48,9 @@ html:lang(ru) main[data-ai-page="sites"] .st-hg { --hg-l1: 10.2; --hg-l2: 6.6; }
 @font-face { font-family: "St Hero Serif"; font-style: italic; font-weight: 300 600; font-display: block; src: url("/fonts/sites/source-serif-4-italic-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 @font-face { font-family: "St Hero Mono"; font-style: normal; font-weight: 400; font-display: block; src: url("/fonts/ibm-plex-mono-400-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
 @font-face { font-family: "St Hero Mono"; font-style: normal; font-weight: 400; font-display: block; src: url("/fonts/ibm-plex-mono-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+/* (20 Oct) «ДИЗАЙН» in Helvetica Neue Medium Italic on a computer: named by itself, as the system's own (a browser asked for
+   weight 500 italic of «Helvetica Neue» takes the Bold Italic); where it is missing, the stack below it takes over */
+@font-face { font-family: "St Hero Helvetica Medium"; font-style: italic; font-weight: 500; src: local("HelveticaNeue-MediumItalic"), local("Helvetica Neue Medium Italic"); }
 main[data-ai-page="sites"] .st-hg { --t5-a: 3.369em; --t5-i: 0.211em; }
 html:lang(ru) main[data-ai-page="sites"] .st-hg { --t5-i: 0.573em; }
 .st-h1 {
@@ -144,6 +147,9 @@ main[data-ai-page="sites"] .st-hg .ai-hero__actions { margin: 0 0 clamp(2rem, 4v
 .st-hg__mark--tr { top: calc(var(--hg-pad) * -0.5); }
 .st-hg__mark--bl,
 .st-hg__mark--br { top: calc(100% + var(--hg-pad) * 0.5); }
+
+/* the button in ember, as on the rest of the page (the owner, 21 Oct: «оранжевый текст и кнопка»; lime before) */
+main[data-ai-page="sites"] .st-hg .btn--primary { --btn-bg: var(--ember); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(210 86 28 / 0.6); }
 
 /* ---------- the entrance: once, from the first paint (the lines, the lead and the button: sites.css) ---------- */
 html.motion main[data-ai-page="sites"] .st-hg .st-hg__k { animation: ai-rise-in 0.5s var(--ease-out) 0.26s backwards; }
@@ -256,7 +262,7 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
    squarer screen keeps less empty room; --ox / --oy are the sheet's margins inside the words' column.
    On the sheet (the owner's pick of two, 20 Oct: the grid of the earlier sketch «A», Frame 10's type): «ДИЗАЙН» large on
    the right (Helvetica Neue Bold Italic 225, tracking −8 %), «И РАЗРАБОТКА» a line under it on the right edge (72),
-   «САЙТОВ.» large bottom left in lime (Helvetica Neue Medium 225), the droplet in the middle between them, in front
+   «САЙТОВ.» large bottom left in ember (Helvetica Neue Medium 225), the droplet in the middle between them, in front
    (turned −7°). Cap heights, frame px: «ДИЗАЙН» 80–240, «И РАЗРАБОТКА» 330–381, «САЙТОВ.» 540–700. Corners: the
    formats with their pictures and the button under them top left, the prices in three columns along the foot, a cross
    outside each corner. The H1 still reads «Дизайн і розробка сайтів» (its plain sentence); the four words are its
@@ -302,28 +308,31 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   /* the words: a layer over the sheet, each word placed in frame px */
   .st-hg .st-hg__title { position: absolute; grid-area: auto; inset: 0; z-index: 1; margin: 0; font-size: calc(100 * var(--u)); line-height: normal; letter-spacing: 0; pointer-events: none; }
   .st-h1 { display: block; position: absolute; inset: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; text-transform: uppercase; }
-  .st-h1__m { position: absolute; padding: 0 0.22em 0.12em 0.04em; margin: 0 -0.22em -0.12em -0.04em; white-space: nowrap; }
+  .st-h1__m { position: absolute; padding: 0 0.22em 0.12em 0.16em; margin: 0 -0.22em -0.12em -0.16em; white-space: nowrap; }
   .st-h1__a,
   .st-h1__i,
   .st-h1__b { font-family: inherit; font-style: italic; font-weight: 700; font-variation-settings: normal; color: #fff; }
   .st-h1__a { right: var(--ox); top: calc(var(--oy) + 22 * var(--v)); font-size: 2.25em; letter-spacing: -0.08em; padding-right: 0.22em; margin-right: -0.22em; }
+  /* the owner, 20 Oct: «ДИЗАЙН» a step lighter than the rest (medium) */
+  .st-hg .st-h1 .st-h1__a { font-family: "St Hero Helvetica Medium", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 500; letter-spacing: -0.07em; }
   .st-h1__i { right: calc(var(--ox) + (var(--w-b) + 0.3) * 72 * var(--u)); top: calc(var(--oy) + 312 * var(--v)); font-size: 0.72em; letter-spacing: -0.07em; }
   .st-h1__b { right: var(--ox); top: calc(var(--oy) + 312 * var(--v)); font-size: 0.72em; letter-spacing: -0.07em; }
   /* (never down on the prices: on a small sheet they keep their size in rem, so the word stays above their room) */
-  .st-h1__s { left: calc(var(--ox) + 230 * var(--u)); top: min(calc(var(--oy) + 483 * var(--v)), calc(var(--oy) + 900 * var(--v) - 10.5rem - 225 * var(--u))); font-size: 2.25em; font-style: normal; font-weight: 500; font-variation-settings: normal; letter-spacing: -0.07em; color: #d0ff00; }
+  .st-h1__s { left: calc(var(--ox) + 230 * var(--u)); top: min(calc(var(--oy) + 483 * var(--v)), calc(var(--oy) + 900 * var(--v) - 10.5rem - 225 * var(--u))); font-size: 2.25em; font-style: normal; font-weight: 500; font-variation-settings: normal; letter-spacing: -0.07em; color: var(--ember); }
   .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
   .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
   .st-h1__s .tone::after { content: "."; }
   .st-h1__caret { display: none; }
   /* the droplet: in front of the words, where the frame has it, at its size (a 700 px canvas) */
-  .st-hg .st-hg__stone { position: absolute; grid-area: auto; left: calc(var(--ox) + 850 * var(--u)); top: calc(var(--oy) + 400 * var(--v)); width: 0; height: 0; margin: 0; z-index: 2; font-size: calc(700 / 9.4 * var(--u)); }
+  /* (21 Oct: a little to the right, 850 → 910) */
+  .st-hg .st-hg__stone { position: absolute; grid-area: auto; left: calc(var(--ox) + 910 * var(--u)); top: calc(var(--oy) + 400 * var(--v)); width: 0; height: 0; margin: 0; z-index: 2; font-size: calc(700 / 9.4 * var(--u)); }
   .st-hg .ai-hero__rock { top: 50%; }
 }
 
 /* ==========================================================================
    The poster upright (a phone, a tablet held upright, any screen taller than wide; the owner's pick of four, 20 Oct): the
    words close together, «ДИЗАЙН» large on the right, «И РАЗРАБОТКА» a line under it on the right, «САЙТОВ.» large on the
-   left, lime; the droplet (its still, mirrored: the live one stays on computers) large in the middle between them, just
+   left, ember; the droplet (its still, mirrored: the live one stays on computers) large in the middle between them, just
    touching «ДИЗАЙН» and «САЙТОВ.». On a phone the first screen is that and, at its foot, the prices and the button. Under the poster: the formats, the button, the prices. One sheet too: --pu
    is one px of a 358 px column (a 390 px phone), never more than the screen's height allows, and the words keep that
    column's width, so the poster is the same on every upright screen
@@ -343,7 +352,7 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-hg .st-hg__title { grid-column: 1; grid-row: 1; justify-self: stretch; width: auto; position: relative; z-index: 1; margin: 0; font-size: calc(58 * var(--pu)); line-height: 0.9; letter-spacing: 0; }
   .st-h1 { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "a a a" ". i b" "s s s"; align-items: baseline; gap: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; text-transform: uppercase; }
   /* (the masks leave room above the caps: the lines are set tight, «Й»'s breve rises above them) */
-  .st-h1__m { padding: 0.22em 0.22em 0.12em 0.04em; margin: -0.22em -0.22em -0.12em -0.04em; white-space: nowrap; }
+  .st-h1__m { padding: 0.22em 0.22em 0.12em 0.16em; margin: -0.22em -0.22em -0.12em -0.16em; white-space: nowrap; }
   .st-h1__a,
   .st-h1__i,
   .st-h1__b { font-family: inherit; font-style: italic; font-weight: 700; font-variation-settings: normal; color: #fff; }
@@ -353,7 +362,7 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-h1__b { font-size: 0.44em; letter-spacing: -0.07em; }
   .st-h1__i,
   .st-h1__b { margin-top: calc(6 * var(--pu)); margin-bottom: var(--gap); }
-  .st-h1__s { justify-self: start; font-size: 1.36em; font-style: normal; font-weight: 500; font-variation-settings: normal; letter-spacing: -0.07em; color: #d0ff00; }
+  .st-h1__s { justify-self: start; font-size: 1.36em; font-style: normal; font-weight: 500; font-variation-settings: normal; letter-spacing: -0.07em; color: var(--ember); }
   .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
   .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
   .st-h1__s .tone::after { content: "."; }
@@ -403,3 +412,12 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   /* (the phone's old rule zeroes the actions' margins: this one is as strong) */
   main[data-ai-page="sites"] .st-hg .ai-hero__actions.st-hg__acts { grid-row: 5; margin: 2rem 0 0; }
 }
+
+/* the words as a liquid (TitleFx.tsx): the canvas over the words, shown once it draws the same letters; the page's words
+   then hide under it */
+.st-h1fx { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0; }
+.st-h1fx.is-live { opacity: 1; }
+.st-hg__title.is-fx .st-h1 { visibility: hidden; }
+/* the soap bubble (SitesBubble.tsx): a layer over the whole first screen, over its words, its corners and the droplet
+   (the pinned first screen is a layer of its own: block 2 still slides over it) */
+.st-hg .st-bubble { position: absolute; left: 0; top: 0; z-index: 4; width: 100%; height: 100vh; height: 100svh; pointer-events: none; }
