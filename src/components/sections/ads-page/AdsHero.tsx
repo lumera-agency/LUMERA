@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich } from "@/components/ai/rich";
-import { Replay, Sample } from "@/components/ai/parts";
 import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
 import { priceLine, type AdsFacts } from "@/components/ads/facts";
 
@@ -38,7 +37,8 @@ const ICON: Record<Src, React.ReactNode> = {
  * diagram (Magic UI's / 21st.dev's Animated Beam): the three networks on top, their lines join and run into «Ваш сайт ·
  * форма заявки», and from there into the week's requests, each with the ad it came from. Plays once (scene «hero»): a
  * light runs from a network down the lines into the site, the request lands on top of the list, and that network's count
- * goes up; four times, Google, Instagram, Facebook, Google. Phones stack the diagram under the button. The ground is the
+ * goes up; four times, Google, Instagram, Facebook, Google. It plays again each time it comes back into view; under
+ * the window, quietly, «Приклад · дані умовні». Phones stack the diagram under the button. The ground is the
  * sibling pages' FluxLines on black; it pins, and the page slides over it (data-cover).
  */
 export async function AdsHero({ facts }: { facts: AdsFacts }) {
@@ -74,7 +74,6 @@ export async function AdsHero({ facts }: { facts: AdsFacts }) {
             <div className="ad-fl__win" role="img" aria-label={t("hero.alt")}>
               <p className="ad-fl__top" aria-hidden="true">
                 <span>{t("hero.sum")}</span>
-                <Sample>{t("sample")}</Sample>
               </p>
               {/* the networks, each with its count of the week's requests (a strip 0…n, rolled by the runtime) */}
               <ul className="ad-fl__src" aria-hidden="true">
@@ -128,7 +127,7 @@ export async function AdsHero({ facts }: { facts: AdsFacts }) {
                 </ul>
               </div>
             </div>
-            <Replay scenes="hero" label={t("replay.hero")}>{t("replay.text")}</Replay>
+            <p className="ad-note">{t("sample")}</p>
           </div>
         </div>
       </div>

@@ -52,6 +52,7 @@ export function startAds() {
   initSticky();
   initCover();
   initScenes();
+  initBlurText();
   initReveals();
   arrive();
 }
@@ -66,6 +67,7 @@ const REVEAL = [
   'main.ad .ai-sec .s-head__meta', 'main.ad .ai-sec .s-head__intro',
   '.ad-card', '.ad-live__how', '.ad-live__foot', '.ad-path__foot', '.ad-first', '.ad-pc', '.ad-addons__h', '.ad-addon',
   '.ad-bundles', '.ad-price__note', '.ad-track', '.ad-kase', 'main.ad .faq', '.ad-next', '.ad-get',
+  '.ad-terms__list',
   'main.ad .lead-form',
 ].join(', ');
 /** a card's parts that follow it in (its scene, if it has one, keeps its own timing) */
@@ -73,6 +75,7 @@ const PARTS = [
   ['.ad-card', '.ad-card__body > *'],
   ['.ad-pc', ':scope > *'],
   ['.ad-get', ':scope > *'],
+  ['.ad-terms__list', ':scope > li'],
 ];
 
 function initReveals() {
@@ -118,6 +121,60 @@ function initReveals() {
     io.unobserve(el);
     el.classList.remove('ai-rv');
   });
+}
+
+/* ---------- the pause's sentence comes in out of a blur, from a little above (React Bits' BlurText, effect «blur», by
+   words), once, as soon as it comes up the screen. Smoothed on the owner's word (21 Oct: word by word it jerked): the words
+   50 ms apart, so the sentence clears almost as one, on a long soft curve (1.1 s), 8 px of blur, a short drop. The
+   words are wrapped here, so the heading stays one plain sentence for search and screen readers; without motion it simply
+   stands. Done with the browser's own animations: the page adds no package for it ---------- */
+const BLUR_STEP = 50;
+function initBlurText() {
+  if (!motion) return;
+  for (const el of $$('.ad-pause__text')) {
+    if (el.getBoundingClientRect().bottom < 0) continue;
+    const words = [];
+    const walk = (node) => {
+      for (const child of [...node.childNodes]) {
+        if (child.nodeType === Node.ELEMENT_NODE) { walk(child); continue; }
+        if (child.nodeType !== Node.TEXT_NODE || !child.textContent.trim()) continue;
+        // a stop or a comma right after a word (the word may sit in the key-word mark) goes into that word's box, so the
+        // line never breaks before it (the owner's iPhone, 21 Oct: «. Потім» opened a line); it keeps the sentence's colour
+        const lead = child.textContent.match(/^[.,:;!?…»)]+/);
+        const prev = words[words.length - 1];
+        if (lead && prev) {
+          const p = document.createElement('span');
+          p.className = 'ad-bw-p';
+          p.textContent = lead[0];
+          prev.append(p);
+          child.textContent = child.textContent.slice(lead[0].length);
+        }
+        const frag = document.createDocumentFragment();
+        for (const part of child.textContent.split(/(\s+)/)) {
+          if (!part) continue;
+          if (/^\s+$/.test(part)) { frag.append(part); continue; }
+          const w = document.createElement('span');
+          w.className = 'ad-bw';
+          w.textContent = part;
+          frag.append(w);
+          words.push(w);
+        }
+        child.replaceWith(frag);
+      }
+    };
+    walk(el);
+    el.classList.add('is-pre');
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      words.forEach((w, i) => w.animate([
+        { opacity: 0, filter: 'blur(8px)', transform: 'translateY(-0.35em)' },
+        { opacity: 1, filter: 'blur(0)', transform: 'none' },
+      ], { duration: 1100, delay: i * BLUR_STEP, easing: SOFT, fill: 'backwards' }));
+      el.classList.remove('is-pre');
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
+    io.observe(el);
+  }
 }
 
 /* ---------- where the visitor lands: back where they were after a language switch or a reload, else at the #block ---------- */
@@ -173,9 +230,17 @@ function initPlans() {
 function initFolds() {
   const folds = $$('details[data-fold]');
   if (!folds.length) return;
-  const set = () => folds.forEach((d) => { d.open = !phoneMQ.matches; });
+  // phones fold them (one marked data-fold-open stays open: the first of the terms); wider screens open them all
+  const set = () => folds.forEach((d) => { d.open = !phoneMQ.matches || d.hasAttribute('data-fold-open'); });
   set();
   phoneMQ.addEventListener('change', set);
+  // a term opened on a phone: its sentence comes in softly (opacity and a few pixels, no height animation)
+  for (const d of $$('.ad-terms__fold')) {
+    d.addEventListener('toggle', () => {
+      if (!d.open || !motion || !phoneMQ.matches) return;
+      $('.ad-terms__p', d)?.animate([{ opacity: 0, translate: '0 -0.375rem' }, { opacity: 1, translate: '0 0' }], { duration: 380, easing: SOFT });
+    });
+  }
 }
 
 /* ---------- 4 · wider screens: the longest setup shows four items and «ще 2», so the three cards end level (the art
@@ -436,13 +501,20 @@ function initCover() {
 const scenes = [];
 let current = null;
 const queue = [];
+/** the demos that play again each time they come back into view (their «↻ Ще раз» went in the owner's brief of 21 Oct):
+ *  off the screen they go back to their first frame, so the start is never seen jumping */
+const AGAIN = new Set(['hero', 'google', 'meta', 'live', 'path']);
+/** the first screen goes round while it is in sight (the owner, 21 Oct: once played, it stood still): a pause, the
+ *  requests fade, a new round comes in. Covered by the page, off the screen or in a hidden tab, it waits */
+const LOOP = new Set(['hero']);
+const LOOP_HOLD = 2600;
 
 function initScenes() {
   const defs = { hero: playHero, google: playGoogle, meta: playMeta, live: playLive, path: playPath, case: playCase, kstack: playStack, how: playHow };
   for (const el of $$('[data-scene]')) {
     const play = defs[el.dataset.scene];
     if (!play) continue;
-    const scene = { el, play, anims: [], playing: false, played: false, inView: false, ratio: 0, token: 0 };
+    const scene = { el, play, anims: [], playing: false, played: false, inView: false, ratio: 0, token: 0, again: AGAIN.has(el.dataset.scene), rerun: false, loop: LOOP.has(el.dataset.scene), covered: false, loopT: 0 };
     // phones: the part where the scene ends (data-gate) must be above the sticky bar before the scene starts
     scene.gate = el.dataset.gate ? $(el.dataset.gate, el) : null;
     scene.gateOk = !scene.gate;
@@ -464,6 +536,7 @@ function initScenes() {
     } else if (r.bottom < 0) {
       scene.played = true;
       showReplay(scene);
+      rewind(scene);
     } else if (r.top > vh * 0.82) {
       setPre(scene, true);
     } else {
@@ -473,6 +546,7 @@ function initScenes() {
     }
   }
   root.classList.add('ad-go');
+  initLoops();
   // the layers for a scene's moving parts (.is-warm: will-change) come one screen ahead of it and leave once it has played
   const warm = new IntersectionObserver((entries) => {
     for (const entry of entries) {
@@ -503,6 +577,7 @@ function initScenes() {
         if (scene.playing) finish(scene);
         const i = queue.indexOf(scene);
         if (i >= 0) queue.splice(i, 1);
+        rewind(scene);
       }
     }, { rootMargin: '0px 0px -18% 0px', threshold: [0, start, 0.3, 0.5] }).observe(scene.el);
   }
@@ -519,6 +594,48 @@ function ready(scene) {
 function maybeYield() {
   if (!phoneMQ.matches || !current || !queue.length) return;
   if (current.ratio < 0.3 && queue.some((q) => q.ratio >= 0.5 && !q.played)) finish(current);
+}
+
+/** the looping scenes: the first block of the page covering the first screen (it pins on wide screens, so it never
+ *  leaves the screen) counts as out of sight; a tab shown again picks the round up */
+function initLoops() {
+  const loops = scenes.filter((s) => s.loop);
+  if (!loops.length) return;
+  const cover = $('main.ad .ai-hero ~ *');
+  if (cover) {
+    new IntersectionObserver((entries) => {
+      const e = entries[entries.length - 1];
+      const covered = e.isIntersecting || e.boundingClientRect.top < 0;
+      loops.forEach((s) => { s.covered = covered; if (!covered) loopAgain(s, 600); });
+    }, { rootMargin: '0px 0px -45% 0px' }).observe(cover);
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) loops.forEach((s) => loopAgain(s, 600)); });
+}
+
+/** one more round after a pause: the landed requests and the counts fade, the scene goes back to its first frame and
+ *  plays again (only while it is in sight and done; otherwise the next chance picks it up) */
+function loopAgain(scene, hold = LOOP_HOLD) {
+  clearTimeout(scene.loopT);
+  scene.loopT = setTimeout(async () => {
+    if (!scene.inView || scene.covered || scene.playing || !scene.played || document.hidden) return;
+    const parts = $$('.ad-inbox__row, .ad-fl__n', scene.el);
+    const fades = parts.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: EXIT, fill: 'forwards' }));
+    try { await Promise.all(fades.map((a) => a.finished)); } catch { /* cancelled */ }
+    if (!scene.inView || scene.covered || scene.playing || document.hidden) { fades.forEach((a) => a.cancel()); return; }
+    scene.played = false;
+    scene.rerun = true;
+    setPre(scene, true);
+    fades.forEach((a) => a.cancel());
+    request(scene);
+  }, hold);
+}
+
+/** a scene that plays again, off the screen and done: back to its first frame, to play once more when it returns */
+function rewind(scene) {
+  if (!scene.again || scene.playing || !scene.played || scene.inView) return;
+  scene.played = false;
+  scene.rerun = true;
+  setPre(scene, true);
 }
 
 function setPre(scene, on) {
@@ -556,7 +673,8 @@ async function start(scene, replay) {
   scene.playing = true;
   current = scene;
   scene.anims = [];
-  scene.play(scene, replay);
+  scene.play(scene, replay || scene.rerun);
+  scene.rerun = false;
   // the start frame comes from the animations themselves now (fill: backwards): the hold can go
   setPre(scene, false);
   try {
@@ -568,6 +686,8 @@ async function start(scene, replay) {
   scene.el.classList.remove('is-warm');
   scene.anims = [];
   showReplay(scene);
+  rewind(scene);
+  if (scene.loop) loopAgain(scene);
   if (current === scene) current = null;
   if (queue.length) setTimeout(next, 120);
 }

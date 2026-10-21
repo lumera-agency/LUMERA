@@ -10,7 +10,7 @@ import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import { AiSprite } from "@/components/ai/parts";
 import { aiHref } from "@/components/ai/links";
 import { AdsRuntime } from "./AdsRuntime";
-// the main page's header styles, the AI pages' kit (sections, mock windows, «Ще раз», the sticky bar, the quick picks),
+// the main page's header styles, the AI pages' kit (sections, mock windows, the sticky bar, the quick picks),
 // then this page's own
 import "@/components/layout/header/header.css";
 import "@/components/ai/ai.css";
@@ -27,24 +27,10 @@ type Props = {
   children: React.ReactNode;
 };
 
-/** Where the button back up steps aside: the page's controls that can sit in its corner */
-const TO_TOP_QUIET = [
-  ".footer",
-  ".ai-sticky.is-on",
-  "#faq summary",
-  ".lead-form :is(input:not([tabindex='-1']), textarea, button, label)",
-  ".ai-pick",
-  ".ai-replay",
-  ".ad-price__go",
-  ".ad-pc__more summary",
-  ".ad-addon",
-  ".ad-kase__end",
-  ".ad-kase__sum",
-  ".ad-bundles",
-  ".ad-card__go",
-  ".ad-fact__go",
-  ".ad-faq-more",
-].join(", ");
+/** Where the button back up steps aside: only the request block and the footer (the owner, 22 Oct: with every row
+ *  and button of the page on the list it blinked on and off as they passed its corner; on phones it stands above the
+ *  sticky request bar, ads.css, so the bar no longer hides it) */
+const TO_TOP_QUIET = ["#contact", ".footer"].join(", ");
 
 /** The faces the first screen is set in: fetched with the page, so the words never re-wrap once the font comes in */
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
