@@ -1,6 +1,5 @@
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
-import { Replay, Sample } from "@/components/ai/parts";
 import { aiRich as R } from "@/components/ai/rich";
 import { priceLine, type AdsFacts } from "@/components/ads/facts";
 
@@ -91,7 +90,6 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
               <svg className="ad-live__logo" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><rect x="2" y="11" width="4" height="7" rx="2" /><rect x="8" y="6.5" width="4" height="11.5" rx="2" /><rect x="14" y="2" width="4" height="16" rx="2" /></svg>
               <b>Google Analytics</b>
               <span className="ad-live__crumb">/ {t("an.live.crumb")}</span>
-              <Sample>{t("sample")}</Sample>
             </p>
             <div className="ad-live__body">
               <div className="ad-live__feed">
@@ -122,7 +120,7 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
             </div>
             <p className="ad-live__note">{t("an.note")}</p>
           </div>
-          <Replay scenes="live" label={t("replay.report")}>{t("replay.text")}</Replay>
+          <p className="ad-note">{t("sample")}</p>
           <p className="ad-live__how">
             <span className="ad-live__how-k">{t("an.how.k")}</span>
             <span className="ad-live__chip ad-live__chip--sys"><i aria-hidden="true" />{t("an.how.1")}</span>
@@ -144,7 +142,7 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
         {/* A · phones and narrow tablets: one request's way on a rail */}
         <div className="ad-an__mob">
           <div className="ad-path" data-scene="path">
-            <div className="ad-path__top"><p className="ad-path__k">{t("an.label")}</p><Sample>{t("sample")}</Sample></div>
+            <div className="ad-path__top"><p className="ad-path__k">{t("an.label")}</p></div>
             <div className="ad-path__flow" aria-hidden="true">
               <figure className="ad-path__frame" data-f="1">
                 <figcaption className="ad-path__cap"><span className="ad-path__n">1</span><p><b>{t("an.s.1.t")}</b><span>{t("an.s.1.p")}</span></p></figcaption>
@@ -192,7 +190,7 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
             </div>
             <p className="visually-hidden">{t("an.path")}</p>
           </div>
-          <Replay scenes="path" label={t("replay.flow")}>{t("replay.text")}</Replay>
+          <p className="ad-note">{t("sample")}</p>
           <div className="ad-path__foot">
             <ul className="ad-path__facts">
               {[1, 2, 3].map((n) => (

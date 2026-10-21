@@ -39,7 +39,7 @@ const PICS: Record<number, React.ReactNode> = {
 };
 
 /**
- * 6 · Як працюємо (ivory), the owner's second pass of 20 Oct («the line said nothing»): one card, the setup time on top
+ * 7 · Як працюємо (black, no card, the steps on one line: the owner's brief of 21 Oct), the owner's second pass of 20 Oct («the line said nothing»): one card, the setup time on top
  * (from the engine, wAds), then five steps, each with a small moving picture of what happens in it (21st.dev's feature
  * steps, Magic UI's animated icons): a call, the queries going in and the useless ones out, the test request getting
  * its tick, the ad switched on, the report's bars; under it the step's title and one line. Wide screens: five across;
@@ -48,7 +48,7 @@ const PICS: Record<number, React.ReactNode> = {
 export async function AdsHow({ index, facts }: { index: number; facts: AdsFacts }) {
   const t = await getTranslations("ads");
   return (
-    <section className="section section--ivory ai-sec ad-how" id="how" aria-labelledby="how-title">
+    <section className="section ai-sec ad-how" id="how" aria-labelledby="how-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">

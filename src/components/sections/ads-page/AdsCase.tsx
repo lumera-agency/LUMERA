@@ -11,25 +11,30 @@ type Case = {
   shots: Shot[];
   /** the conversion tile's segments: [filled, of] (≈ 1 in 4), or none */
   seg?: [number, number];
+  /** the client's site, linked from the case (the owner, 21 Oct) */
+  site: string;
+  /** the screenshot shows the account before our changes: the window's chip and its caption say so */
+  before?: boolean;
 };
 
 /**
- * The cases, one per client (the owner, 20–21 Oct). Numbers are the accounts' own (_cases/<id>/case.md); the companies'
- * names are not shown. Before a case goes live: its dated screenshots, our role and the client's consent
- * (_merge/MERGE.md).
+ * The cases, one per client (the owner, 20–21 Oct). Numbers are the accounts' own (_cases/<id>/case.md); each case links
+ * the client's site (the owner, 21 Oct; the screenshots still hide the names). Before a case goes live: its dated
+ * screenshots, our role and the client's consent (_merge/MERGE.md).
  * · ac: a heating and air-conditioning service, Kyiv and Dnipro, June – September 2026, setup and ads: keywords with the
  *   Total row's conversions and cost per conversion ringed, campaigns.
  * · pest: pest control, July – September 2026, managing an account that was already running: the accepted calls counted
  *   by call tracking (one call never twice), the spend ringed on the account's total.
  * · volter: backup power systems, Kyiv and Dnipro, 29 August – 20 October 2026, the first cycle of managing an account:
  *   the budget no longer spent on keywords with no requests, the click's price and the share of impressions before and
- *   after (only three days after the changes, and the card says so); on the keywords the cheapest and the dearest cost
- *   per conversion ringed.
+ *   after (only three days after the changes, and the card says so). One screenshot, the campaigns, marked «before our
+ *   changes» (the owner, 21 Oct: the keywords' screenshot, its quality scores of 3–5 out of 10, only hurt the case).
  */
 const CASES: Case[] = [
   {
     id: "ac",
     seg: [1, 4],
+    site: "https://airfrost.com.ua",
     shots: [
       { id: "kw", src: "/img/ads/case-ac-keywords.jpg", w: 780, h: 400, rings: [{ left: 78, top: 13, width: 10.6, height: 7.5 }, { left: 88.6, top: 13, width: 11, height: 7.5 }] },
       { id: "cmp", src: "/img/ads/case-ac-campaigns.jpg", w: 780, h: 385 },
@@ -37,6 +42,7 @@ const CASES: Case[] = [
   },
   {
     id: "pest",
+    site: "https://prussakoff.dp.ua",
     shots: [
       { id: "cmp", src: "/img/ads/case-pest-campaigns.jpg", w: 1086, h: 465, rings: [{ left: 46.4, top: 79.2, width: 8.3, height: 8.2 }] },
       { id: "mon", src: "/img/ads/case-pest-months.jpg", w: 1086, h: 550 },
@@ -44,10 +50,9 @@ const CASES: Case[] = [
   },
   {
     id: "volter",
-    shots: [
-      { id: "kw", src: "/img/ads/case-volter-keywords.jpg", w: 1050, h: 660, rings: [{ left: 91.2, top: 56, width: 7.6, height: 6.8 }, { left: 91.2, top: 64.8, width: 7.6, height: 6.2 }] },
-      { id: "cmp", src: "/img/ads/case-volter-campaigns.jpg", w: 1138, h: 335 },
-    ],
+    site: "https://volter.co.ua",
+    before: true,
+    shots: [{ id: "cmp", src: "/img/ads/case-volter-campaigns.jpg", w: 1138, h: 335 }],
   },
 ];
 /** the four numbers: the price of a request first (the large tile), requests and spend side by side, conversion under them */
@@ -93,7 +98,9 @@ function Value({ text }: { text: string }) {
 }
 
 /**
- * 4 · Кейси (ivory): the clients' cases behind a switcher (the owner, 21 Oct: more cases, the page no longer than one;
+ * 2 · Кейси (the page's one light block, right after the first screen: the owner's brief of 21 Oct, the proof before the
+ * explaining; the headline number the largest type on the page, in ember; the screenshot across the block, open on
+ * phones too): the clients' cases behind a switcher (the owner, 21 Oct: more cases, the page no longer than one;
  * each tab shows the case's headline number, as 21st.dev's «Logo Cloud Story Tabs»; phones swipe the tabs as a row):
  * each is one card with the numbers that matter (21st.dev's «Stats Bento»): the price of a request or of an accepted
  * call large, then requests or calls, spend, conversion; what was done in one line; the account's screenshots under
@@ -192,26 +199,40 @@ export async function AdsCase({ index }: { index: number }) {
                       </div>
                     ))}
                   </dl>
+                  <p className="ad-kase__site">
+                    <span>{t("case.site")}</span>
+                    <a className="ad-kase__go" href={c.site} target="_blank" rel="noopener">
+                      {new URL(c.site).hostname}
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-arrow" /></svg>
+                    </a>
+                  </p>
                   <p className="ad-kase__how">{t.rich(`case.${c.id}.how`, R)}</p>
                 </div>
 
-                <details className="ad-kase__shot" data-fold="" open>
+                <details className="ad-kase__shot" open>
                   <summary className="ad-kase__sum">{t("case.shot")}</summary>
                   <div className="ad-case__win">
                     <div className="ad-case__bar">
                       <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
                       <span className="ad-case__host">ads.google.com</span>
-                      <span className="ad-case__tabs" role="tablist" aria-label={t("case.tabs")}>
-                        {c.shots.map((s, k) => (
-                          <button type="button" className="ad-case__tab" role="tab" id={`case-${c.id}-tab-${s.id}`} aria-controls={`case-${c.id}-pic-${s.id}`} aria-selected={k === 0} tabIndex={k === 0 ? 0 : -1} data-case-tab={s.id} key={s.id}>
-                            {t(`case.${c.id}.shots.${s.id}`)}
-                          </button>
-                        ))}
-                      </span>
-                      <span className="ad-case__ok"><b aria-hidden="true" />{t("case.ok")}</span>
+                      {/* tabs only when there is more than one screenshot */}
+                      {c.shots.length > 1 && (
+                        <span className="ad-case__tabs" role="tablist" aria-label={t("case.tabs")}>
+                          {c.shots.map((s, k) => (
+                            <button type="button" className="ad-case__tab" role="tab" id={`case-${c.id}-tab-${s.id}`} aria-controls={`case-${c.id}-pic-${s.id}`} aria-selected={k === 0} tabIndex={k === 0 ? 0 : -1} data-case-tab={s.id} key={s.id}>
+                              {t(`case.${c.id}.shots.${s.id}`)}
+                            </button>
+                          ))}
+                        </span>
+                      )}
+                      {c.before ? (
+                        <span className="ad-case__ok ad-case__ok--before">{t("case.before")}</span>
+                      ) : (
+                        <span className="ad-case__ok"><b aria-hidden="true" />{t("case.ok")}</span>
+                      )}
                     </div>
                     {c.shots.map((s, k) => (
-                      <div className="ad-case__pic" id={`case-${c.id}-pic-${s.id}`} role="tabpanel" aria-labelledby={`case-${c.id}-tab-${s.id}`} tabIndex={0} data-case-pic={s.id} hidden={k > 0} key={s.id}>
+                      <div className="ad-case__pic" id={`case-${c.id}-pic-${s.id}`} role={c.shots.length > 1 ? "tabpanel" : undefined} aria-labelledby={c.shots.length > 1 ? `case-${c.id}-tab-${s.id}` : undefined} tabIndex={0} data-case-pic={s.id} hidden={k > 0} key={s.id}>
                         <div className="ad-case__in">
                           <img src={s.src} width={s.w} height={s.h} alt={t(`case.${c.id}.alt.${s.id}`)} loading="lazy" decoding="async" />
                           {s.rings?.map((r, j) => (
@@ -222,7 +243,7 @@ export async function AdsCase({ index }: { index: number }) {
                     ))}
                   </div>
                   <p className="ad-case__swipe" aria-hidden="true">← {t("case.swipe")} →</p>
-                  <p className="ad-case__cap">{t("case.cap")}</p>
+                  <p className="ad-case__cap">{c.before ? t(`case.${c.id}.cap`) : t("case.cap")}</p>
                 </details>
 
                 <div className="ad-kase__end">

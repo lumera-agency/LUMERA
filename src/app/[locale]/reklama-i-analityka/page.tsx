@@ -9,6 +9,8 @@ import { AdsChannels } from "@/components/sections/ads-page/AdsChannels";
 import { AdsHow } from "@/components/sections/ads-page/AdsHow";
 import { AdsAnalytics } from "@/components/sections/ads-page/AdsAnalytics";
 import { AdsCase } from "@/components/sections/ads-page/AdsCase";
+import { AdsPause } from "@/components/sections/ads-page/AdsPause";
+import { AdsTerms } from "@/components/sections/ads-page/AdsTerms";
 import { AdsPrice } from "@/components/sections/ads-page/AdsPrice";
 import { AdsFaq } from "@/components/sections/ads-page/AdsFaq";
 import { AdsContact } from "@/components/sections/ads-page/AdsContact";
@@ -19,11 +21,11 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/reklama-
 }
 
 /**
- * «Реклама й аналітика» — the ads section's own page (the main page's block 2, row 04, and the ads slide lead here): 1 the first
- * screen → 2 where the ads are shown (Google, Facebook / Instagram) → 3 the analytics (GA4), the page's main difference →
- * 4 the first real case (the owner, 20 Oct) → 5 the price → 6 how we work → 7 questions (why us is the first one: the
- * trust block moved there, the owner, 20 Oct) → 8 the request (the order the business analyst proposed on 20 Oct: the difference and the price first, the process
- * near the form; the case right after the analytics it proves). Built from the AI pages' and «Дизайн і сайти»'s kit.
+ * «Реклама й аналітика» — the ads section's own page (the main page's block 2, row 04, will lead here). The order of the
+ * owner's brief of 21 Oct (the proof before the explaining): 1 the first screen → 2 the clients' cases (the one light
+ * block) → a pause, one sentence → 3 where the ads are shown (Google, Facebook / Instagram) → 4 the analytics (GA4) →
+ * 5 our terms → 6 the price → 7 how we work → 8 questions → 9 the request. Built from the AI pages' and «Дизайн і
+ * сайти»'s kit.
  */
 export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i-analityka">) {
   const { locale } = await params;
@@ -31,9 +33,9 @@ export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i
   const t = await getTranslations("ads");
   const facts = adsFacts(locale);
   const nav = [
+    { href: "#case", text: t("nav.case") },
     { href: "#ads", text: t("nav.ads") },
     { href: "#analytics", text: t("nav.analytics") },
-    { href: "#case", text: t("nav.case") },
     { href: "#price", text: t("nav.price") },
     { href: "#how", text: t("nav.how") },
     { href: "#faq", text: t("nav.faq") },
@@ -50,13 +52,15 @@ export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i
     >
       <AdsHero facts={facts} />
       <PageShell>
-        <AdsChannels index={2} facts={facts} />
-        <AdsAnalytics index={3} facts={facts} />
-        <AdsCase index={4} />
-        <AdsPrice index={5} facts={facts} />
-        <AdsHow index={6} facts={facts} />
-        <AdsFaq index={7} facts={facts} />
-        <AdsContact index={8} />
+        <AdsCase index={2} />
+        <AdsPause />
+        <AdsChannels index={3} facts={facts} />
+        <AdsAnalytics index={4} facts={facts} />
+        <AdsTerms index={5} />
+        <AdsPrice index={6} facts={facts} />
+        <AdsHow index={7} facts={facts} />
+        <AdsFaq index={8} facts={facts} />
+        <AdsContact index={9} />
         {/* the main page's PageShell fades in blocks marked data-sr (ScrollReveals); this page has its own reveals and
             none, and GSAP warns «target not found» on an empty list: one empty, unseen mark keeps it quiet (as on the
             sites page) */}

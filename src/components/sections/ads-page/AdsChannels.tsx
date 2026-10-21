@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { Replay, Sample } from "@/components/ai/parts";
 import { aiRich as R } from "@/components/ai/rich";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { priceLine, type AdsFacts } from "@/components/ads/facts";
@@ -47,7 +46,8 @@ const Check = () => (
 );
 
 /**
- * 2 · Реклама (ivory): the two places the ads are shown, a card each with its own scene.
+ * 3 · Реклама: the two places the ads are shown, each its own scene with its words under it (black and without cards
+ * since the owner's brief of 21 Oct; the scenes play again each time they come back into view).
  * Google: a query types itself into the search field (React Bits TextType), two ordinary results come up and our ad
  * slides in on top of them with Google's mark, a tap, «+1 заявка». Facebook / Instagram: the people of a city; each
  * audience chip leaves some out (the city, the age), three light up, the ad stands in the feed, and a request comes from
@@ -60,7 +60,7 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
   const google = { plan: `${t("price.g.t")} · ${facts.ads}`, details: [1, 2, 3, 4].map((n) => t(`price.g.${n}`)).join("\n") };
   const meta = { plan: `${t("price.fb.t")} · ${t("price.talk")}`, details: "" };
   return (
-    <section className="section section--ivory ai-sec ad-ch" id="ads" aria-labelledby="ads-title">
+    <section className="section ai-sec ad-ch" id="ads" aria-labelledby="ads-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
@@ -83,7 +83,6 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
                   <i aria-hidden="true" />
                   <i aria-hidden="true" />
                   <span>{m("host")}</span>
-                  <Sample>{t("sample")}</Sample>
                 </div>
                 <div className="ad-serp__in">
                   <p className="ad-serp__field">
@@ -112,11 +111,11 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
                   <span className="ad-toast__ico" aria-hidden="true"><Check /></span>
                   <span><b>{m("lead")}</b> {m("leadG")}</span>
                 </p>
-                {/* the person's finger (ember), only while the scene plays */}
+                {/* the person's finger, only while the scene plays */}
                 <i className="ad-finger" aria-hidden="true" />
               </div>
-              <Replay scenes="google" label={t("replay.google")}>{t("replay.text")}</Replay>
             </div>
+            <p className="ad-note">{t("sample")}</p>
             <div className="ad-card__body">
               <p className="ad-card__tag">{t("ch.g.tag")}</p>
               <h3 className="ad-card__t" id="ch-g">{t("ch.g.t")}</h3>
@@ -148,7 +147,6 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
                     </i>
                   ))}
                 </div>
-                <Sample>{t("sample")}</Sample>
                 <div className="ad-aud">
                   <p className="ad-aud__k">{m("who")}</p>
                   <ul className="ad-aud__chips">
@@ -188,8 +186,8 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
                   <span><b>{m("lead")}</b> {m("leadM")}</span>
                 </p>
               </div>
-              <Replay scenes="meta" label={t("replay.meta")}>{t("replay.text")}</Replay>
             </div>
+            <p className="ad-note">{t("sample")}</p>
             <div className="ad-card__body">
               <p className="ad-card__tag">{t("ch.m.tag")}</p>
               <h3 className="ad-card__t" id="ch-m">{t("ch.m.t")}</h3>
