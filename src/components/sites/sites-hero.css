@@ -421,3 +421,6 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
 /* the soap bubble (SitesBubble.tsx): a layer over the whole first screen, over its words, its corners and the droplet
    (the pinned first screen is a layer of its own: block 2 still slides over it) */
 .st-hg .st-bubble { position: absolute; left: 0; top: 0; z-index: 4; width: 100%; height: 100vh; height: 100svh; pointer-events: none; }
+/* a computer: the bubble is the pointer while it shows over the first screen (SitesBubble: is-bubble) */
+.st-hg.is-bubble,
+.st-hg.is-bubble * { cursor: none; }
