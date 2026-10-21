@@ -26,6 +26,8 @@ const phoneMQ = window.matchMedia('(max-width: 600px)');
 const noteMQ = window.matchMedia('(max-width: 720px)'); // 5 · the notes beside the Telegram message go
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const EASE_IO = 'cubic-bezier(0.65, 0, 0.35, 1)';
+/** a looping scene's rest on its last frame before it plays again (ms) */
+const LOOP_REST = 2200;
 
 /** The words the calculator writes (the page's language, from the server: AiRuntime's `strings`). */
 let words = {};
@@ -57,6 +59,8 @@ export function startAi({ strings = {} } = {}) {
 const REVEAL = [
   // every section's head (its title unmasks line by line: the main page's [data-split])
   'main.ai .ai-sec .s-head__meta', 'main.ai .ai-sec .s-head__intro',
+  // the AI page's own blocks opt in with data-rv (sections/ai-page)
+  'main[data-ai-page="ai"] [data-rv]',
   // the AI page
   '.ai-svc', '.ai-do__foot', '.ai-door', '.ai-calc__g', '.ai-calc__card',
   // the case
@@ -269,7 +273,7 @@ function initScenes() {
   for (const el of $$('[data-scene]')) {
     const play = defs[el.dataset.scene];
     if (!play) continue;
-    const scene = { el, play, anims: [], playing: false, played: false, inView: false, skip: null, token: 0 };
+    const scene = { el, play, anims: [], playing: false, played: false, inView: false, skip: null, token: 0, loop: el.hasAttribute('data-loop'), loopTimer: 0 };
     scenes.push(scene);
     scene.replay = $(`[data-replay~="${el.dataset.scene}"]`);
     scene.replay?.addEventListener('click', () => request(scene, true));
@@ -304,7 +308,11 @@ function initScenes() {
       scene.inView = entry.isIntersecting;
       if (scene.inView) {
         if (entry.intersectionRatio >= start - 0.001 && !scene.played && !scene.playing) request(scene);
+        // a looping scene that has played: again, from its start, each time it comes back
+        else if (scene.loop && scene.played && !scene.playing && !scene.loopTimer && entry.intersectionRatio >= start - 0.001) request(scene, true);
       } else {
+        clearTimeout(scene.loopTimer);
+        scene.loopTimer = 0;
         // off the screen: a scene still playing jumps to its end (frees the phone's one slot),
         // one waiting in line leaves it (it asks again when it comes back)
         if (scene.playing) finish(scene);
@@ -356,6 +364,15 @@ async function start(scene, replay) {
   scene.anims = [];
   scene.skip = null;
   showReplay(scene);
+  // a looping scene (data-loop: the AI page's lineup, the owner, 21 Oct 2026) plays again after a rest, as long as it
+  // stays on the screen; off the screen it waits (the observer below restarts it when it comes back)
+  if (scene.loop && scene.inView) {
+    clearTimeout(scene.loopTimer);
+    scene.loopTimer = setTimeout(() => {
+      scene.loopTimer = 0;
+      if (scene.inView && !scene.playing) request(scene, true);
+    }, LOOP_REST);
+  }
   if (current === scene) current = null;
   // the next in line, if it is still on the screen — a few frames later, so a scene that has just jumped
   // to its end (it left the screen) and the next one's start never land in the same frame

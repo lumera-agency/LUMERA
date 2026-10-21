@@ -1,80 +1,58 @@
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich } from "@/components/ai/rich";
-import { Replay, Sample } from "@/components/ai/parts";
 import { AiStoneSlot } from "@/components/ai/AiStoneSlot";
 import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
+import { AUDIT, LOSS_READY, usd } from "./prices";
 
 /**
- * 1 · the first screen, centred: what the page is about, plainly (two lines that rise once, CSS), the request button,
- * then today's to-do list (three tasks done by the system, one left to you; scene «todo»). Far behind the words, the
- * main page's stone: a still that the live 3D stone replaces once it has drawn (three/ai-stone, AiStoneSlot). The ground is
- * the «Дизайн і сайти» page's (the owner, 19 Oct 2026): its FluxLines on pure black, resting once block 2 covers the
- * screen. It pins, and the page slides over it (data-cover).
+ * 1 · the first screen, centred (the owner, 21 Oct 2026: the page sells the result, not the technology): the question
+ * the page answers (two lines that rise once, CSS), what the robot takes over, the request button and the way to the
+ * losses calculator, the audit's price under them. Far behind the words, the main page's stone: a still that the live
+ * 3D stone replaces once it has drawn (three/ai-stone, AiStoneSlot). The ground is the «Дизайн і сайти» page's: its
+ * FluxLines on pure black, resting once block 2 covers the screen. It pins, and the page slides over it (data-cover).
  */
 export async function Hero() {
   const t = await getTranslations("ai");
   const c = await getTranslations("aiCommon");
-  const rows = [
-    { n: 1, who: "prog", text: t("todo.1"), label: t("todo.who.prog") },
-    { n: 2, who: "bot", text: t("todo.2"), label: t("todo.who.bot") },
-    { n: 3, who: "prog", text: t("todo.3"), label: t("todo.who.prog") },
-  ];
   return (
     <section className="ai-hero ai-hero--center" id="top" aria-labelledby="ai-title" data-cover="">
       {/* the sites page's first-screen background: the fluid lines on black (the stone is behind the words, below) */}
-      <div className="ai-hero__bg" aria-hidden="true"><HeroFlux under="#how" /></div>
+      <div className="ai-hero__bg" aria-hidden="true"><HeroFlux under="#case" /></div>
       <div className="ai-hero__in">
         <div className="ai-hero__copy">
           <div className="ai-hero__head">
             <div className="ai-hero__rock" aria-hidden="true">
               <i className="ai-hero__glow" />
-              {/* the largest thing on the first screen (the browser's LCP): fetched early, 32 KB. The live stone takes its
-                  place once it has drawn */}
-              {/* eslint-disable-next-line @next/next/no-img-element -- a fixed still under the live stone, swapped by script */}
-              <img className="ai-hero__stone" src="/img/ai/lock-stone.webp" width={520} height={626} alt="" decoding="async" fetchPriority="high" />
-              <AiStoneSlot />
+              {/* the still and the live stone share one box (and its 0.8 opacity): the still is the live stone's own first
+                  frame (img/ai/stone-still*.webp, rendered from three/ai-stone: the phone's from its simpler render), so
+                  the live one dissolves in over it with no visible swap (the owner, 21 Oct 2026). The still is the first
+                  screen's largest thing (the browser's LCP): fetched early, 60 KB, 19 KB on phones */}
+              <span className="ai-hero__stone-box">
+                <picture>
+                  <source media="(pointer: coarse)" srcSet="/img/ai/stone-still-m.webp" width={771} height={771} />
+                  <img className="ai-hero__stone" src="/img/ai/stone-still.webp" width={1268} height={1268} alt="" decoding="async" fetchPriority="high" />
+                </picture>
+                <AiStoneSlot />
+              </span>
             </div>
             <h1 className="s-head__title s-head__title--stone ai-hero__title ai-hero__title--auto" id="ai-title">
               {t.rich("hero.title", aiRich)}
             </h1>
           </div>
-          <p className="ai-hero__lead">{t("hero.lead")}</p>
+          <p className="ai-hero__lead">
+            <span>{t("hero.lead")}</span> <span className="ai-hero__lead2">{t("hero.lead2")}</span>
+          </p>
           <div className="ai-hero__actions">
             <ButtonLink href="#contact" variant="primary">{c("cta.auto")}</ButtonLink>
+            {LOSS_READY && (
+              <a className="link ai-hero__loss" href="#loss">
+                <span>{t("hero.loss")}</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v15M6 13.5l6 6 6-6" /></svg>
+              </a>
+            )}
           </div>
-        </div>
-
-        {/* today's to-do list (a sample): rows 1–3 get done by the program or the assistant (signal), row 4 is left to
-            you (ember). A real list for screen readers; the numbers and ticks are decoration */}
-        <div className="ai-hero__visual">
-          <div className="ai-todo" data-scene="todo">
-            <div className="ai-sheet__win ai-todo__win">
-              <div className="ai-sheet__bar ai-todo__bar">
-                <i aria-hidden="true" />
-                <i aria-hidden="true" />
-                <i aria-hidden="true" />
-                <span id="todo-head">{t("todo.head")}</span>
-                <Sample>{c("sample")}</Sample>
-              </div>
-              <ol className="ai-todo__list" aria-labelledby="todo-head">
-                {rows.map((r) => (
-                  <li className="ai-todo__row" data-who={r.who} key={r.n}>
-                    <span className="ai-todo__n" aria-hidden="true">{r.n}<i className="ai-todo__fill">{r.n}</i></span>
-                    <span className="ai-todo__t">{r.text}</span>
-                    <span className="ai-todo__who"><span aria-hidden="true">✓ </span><span>{r.label}</span></span>
-                  </li>
-                ))}
-                <li className="ai-todo__row ai-todo__row--you" data-who="you">
-                  <i className="ai-todo__hl" aria-hidden="true" />
-                  <span className="ai-todo__n" aria-hidden="true">4<i className="ai-todo__fill">4</i></span>
-                  <span className="ai-todo__t">{t("todo.4")}</span>
-                  <span className="ai-todo__who"><span>{t("todo.who.you")}</span></span>
-                </li>
-              </ol>
-            </div>
-            <Replay scenes="todo" label={t("replay.todo")}>{c("replay")}</Replay>
-          </div>
+          <p className="ai-hero__audit">{t("hero.audit", { audit: usd(AUDIT.price) })}</p>
         </div>
       </div>
     </section>

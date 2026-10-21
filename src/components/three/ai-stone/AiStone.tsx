@@ -7,10 +7,12 @@
  * it turns a little as the first screen scrolls away.
  *
  * It renders only while it can be seen: off screen, once the next block has slid over the first screen, and in a
- * hidden tab its loop stops. The still (img/ai/lock-stone.webp) holds its place until the first frame, then the two
- * cross-fade (.ai-hero__rock.is-live). Never with reduced motion (the still stays): AiStoneSlot decides.
+ * hidden tab its loop stops. The still under it is this stone's own first frame (img/ai/stone-still*.webp, rendered
+ * from this component: same pose, same light, the phone's from the phone's simpler render), so it starts fully lit and
+ * dissolves in over the still with nothing to see but the start of the sway (the owner, 21 Oct 2026: «сначала
+ * картинка, потом 3D»). Never with reduced motion (the still stays): AiStoneSlot decides.
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Resume } from "../lib/Resume";
@@ -26,6 +28,8 @@ const input = { x: 0, y: 0, tx: 0, ty: 0, scroll: 0 };
 export default function AiStone({ host }: { host: HTMLElement }) {
   const box = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  // shown yet? Until the cross-fade starts the stone holds its first frame (the still's pose): no sway, no lean
+  const shown = useRef(false);
   const coarse = useMemo(() => matchMedia("(pointer: coarse)").matches, []);
 
   // runs only while the first screen can be seen and is not covered by the block sliding over it
@@ -109,7 +113,16 @@ export default function AiStone({ host }: { host: HTMLElement }) {
           gl.toneMappingExposure = 1.12;
         }}
       >
-        <Stone coarse={coarse} onLive={() => stillSettled(host).then(() => host.classList.add("is-live"))} />
+        <Stone
+          coarse={coarse}
+          shown={shown}
+          onLive={() =>
+            stillSettled(host).then(() => {
+              shown.current = true;
+              host.classList.add("is-live");
+            })
+          }
+        />
         <Resume running={visible} />
       </Canvas>
     </div>
@@ -124,7 +137,7 @@ function stillSettled(host: HTMLElement) {
   return Promise.all(running.map((a) => a.finished.catch(() => undefined))).then(() => undefined);
 }
 
-function Stone({ coarse, onLive }: { coarse: boolean; onLive: () => void }) {
+function Stone({ coarse, shown, onLive }: { coarse: boolean; shown: RefObject<boolean>; onLive: () => void }) {
   const { gl, scene, camera } = useThree();
   const studio = useMemo(() => createStudioEnvironment(gl), [gl]);
   const chrome = useMemo(() => createChromeEnvironment(gl, CHROME_LIGHTS.signal), [gl]);
@@ -143,7 +156,8 @@ function Stone({ coarse, onLive }: { coarse: boolean; onLive: () => void }) {
   const rim = useRef<THREE.DirectionalLight>(null);
   const top = useRef<THREE.DirectionalLight>(null);
   const rot = useMemo(() => new THREE.Matrix4(), []);
-  const clock = useRef({ time: 0, reveal: 0, ready: false, frames: 0 });
+  // fully lit from its first frame: that frame is the still under it (no dip into darkness at the swap)
+  const clock = useRef({ time: 0, reveal: 1, ready: false, frames: 0 });
 
   useEffect(() => {
     scene.environment = studio;
@@ -166,13 +180,16 @@ function Stone({ coarse, onLive }: { coarse: boolean; onLive: () => void }) {
     const c = clock.current;
     if (!c.ready || !stage.current || !tilt.current || !spin.current || !rock.current || !key.current || !rim.current || !top.current) return;
     const dt = Math.min(delta, 1 / 20);
-    c.time += dt;
-    // lit out of darkness over a second and a half, as the main page's stone is
+    // its clock starts with the cross-fade: the first frame anyone sees is the still's pose
+    if (shown.current) c.time += dt;
+    // (a reveal out of darkness, as the main page's stone has, would start from 0 here: this one starts lit)
     c.reveal = Math.min(1, c.reveal + dt / 1.5);
     const lit = 1 - Math.pow(1 - c.reveal, 3);
     if (++c.frames === 2) onLive(); // the picture under it can go
-    input.x = damp(input.x, input.tx, 2.6, dt);
-    input.y = damp(input.y, input.ty, 2.6, dt);
+    if (shown.current) {
+      input.x = damp(input.x, input.tx, 2.6, dt);
+      input.y = damp(input.y, input.ty, 2.6, dt);
+    }
     const t = c.time;
     const s = input.scroll;
     spin.current.rotation.y = SEAM_FACING + Math.sin(t * 0.19) * SWAY + s * 0.9;

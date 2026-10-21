@@ -44,6 +44,7 @@ const TO_TOP_QUIET = [
   ".ai-calc label",
   ".ai-door",
   ".ai-replay",
+  ".ai-proof__ex",
   "#faq summary",
   ".lead-form :is(input:not([tabindex='-1']), textarea, button, label)",
   ".ai-pick",
