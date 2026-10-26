@@ -7,8 +7,9 @@ import { aiHref } from "@/components/ai/links";
 const ROWS = ["tg", "phone", "mail", "fop"] as const;
 
 /**
- * 3 · Контакти: a plain list, no cards (Telegram, phone, e-mail, the legal entity), when we answer, and the page's one
- * lime button: «Обговорити проєкт», to the main page's form.
+ * 4 · Контакти: a plain list, no cards (Telegram, phone, e-mail, the legal entity), when we answer, and the page's one
+ * lime button: «Обговорити проєкт», to the main page's form. The rows come in one after another as the list reaches the
+ * screen (React Bits' Animated List: a short rise from a little smaller; runtime: [data-in]).
  */
 export async function AboutContacts({ index }: { index: number }) {
   const t = await getTranslations("about");
@@ -27,9 +28,9 @@ export async function AboutContacts({ index }: { index: number }) {
         </header>
         <div className="about-cols">
           <div className="about-contacts__in">
-            <dl className="about-contacts__list" data-sr="">
+            <dl className="about-contacts__list">
               {ROWS.map((k) => (
-                <div className="about-contacts__row" key={k}>
+                <div className="about-contacts__row" data-in="" key={k}>
                   <dt>{t(`contacts.${k}`)}</dt>
                   <dd className="is-empty">{t("contacts.empty")}</dd>
                 </div>

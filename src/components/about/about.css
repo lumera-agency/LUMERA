@@ -2,7 +2,10 @@
  * «Про нас» (/pro-nas): this page's own blocks. The kit (tokens, sections and heads, the card, the ivory block, buttons,
  * topbar, footer) is the main page's and the AI pages' (styles/tokens.css, layout/page/page.css, ui/button, ai/ai.css).
  * Every colour here is a token: the page has no value of its own. Type: five sizes (label, small, lead, display, and the
- * buttons' own); mono only in the labels.
+ * buttons' own); mono only in the labels (the blocks' labels, the contacts' names, the cases' chips).
+ * Effects, ported from React Bits and 21st.dev and rebuilt on CSS (transform and opacity only, each once, the CSS default
+ * the final frame): Vertical Cut Reveal, Text Generate Effect, Shuffle, Glare Hover, Bounce Cards, Animated Content,
+ * Animated List (runtime/about-runtime.js plays what waits for the screen).
  */
 
 /* the AI pages' resets cover h2 and ol; the cards' role is an h3 */
@@ -19,9 +22,31 @@ main.about [data-in] {
     opacity 0.9s var(--ease-out) var(--d, 0s),
     translate 0.9s var(--ease-out) var(--d, 0s),
     rotate 0.9s var(--ease-out) var(--d, 0s),
+    scale 0.9s var(--ease-out) var(--d, 0s),
     transform 0.6s var(--ease-out);
 }
 main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
+/* (React Bits' Animated List) rows come in from a little lower and a little smaller: the contacts, the people on phones */
+main.about .about-contacts__row[data-in].is-pre { translate: 0 1rem; scale: 0.97; }
+.about-contacts__row { transform-origin: 0 50%; }
+
+/* (21st.dev's Vertical Cut Reveal) the first screen's title: each word rises out of its own cut, one after another,
+   from the first paint (the cut leaves room for the letters' marks above and below) */
+.about-cut { display: inline-block; overflow: clip; vertical-align: top; padding-block: 0.14em; margin-block: -0.14em; }
+.about-cut__w { display: inline-block; }
+@keyframes about-cut-in { from { translate: 0 115%; } }
+html.motion .about-cut__w { animation: about-cut-in 1s var(--ease-out) calc(0.1s + var(--i) * 0.07s) backwards; }
+
+/* (21st.dev's Text Generate Effect) a text's words come up one after another as it reaches the screen, once
+   ([data-gen], runtime: initIn) */
+.about-gen { transition: opacity 0.7s var(--ease-out) calc(var(--i) * 26ms); }
+main.about [data-gen].is-pre .about-gen { opacity: 0; transition: none; }
+
+/* (React Bits' Shuffle) a block's label while its letters settle: each letter on a strip, its own on top (runtime:
+   initShuffle; the plain text comes back once they have) */
+.about-sh { display: inline-block; height: 1.5em; overflow: hidden; vertical-align: top; }
+.about-sh__s { display: block; }
+.about-sh__s > span { display: block; height: 1.5em; line-height: 1.5em; }
 
 /* the photo's place (the owner adds the photos): a square on the card's radius, a faint hatch, a thin line person in
    the captions' grey; no accent in it */
@@ -29,7 +54,6 @@ main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
 .about-ph::before { content: ""; position: absolute; inset: 0; background: var(--hatch); opacity: 0.3; }
 .about-ph__ico { position: relative; width: clamp(2.75rem, 4vw, 3.5rem); height: auto; fill: none; stroke: var(--ink-mute); stroke-width: 1.25; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .about-ph__ico * { vector-effect: non-scaling-stroke; }
-.about-ph__ico--team { width: clamp(4rem, 6vw, 5.5rem); }
 
 /* a person: the photo, then the name small, the role at the reading size, one line of what they do */
 .about-m { display: grid; align-content: start; gap: 1.25rem; padding: 0.5rem 0.5rem 1.5rem; }
@@ -37,6 +61,12 @@ main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
 .about-m__name { font-size: var(--fs-small); line-height: 1.4; color: var(--ink-mute); }
 .about-m__role { font-size: var(--fs-lead); font-weight: 400; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
 .about-m__d { font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+/* (React Bits' Glare Hover) a soft streak of the page's light crosses the card once under the pointer; a mouse only */
+.about-glare { position: absolute; inset: 0; z-index: 2; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.about-glare::before { content: ""; position: absolute; top: -50%; bottom: -50%; left: 0; width: 35%; background: linear-gradient(90deg, transparent, var(--ink), transparent); opacity: 0; translate: -150% 0; rotate: 18deg; }
+@media (hover: hover) and (pointer: fine) {
+  .about-m:hover .about-glare::before { opacity: 0.08; translate: 420% 0; transition: translate 1.1s var(--ease-out), opacity 0.3s var(--ease-out); }
+}
 
 /* the quiet way down to the contacts */
 .about-down { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; margin-top: 0.75rem; }
@@ -96,17 +126,25 @@ main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
 .about-work__text p { font-size: var(--fs-lead); font-weight: 300; line-height: 1.6; color: var(--ink-soft); text-wrap: pretty; }
 
 /* ==========================================================================
-   The light block: one sentence, the team's photo
+   3 · Кейси (the page's one light block): the clients' cases, in the site's own words, without their numbers
    ========================================================================== */
-/* (one column: the head's title would otherwise span 8 implicit columns of the kit's grid) */
-.about-photo__in { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--rhythm-m); }
-.about-photo__in > * { grid-column: 1; }
-.about-photo__text { max-width: 18ch; }
-.about-photo__ph { display: grid; place-items: center; align-content: center; gap: 1rem; aspect-ratio: 21 / 9; border-radius: var(--radius-lg); font-size: var(--fs-small); color: var(--ink-dark-mute); background: var(--card-ivory); box-shadow: inset 0 0 0 1px var(--line-dark); }
-.about-photo__ph .about-ph__ico { stroke: currentColor; }
+.about-cases__list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--card-gap); }
+.about-case { display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 0.5rem; padding: clamp(1.25rem, 2vw, 1.75rem); }
+.about-case__chip { justify-self: start; margin-bottom: 0.75rem; padding: 0.4375rem 0.625rem; border-radius: 62.4375rem; font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ivory); background: var(--ink-dark); }
+.about-case__name { font-size: var(--fs-lead); font-weight: 500; line-height: 1.25; color: var(--ink-dark); text-wrap: balance; }
+.about-case__who { font-size: var(--fs-small); line-height: 1.45; color: var(--ink-dark-mute); }
+.about-case__d { font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+.about-case__go { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--line-dark); }
+.about-case__go a { display: inline-flex; align-items: center; gap: 0.375rem; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink-dark); }
+.about-case__go svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
+.about-case__go a:hover svg { transform: translateX(0.1875rem); }
+/* under the pointer the card lifts a little (a mouse only) */
+@media (hover: hover) and (pointer: fine) {
+  .about-case:hover { transform: translateY(-0.375rem); }
+}
 
 /* ==========================================================================
-   3 · Контакти: the list, when we answer, the page's one lime button
+   4 · Контакти: the list, when we answer, the page's one lime button
    ========================================================================== */
 .about-contacts { padding-bottom: var(--rhythm-section); }
 .about-contacts__in { display: grid; justify-items: start; gap: var(--rhythm-s); }
@@ -124,6 +162,7 @@ main.about .about-contacts .btn--primary { --btn-bg: var(--signal); --btn-ink: v
    ========================================================================== */
 @media (max-width: 1100px) {
   .about-cols > * { grid-column: 4 / -1; }
+  .about-cases__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 860px) {
   .about-cols > * { grid-column: 1 / -1; }
@@ -136,11 +175,12 @@ main.about .about-contacts .btn--primary { --btn-bg: var(--signal); --btn-ink: v
   .about-fan .about-m { grid-template-columns: 8rem minmax(0, 1fr); align-items: center; gap: 0 1.25rem; padding: 0.5rem 1.25rem 0.5rem 0.5rem; }
   .about-fan .about-ph__ico { width: 2.5rem; }
   .about-fan .about-m__body { padding: 0.25rem 0; }
+  main.about .about-fan [data-in].is-pre { translate: 0 1.25rem; scale: 0.97; }
 }
 @media (max-width: 600px) {
   .about-hero { padding-top: calc(var(--topbar-h) + 1.75rem); }
   .about-fan .about-m { grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0 1rem; padding: 0.5rem 1rem 0.5rem 0.5rem; }
   .about-fan .about-ph__ico { width: 2.25rem; }
-  .about-photo__ph { aspect-ratio: 4 / 3; }
+  .about-cases__list { grid-template-columns: minmax(0, 1fr); }
   .about-contacts__row { grid-template-columns: minmax(0, 1fr); }
 }
