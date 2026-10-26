@@ -13,7 +13,7 @@ main.about h3 { margin: 0; }
    ========================================================================== */
 
 /* [data-in]: a part that comes in once as it reaches the screen (runtime: initIn). Its CSS default is its final frame;
-   .is-pre holds the start (each variant sets its own below); --d staggers the ones arriving together */
+   .is-pre holds the start (a short rise); --d staggers the ones arriving together */
 main.about [data-in] {
   transition:
     opacity 0.9s var(--ease-out) var(--d, 0s),
@@ -47,29 +47,12 @@ main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
 .about-cols > * { grid-column: 7 / -1; }
 
 /* ==========================================================================
-   1 · Команда, the first screen (three variants)
+   1 · Команда, the first screen (the owner's pick of 26 Oct): wide screens «Віяло», the title in the middle over the
+   lines and the cards fanning out into a row; phones and tablets «Розкол»'s rows, the photo's square beside the words
    ========================================================================== */
-.about-hero { padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); }
-
-/* ---------- A · «Сітка»: the head as on the sibling pages, the cards in a row, the middle one a step lower ---------- */
-.about-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--card-gap); align-items: start; }
-.about-grid .about-m { transform: perspective(60rem) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
-
-/* ---------- B · «Розкол»: the title stays on the left, the people pass on the right ---------- */
-.about-split { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: start; }
-.about-split__head { grid-column: 1 / span 5; position: sticky; top: calc(var(--topbar-h) + clamp(1.5rem, 5vh, 3rem)); }
-.about-split__head .s-head__meta { margin-bottom: var(--rhythm-xs); }
-.about-split__list { grid-column: 7 / -1; display: grid; gap: var(--card-gap); }
-.about-split .about-m { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: end; gap: 0 1.5rem; padding: 0.5rem 1.5rem 0.5rem 0.5rem; }
-.about-split .about-ph { aspect-ratio: 4 / 5; }
-.about-split .about-m__body { padding: 0 0 1.25rem; }
-/* (a short slide: less than the page's side margin, so nothing ever sticks out past the screen's edge) */
-@media (min-width: 861px) { main.about .about-split [data-in].is-pre { translate: 1.75rem 0; } }
-
-/* ---------- C · «Віяло»: the title in the middle over the lines; the cards fan out into a row ---------- */
-.about-hero--c { overflow: hidden; padding-bottom: var(--rhythm-m); }
+.about-hero { overflow: hidden; padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); }
 .about-hero__bg { -webkit-mask-image: linear-gradient(var(--bg) 35%, transparent 90%); mask-image: linear-gradient(var(--bg) 35%, transparent 90%); }
-.about-hero--c > .container { z-index: 1; }
+.about-hero > .container { z-index: 1; }
 .about-center { text-align: center; }
 .about-center .s-head__title { grid-column: 1 / -1; justify-self: center; max-width: 14ch; }
 .about-center .s-head__intro { grid-column: 1 / -1; justify-self: center; margin-top: 1.25rem; }
@@ -78,11 +61,8 @@ main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
 /* in the pile the cards lie on each other: the page's black under the card's own light, so one never shows through */
 .about-fan > .about-m { background-color: var(--bg); }
 
-/* ---------- the first screen's entrances (CSS, from the first paint, only with motion; wide screens: the cards are on
-   the first screen there; phones bring them in one at a time as they reach the screen, [data-in]) ---------- */
-@keyframes about-rise { from { opacity: 0; translate: 0 2.5rem; } }
-@keyframes about-slide { from { opacity: 0; translate: 1.75rem 0; } }
-/* (Bounce Cards) the side cards arrive as a fanned pile behind the middle one, hold, and spread to their places */
+/* (Bounce Cards) wide screens: the side cards arrive as a fanned pile behind the middle one, hold, and spread to their
+   places; CSS from the first paint, only with motion (phones and tablets: [data-in], one card at a time) */
 @keyframes about-fan-l {
   0% { opacity: 0; translate: calc(100% + var(--card-gap)) 3rem; rotate: -12deg; }
   30%, 48% { opacity: 1; translate: calc(86% + var(--card-gap)) 0.75rem; rotate: -7deg; }
@@ -93,20 +73,13 @@ main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
 }
 @keyframes about-fan-m { 0% { opacity: 0; translate: 0 3rem; } 30% { opacity: 1; translate: 0 0; } }
 @media (min-width: 861px) {
-  html.motion .about-grid > * { animation: about-rise 1s var(--ease-out) 0.35s backwards; }
-  html.motion .about-grid > :nth-child(2) { animation-delay: 0.47s; }
-  html.motion .about-grid > :nth-child(3) { animation-delay: 0.59s; }
-  html.motion .about-split__list > * { animation: about-slide 1s var(--ease-out) 0.35s backwards; }
-  html.motion .about-split__list > :nth-child(2) { animation-delay: 0.47s; }
-  html.motion .about-split__list > :nth-child(3) { animation-delay: 0.59s; }
+  .about-hero { padding-bottom: var(--rhythm-m); }
   html.motion .about-fan > :nth-child(1) { animation: about-fan-l 1.7s var(--ease-out) 0.3s backwards; }
   html.motion .about-fan > :nth-child(2) { animation: about-fan-m 1.7s var(--ease-out) 0.3s backwards; }
   html.motion .about-fan > :nth-child(3) { animation: about-fan-r 1.7s var(--ease-out) 0.3s backwards; }
-  .about-grid > :nth-child(2) { margin-top: clamp(2.5rem, 7vh, 5rem); }
 }
-
-/* (Bounce Cards) under the pointer: the card lifts, the others step aside; a mouse only */
-@media (hover: hover) and (pointer: fine) {
+/* (Bounce Cards) under the pointer: the card lifts, the others step aside; wide screens, a mouse only */
+@media (min-width: 861px) and (hover: hover) and (pointer: fine) {
   .about-fan > .about-m:hover { transform: translateY(-0.5rem); }
   .about-fan:has(> :nth-child(1):hover) > :is(:nth-child(2), :nth-child(3)),
   .about-fan:has(> :nth-child(2):hover) > :nth-child(3) { transform: translateX(0.625rem); }
@@ -147,14 +120,6 @@ main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
 main.about .about-contacts .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: var(--ink); --btn-glow: var(--signal-glow); }
 
 /* ==========================================================================
-   TEMPORARY: the variants' switch (goes once the owner has chosen)
-   ========================================================================== */
-.about-pick { position: fixed; z-index: 60; left: 1rem; bottom: 1rem; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 62.4375rem; font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); background: var(--bg); box-shadow: inset 0 0 0 1px var(--border-strong); }
-.about-pick span { padding: 0 0.5rem 0 0.75rem; }
-.about-pick a { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; color: var(--ink); text-decoration: none; }
-.about-pick a[aria-current] { color: var(--on-ink); background: var(--ink); }
-
-/* ==========================================================================
    Narrower screens
    ========================================================================== */
 @media (max-width: 1100px) {
@@ -162,24 +127,20 @@ main.about .about-contacts .btn--primary { --btn-bg: var(--signal); --btn-ink: v
 }
 @media (max-width: 860px) {
   .about-cols > * { grid-column: 1 / -1; }
-  .about-grid, .about-fan { grid-template-columns: minmax(0, 1fr); max-width: 30rem; }
-  .about-split__head { grid-column: 1 / -1; position: static; margin-bottom: var(--rhythm-m); }
-  .about-split__list { grid-column: 1 / -1; }
-  /* the fan, one at a time: each card comes in a little turned and straightens */
-  main.about .about-fan > :nth-child(odd).is-pre { rotate: -3deg; }
-  main.about .about-fan > :nth-child(even).is-pre { rotate: 3deg; }
+  /* the first screen: no lines, the head on the left, the people as rows (one under another, the photo's square on the
+     left, the words beside it) */
+  .about-hero__bg { display: none; }
+  .about-center { text-align: left; }
+  .about-center .s-head__title, .about-center .s-head__intro { justify-self: start; }
+  .about-fan { grid-template-columns: minmax(0, 1fr); max-width: 36rem; margin-inline: 0; }
+  .about-fan .about-m { grid-template-columns: 8rem minmax(0, 1fr); align-items: center; gap: 0 1.25rem; padding: 0.5rem 1.25rem 0.5rem 0.5rem; }
+  .about-fan .about-ph__ico { width: 2.5rem; }
+  .about-fan .about-m__body { padding: 0.25rem 0; }
 }
 @media (max-width: 600px) {
   .about-hero { padding-top: calc(var(--topbar-h) + 1.75rem); }
-  .about-center { text-align: left; }
-  .about-center .s-head__title, .about-center .s-head__intro { justify-self: start; }
-  /* B: compact rows, the photo's square on the left */
-  .about-split .about-m { grid-template-columns: 6.5rem minmax(0, 1fr); align-items: center; gap: 0 1rem; padding: 0.5rem 1rem 0.5rem 0.5rem; }
-  .about-split .about-ph { aspect-ratio: 1; }
-  .about-split .about-ph__ico { width: 2.25rem; }
-  .about-split .about-m__body { padding: 0.25rem 0; }
+  .about-fan .about-m { grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0 1rem; padding: 0.5rem 1rem 0.5rem 0.5rem; }
+  .about-fan .about-ph__ico { width: 2.25rem; }
   .about-photo__ph { aspect-ratio: 4 / 3; }
   .about-contacts__row { grid-template-columns: minmax(0, 1fr); }
-  .about-pick { top: calc(var(--topbar-h) + 0.5rem); right: 1rem; bottom: auto; left: auto; }
-  .about-pick span { display: none; }
 }

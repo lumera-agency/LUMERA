@@ -1,10 +1,10 @@
 /*
  * «Про нас»'s behaviour, an island as on the sibling pages (React owns the markup, this module the motion): the parts
- * coming in as they reach the screen, variant A's tilt, the phones' sticky request bar, and where the visitor lands.
+ * coming in as they reach the screen, the phones' sticky request bar, and where the visitor lands.
  * The section heads and the [data-sr] blocks are the main page's own reveals (PageShell → ScrollReveals).
  *
- * Ported ideas (React Bits, reactbits.dev, MIT + Commons Clause), rebuilt here on CSS transitions: Animated Content (a
- * part rises in once), Tilted Card (the card leans toward the pointer), Bounce Cards (variant C: the fan, CSS only).
+ * Ported ideas (React Bits, reactbits.dev, MIT + Commons Clause), rebuilt here on CSS: Animated Content (a part rises in
+ * once, below), Bounce Cards (the first screen's fan on wide screens, about.css only).
  *
  * Motion rules (the owner's): transform and opacity only, once each, nothing runs at rest; with reduced motion the page
  * shows every part's final frame. The CSS default of each part IS its final frame: `.is-pre` holds its start until it
@@ -16,7 +16,6 @@ const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const phoneMQ = window.matchMedia('(max-width: 600px)');
-const fineMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
 
 let started = false;
 /** Once per page load (React's dev double effects run it twice). */
@@ -24,12 +23,11 @@ export function startAbout() {
   if (started) return;
   started = true;
   initIn();
-  initTilt();
   initSticky();
   arrive();
 }
 
-/* ---------- [data-in]: a part still below the screen waits (.is-pre: each variant's own start frame in about.css) and
+/* ---------- [data-in]: a part still below the screen waits (.is-pre: its start frame, about.css) and
    comes in once as it reaches the screen; the ones arriving together one after another (--d). A part on the screen or
    passed stays as it is; a keyboard focus inside a waiting part shows it at once ---------- */
 function initIn() {
@@ -62,35 +60,6 @@ function initIn() {
     io.unobserve(el);
     el.classList.remove('is-pre');
   });
-}
-
-/* ---------- variant A: each card leans a little toward the pointer (at most 3°), and straightens when it leaves; only
-   with a mouse, only while it moves (no loop) ---------- */
-function initTilt() {
-  if (!motion || !fineMQ.matches) return;
-  const MAX = 3;
-  for (const card of $$('[data-tilt]')) {
-    let frame = 0;
-    let x = 0.5;
-    let y = 0.5;
-    const draw = () => {
-      frame = 0;
-      card.style.setProperty('--rx', `${((0.5 - y) * MAX * 2).toFixed(2)}deg`);
-      card.style.setProperty('--ry', `${((x - 0.5) * MAX * 2).toFixed(2)}deg`);
-    };
-    card.addEventListener('pointermove', (e) => {
-      const r = card.getBoundingClientRect();
-      x = (e.clientX - r.left) / r.width;
-      y = (e.clientY - r.top) / r.height;
-      if (!frame) frame = requestAnimationFrame(draw);
-    });
-    card.addEventListener('pointerleave', () => {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      card.style.removeProperty('--rx');
-      card.style.removeProperty('--ry');
-    });
-  }
 }
 
 /* ---------- phones: the request button once the first screen has passed, hidden again at the contacts and the footer

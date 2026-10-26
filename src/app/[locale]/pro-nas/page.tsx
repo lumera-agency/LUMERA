@@ -3,7 +3,7 @@ import { PageShell } from "@/components/layout/page/PageShell";
 import { aiHref } from "@/components/ai/links";
 import { aiMetadata } from "@/components/ai/meta";
 import { AboutShell } from "@/components/about/AboutShell";
-import { AboutTeam, type AboutVariant } from "@/components/sections/about-page/AboutTeam";
+import { AboutTeam } from "@/components/sections/about-page/AboutTeam";
 import { AboutWork } from "@/components/sections/about-page/AboutWork";
 import { AboutPhoto } from "@/components/sections/about-page/AboutPhoto";
 import { AboutContacts } from "@/components/sections/about-page/AboutContacts";
@@ -13,21 +13,16 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/pro-nas"
   return aiMetadata({ locale, namespace: "about.meta", path: "/pro-nas", image: "/img/about/og-about.jpg" });
 }
 
-/** TEMPORARY: the first screen's variants (?v=a|b|c) while the owner chooses; goes with the switch below */
-const VARIANTS: readonly AboutVariant[] = ["a", "b", "c"];
-
 /**
  * «Про нас» — the studio's own page: who the visitor will talk to, and how to reach them (the owner's brief of 26 Oct:
  * the page answers one doubt, «won't they vanish in a month?», and stays short). 1 the team (the first screen) → 2 how we
  * work → the one light block (a sentence, the team's photo) → 3 the contacts. No form of its own: the request buttons
  * lead to the main page's. Built from the sibling pages' kit (AdsShell's frame, the main page's sections and card).
  */
-export default async function AboutPage({ params, searchParams }: PageProps<"/[locale]/pro-nas">) {
+export default async function AboutPage({ params }: PageProps<"/[locale]/pro-nas">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("about");
-  const { v } = await searchParams;
-  const variant = VARIANTS.find((k) => k === v) ?? "a";
   const home = aiHref(locale, "/");
   const form = `${home}#contact`;
   const nav = [
@@ -44,18 +39,11 @@ export default async function AboutPage({ params, searchParams }: PageProps<"/[l
       barCta={{ href: form, text: t("topbar.cta") }}
     >
       <PageShell>
-        <AboutTeam variant={variant} />
+        <AboutTeam />
         <AboutWork index={2} />
         <AboutPhoto />
         <AboutContacts index={3} />
       </PageShell>
-      {/* TEMPORARY: the variants' switch, for the owner's choice */}
-      <nav className="about-pick" aria-label={t("pick")}>
-        <span>{t("pick")}</span>
-        {VARIANTS.map((k) => (
-          <a href={`?v=${k}`} aria-current={k === variant ? "page" : undefined} key={k}>{k.toUpperCase()}</a>
-        ))}
-      </nav>
     </AboutShell>
   );
 }
