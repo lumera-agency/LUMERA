@@ -154,7 +154,13 @@ export function LetterFlow({ copy, loop = false }: { copy: FlowCopy; loop?: bool
           gsap.set(q(".flow__mark, .flow__chip-fill"), { scaleX: 0 });
           // the texts the scenes write over: put back when this run is undone (a width change, a replay)
           const texts = [...values, clock, ms].map((node) => [node, node.textContent] as const);
-          values.forEach((v) => (v.textContent = "· · ·"));
+          // each field keeps its final height while it reads «· · ·» and while its letters scramble (a long value, or a
+          // scramble wider than it, wraps on narrow phones: CLS 0)
+          values.forEach((v) => {
+            const box = v.parentElement;
+            if (box) box.style.height = `${box.offsetHeight}px`;
+            v.textContent = "· · ·";
+          });
           clock.textContent = sec(0);
           ms.textContent = "0 мс";
 
@@ -186,7 +192,10 @@ export function LetterFlow({ copy, loop = false }: { copy: FlowCopy; loop?: bool
               if (run) gsap.set(gsap.utils.selector(step)(".flow__fill"), { scaleY: 1 });
             });
           }
-          return () => texts.forEach(([node, text]) => (node.textContent = text));
+          return () => {
+            texts.forEach(([node, text]) => (node.textContent = text));
+            values.forEach((v) => v.parentElement?.style.removeProperty("height"));
+          };
         },
       );
       return () => mm.revert();
