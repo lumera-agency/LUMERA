@@ -5,28 +5,12 @@
  * scenes; the price calculator reuses its .ai-calc. Phase 1 lays the blocks out; phase 3 sets the final weights.
  */
 
-/* ---------- 1 · the first screen: the words alone over the stone (the to-do list went), the screen's full height ---------- */
-main[data-ai-page="ai"] .ai-hero--center { display: grid; align-content: center; min-height: 100svh; padding-bottom: clamp(4rem, 10vh, 7rem); }
+/* ---------- 1 · the first screen «Пульт» (the owner's pick, 26 Oct 2026): its layout and console are hero-console.css;
+   here the words' small parts shared with the earlier first screens ---------- */
 main[data-ai-page="ai"] .ai-hero__lead2 { display: block; color: var(--ink-soft); }
 main[data-ai-page="ai"] .ai-hero__audit { margin: 1.125rem 0 0; font-size: var(--fs-small); color: var(--ink-soft); text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 0 0.5rem rgba(0, 0, 0, 0.85); }
 main[data-ai-page="ai"] .ai-hero__loss { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; color: var(--ink); text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.85); }
-/* the stone: its still and its live render in one box at 0.8 (so the dissolve never thickens it); the still is the
-   live stone's first frame at the canvas' size, so the canvas dissolves in over it in a third of a second, then the
-   still goes (the owner, 21 Oct 2026: «сначала картинка, потом 3D») */
-main[data-ai-page="ai"] .ai-hero__stone-box { position: absolute; left: 0; top: 0; opacity: 0.8; }
-main[data-ai-page="ai"] .ai-hero__stone { width: 11.6em; height: 11.6em; rotate: none; opacity: 1; filter: none; }
-main[data-ai-page="ai"] .ai-hero__canvas { opacity: 0; transition: opacity 0.35s ease-out; }
-main[data-ai-page="ai"] .ai-hero__stone-box.is-live .ai-hero__canvas { opacity: 1; }
-main[data-ai-page="ai"] .ai-hero__stone-box.is-live .ai-hero__stone { opacity: 0; transition: opacity 0s linear 0.4s; }
-@media (max-width: 600px) {
-  main[data-ai-page="ai"] .ai-hero__stone { width: 12.4em; height: 12.4em; opacity: 1; }
-}
 main[data-ai-page="ai"] .ai-hero__loss svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-/* phones: each of the title's two lines stays whole («Що у вашому бізнесі», «до сих пор вручную?» are longer than the
-   old lines): the size follows the column's width */
-@media (max-width: 600px) {
-  main[data-ai-page="ai"] .ai-hero--center .ai-hero__title--auto { font-size: min(clamp(2rem, 9.5vw, 3.2rem), calc((100vw - 2 * var(--gutter)) / 10.8)); }
-}
 
 /* ---------- 2 · Кейс (ivory, the sheet over the first screen): who and what, the morning before and after, the screenshots ---------- */
 main[data-ai-page="ai"] .ai-proof__lead { display: grid; gap: 0.875rem; max-width: 46rem; margin-top: var(--rhythm-s); }
@@ -247,4 +231,13 @@ main[data-ai-page="ai"] .ai-out__item { padding: 1.125rem 0; border-bottom: 1px 
     transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s linear 0.45s;
   }
   body:has(main[data-ai-page="ai"]) .ai-sticky.is-on { visibility: visible; transform: none; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s; }
+}
+
+/* ---------- 1 → 2 on a phone (the owner, 26 Oct 2026: «убери наезд экрана на мобильном телефоне, он не нужен»): the
+   first screen no longer pins and block 2 no longer slides over it as a sheet; the page simply scrolls. Computers keep
+   the sheet (ai.css: html.ai-stick .ai-hero[data-cover]). ---------- */
+@media (max-width: 899px) {
+  html.ai-stick main[data-ai-page="ai"] .ai-hero[data-cover] { position: relative; top: auto; }
+  html.ai-stick main[data-ai-page="ai"] .ai-hero[data-cover] + .page > .section:first-of-type { border-radius: 0; box-shadow: none; }
+  html.ai-stick main[data-ai-page="ai"] .ai-hero[data-cover] :is(.ai-hero__in, .ai-hero__bg) { animation: none; }
 }

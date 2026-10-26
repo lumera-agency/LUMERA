@@ -17,8 +17,9 @@ export function ScrollReveals({ root = "[data-page]", exclude = ".is-deck .stage
       const items = [...scope.querySelectorAll<HTMLElement>("[data-sr]")].filter((el) => !el.closest(exclude));
       const touch = !matchMedia("(hover: hover) and (pointer: fine)").matches;
       const rise = touch ? 0 : 24;
-      gsap.set(items, { opacity: 0, y: rise });
-      ScrollTrigger.batch(items, {
+      // (a page with no [data-sr] blocks, e.g. the AI page: GSAP would warn «target not found» on an empty set)
+      if (items.length) gsap.set(items, { opacity: 0, y: rise });
+      if (items.length) ScrollTrigger.batch(items, {
         start: touch ? "top 98%" : "top 88%",
         once: true,
         onEnter: (batch) => {
