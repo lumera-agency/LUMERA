@@ -9,7 +9,7 @@
  * her request, the search that brought it, the automations around it.
  *
  * Each is a GSAP timeline that plays once, when its row is being read, and
- * rests at 8.0 s (clip 4 at 9.0). Only one thing moves at a time. Rows arrive
+ * rests at its own label (clips 1–2 at 6.2 and 6.4 s, clip 4 at 9.0). Only one thing moves at a time. Rows arrive
  * on their start frame and replay when they come back into view (or from the
  * «Ще раз» pill); with reduced motion each shows exactly its rest frame;
  * without GSAP the CSS default is that same finished composition.
@@ -206,12 +206,6 @@ function aimAt(stage, el, s, keep) {
   return { x: () => f().x, y: () => f().y, scale: s };
 }
 
-/** Four corner ticks, 7 px long, 4 px outside the rect. */
-const bracketsD = (r, k = 7, o = 4) => {
-  const [x0, y0, x1, y1] = [r.x - o, r.y - o, r.x + r.w + o, r.y + r.h + o].map((v) => Math.round(v) + 0.5);
-  return `M${x0} ${y0 + k}V${y0}H${x0 + k}M${x1 - k} ${y0}H${x1}V${y0 + k}M${x1} ${y1 - k}V${y1}H${x1 - k}M${x0 + k} ${y1}H${x0}V${y1 - k}`;
-};
-
 /** The step track: the stub fills during the open, each connector fills over the last
  *  0.5 s of the step before, the active numeral sits on a lime disc; at the result
  *  the lime turns to ink and the track rests complete. */
@@ -268,6 +262,13 @@ function wipe(tl, box, inner, at, duration) {
     .to(box, { x: 0, duration, ease: E.travel }, at)
     .to(inner, { x: 0, duration, ease: E.travel }, at);
 }
+/** A wipe in percent of the box itself (immune to the box being measured before its final size). */
+function wipePct(tl, box, inner, at, duration) {
+  tl.set(box, { xPercent: -100 }, 0)
+    .set(inner, { xPercent: 100 }, 0)
+    .to(box, { xPercent: 0, duration, ease: E.travel }, at)
+    .to(inner, { xPercent: 0, duration, ease: E.travel }, at);
+}
 /** System streaming: the text of `el` as word spans (built once), for a word-by-word arrival. */
 function splitWords(el) {
   if (!el.querySelector('.w')) {
@@ -285,240 +286,100 @@ function splitWords(el) {
 /** The window is a phone's (the CSS container queries switch at the same width). */
 const isNarrow = (root) => root.offsetWidth < 520;
 
-/* ---------- 1 · Дизайн: the first screen answers at once what you offer, why to trust you and what
-   to do — the offer, then the proof, then the button, each marked by a numbered note. On a phone the
-   notes are numbered discs and the caption names the active one; on the rest frame the discs and the
-   track (1 Пропозиція · 2 Довіра · 3 Дія) are the legend. ---------- */
-function attention(gsap, root) {
+/* ---------- 1 · Дизайн: one layout becomes three businesses, each in its own colours, fonts and photos, on a
+   computer and a phone at once (the design page's sample sites). Grey blocks first; then the photo studio,
+   the dental clinic and the glass shop wipe in one after another; the rest frame is the shop with the summary
+   line «Кольори, шрифти й фото під ваш бізнес». ---------- */
+function looks(gsap, root) {
   const q = gsap.utils.selector(root);
-  const stage = q('.d-stage')[0];
-  const box = q('.mh')[0];
-  const cols = q('.mh__grid i');
-  const title = q('.mh__title')[0];
-  const logo = q('.mh__logo')[0];
-  const [titleText] = q('.rise > span');
-  const [titleWire, ctaWire] = q('.mh__wire');
-  const cta = q('.mh__cta')[0];
-  const object = q('.mh__object')[0];
-  const proof = q('.mh__proof')[0];
-  const notes = q('.d-note');
-  const marks = q('.marks')[0];
-  const brackets = q('.marks__brackets')[0];
-  const leads = q('.marks__lead');
   const cap = q('.d-cap')[0];
   const caps = q('.d-cap__set > b');
-  // the client's object, the hero's stone: it waits dim and turned away, then lights and turns into place
-  const stone = q('.mh__stone')[0];
-  const unlit = q('.mh__float img')[0];
-  const glint = q('.mh__glint b')[0];
-
-  // the notes and their leader lines sit beside what they mark, never on it
-  const layout = () => {
-    const W = box.offsetWidth;
-    const H = box.offsetHeight;
-    marks.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    const t = boxIn(box, title);
-    const c = boxIn(box, cta);
-    const p = boxIn(box, proof);
-    const place = (el, x, y) => gsap.set(el, { left: Math.round(x), top: Math.round(y) });
-    const n1 = notes[0].offsetHeight;
-    // ① above the headline (clear of the logo when the nav sits close, on a phone)
-    const lg = boxIn(box, logo);
-    const x1 = t.y - n1 - 12 < lg.y + lg.h + 4 ? Math.max(t.x, lg.x + lg.w + 10) : t.x;
-    place(notes[0], x1, t.y - n1 - 12);
-    leads[0].setAttribute('d', `M${Math.round(x1 + n1 / 2) + 0.5} ${Math.round(t.y - 12)}V${Math.round(t.y - 3)}`);
-    // ② above the proof
-    place(notes[1], p.x, p.y - notes[1].offsetHeight - 12);
-    leads[1].setAttribute('d', `M${Math.round(p.x + notes[1].offsetHeight / 2) + 0.5} ${Math.round(p.y - 12)}V${Math.round(p.y - 3)}`);
-    // ③ right of the button
-    place(notes[2], c.x + c.w + 14, c.y + (c.h - notes[2].offsetHeight) / 2);
-    leads[2].setAttribute('d', `M${Math.round(c.x + c.w + 3)} ${Math.round(c.y + c.h / 2) + 0.5}H${Math.round(c.x + c.w + 14)}`);
-  };
-  const frame = (el) => () => brackets.setAttribute('d', bracketsD(boxIn(box, el)));
-
+  const desk = q('.looks__desk .looks__shot');
+  const phone = q('.looks__phone .looks__shot');
+  const beats = [0.4, 2.2, 4.0];
   const tl = gsap.timeline({ paused: true, defaults: { ease: E.arrive } });
-  layout();
-  new ResizeObserver(() => layout()).observe(box);
-  tl.call(layout, null, 0)
-    .set(stage, { x: 0, y: 0, scale: 1 }, 0)
-    .set(cols, { autoAlpha: 0.3 }, 0)
-    .set(titleText, { yPercent: 105 }, 0)
-    .set([titleWire, ctaWire], { autoAlpha: 1 }, 0)
-    .set(cta, { scale: 1 }, 0)
-    .set(proof, { autoAlpha: 0, y: 4 }, 0)
-    .set(notes, { autoAlpha: 0, x: -4 }, 0)
-    .set(leads, { autoAlpha: 0 }, 0)
-    .set(brackets, { autoAlpha: 0 }, 0)
-    .set(stone, { rotation: -9, scale: 0.95 }, 0)
-    .set(unlit, { opacity: 0.35 }, 0)
-    .set(glint, { xPercent: -110 }, 0)
-    .set(cap, { autoAlpha: 1 }, 0)
-    .set(caps, { autoAlpha: 0, y: 0 }, 0);
-  track(tl, root, [0.4, 2.4, 4.4], 7.2);
-  // 1 · the offer: the headline replaces its wireframe
-  tl.to(titleText, { yPercent: 0, duration: 0.6 }, 0.4)
-    .to(titleWire, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 0.45)
-    .to(stage, { ...aimAt(stage, title, 1.03), duration: 1.2, ease: E.camera }, 0.4)
-    .call(frame(title), null, 1.4)
-    .to(brackets, { autoAlpha: 1, duration: 0.35 }, 1.4)
-    .to(notes[0], { autoAlpha: 1, x: 0, duration: 0.3 }, 1.55)
-    .to(leads[0], { autoAlpha: 1, duration: 0.3 }, 1.55);
-  caption(tl, caps, -1, 0, 1.55);
-  // 2 · trust: the camera goes to the object; it lights and turns; the reviews arrive
-  tl.to(brackets, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 2.4)
-    .to(stage, { ...aimAt(stage, object, 1.1, title), duration: 1.0, ease: E.camera }, 2.4)
-    .to(unlit, { opacity: 1, duration: 0.9, ease: E.camera }, 3.4)
-    .to(stone, { rotation: 0, scale: 1, duration: 1.2, ease: E.camera }, 3.4)
-    .fromTo(glint, { xPercent: -110 }, { xPercent: 330, duration: 1.3, ease: 'power2.inOut', immediateRender: false }, 3.5)
-    .to(proof, { autoAlpha: 1, y: 0, duration: 0.5 }, 3.9)
-    .to(notes[1], { autoAlpha: 1, x: 0, duration: 0.3 }, 4.1)
-    .to(leads[1], { autoAlpha: 1, duration: 0.3 }, 4.1);
-  caption(tl, caps, 0, 1, 4.1);
-  // 3 · the action: the camera goes to the button; its placeholder gives way to the real button
-  tl.to(stage, { ...aimAt(stage, cta, 1.06), duration: 0.9, ease: E.camera }, 4.4)
-    .to(ctaWire, { autoAlpha: 0, duration: 0.4, ease: E.camera }, 5.3)
-    .fromTo(cta, { scale: 0.94 }, { scale: 1, duration: 0.45, ease: E.result, immediateRender: false }, 5.35)
-    .to(notes[2], { autoAlpha: 1, x: 0, duration: 0.3 }, 5.8)
-    .to(leads[2], { autoAlpha: 1, duration: 0.3 }, 5.8);
-  caption(tl, caps, 1, 2, 5.8);
-  // the result: the wide shot of a finished first screen; the notes stay as its legend
-  tl.to(stage, { x: 0, y: 0, scale: 1, duration: 1.1, ease: E.camera }, 6.4)
-    .to(cols, { autoAlpha: 0, duration: 0.4, ease: E.leave }, 6.4)
-    .to(leads, { autoAlpha: 0.35, duration: 0.4 }, 7.2)
-    .to(cap, { autoAlpha: 0, duration: 0.3, ease: E.leave }, 7.2)
-    .addLabel('rest', REST_AT);
+  tl.set(cap, { autoAlpha: 1 }, 0).set(caps, { autoAlpha: 0, y: 0 }, 0);
+  track(tl, root, beats, 5.4);
+  // each look wipes in over the last, in the desk and the phone at once (one gesture)
+  beats.forEach((t, i) => {
+    wipePct(tl, desk[i], desk[i].querySelector('img'), t, 0.8);
+    wipePct(tl, phone[i], phone[i].querySelector('img'), t, 0.8);
+  });
+  caption(tl, caps, -1, 0, 0.4, 1.0);
+  caption(tl, caps, 0, 1, 2.2, 2.8);
+  caption(tl, caps, 1, 2, 4.0, 4.6);
+  caption(tl, caps, 2, 3, 5.4); // the summary, its key word in ember
+  tl.addLabel('rest', 6.2);
   return tl;
 }
 
-/* ---------- 2 · Сайт і заявка: the page answers the client's four questions in turn — what, how
-   much, why trust you, how to order — and ordering takes two fields. One scroll down the page lights
-   the questions on the rail (on a phone the caption counts them); then she fills the two fields and
-   sends; the request is confirmed and counted. Every change is a fade or a move: no rolls. ---------- */
-function action(gsap, root) {
+/* ---------- 2 · Сайт і ціна: the design page's calculator in miniature. The visitor picks «Лендінг» instead of
+   «Магазин»: the sample becomes the photo studio and the sum $1 500 → $500; then ticks «3D-обʼєкт»: the studio's
+   own 3D object appears on its first screen and the sum becomes $900; the sum is ringed in lime and the ember
+   «Обговорити проєкт» comes up. On a phone the calculator is one bar over the sample and runs by itself. ---------- */
+function pick(gsap, root) {
   const q = gsap.utils.selector(root);
-  const stage = q('.d-stage')[0];
-  const sf = q('.sf')[0];
-  const view = q('.sf__view')[0];
-  const page = q('.sf__page')[0];
-  const rms = q('.sf__rm');
-  const ons = rms.map((m) => m.querySelector('.sf__on') || m.appendChild(Object.assign(document.createElement('span'), { className: 'sf__on' })));
-  const nums = q('.sf__rm em');
-  const ticks = q('.sf__rm svg');
-  const texts = q('.sf__ri > span');
-  const cap = q('.d-cap')[0];
-  const caps = q('.d-cap__set > b');
-  const form = q('.sf__form')[0];
-  const [nameInput, phoneInput] = q('.sf__input');
-  const [focusName, focusPhone] = q('.sf__focus');
-  const name = q('.sf__name')[0];
-  const slots = q('.sf__slot');
-  const oks = q('.sf__ok');
-  const send = q('.sf__send')[0];
-  const fill = q('.sf__send-fill')[0];
-  const labels = q('.sf__send-set > b');
-  const spin = q('.sf__spin')[0];
-  const done = q('.sf__done')[0];
-  const plus = q('.sf__plus')[0];
+  const pk = q('.pick')[0];
+  const rows = q('.pick__fmt');
+  const sel = q('.pick__sel')[0];
+  const opt = q('.pick__opt')[0];
+  const boxFill = q('.pick__box i')[0];
+  const boxTick = q('.pick__box svg')[0];
+  const mark = q('.mock-window__bar > .pick__mark')[0];
+  const [, studio, studio3d] = q('.pick__shot');
+  const valSets = q('.pick__vals').map((v) => [...v.children]);
+  const rings = q('.pick__ring');
+  const send = q('.pick__send')[0];
+  const swaps = q('.pick__swap > b');
+  const chip3d = q('.pick__chip--3d')[0];
   const ring = q('.ripple')[0];
   const cursor = q('.cursor')[0];
-  const tag = q('.cursor__tag')[0];
-  // her name is typed letter by letter (each letter a span: seeking lands on exact frames)
-  if (!name.querySelector('i')) {
-    const word = name.textContent.trim();
-    name.textContent = '';
-    for (const ch of word) name.append(Object.assign(document.createElement('i'), { textContent: ch }));
-  }
-  const letters = [...name.querySelectorAll('i')];
-  const unders = slots.map((s) => s.children[0]);
-  const digits = slots.map((s) => s.children[1]);
-  // the page ends scrolled to its form; points inside it are measured at that scroll
-  const pageY = () => -Math.max(0, page.offsetHeight - view.clientHeight);
-  const onPage = (el, ax = 0.5, ay = 0.5) => () => { const r = boxIn(sf, el); return { x: r.x + r.w * ax, y: r.y + r.h * ay + pageY() }; };
-  const formRect = () => { const r = boxIn(stage, form); return { ...r, y: r.y + pageY() }; };
-  const press = (at) => tl.to(cursor, { scale: 0.9, duration: 0.08, ease: E.leave }, at).to(cursor, { scale: 1, duration: 0.16 }, at + 0.08);
-  const tick = (el, at) => tl.to(el, { autoAlpha: 1, scale: 1, duration: 0.25, ease: E.result }, at);
+  const at = (el, ax = 0.5, ay = 0.5) => () => { const r = boxIn(pk, el); return { x: r.x + r.w * ax, y: r.y + r.h * ay }; };
+  const press = (t, el) => {
+    tl.to(cursor, { scale: 0.9, duration: 0.08, ease: E.leave }, t)
+      .to(cursor, { scale: 1, duration: 0.16 }, t + 0.08)
+      .set(ring, { x: () => at(el)().x, y: () => at(el)().y, scale: 0.25, autoAlpha: 1 }, t + 0.02)
+      .to(ring, { scale: 1.6, autoAlpha: 0, duration: 0.55, ease: 'power2.out' }, t + 0.02);
+  };
+  const moveTo = (el, t, ax = 0.5) => tl
+    .to(cursor, { x: () => at(el, ax, 0.55)().x, duration: 0.5, ease: E.travel }, t)
+    .to(cursor, { y: () => at(el, ax, 0.55)().y, duration: 0.5, ease: E.camera }, t);
 
   const tl = gsap.timeline({ paused: true, defaults: { ease: E.arrive } });
-  tl.set(stage, { x: 0, y: 0, scale: 1 }, 0)
-    .set(page, { y: 0 }, 0)
-    .set(texts, { opacity: 0.45 }, 0)
-    .set(ons, { opacity: 0 }, 0)
-    .set(nums, { autoAlpha: 1 }, 0)
-    .set([...ticks, ...oks], { autoAlpha: 0, scale: 0.6 }, 0)
-    .set(cap, { autoAlpha: 1 }, 0)
-    .set(caps, { autoAlpha: 0, y: 0 }, 0)
-    .set(caps[0], { autoAlpha: 1 }, 0)
-    .set(letters, { autoAlpha: 0 }, 0)
-    .set(unders, { autoAlpha: 1 }, 0)
-    .set(digits, { autoAlpha: 0 }, 0)
-    .set([focusName, focusPhone], { autoAlpha: 0 }, 0)
-    .set(fill, { autoAlpha: 1 }, 0)
-    .set(labels, { autoAlpha: 0 }, 0)
-    .set(labels[0], { autoAlpha: 1 }, 0)
-    .set(send, { scale: 1 }, 0)
-    .set(spin, { rotate: 0 }, 0)
-    .set(done, { autoAlpha: 0, y: 6 }, 0)
+  tl.set(sel, { y: () => rows[3].offsetTop }, 0)
+    .set(boxFill, { scale: 0 }, 0)
+    .set(boxTick, { autoAlpha: 0, scale: 0.6 }, 0)
+    .set([mark, chip3d], { autoAlpha: 0, scale: 0.8 }, 0)
+    .set(studio3d, { autoAlpha: 0 }, 0)
+    .set(rings, { autoAlpha: 0 }, 0)
+    .set(send, { autoAlpha: 0, y: 6 }, 0)
     .set(ring, { autoAlpha: 0 }, 0)
-    .set(plus, { autoAlpha: 0, scale: 0.86 }, 0)
-    .set(cursor, { autoAlpha: 0, scale: 1, x: () => sf.offsetWidth + 16, y: () => onPage(nameInput, 0.7, 0.55)().y + 40 }, 0)
-    .set(tag, { autoAlpha: 1 }, 0);
-  track(tl, root, [0.4, 3.3, 6.5], 8.3);
+    .set(cursor, { autoAlpha: 0, scale: 1, x: () => pk.offsetWidth * 0.34, y: () => pk.offsetHeight + 16 }, 0);
+  valSets.forEach((v) => tl.set(v, { autoAlpha: 0, y: 0 }, 0).set(v[0], { autoAlpha: 1 }, 0));
+  tl.set(swaps, { autoAlpha: 0, y: 0 }, 0).set(swaps[0], { autoAlpha: 1 }, 0);
+  wipePct(tl, studio, studio.querySelector('img'), 1.0, 0.8); // hidden until 1.0
+  track(tl, root, [0.4, 2.4, 4.6], 5.8);
 
-  // 1 · the structure: one scroll down the page; each question lights as its answer passes, then is ticked
-  tl.to(page, { y: pageY, duration: 2.6, ease: E.camera }, 0.4);
-  [0.6, 1.3, 2.0, 2.7].forEach((t, i) => {
-    tl.to(ons[i], { opacity: 1, duration: 0.2 }, t)
-      .to(texts[i], { opacity: 1, duration: 0.2 }, t);
-    if (i > 0) caption(tl, caps, i - 1, i, t);
-    if (i < 3) {
-      tl.to(nums[i], { autoAlpha: 0, duration: 0.15, ease: E.leave }, t + 0.4)
-        .to(ons[i], { opacity: 0, duration: 0.2 }, t + 0.4);
-      tick(ticks[i], t + 0.4);
-    }
-  });
-  // 2 · the form: the camera moves to it; she comes in (her name on the cursor only in empty space),
-  // clicks into «Ім’я» and types; then the phone, nine digits
-  tl.to(stage, { ...aimAt(stage, formRect, 1.03), duration: 0.8, ease: E.camera }, 3.3)
-    .set(cursor, { autoAlpha: 1 }, 4.1)
-    .to(cursor, { x: () => onPage(nameInput, 0.7, 0.55)().x, duration: 0.45, ease: E.travel }, 4.1)
-    .to(cursor, { y: () => onPage(nameInput, 0.7, 0.55)().y, duration: 0.45, ease: E.camera }, 4.1)
-    .to(tag, { autoAlpha: 0, duration: 0.25, ease: E.leave }, 4.2);
-  press(4.6);
-  tl.to(focusName, { autoAlpha: 1, duration: 0.15 }, 4.6)
-    .to(letters, { autoAlpha: 1, duration: 0.01, stagger: 0.3 / letters.length, ease: E.tick }, 4.65);
-  tick(oks[0], 5.05);
-  tl.to(focusName, { autoAlpha: 0, duration: 0.15, ease: E.leave }, 5.2)
-    .to(focusPhone, { autoAlpha: 1, duration: 0.15 }, 5.2);
-  digits.forEach((d, i) => {
-    const t = 5.3 + i * 0.075;
-    tl.to(unders[i], { autoAlpha: 0, duration: 0.01, ease: E.tick }, t).to(d, { autoAlpha: 1, duration: 0.01, ease: E.tick }, t);
-  });
-  tick(oks[1], 6.05);
-  tl.to(focusPhone, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 6.3)
-    // 3 · the request: she sends it; it is confirmed, then counted
-    .to(cursor, { x: () => onPage(send, 0.5, 0.55)().x, duration: 0.4, ease: E.travel }, 6.5)
-    .to(cursor, { y: () => onPage(send, 0.5, 0.55)().y, duration: 0.4, ease: E.camera }, 6.5);
-  press(6.95);
-  tl.to(send, { scale: 0.97, duration: 0.08, ease: E.leave }, 6.95)
-    .to(send, { scale: 1, duration: 0.16 }, 7.03)
-    .set(ring, { x: () => onPage(send)().x, y: () => onPage(send)().y, scale: 0.25, autoAlpha: 1 }, 6.97)
-    .to(ring, { scale: 1.7, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, 6.97)
-    .to(labels[0], { autoAlpha: 0, duration: 0.1, ease: E.leave }, 7.0)
-    .to(labels[1], { autoAlpha: 1, duration: 0.1 }, 7.05)
-    .to(spin, { rotate: 300, duration: 0.25, ease: E.tick }, 7.05)
-    .to(cursor, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 7.1)
-    .to(labels[1], { autoAlpha: 0, duration: 0.1, ease: E.leave }, 7.3)
-    .to(fill, { autoAlpha: 0, duration: 0.3, ease: E.camera }, 7.3)
-    .to(labels[2], { autoAlpha: 1, duration: 0.25 }, 7.4)
-    .to(stage, { x: 0, y: 0, scale: 1, duration: 0.8, ease: E.camera }, 7.4)
-    .to(done, { autoAlpha: 1, y: 0, duration: 0.4 }, 7.5)
-    .to(nums[3], { autoAlpha: 0, duration: 0.15, ease: E.leave }, 7.6)
-    .to(ons[3], { opacity: 0, duration: 0.2 }, 7.6);
-  tick(ticks[3], 7.6);
-  caption(tl, caps, 3, 4, 7.3);
-  // the result: one more request
-  tl.to(plus, { autoAlpha: 1, scale: 1, duration: 0.45, ease: E.result }, 8.3)
-    .addLabel('rest', 8.6);
+  // 1 · the format: «Лендінг» instead of «Магазин»; the sample becomes the photo studio, $1 500 → $500
+  tl.set(cursor, { autoAlpha: 1 }, 0.4);
+  moveTo(rows[0], 0.4, 0.3);
+  press(0.95, rows[0]);
+  tl.to(sel, { y: 0, duration: 0.45, ease: E.travel }, 0.95);
+  valSets.forEach((v) => swap(tl, v, 0, 1, 1.1, { out: 0.12, inn: 0.25, y: 4 }));
+  swap(tl, swaps, 0, 1, 1.0, { out: 0.12, inn: 0.25, y: 4 });
+  // 2 · the option: «3D-обʼєкт» ticked; the studio's own 3D object appears; $500 → $900
+  moveTo(opt, 2.4, 0.12);
+  press(2.95, opt);
+  tl.to(boxFill, { scale: 1, duration: 0.2, ease: E.arrive }, 2.97)
+    .to(boxTick, { autoAlpha: 1, scale: 1, duration: 0.25, ease: E.result }, 3.05)
+    .to([mark, chip3d], { autoAlpha: 1, scale: 1, duration: 0.3, ease: E.result }, 3.1)
+    .to(studio3d, { autoAlpha: 1, duration: 0.9, ease: E.camera }, 3.1)
+    .to(cursor, { autoAlpha: 0, duration: 0.25, ease: E.leave }, 3.4);
+  valSets.forEach((v) => swap(tl, v, 1, 2, 3.7, { out: 0.12, inn: 0.25, y: 4 }));
+  // 3 · the price: the sum ringed in lime, then the person's button
+  tl.to(rings, { autoAlpha: 1, duration: 0.35 }, 4.6)
+    .to(send, { autoAlpha: 1, y: 0, duration: 0.4, ease: E.result }, 5.0)
+    .addLabel('rest', 6.4);
   return tl;
 }
 
@@ -869,7 +730,8 @@ function saas(gsap, root) {
   return tl;
 }
 
-const BUILDERS = { attention, action, ads, leads, saas };
+
+const BUILDERS = { looks, pick, ads, leads, saas };
 
 export function initDemos({ motion, reducedMotion = false }) {
   const roots = $$('[data-demo]');
