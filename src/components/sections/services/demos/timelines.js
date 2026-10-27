@@ -293,19 +293,25 @@ function bracketsD({ x, y, w, h }) {
 /* ---------- 1 · Дизайн і розробка: why our design and development, in three full-window scenes and a summary.
    The first screen of the «Ваш бренд» sample fills in over its wireframe, and three numbered notes say what it
    answers: what you offer, why to trust you, what to do now. Then PageSpeed Insights: the gauge counts up to the
-   owner's 90+ and three checks tick in (phone and computer, Google search, the test request). Then the first screen
-   comes back alive: its blocks arrive one after another, the 3D object turns to the cursor, the button reacts to
-   it — the details a template hasn't got; three tags name them. The rest frame is a three-line poster, as in
-   «Автоматизація». ---------- */
+   owner's 90+ and three checks tick in (phone and computer, Google search, the test request). Then back on the
+   finished first screen, the details a template hasn't got: the cursor takes the 3D object and it turns with it,
+   the page scrolls on and the next block's cards rise in as they come into view, a card rises to the cursor —
+   three tags name them. The rest frame is a three-line poster, as in «Автоматизація». ---------- */
 function design(gsap, root) {
   const q = gsap.utils.selector(root);
   const hosts = q('.d-host > b'); // vash-sait.ua · PageSpeed Insights
   const cap = q('.d-cap')[0];
   const caps = q('.d-cap__set > b');
   const [site, speed, sum] = q('.d-scene');
-  // 1 · the first screen
+  // 1 · the first screen, in the sample's viewport; the next block hangs under it (3 · the page scrolls to it)
+  const view = q('.dn-view')[0];
+  const page = q('.dn-page')[0];
   const hero = q('.dn-hero')[0];
-  const blocks = q('[data-blk]');
+  const block = q('.dn-block')[0];
+  const blockH = q('.dn-block__h')[0];
+  const cards = q('.dn-card');
+  const cardRings = cards.map((c) => c.querySelector('i'));
+  const cardNums = cards.map((c) => c.querySelector('b'));
   const title = q('.dn-title')[0];
   const titleText = q('.dn-title .rise > span')[0];
   const textIn = q('.dn-text > span')[0];
@@ -337,9 +343,20 @@ function design(gsap, root) {
   const ticks = checks.map((li) => li.querySelector('i'));
   const lime = css(root, '--lime') || '#daff02';
   const ink = css(root, '--ink') || '#f6f6f3';
+  const mute = css(root, '--ink-mute') || '#8a857d';
   // the summary
   const rows = q('.dn-sum__list li');
-  const mid = (el, ax = 0.5, ay = 0.5) => { const r = boxIn(hero, el); return { x: r.x + r.w * ax, y: r.y + r.h * ay }; };
+  // a point in the viewport (layout coordinates: the page's scroll is taken off where it is on)
+  const vmid = (el, ax = 0.5, ay = 0.5) => { const r = boxIn(view, el); return { x: r.x + r.w * ax, y: r.y + r.h * ay }; };
+  // how far the page scrolls: the next block's foot 6 px over the viewport's; never leaving a sliver of the button
+  // at the top (a phone's window): then a little further, so it is out
+  const sy = () => {
+    let s = block.offsetTop + block.offsetHeight + 6 - view.offsetHeight;
+    const c = boxIn(view, cta);
+    const cut = c.y + c.h - s; // how much of the button would still show
+    if (cut > -8 && cut < c.h) s = c.y + c.h + 8;
+    return s;
+  };
   // where the headline's last line ends, inside the hero (the scene's slide is in both rects, so it cancels out;
   // the headline's own rise, a yPercent on the span, is taken off)
   const lineEnd = (el) => {
@@ -378,9 +395,12 @@ function design(gsap, root) {
     // ③ right of the button
     place(notes[2], c.x + c.w + 14, c.y + (c.h - notes[2].offsetHeight) / 2);
     leads[2].setAttribute('d', `M${Math.round(c.x + c.w + 3)} ${Math.round(c.y + c.h / 2) + 0.5}H${Math.round(c.x + c.w + 14)}`);
-    // the detail tags (scene 3): over the headline, right of the button, over the object's foot
-    place(fx[0], t.x, t.y - fx[0].offsetHeight - 8);
-    place(fx[1], c.x + c.w + 14, c.y + (c.h - fx[1].offsetHeight) / 2);
+    // the detail tags (scene 3, in the page): right of the next block's heading, over the third card, over the
+    // object's foot
+    const bh = boxIn(page, blockH);
+    const c3 = boxIn(page, cards[2]);
+    place(fx[0], bh.x + bh.w + 12, bh.y + (bh.h - fx[0].offsetHeight) / 2);
+    place(fx[1], c3.x + (c3.w - fx[1].offsetWidth) / 2, c3.y - fx[1].offsetHeight - 8);
     place(fx[2], o.x + (o.w - fx[2].offsetWidth) / 2, o.y + o.h * 0.86 - fx[2].offsetHeight / 2);
   };
   const frame = (el) => () => brackets.setAttribute('d', bracketsD(boxIn(hero, el)));
@@ -401,7 +421,10 @@ function design(gsap, root) {
     .set(speed, { xPercent: 100 }, 0)
     .set(sum, { autoAlpha: 0 }, 0)
     .set(rows, { autoAlpha: 0, y: 8 }, 0)
-    .set(blocks, { autoAlpha: 1, y: 0 }, 0)
+    .set(page, { y: 0 }, 0)
+    .set(cards, { autoAlpha: 0, y: 14 }, 0)
+    .set(cardRings, { autoAlpha: 0 }, 0)
+    .set(cardNums, { color: mute }, 0)
     .set(titleText, { yPercent: 105 }, 0)
     .set(textIn, { autoAlpha: 0, y: 4 }, 0)
     .set(wires, { autoAlpha: 1 }, 0)
@@ -466,33 +489,39 @@ function design(gsap, root) {
       .to(ticks[k], { scale: 1, duration: 0.3, ease: E.result }, t + 0.15);
   });
 
-  // 3 · back to the first screen, alive: the blocks arrive one after another; the cursor comes in to the object,
-  //     which turns to it as the light runs over; then to the button, which rises to it and takes a press
+  // 3 · back on the finished first screen, the details a template hasn't got. The cursor comes in to the object,
+  //     presses and drags across it: it turns with the cursor as the light runs over. The page scrolls down to
+  //     the next block and its cards rise in as they come into view. The cursor comes to a card: it rises, a lime
+  //     edge, its number lights. Three tags name them.
   caption(tl, caps, 1, 2, 9.4, 9.85);
   tl.set(site, { xPercent: 100 }, 9.4)
     .set([...notes, ...leads, brackets], { autoAlpha: 0 }, 9.4)
-    .set(blocks, { autoAlpha: 0, y: 10 }, 9.4)
     .to(speed, { xPercent: -100, duration: 0.6, ease: E.travel }, 9.4)
     .to(site, { xPercent: 0, duration: 0.6, ease: E.travel }, 9.4);
   swap(tl, hosts, 1, 0, 9.5);
-  blocks.forEach((b, i) => tl.to(b, { autoAlpha: 1, y: 0, duration: 0.45 }, 10.0 + i * 0.13));
-  tl.to(fx[0], { autoAlpha: 1, x: 0, duration: 0.3 }, 10.9)
-    .set(cursor, { x: () => hero.offsetWidth + 12, y: () => mid(stone, 0.5, 0.5).y, autoAlpha: 1 }, 11.5)
-    .to(cursor, { x: () => mid(stone, 0.6, 0.5).x, duration: 0.5, ease: E.travel }, 11.5)
-    .to(cursor, { y: () => mid(stone, 0.6, 0.5).y, duration: 0.5, ease: E.camera }, 11.5)
-    .to(stone, { rotation: 7, scale: 1.06, x: () => hero.offsetWidth * 0.012, duration: 0.7, ease: E.camera }, 12.0)
-    .fromTo(glint, { xPercent: -110 }, { xPercent: 330, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 12.05)
-    .to(fx[2], { autoAlpha: 1, x: 0, duration: 0.3 }, 12.3)
-    .to(cursor, { x: () => mid(cta, 0.5, 0.55).x, duration: 0.5, ease: E.travel }, 12.9)
-    .to(cursor, { y: () => mid(cta, 0.5, 0.55).y, duration: 0.5, ease: E.camera }, 12.9)
-    .to(stone, { rotation: 0, scale: 1, x: 0, duration: 0.8, ease: E.camera }, 12.9)
-    .to(cta, { scale: 1.06, duration: 0.3, ease: E.result }, 13.4)
-    .to(ctaArrow, { x: 3, duration: 0.3, ease: E.result }, 13.4)
-    .to(cursor, { scale: 0.9, duration: 0.08, ease: E.leave }, 13.7)
-    .to(cursor, { scale: 1, duration: 0.16 }, 13.78)
-    .set(ring, { x: () => mid(cta, 0.5, 0.55).x, y: () => mid(cta, 0.5, 0.55).y, scale: 0.25, autoAlpha: 1 }, 13.72)
-    .to(ring, { scale: 1.6, autoAlpha: 0, duration: 0.55, ease: 'power2.out' }, 13.72)
-    .to(fx[1], { autoAlpha: 1, x: 0, duration: 0.3 }, 13.9)
+  tl.set(cursor, { x: () => view.offsetWidth + 12, y: () => vmid(stone, 0.5, 0.42).y, autoAlpha: 1 }, 10.1)
+    .to(cursor, { x: () => vmid(stone, 0.74, 0.42).x, duration: 0.5, ease: E.travel }, 10.1)
+    .to(cursor, { y: () => vmid(stone, 0.74, 0.42).y, duration: 0.5, ease: E.camera }, 10.1)
+    .to(cursor, { scale: 0.9, duration: 0.08, ease: E.leave }, 10.65)
+    .set(ring, { x: () => vmid(stone, 0.74, 0.42).x, y: () => vmid(stone, 0.74, 0.42).y, scale: 0.25, autoAlpha: 1 }, 10.67)
+    .to(ring, { scale: 1.6, autoAlpha: 0, duration: 0.55, ease: 'power2.out' }, 10.67)
+    .to(cursor, { x: () => vmid(stone, 0.3, 0.6).x, y: () => vmid(stone, 0.3, 0.6).y, duration: 0.85, ease: E.camera }, 10.75)
+    .to(stone, { rotation: -13, scale: 1.06, x: () => -hero.offsetWidth * 0.015, duration: 0.85, ease: E.camera }, 10.75)
+    .fromTo(glint, { xPercent: 330 }, { xPercent: -110, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 10.8)
+    .to(fx[2], { autoAlpha: 1, x: 0, duration: 0.3 }, 11.1)
+    .to(cursor, { scale: 1, duration: 0.16 }, 11.6)
+    .to(stone, { rotation: 0, scale: 1, x: 0, duration: 0.9, ease: E.camera }, 11.7)
+    .to(cursor, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 11.7);
+  tl.to(page, { y: () => -sy(), duration: 0.8, ease: E.camera }, 11.9);
+  cards.forEach((c, i) => tl.to(c, { autoAlpha: 1, y: 0, duration: 0.45 }, 12.2 + i * 0.15));
+  tl.to(fx[0], { autoAlpha: 1, x: 0, duration: 0.3 }, 12.7)
+    .set(cursor, { x: () => view.offsetWidth + 12, y: () => vmid(cards[2], 0.5, 0.6).y - sy() + 24, autoAlpha: 1 }, 13.0)
+    .to(cursor, { x: () => vmid(cards[2], 0.55, 0.6).x, duration: 0.5, ease: E.travel }, 13.0)
+    .to(cursor, { y: () => vmid(cards[2], 0.55, 0.6).y - sy(), duration: 0.5, ease: E.camera }, 13.0)
+    .to(cards[2], { y: -3, duration: 0.3, ease: E.result }, 13.5)
+    .to(cardRings[2], { autoAlpha: 1, duration: 0.25 }, 13.5)
+    .to(cardNums[2], { color: lime, duration: 0.25 }, 13.5)
+    .to(fx[1], { autoAlpha: 1, x: 0, duration: 0.3 }, 13.75)
     .to(cursor, { autoAlpha: 0, duration: 0.25, ease: E.leave }, 14.3);
 
   // the result: three lines, what the site gives, numbered like the track

@@ -9,8 +9,9 @@ const SCORE = 96;
 /** 1 · Дизайн і розробка: why our design and development, in three scenes and a summary (the clip is
  *  demos/timelines.js «design»). The first screen of the «Ваш бренд» sample fills in and three numbered notes say what
  *  it answers: what you offer, why to trust you, what to do now. Then PageSpeed Insights: the gauge counts up to 90+
- *  and three checks tick in. Then the same first screen comes alive: the blocks arrive one after another, the 3D
- *  object turns to the cursor, the button reacts to it. «Детальніше» opens the sites page (/dyzain-i-saity). */
+ *  and three checks tick in. Then back on the finished first screen, the details a template hasn't got: the cursor
+ *  takes the 3D object and it turns with it, the page scrolls on and the next block's cards rise in as they come
+ *  into view, a card rises to the cursor. «Детальніше» opens the sites page (/dyzain-i-saity). */
 export async function ServiceDesign() {
   const t = await getTranslations();
   const prices = PRICES;
@@ -40,78 +41,98 @@ export async function ServiceDesign() {
             </div>
             <div className="d-stage">
               <div className="d-scenes dn">
-                {/* 1 · the first screen (scene 1), and the same screen alive (scene 3) */}
+                {/* 1 · the first screen (scene 1); in scene 3 the page scrolls on to the next block under it */}
                 <section className="d-scene dn-site">
-                  <div className="dn-hero">
-                    <div className="dn-nav" data-blk="">
-                      <b className="dn-logo">
-                        <i></i>
-                        <span>{t("services.mh.brand")}</span>
-                      </b>
-                      <span>{t("services.mh.nav.1")}</span>
-                      <span>{t("services.mh.nav.2")}</span>
-                      <span>{t("services.mh.nav.3")}</span>
-                      <span className="dn-nav__btn">{t("services.mh.cta")}</span>
-                    </div>
-                    <div className="dn-copy">
-                      <p className="dn-title" data-blk="">
-                        <span className="rise">
-                          <span>{t("services.mh.title")}</span>
-                        </span>
-                        <i className="dn-wire dn-wire--title"></i>
-                      </p>
-                      <p className="dn-text" data-blk="">
-                        <span>{t("services.dsn.site.text")}</span>
-                        <i className="dn-wire dn-wire--text"></i>
-                      </p>
-                      <p className="dn-acts" data-blk="">
-                        <span className="dn-cta">
-                          <span>{t("services.mh.cta")}</span>
-                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-                          <i className="dn-wire dn-wire--cta"></i>
-                        </span>
-                      </p>
-                      <p className="dn-proof" data-blk="">
-                        <span>
-                          <svg className="dn-star" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M6 .6l1.41 3.66 3.92.21-3.05 2.47 1.01 3.79L6 8.6l-3.29 2.13 1.01-3.79L.67 4.47l3.92-.21z" /></svg>
-                          <span>{t("services.dsn.site.proof.1")}</span>
-                        </span>
-                        <span>
-                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z" /><path d="m9 12 2 2 4-4" /></svg>
-                          <span>{t("services.dsn.site.proof.2")}</span>
-                        </span>
-                      </p>
-                    </div>
-                    {/* the client's object: the hero's stone, lit and turned into place; in scene 3 it turns to the cursor */}
-                    <div className="dn-object" data-blk="">
-                      <i className="dn-wire dn-wire--obj"></i>
-                      <span className="dn-stone">
-                        <img src="/img/stone.webp" alt="" width={520} height={626} loading="lazy" decoding="async" />
-                        <i className="dn-glint">
-                          <b></b>
-                        </i>
-                      </span>
-                      <span className="dn-shadow"></span>
-                    </div>
-                    {/* the notes (scene 1) and the detail tags (scene 3); the script places them beside what they mark */}
-                    {[1, 2, 3].map((n) => (
-                      <span className="d-note" data-note={n} key={n}>
-                        <i>{n}</i>
-                        <b>{t(`services.dsn.note.${n}`)}</b>
-                      </span>
-                    ))}
-                    {[1, 2, 3].map((n) => (
-                      <span className="d-note d-note--fx" data-fx={n} key={n}>
-                        <i></i>
-                        <b>{t(`services.dsn.fx.${n}`)}</b>
-                      </span>
-                    ))}
-                    <svg className="marks" aria-hidden="true" focusable="false">
-                      <path className="marks__brackets" />
+                  <div className="dn-view">
+                    <div className="dn-page">
+                      <div className="dn-hero">
+                        <div className="dn-nav">
+                          <b className="dn-logo">
+                            <i></i>
+                            <span>{t("services.mh.brand")}</span>
+                          </b>
+                          <span>{t("services.mh.nav.1")}</span>
+                          <span>{t("services.mh.nav.2")}</span>
+                          <span>{t("services.mh.nav.3")}</span>
+                          <span className="dn-nav__btn">{t("services.mh.cta")}</span>
+                        </div>
+                        <div className="dn-copy">
+                          <p className="dn-title">
+                            <span className="rise">
+                              <span>{t("services.mh.title")}</span>
+                            </span>
+                            <i className="dn-wire dn-wire--title"></i>
+                          </p>
+                          <p className="dn-text">
+                            <span>{t("services.dsn.site.text")}</span>
+                            <i className="dn-wire dn-wire--text"></i>
+                          </p>
+                          <p className="dn-acts">
+                            <span className="dn-cta">
+                              <span>{t("services.mh.cta")}</span>
+                              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                              <i className="dn-wire dn-wire--cta"></i>
+                            </span>
+                          </p>
+                          <p className="dn-proof">
+                            <span>
+                              <svg className="dn-star" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M6 .6l1.41 3.66 3.92.21-3.05 2.47 1.01 3.79L6 8.6l-3.29 2.13 1.01-3.79L.67 4.47l3.92-.21z" /></svg>
+                              <span>{t("services.dsn.site.proof.1")}</span>
+                            </span>
+                            <span>
+                              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z" /><path d="m9 12 2 2 4-4" /></svg>
+                              <span>{t("services.dsn.site.proof.2")}</span>
+                            </span>
+                          </p>
+                        </div>
+                        {/* the client's object: the hero's stone, lit and turned into place; in scene 3 it turns to the cursor */}
+                        <div className="dn-object">
+                          <i className="dn-wire dn-wire--obj"></i>
+                          <span className="dn-stone">
+                            <img src="/img/stone.webp" alt="" width={520} height={626} loading="lazy" decoding="async" />
+                            <i className="dn-glint">
+                              <b></b>
+                            </i>
+                          </span>
+                          <span className="dn-shadow"></span>
+                        </div>
+                        {/* the notes (scene 1); the script places them beside what they mark */}
+                        {[1, 2, 3].map((n) => (
+                          <span className="d-note" data-note={n} key={n}>
+                            <i>{n}</i>
+                            <b>{t(`services.dsn.note.${n}`)}</b>
+                          </span>
+                        ))}
+                        <svg className="marks" aria-hidden="true" focusable="false">
+                          <path className="marks__brackets" />
+                          {[1, 2, 3].map((n) => (
+                            <path className="marks__lead" data-lead={n} key={n} />
+                          ))}
+                        </svg>
+                      </div>
+                      {/* the next block under the first screen, «Послуги й ціни»: scene 3 scrolls down to it and its cards
+                          rise in as they come into view (the sample's plan names and «ваша ціна», services.site) */}
+                      <div className="dn-block">
+                        <p className="dn-block__h">{t("services.dsn.site.block")}</p>
+                        <div className="dn-cards">
+                          {[1, 2, 3].map((n) => (
+                            <p className="dn-card" key={n}>
+                              <b>0{n}</b>
+                              <span>{t(`services.site.plan.${n}`)}</span>
+                              <em>{t(`services.site.price.${n}`)}</em>
+                              <i></i>
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                      {/* the detail tags (scene 3): the 3D object, the arrival on scroll, the card under the cursor */}
                       {[1, 2, 3].map((n) => (
-                        <path className="marks__lead" data-lead={n} key={n} />
+                        <span className="d-note d-note--fx" data-fx={n} key={n}>
+                          <i></i>
+                          <b>{t(`services.dsn.fx.${n}`)}</b>
+                        </span>
                       ))}
-                    </svg>
+                    </div>
                     <span className="ripple"></span>
                     <span className="cursor"></span>
                   </div>
