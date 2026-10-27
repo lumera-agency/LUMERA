@@ -60,7 +60,7 @@ registry.json              реестр эффектов (shadcn)
 жизненным циклом, модуль — хореографией. Так они переносимы в любой проект.
 
 «Острова» (перенесены как есть, работают, ждут переписывания в компоненты при необходимости):
-`pricing/configurator/*` (конфигуратор с живым превью), `services/demos/timelines.js` (5 демо),
+`pricing/configurator/*` (конфигуратор с живым превью), `services/demos/timelines.js` (4 демо),
 `why/why-orbit.js`, `why/why-phone.js`, `approach/stages.js`, `approach/approach-phone.js`,
 `contact/lead-form.js`, `fx/splash-cursor/fluid.js`, `fx/chrome-wordmark/wordmark.js`.
 

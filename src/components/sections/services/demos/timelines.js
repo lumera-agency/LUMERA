@@ -9,10 +9,11 @@
  * her request, the search that brought it, the automations around it.
  *
  * Each is a GSAP timeline that plays once, when its row is being read, and
- * rests at its own label (clips 1–2 at 6.2 and 6.4 s, clip 4 at 9.0). Only one thing moves at a time. Rows arrive
- * on their start frame and replay when they come back into view (or from the
- * «Ще раз» pill); with reduced motion each shows exactly its rest frame;
- * without GSAP the CSS default is that same finished composition.
+ * rests at its own label (clip 1 at 15.5 s, clip 2 at 10.6, clip 3 at 15.9,
+ * clip 4 at 8.0). Only one thing moves at a time. Rows arrive on their start
+ * frame and replay when they come back into view (or from the «Ще раз» pill);
+ * with reduced motion each shows exactly its rest frame; without GSAP the CSS
+ * default is that same finished composition.
  *
  * Two signal colours: lime for the system at work (layout, steps, clicks, data,
  * AI) and ember for the person (the button, the request, the alert).
@@ -236,7 +237,7 @@ function track(tl, root, beats, result) {
     .to([nums[last], labels[last]], { color: C.soft, duration: 0.3 }, result);
 }
 
-const REST_AT = 8.0; // clips 1–2 come to rest here (clip 3 and 4 name their own)
+const REST_AT = 8.0; // clip 4 (SaaS) comes to rest here; the others name their own
 
 /* ---------- round 8 kit: no rolling text, captions, full-window scenes ---------- */
 /** Labels stacked in one cell (a host, a clock, a caption, a counter): the old one fades out,
@@ -262,13 +263,6 @@ function wipe(tl, box, inner, at, duration) {
     .to(box, { x: 0, duration, ease: E.travel }, at)
     .to(inner, { x: 0, duration, ease: E.travel }, at);
 }
-/** A wipe in percent of the box itself (immune to the box being measured before its final size). */
-function wipePct(tl, box, inner, at, duration) {
-  tl.set(box, { xPercent: -100 }, 0)
-    .set(inner, { xPercent: 100 }, 0)
-    .to(box, { xPercent: 0, duration, ease: E.travel }, at)
-    .to(inner, { xPercent: 0, duration, ease: E.travel }, at);
-}
 /** System streaming: the text of `el` as word spans (built once), for a word-by-word arrival. */
 function splitWords(el) {
   if (!el.querySelector('.w')) {
@@ -286,104 +280,231 @@ function splitWords(el) {
 /** The window is a phone's (the CSS container queries switch at the same width). */
 const isNarrow = (root) => root.offsetWidth < 520;
 
-/* ---------- 1 · Дизайн: one layout becomes three businesses, each in its own colours, fonts and photos, on a
-   computer and a phone at once (the design page's sample sites). Grey blocks first; then the photo studio,
-   the dental clinic and the glass shop wipe in one after another; the rest frame is the shop with the summary
-   line «Кольори, шрифти й фото під ваш бізнес». ---------- */
-function looks(gsap, root) {
+/** Four corner marks around a box (what a note points at). */
+function bracketsD({ x, y, w, h }) {
+  const k = Math.min(10, w / 4, h / 4);
+  const x0 = x - 6;
+  const y0 = y - 6;
+  const x1 = x + w + 6;
+  const y1 = y + h + 6;
+  return `M${x0} ${y0 + k}V${y0}H${x0 + k} M${x1 - k} ${y0}H${x1}V${y0 + k} M${x1} ${y1 - k}V${y1}H${x1 - k} M${x0 + k} ${y1}H${x0}V${y1 - k}`;
+}
+
+/* ---------- 1 · Дизайн і розробка: why our design and development, in three full-window scenes and a summary.
+   The first screen of the «Ваш бренд» sample fills in over its wireframe, and three numbered notes say what it
+   answers: what you offer, why to trust you, what to do now. Then PageSpeed Insights: the gauge counts up to the
+   owner's 90+ and three checks tick in (phone and computer, Google search, the test request). Then the first screen
+   comes back alive: its blocks arrive one after another, the 3D object turns to the cursor, the button reacts to
+   it — the details a template hasn't got; three tags name them. The rest frame is a three-line poster, as in
+   «Автоматизація». ---------- */
+function design(gsap, root) {
   const q = gsap.utils.selector(root);
+  const hosts = q('.d-host > b'); // vash-sait.ua · PageSpeed Insights
   const cap = q('.d-cap')[0];
   const caps = q('.d-cap__set > b');
-  const desk = q('.looks__desk .looks__shot');
-  const phone = q('.looks__phone .looks__shot');
-  const beats = [0.4, 2.2, 4.0];
-  const tl = gsap.timeline({ paused: true, defaults: { ease: E.arrive } });
-  tl.set(cap, { autoAlpha: 1 }, 0).set(caps, { autoAlpha: 0, y: 0 }, 0);
-  track(tl, root, beats, 5.4);
-  // each look wipes in over the last, in the desk and the phone at once (one gesture)
-  beats.forEach((t, i) => {
-    wipePct(tl, desk[i], desk[i].querySelector('img'), t, 0.8);
-    wipePct(tl, phone[i], phone[i].querySelector('img'), t, 0.8);
-  });
-  caption(tl, caps, -1, 0, 0.4, 1.0);
-  caption(tl, caps, 0, 1, 2.2, 2.8);
-  caption(tl, caps, 1, 2, 4.0, 4.6);
-  caption(tl, caps, 2, 3, 5.4); // the summary, its key word in ember
-  tl.addLabel('rest', 6.2);
-  return tl;
-}
-
-/* ---------- 2 · Сайт і ціна: the design page's calculator in miniature. The visitor picks «Лендінг» instead of
-   «Магазин»: the sample becomes the photo studio and the sum $1 500 → $500; then ticks «3D-обʼєкт»: the studio's
-   own 3D object appears on its first screen and the sum becomes $900; the sum is ringed in lime and the ember
-   «Обговорити проєкт» comes up. On a phone the calculator is one bar over the sample and runs by itself. ---------- */
-function pick(gsap, root) {
-  const q = gsap.utils.selector(root);
-  const pk = q('.pick')[0];
-  const rows = q('.pick__fmt');
-  const sel = q('.pick__sel')[0];
-  const opt = q('.pick__opt')[0];
-  const boxFill = q('.pick__box i')[0];
-  const boxTick = q('.pick__box svg')[0];
-  const mark = q('.mock-window__bar > .pick__mark')[0];
-  const [, studio, studio3d] = q('.pick__shot');
-  const valSets = q('.pick__vals').map((v) => [...v.children]);
-  const rings = q('.pick__ring');
-  const send = q('.pick__send')[0];
-  const swaps = q('.pick__swap > b');
-  const chip3d = q('.pick__chip--3d')[0];
-  const ring = q('.ripple')[0];
+  const [site, speed, sum] = q('.d-scene');
+  // 1 · the first screen
+  const hero = q('.dn-hero')[0];
+  const blocks = q('[data-blk]');
+  const title = q('.dn-title')[0];
+  const titleText = q('.dn-title .rise > span')[0];
+  const textIn = q('.dn-text > span')[0];
+  const cta = q('.dn-cta')[0];
+  const ctaArrow = cta.querySelector('svg');
+  const proof = q('.dn-proof')[0];
+  const object = q('.dn-object')[0];
+  const stone = q('.dn-stone')[0];
+  const unlit = q('.dn-stone img')[0];
+  const glint = q('.dn-glint b')[0];
+  const wires = q('.dn-wire');
+  const [wTitle, wText, wCta, wObj] = ['title', 'text', 'cta', 'obj'].map((k) => q(`.dn-wire--${k}`)[0]);
+  const notes = q('.d-note:not(.d-note--fx)');
+  const fx = q('.d-note--fx');
+  const marks = q('.marks')[0];
+  const brackets = q('.marks__brackets')[0];
+  const leads = q('.marks__lead');
   const cursor = q('.cursor')[0];
-  const at = (el, ax = 0.5, ay = 0.5) => () => { const r = boxIn(pk, el); return { x: r.x + r.w * ax, y: r.y + r.h * ay }; };
-  const press = (t, el) => {
-    tl.to(cursor, { scale: 0.9, duration: 0.08, ease: E.leave }, t)
-      .to(cursor, { scale: 1, duration: 0.16 }, t + 0.08)
-      .set(ring, { x: () => at(el)().x, y: () => at(el)().y, scale: 0.25, autoAlpha: 1 }, t + 0.02)
-      .to(ring, { scale: 1.6, autoAlpha: 0, duration: 0.55, ease: 'power2.out' }, t + 0.02);
+  const ring = q('.ripple')[0];
+  // 2 · PageSpeed
+  const psUrl = q('.ps__url')[0];
+  const psTabs = q('.ps__tabs')[0];
+  const gauge = q('.ps__gauge')[0];
+  const arc = q('.ps__arc')[0];
+  const num = q('.ps__num')[0];
+  const score = Number(num.dataset.to) || 0;
+  const counter = { n: 0 };
+  const checks = q('.ps__checks li');
+  const ticks = checks.map((li) => li.querySelector('i'));
+  const lime = css(root, '--lime') || '#daff02';
+  const ink = css(root, '--ink') || '#f6f6f3';
+  // the summary
+  const rows = q('.dn-sum__list li');
+  const mid = (el, ax = 0.5, ay = 0.5) => { const r = boxIn(hero, el); return { x: r.x + r.w * ax, y: r.y + r.h * ay }; };
+  // where the headline's last line ends, inside the hero (the scene's slide is in both rects, so it cancels out;
+  // the headline's own rise, a yPercent on the span, is taken off)
+  const lineEnd = (el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const rects = range.getClientRects();
+    const last = rects[rects.length - 1] || el.getBoundingClientRect();
+    const h = hero.getBoundingClientRect();
+    const dy = ((Number(gsap.getProperty(el, 'yPercent')) || 0) / 100) * el.offsetHeight;
+    return { x: last.right - h.left, y: last.top - h.top - dy, h: last.height };
   };
-  const moveTo = (el, t, ax = 0.5) => tl
-    .to(cursor, { x: () => at(el, ax, 0.55)().x, duration: 0.5, ease: E.travel }, t)
-    .to(cursor, { y: () => at(el, ax, 0.55)().y, duration: 0.5, ease: E.camera }, t);
+
+  // the notes and their leader lines sit beside what they mark, never on it; the detail tags take the same spots
+  const place = (el, x, y) => gsap.set(el, { left: Math.round(x), top: Math.round(y) });
+  const layout = () => {
+    const W = hero.offsetWidth;
+    const H = hero.offsetHeight;
+    marks.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const t = boxIn(hero, title);
+    const c = boxIn(hero, cta);
+    const p = boxIn(hero, proof);
+    const o = boxIn(hero, object);
+    // ① above the headline; in a phone's window, where the nav sits close over it, after its last line instead
+    const h1 = notes[0].offsetHeight;
+    if (isNarrow(root)) {
+      const end = lineEnd(titleText);
+      place(notes[0], end.x + 10, end.y + (end.h - h1) / 2);
+      leads[0].setAttribute('d', `M${Math.round(end.x + 3)} ${Math.round(end.y + end.h / 2) + 0.5}H${Math.round(end.x + 10)}`);
+    } else {
+      place(notes[0], t.x, t.y - h1 - 8);
+      leads[0].setAttribute('d', `M${Math.round(t.x + h1 / 2) + 0.5} ${Math.round(t.y - 8)}V${Math.round(t.y - 3)}`);
+    }
+    // ② right of the proof
+    place(notes[1], p.x + p.w + 14, p.y + (p.h - notes[1].offsetHeight) / 2);
+    leads[1].setAttribute('d', `M${Math.round(p.x + p.w + 3)} ${Math.round(p.y + p.h / 2) + 0.5}H${Math.round(p.x + p.w + 14)}`);
+    // ③ right of the button
+    place(notes[2], c.x + c.w + 14, c.y + (c.h - notes[2].offsetHeight) / 2);
+    leads[2].setAttribute('d', `M${Math.round(c.x + c.w + 3)} ${Math.round(c.y + c.h / 2) + 0.5}H${Math.round(c.x + c.w + 14)}`);
+    // the detail tags (scene 3): over the headline, right of the button, over the object's foot
+    place(fx[0], t.x, t.y - fx[0].offsetHeight - 8);
+    place(fx[1], c.x + c.w + 14, c.y + (c.h - fx[1].offsetHeight) / 2);
+    place(fx[2], o.x + (o.w - fx[2].offsetWidth) / 2, o.y + o.h * 0.86 - fx[2].offsetHeight / 2);
+  };
+  const frame = (el) => () => brackets.setAttribute('d', bracketsD(boxIn(hero, el)));
 
   const tl = gsap.timeline({ paused: true, defaults: { ease: E.arrive } });
-  tl.set(sel, { y: () => rows[3].offsetTop }, 0)
-    .set(boxFill, { scale: 0 }, 0)
-    .set(boxTick, { autoAlpha: 0, scale: 0.6 }, 0)
-    .set([mark, chip3d], { autoAlpha: 0, scale: 0.8 }, 0)
-    .set(studio3d, { autoAlpha: 0 }, 0)
-    .set(rings, { autoAlpha: 0 }, 0)
-    .set(send, { autoAlpha: 0, y: 6 }, 0)
-    .set(ring, { autoAlpha: 0 }, 0)
-    .set(cursor, { autoAlpha: 0, scale: 1, x: () => pk.offsetWidth * 0.34, y: () => pk.offsetHeight + 16 }, 0);
-  valSets.forEach((v) => tl.set(v, { autoAlpha: 0, y: 0 }, 0).set(v[0], { autoAlpha: 1 }, 0));
-  tl.set(swaps, { autoAlpha: 0, y: 0 }, 0).set(swaps[0], { autoAlpha: 1 }, 0);
-  wipePct(tl, studio, studio.querySelector('img'), 1.0, 0.8); // hidden until 1.0
-  track(tl, root, [0.4, 2.4, 4.6], 5.8);
+  layout();
+  new ResizeObserver(() => layout()).observe(hero);
+  // the start frame (a row arrives paused here): the first screen as a wireframe — the nav is there, grey blocks
+  // stand where the headline, the text, the button and the object will be
+  tl.call(layout, null, 0)
+    .set(cap, { autoAlpha: 1 }, 0)
+    .set(caps, { autoAlpha: 0, y: 0 }, 0)
+    .set(caps[0], { autoAlpha: 1 }, 0)
+    .set(hosts, { autoAlpha: 0 }, 0)
+    .set(hosts[0], { autoAlpha: 1 }, 0)
+    .set([site, speed], { visibility: 'visible', opacity: 1 }, 0)
+    .set(site, { xPercent: 0 }, 0)
+    .set(speed, { xPercent: 100 }, 0)
+    .set(sum, { autoAlpha: 0 }, 0)
+    .set(rows, { autoAlpha: 0, y: 8 }, 0)
+    .set(blocks, { autoAlpha: 1, y: 0 }, 0)
+    .set(titleText, { yPercent: 105 }, 0)
+    .set(textIn, { autoAlpha: 0, y: 4 }, 0)
+    .set(wires, { autoAlpha: 1 }, 0)
+    .set(cta, { scale: 1 }, 0)
+    .set(ctaArrow, { x: 0 }, 0)
+    .set(proof, { autoAlpha: 0, y: 4 }, 0)
+    .set(stone, { rotation: -9, scale: 0.95, x: 0 }, 0)
+    .set(unlit, { opacity: 0.35 }, 0)
+    .set(glint, { xPercent: -110 }, 0)
+    .set([...notes, ...fx], { autoAlpha: 0, x: -4 }, 0)
+    .set([...leads, brackets, cursor, ring], { autoAlpha: 0 }, 0)
+    .set(cursor, { scale: 1 }, 0)
+    .set([psUrl, psTabs, gauge], { autoAlpha: 0, y: 6 }, 0)
+    .set(arc, { strokeDashoffset: 1 }, 0)
+    .set(num, { color: ink }, 0)
+    .set(counter, { n: 0, onComplete: () => { num.textContent = '0'; } }, 0)
+    .set(checks, { autoAlpha: 0, x: -6 }, 0)
+    .set(ticks, { scale: 0 }, 0);
+  track(tl, root, [0.2, 4.7, 9.4], 14.5);
 
-  // 1 · the format: «Лендінг» instead of «Магазин»; the sample becomes the photo studio, $1 500 → $500
-  tl.set(cursor, { autoAlpha: 1 }, 0.4);
-  moveTo(rows[0], 0.4, 0.3);
-  press(0.95, rows[0]);
-  tl.to(sel, { y: 0, duration: 0.45, ease: E.travel }, 0.95);
-  valSets.forEach((v) => swap(tl, v, 0, 1, 1.1, { out: 0.12, inn: 0.25, y: 4 }));
-  swap(tl, swaps, 0, 1, 1.0, { out: 0.12, inn: 0.25, y: 4 });
-  // 2 · the option: «3D-обʼєкт» ticked; the studio's own 3D object appears; $500 → $900
-  moveTo(opt, 2.4, 0.12);
-  press(2.95, opt);
-  tl.to(boxFill, { scale: 1, duration: 0.2, ease: E.arrive }, 2.97)
-    .to(boxTick, { autoAlpha: 1, scale: 1, duration: 0.25, ease: E.result }, 3.05)
-    .to([mark, chip3d], { autoAlpha: 1, scale: 1, duration: 0.3, ease: E.result }, 3.1)
-    .to(studio3d, { autoAlpha: 1, duration: 0.9, ease: E.camera }, 3.1)
-    .to(cursor, { autoAlpha: 0, duration: 0.25, ease: E.leave }, 3.4);
-  valSets.forEach((v) => swap(tl, v, 1, 2, 3.7, { out: 0.12, inn: 0.25, y: 4 }));
-  // 3 · the price: the sum ringed in lime, then the person's button
-  tl.to(rings, { autoAlpha: 1, duration: 0.35 }, 4.6)
-    .to(send, { autoAlpha: 1, y: 0, duration: 0.4, ease: E.result }, 5.0)
-    .addLabel('rest', 6.4);
+  // 1 · the first screen fills in over its wireframe: the headline, the text, the button, the object, the proof…
+  tl.to(titleText, { yPercent: 0, duration: 0.6 }, 0.2)
+    .to(wTitle, { autoAlpha: 0, duration: 0.25, ease: E.leave }, 0.3)
+    .to(textIn, { autoAlpha: 1, y: 0, duration: 0.4 }, 0.6)
+    .to(wText, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 0.6)
+    .to(wCta, { autoAlpha: 0, duration: 0.35, ease: E.camera }, 0.9)
+    .fromTo(cta, { scale: 0.94 }, { scale: 1, duration: 0.45, ease: E.result, immediateRender: false }, 0.95)
+    .to(wObj, { autoAlpha: 0, duration: 0.5, ease: E.camera }, 1.1)
+    .to(unlit, { opacity: 1, duration: 0.9, ease: E.camera }, 1.1)
+    .to(stone, { rotation: 0, scale: 1, duration: 1.2, ease: E.camera }, 1.1)
+    .fromTo(glint, { xPercent: -110 }, { xPercent: 330, duration: 1.3, ease: 'power2.inOut', immediateRender: false }, 1.3)
+    .to(proof, { autoAlpha: 1, y: 0, duration: 0.45 }, 1.5);
+  // …and three notes say what it answers: ① what you offer, ② why to trust you, ③ what to do now
+  tl.call(frame(title), null, 1.0)
+    .to(brackets, { autoAlpha: 1, duration: 0.3 }, 1.0)
+    .to(notes[0], { autoAlpha: 1, x: 0, duration: 0.3 }, 1.1)
+    .to(leads[0], { autoAlpha: 1, duration: 0.3 }, 1.1)
+    .to(brackets, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 2.3)
+    .call(frame(proof), null, 2.5)
+    .to(brackets, { autoAlpha: 1, duration: 0.3 }, 2.5)
+    .to(notes[1], { autoAlpha: 1, x: 0, duration: 0.3 }, 2.6)
+    .to(leads[1], { autoAlpha: 1, duration: 0.3 }, 2.6)
+    .to(brackets, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 3.5)
+    .call(frame(cta), null, 3.7)
+    .to(brackets, { autoAlpha: 1, duration: 0.3 }, 3.7)
+    .to(notes[2], { autoAlpha: 1, x: 0, duration: 0.3 }, 3.8)
+    .to(leads[2], { autoAlpha: 1, duration: 0.3 }, 3.8)
+    .to(brackets, { autoAlpha: 0, duration: 0.25, ease: E.leave }, 4.45);
+
+  // 2 · PageSpeed Insights: the site's address, the «Телефон» tab, the gauge counts up to 90+, three checks tick in
+  caption(tl, caps, 0, 1, 4.7, 5.15);
+  slide(tl, site, speed, 4.7);
+  swap(tl, hosts, 0, 1, 4.8);
+  tl.to(psUrl, { autoAlpha: 1, y: 0, duration: 0.3 }, 5.3)
+    .to(psTabs, { autoAlpha: 1, y: 0, duration: 0.3 }, 5.5)
+    .to(gauge, { autoAlpha: 1, y: 0, duration: 0.4 }, 5.7)
+    .to(arc, { strokeDashoffset: 1 - score / 100, duration: 1.6, ease: 'power2.out' }, 6.0)
+    .to(counter, { n: score, duration: 1.6, ease: 'power2.out', onUpdate: () => { num.textContent = String(Math.round(counter.n)); } }, 6.0)
+    .to(num, { color: lime, duration: 0.3 }, 7.5);
+  [6.9, 7.35, 7.8].forEach((t, k) => {
+    tl.to(checks[k], { autoAlpha: 1, x: 0, duration: 0.3 }, t)
+      .to(ticks[k], { scale: 1, duration: 0.3, ease: E.result }, t + 0.15);
+  });
+
+  // 3 · back to the first screen, alive: the blocks arrive one after another; the cursor comes in to the object,
+  //     which turns to it as the light runs over; then to the button, which rises to it and takes a press
+  caption(tl, caps, 1, 2, 9.4, 9.85);
+  tl.set(site, { xPercent: 100 }, 9.4)
+    .set([...notes, ...leads, brackets], { autoAlpha: 0 }, 9.4)
+    .set(blocks, { autoAlpha: 0, y: 10 }, 9.4)
+    .to(speed, { xPercent: -100, duration: 0.6, ease: E.travel }, 9.4)
+    .to(site, { xPercent: 0, duration: 0.6, ease: E.travel }, 9.4);
+  swap(tl, hosts, 1, 0, 9.5);
+  blocks.forEach((b, i) => tl.to(b, { autoAlpha: 1, y: 0, duration: 0.45 }, 10.0 + i * 0.13));
+  tl.to(fx[0], { autoAlpha: 1, x: 0, duration: 0.3 }, 10.9)
+    .set(cursor, { x: () => hero.offsetWidth + 12, y: () => mid(stone, 0.5, 0.5).y, autoAlpha: 1 }, 11.5)
+    .to(cursor, { x: () => mid(stone, 0.6, 0.5).x, duration: 0.5, ease: E.travel }, 11.5)
+    .to(cursor, { y: () => mid(stone, 0.6, 0.5).y, duration: 0.5, ease: E.camera }, 11.5)
+    .to(stone, { rotation: 7, scale: 1.06, x: () => hero.offsetWidth * 0.012, duration: 0.7, ease: E.camera }, 12.0)
+    .fromTo(glint, { xPercent: -110 }, { xPercent: 330, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 12.05)
+    .to(fx[2], { autoAlpha: 1, x: 0, duration: 0.3 }, 12.3)
+    .to(cursor, { x: () => mid(cta, 0.5, 0.55).x, duration: 0.5, ease: E.travel }, 12.9)
+    .to(cursor, { y: () => mid(cta, 0.5, 0.55).y, duration: 0.5, ease: E.camera }, 12.9)
+    .to(stone, { rotation: 0, scale: 1, x: 0, duration: 0.8, ease: E.camera }, 12.9)
+    .to(cta, { scale: 1.06, duration: 0.3, ease: E.result }, 13.4)
+    .to(ctaArrow, { x: 3, duration: 0.3, ease: E.result }, 13.4)
+    .to(cursor, { scale: 0.9, duration: 0.08, ease: E.leave }, 13.7)
+    .to(cursor, { scale: 1, duration: 0.16 }, 13.78)
+    .set(ring, { x: () => mid(cta, 0.5, 0.55).x, y: () => mid(cta, 0.5, 0.55).y, scale: 0.25, autoAlpha: 1 }, 13.72)
+    .to(ring, { scale: 1.6, autoAlpha: 0, duration: 0.55, ease: 'power2.out' }, 13.72)
+    .to(fx[1], { autoAlpha: 1, x: 0, duration: 0.3 }, 13.9)
+    .to(cursor, { autoAlpha: 0, duration: 0.25, ease: E.leave }, 14.3);
+
+  // the result: three lines, what the site gives, numbered like the track
+  tl.to(cap, { autoAlpha: 0, duration: 0.2, ease: E.leave }, 14.5)
+    .to(site, { autoAlpha: 0, duration: 0.3, ease: E.leave }, 14.5)
+    .set(sum, { autoAlpha: 1 }, 14.5);
+  rows.forEach((r, i) => tl.to(r, { autoAlpha: 1, y: 0, duration: 0.35 }, 14.7 + i * 0.25));
+  tl.addLabel('rest', 15.5);
   return tl;
 }
 
-/* ---------- 3 · Реклама в Google: the ad is shown to people who search for your service, and you
+/* ---------- 2 · Реклама в Google: the ad is shown to people who search for your service, and you
    see which search brought the request and what it cost. Three full-window scenes: the searches to
    show it for (and the ones left out) → the ad in Google, clicked → the report, where her request
    lands on the search that brought it. The caption stays on the rest frame: it explains the report. ---------- */
@@ -532,7 +653,7 @@ function ads(gsap, root) {
   return tl;
 }
 
-/* ---------- 4 · Автоматизація: one client, three things that happen around her request, as three
+/* ---------- 3 · Автоматизація: one client, three things that happen around her request, as three
    full-window scenes in turn — the request reaches the manager at once and isn't lost; the data in
    her email moves into the table by itself; the AI assistant answers on the site and in Telegram and
    hands what it doesn't know to a manager — then a three-line poster (the rest frame). The window's
@@ -686,7 +807,7 @@ function leads(gsap, root) {
   return tl;
 }
 
-/* ---------- 5 · SaaS (v2): a product's main screen builds itself — first the wireframe (lime dashes
+/* ---------- 4 · SaaS (v2): a product's main screen builds itself — first the wireframe (lime dashes
    mark where each block goes), then the interface (the blocks fill in, the chart draws, the numbers
    count up), then the release (an ember «Реліз v1.0» on the chart). The rest frame is the finished
    dashboard with the release badge; the CSS default is that same frame. ---------- */
@@ -731,7 +852,7 @@ function saas(gsap, root) {
 }
 
 
-const BUILDERS = { looks, pick, ads, leads, saas };
+const BUILDERS = { design, ads, leads, saas };
 
 export function initDemos({ motion, reducedMotion = false }) {
   const roots = $$('[data-demo]');
