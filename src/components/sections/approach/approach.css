@@ -151,6 +151,8 @@
     height: max(18.75rem, calc(var(--deck-h, 15rem) + 5rem));
     transform: translateY(-50%);
   }
+  /* lite graphics or no WebGL: a still of the stone, as tall as the 3D one stands in its canvas */
+  .process__still { position: absolute; left: 50%; top: 50%; width: auto; max-width: 95%; height: 80%; object-fit: contain; transform: translate(-50%, -50%); }
   .process__body.is-deck .stages { height: var(--deck-h, 15rem); border-top: 0; clip-path: inset(-5rem -1.5rem 0 -1.5rem); }
   .process__body.is-deck .stage {
     position: absolute;

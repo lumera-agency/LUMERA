@@ -20,6 +20,6 @@ Three tiny pills in the first screen's «01 Формати» line, 160×66 px, c
 
 | file | from | photographer | photo page | licence |
 |---|---|---|---|---|
-| `../hg-pill-landing.jpg` | `landing/hero.jpg` | KOBU Agency | https://unsplash.com/photos/uekNxBHpUU8 | Unsplash License |
+| `../hg-pill-landing.jpg` | `landing/hero.webp` | KOBU Agency | https://unsplash.com/photos/uekNxBHpUU8 | Unsplash License |
 | `../hg-pill-corp.jpg` | `corp/room-orange.jpg` | note thanun | https://unsplash.com/photos/MCSmR0mw1CU | Unsplash License |
 | `../hg-pill-shop.jpg` | `shop/goblets-trio.jpg` | Meg MacDonald | https://unsplash.com/photos/uuR7XkXSUZ0 | Unsplash License |

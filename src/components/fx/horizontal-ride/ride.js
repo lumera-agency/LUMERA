@@ -197,6 +197,7 @@ export function initRide({
         anticipatePin: 1,
         invalidateOnRefresh: true,
         refreshPriority: 2, // above 5 · Підхід's deck: its spacer goes in first
+        onToggle: (self) => ride.classList.toggle('is-riding', self.isActive),
         onUpdate: (self) => {
           if (bar) bar.style.transform = `scaleX(${self.progress.toFixed(4)})`;
           setCurrent(Math.round(self.progress * (panels.length - 1)));
@@ -246,7 +247,7 @@ export function initRide({
       on = false;
       trigger = null;
       current = -1;
-      ride.classList.remove('is-on');
+      ride.classList.remove('is-on', 'is-riding');
       panels.forEach((p) => p.classList.remove('is-current'));
       sr.forEach((p) => p.setAttribute('data-sr', ''));
       bigs.forEach((b) => { b.hidden = true; });

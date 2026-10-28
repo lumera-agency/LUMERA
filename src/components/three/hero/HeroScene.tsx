@@ -14,7 +14,7 @@ import { CHROME_LIGHTS, createChromeEnvironment, createObsidianMaterial, createS
 import { createOrbit, loadOrbitFont } from "./orbit";
 import { createDust } from "./dust";
 import { createStoneMask } from "./stoneMask";
-import { CAMERA_Z, FOV, REST_TILT, SEAM_FACING, STONE_EXTENT, SWAY, VIS_H, damp, heroClock, heroLayout, heroPointer, heroState } from "./state";
+import { CAMERA_Z, FOV, REST_TILT, SEAM_FACING, STONE_EXTENT, SWAY, VIS_H, damp, heroClock, heroLayout, heroPointer, heroState, stonePlacement } from "./state";
 import { boot } from "@/lib/boot";
 
 type Props = {
@@ -98,10 +98,12 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
     };
   }, [scene, studio, mask, orbit, dust, gl, orbitLabel, invalidate]);
 
-  // shaders compiled in the background: the intro waits for this, so its first frames don't stall
+  // shaders compiled in the background: the intro waits for this, so its first frames don't stall (without
+  // KHR_parallel_shader_compile three.js would only poll and warn about it: a plain compile does the same)
   useEffect(() => {
     let done = false;
-    gl.compileAsync(scene, camera)
+    const compiled = gl.extensions.has("KHR_parallel_shader_compile") ? gl.compileAsync(scene, camera) : Promise.resolve(gl.compile(scene, camera));
+    compiled
       .catch(() => {})
       .then(() => {
         if (done) return;
@@ -121,31 +123,10 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
     if (!hero) return;
     const W = Math.max(1, sizeW);
     const H = Math.max(1, sizeH);
-    const mobile = matchMedia("(max-width: 860px)").matches || W / H < 0.85;
-    let cx: number;
-    let cy: number;
-    let s: number;
-    if (!mobile) {
-      cx = W * 0.655;
-      cy = H * 0.54;
-      s = Math.min(H * 0.74, W * 0.46);
-    } else {
-      // places in the layout (offsets), not on screen: a transform (the lift) does not move them
-      const top = (el: HTMLElement | null) => {
-        let y = 0;
-        for (let n: HTMLElement | null = el; n && n !== hero; n = n.offsetParent as HTMLElement | null) y += n.offsetTop;
-        return y;
-      };
-      const header = hero.querySelector<HTMLElement>(".header");
-      const title = hero.querySelector<HTMLElement>("h1");
-      const headerBottom = header ? top(header) + header.offsetHeight : 0;
-      const bottom = title ? top(title) : H * 0.6;
-      cx = W * 0.6;
-      cy = headerBottom + (bottom - headerBottom) * 0.5;
-      s = THREE.MathUtils.clamp(bottom - headerBottom, W * 0.55, W * 1.0);
-    }
+    const { mobile, cx, cy, s } = stonePlacement(hero, W, H);
     const aspect = W / H;
-    heroLayout.base.set((cx / W - 0.5) * VIS_H * aspect, -(cy / H - 0.5) * VIS_H, 0);
+    heroLayout.base.x = (cx / W - 0.5) * VIS_H * aspect;
+    heroLayout.base.y = -(cy / H - 0.5) * VIS_H;
     heroLayout.baseScale = (s * (VIS_H / H)) / STONE_EXTENT;
     Object.assign(heroLayout, { mobile, glowX: cx, glowY: cy, width: W, height: H });
     mask.setSize(W, H);

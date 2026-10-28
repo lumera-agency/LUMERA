@@ -32,7 +32,7 @@
 
   /* type */
   --font-sans: "Geologica", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Archivo", "Arial Black", system-ui, sans-serif;
+  --font-display: "Geologica", "Inter", system-ui, sans-serif; /* the wordmarks: the text face at its heaviest */
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --text-label: 0.75rem;                               /* 12 · mono caps labels, index numerals, tags */
   --text-caption: 0.8125rem;                           /* 13 · hints, captions, notes */

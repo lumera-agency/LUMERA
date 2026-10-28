@@ -136,6 +136,8 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
 
   /* the list (and the deck's measures) */
   let marks = [];
+  let height = 1; // the list's height, measured with the marks: the scroll reads nothing
+  const fill = $('.process__fill', root);
   const measure = () => {
     // the line runs from the first node to the last
     const nodes = cards.map((s) => $('.stage__node', s)).filter(Boolean);
@@ -165,8 +167,9 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
       root.style.setProperty('--deck-k', k.toFixed(3));
       const deckH = Math.max(...cards.map((c) => c.offsetHeight));
       root.style.setProperty('--deck-h', `${deckH}px`);
-      // each card sits centred in the frame, so whichever is on top faces the stone
-      cards.forEach((c) => { c.style.top = `${Math.round((deckH - c.offsetHeight) / 2)}px`; });
+      // each card sits centred in the frame, so whichever is on top faces the stone (all heights read, then all set)
+      const heights = cards.map((c) => c.offsetHeight);
+      cards.forEach((c, i) => { c.style.top = `${Math.round((deckH - heights[i]) / 2)}px`; });
       // the current stage's title rides at 47% of the view, the stone beside it
       const bar = topbarHeight();
       const top = Math.max(bar + dpx(24), Math.min(window.innerHeight * 0.47 - titleOffset(), window.innerHeight - pin.offsetHeight - dpx(32)));
@@ -174,6 +177,7 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
     }
     const top = root.getBoundingClientRect().top;
     marks = cards.map((s) => ($('.stage__node', s)?.getBoundingClientRect().top ?? s.getBoundingClientRect().top) - top + 6);
+    height = root.clientHeight || 1;
   };
   measure();
   build();
@@ -184,8 +188,9 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
     end: 'bottom 45%',
     onUpdate: ({ progress }) => {
       if (root.classList.contains('is-deck')) return;
-      const y = progress * (root.clientHeight || 1);
-      root.style.setProperty('--p', progress.toFixed(4));
+      const y = progress * height;
+      // on the line itself (approach.css .process__fill): set on the list it would restyle every card
+      fill?.style.setProperty('--p', progress.toFixed(4));
       cards.forEach((s, i) => s.classList.toggle('is-on', y >= marks[i]));
     },
   });

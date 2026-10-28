@@ -63,8 +63,7 @@
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(255, 246, 232, 0.1), rgba(255, 246, 232, 0.035) 55%, rgba(255, 246, 232, 0) 100%);
-  transform: translate3d(66vw, -40vh, 0) translate(-50%, -50%);
-  will-change: transform;
+  transform: translate3d(66vw, -40vh, 0) translate(-50%, -50%); /* will-change: set by PageShell while it follows the hero's glow */
 }
 .page__grain {
   position: sticky;

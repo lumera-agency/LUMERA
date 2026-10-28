@@ -9,10 +9,10 @@
  * rim rippling like liquid. When the page's stone falls onto the first letter
  * (journey.js fires `journey:splash` at contact), a ring runs out through the
  * metal from there.
- * Renders only while the footer is on screen; without WebGL the CSS text with a
- * static chrome gradient stays.
+ * Renders only while the footer is on screen; without WebGL (or asked for a still)
+ * the CSS text with a static chrome gradient stays.
  */
-const font = (size) => `800 ${size}px Archivo, "Arial Black", sans-serif`;
+const font = (size) => `600 ${size}px Geologica, "Arial Black", sans-serif`; // the page's own text face (styles/fonts.css)
 const MAX_DPR = 1.75;
 
 export const VERT = `
@@ -118,12 +118,13 @@ void main() {
   gl_FragColor = vec4(mix(col * m, lensCol, lens), mix(m, 1.0, lens));
 }`;
 
-export function initWordmark({ reducedMotion }) {
+/** `textOnly`: no WebGL at all (lite graphics: reduced motion, Save-Data, a weak device) — the live text stays. */
+export function initWordmark({ reducedMotion, textOnly = false }) {
   const root = document.querySelector('[data-wordmark]');
   const text = root?.textContent.trim();
   if (!text) return;
   fitText(root, text);
-  if (!window.WebGLRenderingContext) return;
+  if (textOnly || !window.WebGLRenderingContext) return;
   // set up ahead, while the visitor is still far up the page and not scrolling: a moment after the
   // hero's intro has played (after the «Чому ECLO» clip, so the two don't share a frame), in a
   // pause in the scrolling; reaching the footer sooner than that starts it there. The shader

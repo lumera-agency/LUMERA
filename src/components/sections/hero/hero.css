@@ -30,8 +30,26 @@
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(255, 246, 232, 0.1), rgba(255, 246, 232, 0.035) 55%, rgba(255, 246, 232, 0) 100%);
   transform: translate3d(66vw, 60vh, 0) translate(-50%, -50%);
-  will-change: transform;
 }
+/* a layer of its own only while the scene runs and moves it each frame (HeroShell .is-live) */
+.hero.is-live .hero__glow { will-change: transform; }
+
+/* lite graphics (reduced motion, Save-Data, a weak device) or no WebGL: a still of the stone where the 3D
+   one stands (HeroShell sets --still-*); with motion it comes out of the dark as the stone would */
+.hero__still {
+  position: absolute;
+  left: var(--still-x, 65.5%);
+  top: var(--still-y, 54%);
+  z-index: 2;
+  width: auto;
+  height: var(--still-s, 74%);
+  aspect-ratio: 734 / 883;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  user-select: none;
+}
+html.motion .hero__still { opacity: 0; transition: opacity 2.8s cubic-bezier(0.45, 0, 0.55, 1) 0.5s; }
+html.motion.is-ready .hero__still { opacity: 1; }
 
 .hero__shards,
 .hero__canvas,

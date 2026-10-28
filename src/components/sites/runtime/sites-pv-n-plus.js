@@ -915,11 +915,11 @@ export function enhance(site, ctx = {}) {
     let raf = 0;
     const depth = () => {
       raf = 0;
+      // all the boxes first, then the styles: a box read after a style written lays the strip out again
       const r = strip.getBoundingClientRect();
       const mid = r.left + r.width / 2;
-      for (const sh of shots) {
-        if (sh.hidden) continue;
-        const b = sh.getBoundingClientRect();
+      const seen = shots.filter((sh) => !sh.hidden).map((sh) => [sh, sh.getBoundingClientRect()]);
+      for (const [sh, b] of seen) {
         const k = Math.min(1, Math.abs(b.left + b.width / 2 - mid) / (b.width * 1.05));
         sh.style.opacity = (1 - 0.55 * k).toFixed(3);
         sh.style.scale = (1 - 0.06 * k).toFixed(4);

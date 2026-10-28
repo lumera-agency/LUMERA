@@ -37,15 +37,23 @@ export function PageShell({ children }: { children: React.ReactNode }) {
     const glow = document.querySelector<HTMLElement>("[data-glow]");
     const el = page.current;
     if (!hero || !el || !bridge.current) return;
+    // each frame: both boxes read first, then only what changed is written (the height and the width change
+    // with a resize alone; --hero-h on the page restyles all of it)
+    let heroH = "";
+    let glowW = "";
+    let glowT = "";
     const sync = () => {
       const h = hero.getBoundingClientRect();
-      el.style.setProperty("--hero-h", `${h.height}px`);
-      if (!glow || !bridgeGlow.current) return;
-      const g = glow.getBoundingClientRect();
+      const g = glow && bridgeGlow.current ? glow.getBoundingClientRect() : null;
+      const height = `${h.height}px`;
+      if (height !== heroH) el.style.setProperty("--hero-h", (heroH = height));
+      if (!g || !bridgeGlow.current) return;
       const x = g.left + g.width / 2 - h.left;
       const y = g.top + g.height / 2 - h.bottom;
-      bridgeGlow.current.style.width = `${g.width}px`;
-      bridgeGlow.current.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      const width = `${g.width}px`;
+      if (width !== glowW) bridgeGlow.current.style.width = glowW = width;
+      const transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      if (transform !== glowT) bridgeGlow.current.style.transform = glowT = transform;
     };
     sync();
     const ro = new ResizeObserver(sync);
@@ -57,10 +65,14 @@ export function PageShell({ children }: { children: React.ReactNode }) {
     const loop = () => {
       sync();
       frame = visible ? requestAnimationFrame(loop) : 0;
+      // a layer of its own only while it is moved each frame
+      if (!frame && bridgeGlow.current) bridgeGlow.current.style.willChange = "";
     };
     const io = new IntersectionObserver((entries) => {
       visible = entries[entries.length - 1].isIntersecting;
-      if (visible && !frame) frame = requestAnimationFrame(loop);
+      if (!visible || frame) return;
+      if (bridgeGlow.current) bridgeGlow.current.style.willChange = "transform";
+      frame = requestAnimationFrame(loop);
     });
     io.observe(bridge.current);
     return () => {

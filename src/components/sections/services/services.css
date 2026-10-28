@@ -337,8 +337,9 @@ p.service__dialog-go--alt .link { color: inherit; }
   justify-self: start;
   padding-inline: 0;
   border-top: 0;
-  will-change: transform;
 }
+/* a layer of its own only while the ride runs (ride.js .is-riding: its trigger is active) */
+.ride.is-on.is-riding .services { will-change: transform; }
 /* one slide per screen: each panel is the stage's full width (--panel-w, ride.js), its content
    centred between the arrows; on an ultrawide screen it is capped by the height (the window fills it) */
 .ride.is-on .service {

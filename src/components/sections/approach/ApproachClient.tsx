@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { liteGraphics } from "@/lib/device";
 import { WebGLGate } from "@/components/three/lib/WebGLGate";
 
 const StageStone = dynamic(() => import("@/components/three/stage-stone/StageStone"), { ssr: false });
@@ -55,15 +56,34 @@ export function ApproachClient({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Where the stone sits in the deck's lane; it mounts once the deck is on (wide screens, motion). */
+/** Where the stone sits in the deck's lane; it mounts once the deck is on (wide screens, motion). With lite
+ *  graphics (a weak device, Save-Data: lib/device) or without WebGL, a still of it stands there instead. */
 export function StageStoneSlot() {
   const [on, setOn] = useState(false);
+  const [near, setNear] = useState(false);
+  const slot = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     setSlot = setOn;
     return () => {
       setSlot = null;
     };
   }, []);
-  const empty = <span className="process__stone" aria-hidden="true" />;
-  return on ? <WebGLGate fallback={empty}><StageStone /></WebGLGate> : empty;
+  // its scene (three.js, a WebGL context, the shaders) comes a screen ahead of the block, not with the page
+  useEffect(() => {
+    const el = slot.current;
+    if (!on || near || !el) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries[entries.length - 1].isIntersecting) setNear(true);
+    }, { rootMargin: "100% 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [on, near]);
+  if (!on || !near) return <span className="process__stone" aria-hidden="true" ref={slot} />;
+  const still = (
+    <span className="process__stone" aria-hidden="true">
+      {/* eslint-disable-next-line @next/next/no-img-element -- a still of the 3D stone */}
+      <img className="process__still" src="/img/stone-cutout.webp" alt="" width={734} height={883} loading="lazy" decoding="async" />
+    </span>
+  );
+  return liteGraphics() ? still : <WebGLGate fallback={still}><StageStone /></WebGLGate>;
 }

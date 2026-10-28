@@ -25,7 +25,8 @@ src/
   styles/
     tokens.css             ← единственный источник токенов: Tailwind @theme + CSS-имена
     base.css, fonts.css
-  lib/                     gsap (регистрация плагинов), hooks, boot (сигналы загрузки), typeset, rich
+  lib/                     gsap (регистрация плагинов), hooks, boot (сигналы загрузки), typeset, rich,
+                           device (лёгкая графика: reduced motion, Save-Data, слабое устройство → без WebGL, стоп-кадры)
   components/
     ui/                    кнопка, логотип, иконки — базовые элементы
     fx/                    БИБЛИОТЕКА ЭФФЕКТОВ (каждый — своя папка, не знает про контент)
@@ -39,6 +40,8 @@ src/
     lab/                   витрина
   content/                 данные без текста (навигация)
 registry.json              реестр эффектов (shadcn)
+patches/                   патч @react-three/fiber: часы стора на THREE.Timer вместо устаревшего THREE.Clock
+                           (накладывается patch-package на postinstall)
 ```
 
 ### Слои (сверху вниз зависят только от нижних)

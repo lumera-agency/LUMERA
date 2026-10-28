@@ -1,6 +1,6 @@
 /* what: split 1:1 from website-v2/css by scripts/split-css.mjs (rule order kept) */
 
-.what__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-dark); counter-reset: none; }
+.what__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-dark); counter-reset: none; container-type: inline-size; }
 .what__item { position: relative; border-bottom: 1px solid var(--line-dark); }
 .what__item::after {
   /* the ink line that runs under the row being read */
@@ -19,14 +19,25 @@
   position: relative;
   display: grid;
   /* sized by what is in them: a narrow number, the name takes the room, the description a column of
-     its own, the button as wide as it is */
-  grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 20rem) auto;
+     its own, the button as wide as it is. The name's column is never narrower than its longest word
+     (min-content): a long one-word name («Автоматизація») takes room from the description instead of
+     running into it */
+  grid-template-columns: 2.5rem minmax(min-content, 1fr) minmax(0, 20rem) auto;
   column-gap: clamp(1.5rem, 3vw, 3.5rem);
   align-items: center;
   padding: clamp(1.125rem, 3.2vh, 2.125rem) 0;
   color: var(--ink-dark);
   text-decoration: none;
   transition: opacity 0.5s var(--ease-out);
+}
+/* the four rows on one set of columns: the longest word of any name sets the name's column, so the
+   descriptions stand in one line whichever name needs the room */
+@supports (grid-template-columns: subgrid) {
+  @media (min-width: 861px) and (hover: hover) and (pointer: fine) {
+    .what__list { display: grid; grid-template-columns: 2.5rem minmax(min-content, 1fr) minmax(0, 20rem) auto; column-gap: clamp(1.5rem, 3vw, 3.5rem); }
+    .what__item,
+    .what__row { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; }
+  }
 }
 .what__num {
   grid-column: 1;
@@ -41,6 +52,10 @@
 .what__name { grid-column: 2; display: block; overflow: visible; overflow-y: clip; padding-bottom: 0.08em; } /* the mask only clips up and down: the hover shift is never cut */
 .what__name-in {
   display: inline-block;
+  /* the last resort: a word longer than its whole column breaks rather than leaving it (the stacked
+     layouts below size the type so it never comes to that) */
+  max-width: 100%;
+  overflow-wrap: break-word;
   font-size: clamp(2.1rem, 4.6vw, 5.1rem);
   font-weight: 400;
   font-variation-settings: "SHRP" 64;
@@ -115,6 +130,9 @@
   .what__num { grid-column: 1; grid-row: 1; padding-top: 0.55em; }
   .what__name { grid-column: 2; grid-row: 1; }
   .what__name-in { font-size: clamp(1.7rem, 7.4vw, 3rem); }
+  /* the longest one-word name (ru «Автоматизация») is ~7.1em wide: the type never outgrows the name's column
+     (the list less the number, the picture and the gaps) */
+  .what__name-in { font-size: min(clamp(1.7rem, 7.4vw, 3rem), calc((100cqi - 2.75rem - clamp(4rem, 18vw, 7.5rem)) / 7.5)); }
   .what__desc { grid-column: 2; grid-row: 2; }
   .what__go { grid-column: 2; grid-row: 3; justify-self: start; margin-top: 0.625rem; }
   .what__thumb { display: block; grid-column: 3; grid-row: 1 / span 3; width: clamp(4rem, 18vw, 7.5rem); height: auto; aspect-ratio: 4 / 5; border-radius: 0.625rem; object-fit: cover; }
@@ -122,6 +140,8 @@
 @media (max-width: 860px) and (hover: hover) and (pointer: fine) {
   .what__row { grid-template-columns: 3rem minmax(0, 1fr); column-gap: 1rem; }
   .what__name { grid-column: 2; }
+  /* the name's column: the list less the number and the gap; the longest one-word name (~7.1em) fits it */
+  .what__name-in { font-size: min(clamp(2.1rem, 4.6vw, 5.1rem), calc((100cqi - 4rem) / 7.5)); }
   .what__desc { grid-column: 2; grid-row: 2; margin-top: 0.5rem; }
   .what__go { grid-column: 2; grid-row: 3; justify-self: start; margin-top: 0.875rem; }
 }

@@ -8,8 +8,7 @@
   aspect-ratio: 4 / 5;
   pointer-events: none;
   visibility: hidden;
-  opacity: 0;
-  will-change: transform;
+  opacity: 0; /* will-change: set by useHoverReveal while the frame follows the pointer */
 }
 .hover-reveal__in {
   position: absolute;

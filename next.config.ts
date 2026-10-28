@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
+  // the production build carries no console output; console.error stays (a lead that was not delivered must reach the
+  // server's log)
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
+  },
   // The AI-automation page and its cases are app pages (app/[locale]/ai-avtomatyzatsiia, …/keisy/*): Russian under
   // /ru like the main page. Their first, static version took ?lang=ru: such links land on the Russian page.
   async redirects() {

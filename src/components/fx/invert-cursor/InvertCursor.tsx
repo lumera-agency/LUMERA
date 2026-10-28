@@ -144,10 +144,12 @@ export function InvertCursor({
       // runs while the lens is out (its rim keeps rippling) or still settling
       const busy = cur.r > 0 || target.r > 0 || speed > 2;
       raf = busy && !document.hidden ? requestAnimationFrame(frame) : 0;
+      if (!raf) svg.style.willChange = ""; // a layer of its own only while it moves
     };
     function wake() {
       if (raf) return;
       last = 0;
+      svg.style.willChange = "transform";
       raf = requestAnimationFrame(frame);
     }
 

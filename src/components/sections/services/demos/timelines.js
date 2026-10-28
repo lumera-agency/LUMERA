@@ -372,17 +372,21 @@ function design(gsap, root) {
   // the notes and their leader lines sit beside what they mark, never on it; the detail tags take the same spots
   const place = (el, x, y) => gsap.set(el, { left: Math.round(x), top: Math.round(y) });
   const layout = () => {
+    // every box is read first, then everything is placed: a read after a write would lay the page out again
     const W = hero.offsetWidth;
     const H = hero.offsetHeight;
-    marks.setAttribute('viewBox', `0 0 ${W} ${H}`);
     const t = boxIn(hero, title);
     const c = boxIn(hero, cta);
     const p = boxIn(hero, proof);
     const o = boxIn(hero, object);
+    const bh = boxIn(page, blockH);
+    const c3 = boxIn(page, cards[2]);
+    const end = isNarrow(root) ? lineEnd(titleText) : null;
+    const [h1, h2, h3] = notes.map((n) => n.offsetHeight);
+    const tags = fx.map((n) => ({ w: n.offsetWidth, h: n.offsetHeight }));
+    marks.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // ① above the headline; in a phone's window, where the nav sits close over it, after its last line instead
-    const h1 = notes[0].offsetHeight;
-    if (isNarrow(root)) {
-      const end = lineEnd(titleText);
+    if (end) {
       place(notes[0], end.x + 10, end.y + (end.h - h1) / 2);
       leads[0].setAttribute('d', `M${Math.round(end.x + 3)} ${Math.round(end.y + end.h / 2) + 0.5}H${Math.round(end.x + 10)}`);
     } else {
@@ -390,18 +394,16 @@ function design(gsap, root) {
       leads[0].setAttribute('d', `M${Math.round(t.x + h1 / 2) + 0.5} ${Math.round(t.y - 8)}V${Math.round(t.y - 3)}`);
     }
     // ② right of the proof
-    place(notes[1], p.x + p.w + 14, p.y + (p.h - notes[1].offsetHeight) / 2);
+    place(notes[1], p.x + p.w + 14, p.y + (p.h - h2) / 2);
     leads[1].setAttribute('d', `M${Math.round(p.x + p.w + 3)} ${Math.round(p.y + p.h / 2) + 0.5}H${Math.round(p.x + p.w + 14)}`);
     // ③ right of the button
-    place(notes[2], c.x + c.w + 14, c.y + (c.h - notes[2].offsetHeight) / 2);
+    place(notes[2], c.x + c.w + 14, c.y + (c.h - h3) / 2);
     leads[2].setAttribute('d', `M${Math.round(c.x + c.w + 3)} ${Math.round(c.y + c.h / 2) + 0.5}H${Math.round(c.x + c.w + 14)}`);
     // the detail tags (scene 3, in the page): right of the next block's heading, over the third card, over the
     // object's foot
-    const bh = boxIn(page, blockH);
-    const c3 = boxIn(page, cards[2]);
-    place(fx[0], bh.x + bh.w + 12, bh.y + (bh.h - fx[0].offsetHeight) / 2);
-    place(fx[1], c3.x + (c3.w - fx[1].offsetWidth) / 2, c3.y - fx[1].offsetHeight - 8);
-    place(fx[2], o.x + (o.w - fx[2].offsetWidth) / 2, o.y + o.h * 0.86 - fx[2].offsetHeight / 2);
+    place(fx[0], bh.x + bh.w + 12, bh.y + (bh.h - tags[0].h) / 2);
+    place(fx[1], c3.x + (c3.w - tags[1].w) / 2, c3.y - tags[1].h - 8);
+    place(fx[2], o.x + (o.w - tags[2].w) / 2, o.y + o.h * 0.86 - tags[2].h / 2);
   };
   const frame = (el) => () => brackets.setAttribute('d', bracketsD(boxIn(hero, el)));
 

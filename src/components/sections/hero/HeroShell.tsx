@@ -1,14 +1,16 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { boot, sceneRun, useSceneRunning } from "@/lib/boot";
+import { liteGraphics } from "@/lib/device";
 import { useReducedMotion } from "@/lib/hooks";
 import { lockViewport } from "@/lib/viewport";
-import { WebGLGate } from "@/components/three/lib/WebGLGate";
+import { WebGLGate, hasWebGL } from "@/components/three/lib/WebGLGate";
+import { stonePlacement } from "@/components/three/hero/state";
 import { useBoot } from "./useBoot";
 import "./hero.css";
 
-// three.js and the scenes load after the first paint; the page works without them
+// three.js and the scenes are chunks of their own, fetched once the first screen is in view; the page works without them
 const HeroScene = dynamic(
   () =>
     import("@/components/three/hero/HeroScene").then((m) => {
@@ -18,6 +20,13 @@ const HeroScene = dynamic(
   { ssr: false },
 );
 const ShardsScene = dynamic(() => import("@/components/three/hero/ShardsScene"), { ssr: false });
+
+// the page opens at its top, the first screen in view: its scenes start loading with the page's own code, not a few
+// renders after it has hydrated (the same chunks the components above load; lite graphics and no WebGL: nothing)
+if (typeof window !== "undefined" && window.scrollY < window.innerHeight && !liteGraphics() && hasWebGL()) {
+  void import("@/components/three/hero/HeroScene").catch(() => {});
+  void import("@/components/three/hero/ShardsScene").catch(() => {});
+}
 
 /** The page rides over the first screen: the hero's content is held back as the page scrolls
  *  (HOLD of the scroll, so it nearly stays put) and dims, and the blocks slide over it. */
@@ -29,19 +38,53 @@ const skipScene = () => {
   boot.sceneReady.resolve();
 };
 
+// lite graphics (lib/device) follow reduced motion as it is switched; null on the server and while hydrating
+const subscribeMotion = (onChange: () => void) => {
+  const mq = matchMedia("(prefers-reduced-motion: reduce)");
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+};
+
 /**
- * The first screen's stage: background light, the 3D canvases, grain, and the boot sequence.
- * The copy, header and rail come in as children (server-rendered).
+ * The first screen's stage: background light, the 3D canvases (or, with lite graphics or without WebGL, a still
+ * of the stone in their place), grain, and the boot sequence. The copy, header and rail come in as children
+ * (server-rendered).
  */
 export function HeroShell({ orbitLabel, children }: { orbitLabel: string; children: React.ReactNode }) {
   const hero = useRef<HTMLDivElement>(null);
   const glow = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  const lite = useSyncExternalStore(subscribeMotion, liteGraphics, () => null);
+  const [failed, setFailed] = useState(false);
+  const [near, setNear] = useState(false);
   const started = useSceneRunning();
   const [visible, setVisible] = useState(true);
+  const still = lite === true || failed;
+  const onSkip = useCallback(() => {
+    skipScene();
+    setFailed(true);
+  }, []);
 
   useBoot(hero, reducedMotion);
   useEffect(() => lockViewport(), []);
+  useEffect(() => {
+    if (lite) skipScene();
+  }, [lite]);
+
+  // the scenes (three.js) are fetched once the first screen is in view: on load at once (the page starts at its
+  // top, held there by the preloader; asked right away, not a frame later through an observer), otherwise when
+  // it comes into view
+  useEffect(() => {
+    const el = hero.current;
+    if (!el || lite !== false || near) return;
+    const box = el.getBoundingClientRect();
+    if (box.bottom > 0 && box.top < window.innerHeight) return setNear(true);
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) setNear(true);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [lite, near]);
 
   // pause the canvases off-screen, under the page (touch: the hero is sticky, never off-screen, only
   // covered) and in a background tab; the hero's height for its sticky top (hero.css)
@@ -87,6 +130,23 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     };
   }, []);
 
+  // the still stands where the 3D stone would (three/hero/state stonePlacement), the glow behind it
+  useEffect(() => {
+    const el = hero.current;
+    if (!el || !still) return;
+    const place = () => {
+      const { cx, cy, s } = stonePlacement(el, el.offsetWidth, el.offsetHeight);
+      el.style.setProperty("--still-x", `${cx.toFixed(1)}px`);
+      el.style.setProperty("--still-y", `${cy.toFixed(1)}px`);
+      el.style.setProperty("--still-s", `${s.toFixed(1)}px`);
+      if (glow.current) glow.current.style.transform = `translate3d(${cx.toFixed(1)}px, ${cy.toFixed(1)}px, 0) translate(-50%, -50%)`;
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [still]);
+
   // the lift. Touch screens scroll natively, a step ahead of a script: there the browser runs it
   // itself with the scroll (a scroll-driven animation, hero.css), or there is none
   useEffect(() => {
@@ -105,21 +165,34 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     apply();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      cancelAnimationFrame(queued);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [reducedMotion]);
 
   useEffect(() => () => sceneRun.set(false), []);
   const running = started && visible;
+  const live = running && lite === false && near && !failed;
+  useEffect(() => {
+    hero.current?.classList.toggle("is-live", live);
+  }, [live]);
 
   return (
     <div className="hero" data-hero ref={hero}>
       <div className="hero__bg" aria-hidden="true">
         <div className="hero__glow" data-glow ref={glow} />
       </div>
-      <WebGLGate onSkip={skipScene}>
-        <ShardsScene running={running} reducedMotion={reducedMotion} />
-        <HeroScene heroRef={hero} glowRef={glow} orbitLabel={orbitLabel} running={running} reducedMotion={reducedMotion} />
-      </WebGLGate>
+      {still && (
+        // eslint-disable-next-line @next/next/no-img-element -- a still of the 3D stone, placed by the script (stonePlacement)
+        <img className="hero__still" src="/img/stone-cutout.webp" alt="" width={734} height={883} decoding="async" fetchPriority="high" />
+      )}
+      {lite === false && near && (
+        <WebGLGate onSkip={onSkip}>
+          <ShardsScene running={running} reducedMotion={reducedMotion} />
+          <HeroScene heroRef={hero} glowRef={glow} orbitLabel={orbitLabel} running={running} reducedMotion={reducedMotion} />
+        </WebGLGate>
+      )}
       <div className="hero__grain" aria-hidden="true" />
       {children}
     </div>

@@ -855,7 +855,9 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
      500–800; css/configurator.css R11): never on the page's own load path. They are fetched in idle time
      once the preview comes within a screen of the viewport, at once on an intent toward «Авторський»; a
      sample that needs them before they are in waits for them up to 300 ms (render, below). ---------- */
-  const FACES = ['900 1em "Playfair Display"', 'italic 400 1em "Playfair Display"', '800 1em "Sofia Sans Extra Condensed"'];
+  // (the main page, 28 Oct: only the faces today's samples set — Playfair italic 400 for the shop's wordmark, Sofia Sans
+  // Extra Condensed for the Фуксія landing; Playfair 900 was the Авторський sample's alone and is no longer fetched)
+  const FACES = ['italic 400 1em "Playfair Display"', '800 1em "Sofia Sans Extra Condensed"'];
   let facesP = null, facesIn = false;
   let builtV2 = false; // the last render came from a second sample's module
   // (this page) the new samples: Авторський «Приклад 2» (V2) and the new Базовий (B2); null = the configurator's own

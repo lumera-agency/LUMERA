@@ -30,12 +30,14 @@ export function BackToTop({ label, after = 1, quiet = "footer" }: Props) {
     const el = button.current;
     if (!el) return;
     let queued = 0;
+    let shown: boolean | null = null;
+    let offset = "";
     const check = () => {
       queued = 0;
+      // read everything first (the page's height, the scroll, the boxes), then write only what changed
       const de = document.documentElement;
       const max = de.scrollHeight - window.innerHeight;
       const y = window.scrollY;
-      ring.current?.style.setProperty("stroke-dashoffset", (RING * (1 - Math.min(1, Math.max(0, max > 0 ? y / max : 0)))).toFixed(1));
       const box = el.getBoundingClientRect();
       const pad = 12;
       const blocked = [...document.querySelectorAll<HTMLElement>(quiet)].some((q) => {
@@ -44,6 +46,10 @@ export function BackToTop({ label, after = 1, quiet = "footer" }: Props) {
         return r.width > 0 && r.left < box.right + pad && r.right > box.left - pad && r.top < box.bottom + pad && r.bottom > box.top - pad;
       });
       const on = y > window.innerHeight * after && !blocked;
+      const fill = (RING * (1 - Math.min(1, Math.max(0, max > 0 ? y / max : 0)))).toFixed(1);
+      if (fill !== offset) ring.current?.style.setProperty("stroke-dashoffset", (offset = fill));
+      if (on === shown) return;
+      shown = on;
       el.classList.toggle("is-on", on);
       el.tabIndex = on ? 0 : -1;
       el.setAttribute("aria-hidden", String(!on));

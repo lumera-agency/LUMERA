@@ -59,7 +59,7 @@
  *   environment; the chrome reflects the site's own paper colours), a CSS light pool on the headline.
  *
  * Photos: KOBU Agency's production studio (Unsplash, Unsplash License), img/sites/photos/landing/CREDITS.md:
- *   hero.jpg uekNxBHpUU8 · hall-south.jpg uKKNmPBsaiI · hall-graphite.jpg O8AtzoQcnY4 · hall-attic.jpg 8lqd7vpkxzE ·
+ *   hero.webp uekNxBHpUU8 · hall-south.jpg uKKNmPBsaiI · hall-graphite.jpg O8AtzoQcnY4 · hall-attic.jpg 8lqd7vpkxzE ·
  *   leaf.jpg MqwaHPimeBI (https://unsplash.com/photos/<id>).
  *
  * build(H, c, data, e, opts) → the inner HTML of .pv-site (css/sites-pv-n-landing.css, all under .pv-site--n.pv-n-landing)
@@ -236,7 +236,7 @@ export function build(H, c, data, e, opts = {}) {
         <p class="fx-sub">${sub}</p>
         <div class="fx-ctas">${fb(lx(s.btn, e?.btn), 'fx-btn', 'data-cta data-to="5"', STARFX)}${fb(lx(s.btn2, e?.btn2), 'fx-btn2', 'data-to="1"')}</div>
       </div>
-      <figure class="fx-hang"><i class="fx-hang__roll" aria-hidden="true"></i><div class="fx-hang__ph" data-to="1" data-loupe><img src="${IMG}hero.jpg" alt="" decoding="async"></div><i class="fx-loupe" aria-hidden="true"><img src="${IMG}hero.jpg" alt="" decoding="async"></i></figure>
+      <figure class="fx-hang"><i class="fx-hang__roll" aria-hidden="true"></i><div class="fx-hang__ph" data-to="1" data-loupe><img src="${IMG}hero.webp" alt="" decoding="async"></div><i class="fx-loupe" aria-hidden="true"><img src="${IMG}hero.webp" alt="" decoding="async"></i></figure>
     </section>`;
 
   /* ---------- 02 · the halls and prices: AccordionGallery ---------- */
@@ -927,7 +927,7 @@ export function enhance(site, ctx = {}) {
     if (holder) {
       const api = { paper: null };
       dishPaper = (col) => api.paper?.(col);
-      mountDish(site, holder, ctx, onDispose, api).catch((err) => console.warn('[fuchsia] 3d', err));
+      mountDish(site, holder, ctx, onDispose, api).catch((err) => { console.warn('[fuchsia] 3d', err); });
     }
   }
 }

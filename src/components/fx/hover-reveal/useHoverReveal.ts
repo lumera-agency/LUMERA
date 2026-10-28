@@ -99,9 +99,12 @@ export function useHoverReveal(list: RefObject<HTMLElement | null>, { rows: rowS
     const loop = () => {
       place(false);
       frame = shown || Math.abs(pos.lean) > 0.05 ? requestAnimationFrame(loop) : 0;
+      if (!frame) reveal.style.willChange = ""; // a layer of its own only while it follows the pointer
     };
     const run = () => {
-      if (!frame) frame = requestAnimationFrame(loop);
+      if (frame) return;
+      reveal.style.willChange = "transform";
+      frame = requestAnimationFrame(loop);
     };
 
     /** unmask picture i from the side the pointer came from (down the list: from below) */

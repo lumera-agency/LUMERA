@@ -6,7 +6,7 @@ resized locally (JPEG), no faces, no brand names readable at the sample's size.
 
 | File | Photographer | Photo page | Licence |
 |---|---|---|---|
-| hero.jpg | KOBU Agency | https://unsplash.com/photos/uekNxBHpUU8 | Unsplash License |
+| hero.webp | KOBU Agency | https://unsplash.com/photos/uekNxBHpUU8 | Unsplash License |
 | hall-south.jpg | KOBU Agency | https://unsplash.com/photos/uKKNmPBsaiI | Unsplash License |
 | hall-graphite.jpg | KOBU Agency | https://unsplash.com/photos/O8AtzoQcnY4 | Unsplash License |
 | hall-attic.jpg | KOBU Agency | https://unsplash.com/photos/8lqd7vpkxzE | Unsplash License |
