@@ -12,7 +12,7 @@ const PHONE_LINKS = [
 ] as const;
 
 /**
- * 4 · Чому Lumera: the request's chain, link by link — «Тільки сторінка» against «Система Lumera».
+ * 4 · Чому ECLO: the request's chain, link by link — «Тільки сторінка» against «Система ECLO».
  * Each link has a tiny UI glyph whose short story plays as a relay along the chain (why-orbit.js);
  * on phones the table becomes an accordion (why-phone.js). Markup ported 1:1 from website-v2.
  */
@@ -189,7 +189,7 @@ export async function Why() {
             </table>
           </div>
           {/* ≤ 600 px only (why-phone.js): the four links as an accordion, the first open: the link's glyph
-               and name, under it «Тільки сторінка» against «Система Lumera». There the rows are what a screen
+               and name, under it «Тільки сторінка» against «Система ECLO». There the rows are what a screen
                reader reads (the table above is display: none). Wider screens keep the table; this is display: none. */}
           <ul className="w5-acc" role="list" data-why-acc="">
             {PHONE_LINKS.map((l, i) => (

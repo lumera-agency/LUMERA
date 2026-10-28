@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { studioName } from "@/config/site";
 import { PageShell } from "@/components/layout/page/PageShell";
 import { aiHref } from "@/components/ai/links";
 import { aiMetadata } from "@/components/ai/meta";
@@ -38,7 +39,7 @@ export default async function SitesPage({ params }: PageProps<"/[locale]/dyzain-
   return (
     <SitesShell
       nav={nav}
-      footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: "Lumera Studio" }]}
+      footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: studioName }]}
       cta={{ href: "#contact", text: t("cta") }}
       barCta={{ href: "#contact", text: t("topbar.cta") }}
       claim={t("foot.claim")}

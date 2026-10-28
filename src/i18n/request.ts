@@ -1,8 +1,19 @@
 import { getRequestConfig } from "next-intl/server";
 import { hasLocale } from "next-intl";
 import { routing } from "./routing";
+import { brandName, studioName } from "@/config/site";
 import { typesetMessages } from "@/lib/typeset";
 import { glueNumbers } from "@/components/ai/typeset";
+
+type Messages = { [key: string]: string | Messages };
+
+/** The name in every message comes from config/site: {brand} → brandName, {studio} → studioName (before the
+ *  typesetting, so it sets the final text). */
+function withBrand(node: Messages): Messages {
+  return Object.fromEntries(
+    Object.entries(node).map(([k, v]) => [k, typeof v === "string" ? v.replaceAll("{brand}", brandName).replaceAll("{studio}", studioName) : withBrand(v)]),
+  );
+}
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
@@ -17,6 +28,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
   const ads = glueNumbers((await import(`../messages/ads/${locale}.json`)).default);
   return {
     locale,
-    messages: typesetMessages({ ...main, ...ai, ...sites, ...ads }),
+    messages: typesetMessages(withBrand({ ...main, ...ai, ...sites, ...ads })),
   };
 });

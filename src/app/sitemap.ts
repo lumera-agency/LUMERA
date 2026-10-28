@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumera-seven-eta.vercel.app";
+import { siteUrl } from "@/config/site";
 
 /** Every page in both languages, each pointing at the other (hreflang): the main page, the sites page, the ads page, the AI page and its
  *  two cases. */
@@ -15,7 +14,7 @@ const PAGES = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return PAGES.flatMap(({ path, priority }) => {
-    const languages = { uk: `${SITE}${path || "/"}`, ru: `${SITE}/ru${path}` };
+    const languages = { uk: `${siteUrl}${path || "/"}`, ru: `${siteUrl}/ru${path}` };
     return [
       { url: languages.uk, changeFrequency: "monthly" as const, priority, alternates: { languages } },
       { url: languages.ru, changeFrequency: "monthly" as const, priority: Math.round(priority * 90) / 100, alternates: { languages } },

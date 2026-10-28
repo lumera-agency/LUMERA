@@ -3,7 +3,7 @@
  * stack, each at its own angle (after Codrops' «Image Stack Intro Animation»); under it what the
  * studio does runs word by word (and, if given, lands on a last word with a lime dot); top right the percentage
  * follows the real loading
- * (window.lumeraLoader.step, called by the page's boot). On leaving, the copy slips up out of its
+ * (window.ecloLoader.step, called by the page's boot). On leaving, the copy slips up out of its
  * masks, the other pictures sink away and the top one grows to the whole screen straight from its place,
  * straightening on the way, and, letting go, opens the page through a window in the sheet that grows with
  * it fading away (after Osmo's «Willem»); one move, no stop, transform and opacity only; finish() resolves
@@ -71,8 +71,8 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
   try {
     const nav = performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined;
     const reload = nav?.type === "reload";
-    again = !reload && sessionStorage.getItem("lumera:seen") === "1" && sessionStorage.getItem("lumera:lang-scroll") == null;
-    sessionStorage.setItem("lumera:seen", "1");
+    again = !reload && sessionStorage.getItem("eclo:seen") === "1" && sessionStorage.getItem("eclo:lang-scroll") == null;
+    sessionStorage.setItem("eclo:seen", "1");
   } catch {}
   if (again) {
     el.remove();
@@ -194,7 +194,7 @@ function clock(cfg: { words: string[]; last: string; stages: string[]; min: numb
     poll();
   });
   let finishing: Promise<void> | null = null;
-  (window as unknown as { lumeraLoader: unknown }).lumeraLoader = {
+  (window as unknown as { ecloLoader: unknown }).ecloLoader = {
     step(p: number, i?: number) {
       target = Math.max(target, p);
       if (i != null) setStage(i);

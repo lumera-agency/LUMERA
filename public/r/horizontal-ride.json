@@ -4,9 +4,9 @@
   "title": "HorizontalRide",
   "description": "A pinned horizontal ride, one panel per screen: a wheel gesture (or a sideways swipe) turns one panel, the scroll lands softly on the first and the last, arrows step, skip leaves through a fade and glides on; outlined numerals drift for depth, a HUD counts and names the panels. Selectors are options.",
   "registryDependencies": [
-    "@lumera/gsap-setup",
-    "@lumera/scroll",
-    "@lumera/css-units"
+    "@eclo/gsap-setup",
+    "@eclo/scroll",
+    "@eclo/css-units"
   ],
   "files": [
     {

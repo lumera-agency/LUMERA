@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { brandName } from "@/config/site";
 
 /** 2 · Про кейс: the case in one paragraph, set large, and its facts (ivory). */
 export async function About() {
@@ -18,7 +19,7 @@ export async function About() {
             <div className="ai-about__f"><dt>{t("case.about.k.vol")}</dt><dd>{t("case.about.v.vol")}</dd></div>
             <div className="ai-about__f"><dt>{t("case.about.k.radius")}</dt><dd>{t("case.about.v.radius")}</dd></div>
             <div className="ai-about__f"><dt>{t("case.about.k.dev")}</dt><dd>{t("case.about.v.dev")}</dd></div>
-            <div className="ai-about__f ai-about__f--made"><dt>{t("case.about.k.made")}</dt><dd>Lumera</dd></div>
+            <div className="ai-about__f ai-about__f--made"><dt>{t("case.about.k.made")}</dt><dd>{brandName}</dd></div>
           </dl>
         </div>
       </div>

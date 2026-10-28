@@ -20,7 +20,7 @@
  *     where the requests come from (only what was chosen).
  *   - Базовий reads premium through restraint: a lighter, larger headline, a full-bleed hero image, one
  *     button and a text link, a facts strip instead of fake logos, flat calm components, each business's
- *     own palette and logo mark (never Lumera's ember or lime), no placeholder portraits. The studio's
+ *     own palette and logo mark (never the studio's ember or lime), no placeholder portraits. The studio's
  *     Базовий is «Денне світло» (PD21): paper in daylight, centred type, a fan of prints of its three halls.
  *   - Авторський: the dark, editorial art direction (serif display, mono labels, ember) with a concept
  *     first screen and one signature per sample: the law firm's «§», the store's giant word. The studio's

@@ -4,7 +4,7 @@
   "title": "Magnetic",
   "description": "A gentle pull toward the cursor (mouse only, never with reduced motion); the label lags for depth, presses squash.",
   "registryDependencies": [
-    "@lumera/gsap-setup"
+    "@eclo/gsap-setup"
   ],
   "files": [
     {

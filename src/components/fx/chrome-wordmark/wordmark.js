@@ -1,15 +1,17 @@
 /*
- * The very end of the page: LUMERA in liquid chrome (plain WebGL, no three.js).
+ * The very end of the page: the word in liquid chrome (plain WebGL, no three.js).
+ * The word is the mark's own live text (the canvas covers it), so any word does:
+ * its size, the canvas and the masks are all measured off it.
  * The letters are a mask. A domain-warped noise field flows through them on
  * its own and is shaded as polished metal: sharp-edged studio reflections, a
  * rounded edge taken from a blurred copy of the mask, warm gold in the swirls.
  * Under the cursor (or a finger) an ivory lens shows the letters in black, its
- * rim rippling like liquid. When the page's stone falls into the L (journey.js
- * fires `journey:splash` at contact), a ring runs out through the metal from there.
+ * rim rippling like liquid. When the page's stone falls onto the first letter
+ * (journey.js fires `journey:splash` at contact), a ring runs out through the
+ * metal from there.
  * Renders only while the footer is on screen; without WebGL the CSS text with a
  * static chrome gradient stays.
  */
-const TEXT = 'LUMERA';
 const font = (size) => `800 ${size}px Archivo, "Arial Black", sans-serif`;
 const MAX_DPR = 1.75;
 
@@ -118,16 +120,19 @@ void main() {
 
 export function initWordmark({ reducedMotion }) {
   const root = document.querySelector('[data-wordmark]');
-  if (!root || !window.WebGLRenderingContext) return;
+  const text = root?.textContent.trim();
+  if (!text) return;
+  fitText(root, text);
+  if (!window.WebGLRenderingContext) return;
   // set up ahead, while the visitor is still far up the page and not scrolling: a moment after the
-  // hero's intro has played (after the «Чому Lumera» clip, so the two don't share a frame), in a
+  // hero's intro has played (after the «Чому ECLO» clip, so the two don't share a frame), in a
   // pause in the scrolling; reaching the footer sooner than that starts it there. The shader
   // compiles in the background where the browser can (see start())
   let started = null;
   const go = () => {
     if (started) return started;
     io.disconnect();
-    started = start(root, reducedMotion).catch((error) => {
+    started = start(root, text, reducedMotion).catch((error) => {
       root.classList.remove('is-live');
       console.warn('[wordmark] static fallback.', error);
     });
@@ -147,9 +152,21 @@ export function initWordmark({ reducedMotion }) {
   };
   const afterIntro = () => setTimeout(still, 900);
   if (document.documentElement.classList.contains('intro-done')) afterIntro();
-  else window.addEventListener('lumera:intro-done', afterIntro, { once: true });
+  else window.addEventListener('eclo:intro-done', afterIntro, { once: true });
   // main.js may have it built sooner: before the intro, while nothing on the first screen moves
   return { prepare: go };
+}
+
+/* The live text's size off its own width (--mark-fit in footer.css: font size per width of the mark), once the
+   web font is in: before the canvas, and without WebGL, the text spans the mark whatever the word */
+function fitText(root, text) {
+  (document.fonts ? document.fonts.load(font(100)) : Promise.resolve())
+    .then(() => {
+      const g = document.createElement('canvas').getContext('2d');
+      g.font = font(200);
+      root.style.setProperty('--mark-fit', String(200 / g.measureText(text).width));
+    })
+    .catch(() => {});
 }
 
 /** Runs `fn` once the page has been quiet for a while after `delay` ms. */
@@ -177,28 +194,36 @@ function makeTexture(gl, unit) {
   return tex;
 }
 
-/** Centre of the L's stem, from the L's left ink edge, at font(200) — read off the glyph itself. */
-function stemOfL() {
+/** Centre of a letter's stem, from its left ink edge, at font(200) — read off the glyph itself: the narrowest
+ *  first run of ink across its height (an arm, a bar or a foot runs wider), so it holds for an E as for an L. */
+function stemOf(letter) {
   const c = document.createElement('canvas');
-  c.width = c.height = 280;
   const g = c.getContext('2d', { willReadFrequently: true });
   g.font = font(200);
-  const m = g.measureText('L');
+  const m = g.measureText(letter);
+  c.width = Math.ceil(m.actualBoundingBoxLeft + m.actualBoundingBoxRight) + 40;
+  c.height = Math.ceil(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) + 40;
+  g.font = font(200); // sizing the canvas reset it
   g.fillStyle = '#fff';
-  g.fillText('L', m.actualBoundingBoxLeft + 20, m.actualBoundingBoxAscent + 20);
-  const row = g.getImageData(0, Math.round(20 + m.actualBoundingBoxAscent * 0.4), 280, 1).data;
-  let x0 = -1;
-  let x1 = -1;
-  for (let x = 0; x < 280; x++) {
-    if (row[x * 4 + 3] > 128) {
-      if (x0 < 0) x0 = x;
-      x1 = x;
-    } else if (x0 >= 0) break;
+  g.fillText(letter, m.actualBoundingBoxLeft + 20, m.actualBoundingBoxAscent + 20);
+  const px = g.getImageData(0, 0, c.width, c.height).data;
+  let stem = null;
+  for (let f = 0.15; f < 0.86; f += 0.05) {
+    const y = Math.round(20 + m.actualBoundingBoxAscent * f);
+    let x0 = -1;
+    let x1 = -1;
+    for (let x = 0; x < c.width; x++) {
+      if (px[(y * c.width + x) * 4 + 3] > 128) {
+        if (x0 < 0) x0 = x;
+        x1 = x;
+      } else if (x0 >= 0) break;
+    }
+    if (x0 >= 0 && (!stem || x1 - x0 < stem[1] - stem[0])) stem = [x0, x1];
   }
-  return x0 < 0 ? null : (x0 + x1) / 2 - 20;
+  return stem ? (stem[0] + stem[1]) / 2 - 20 : null;
 }
 
-async function start(root, reducedMotion) {
+async function start(root, text, reducedMotion) {
   const canvas = root.querySelector('canvas');
   // the letters are drawn from the web font, so it has to be there first
   await Promise.race([document.fonts?.load(font(100)), new Promise((resolve) => setTimeout(resolve, 3000))]).catch(() => {});
@@ -257,7 +282,7 @@ async function start(root, reducedMotion) {
     if (!width) return;
     dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     paint.font = font(200);
-    const probe = paint.measureText(TEXT);
+    const probe = paint.measureText(text);
     const inkWidth = probe.actualBoundingBoxLeft + probe.actualBoundingBoxRight;
     const scale = width / inkWidth;
     const capHeight = (probe.actualBoundingBoxAscent + probe.actualBoundingBoxDescent) * scale;
@@ -279,7 +304,7 @@ async function start(root, reducedMotion) {
     paint.clearRect(0, 0, w, h);
     paint.font = font(size);
     paint.fillStyle = '#fff';
-    paint.fillText(TEXT, x, y);
+    paint.fillText(text, x, y);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, maskTex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.ALPHA, gl.ALPHA, gl.UNSIGNED_BYTE, paint.canvas);
@@ -291,7 +316,7 @@ async function start(root, reducedMotion) {
     paint.shadowColor = '#fff';
     paint.shadowBlur = blur;
     paint.shadowOffsetX = w * 2;
-    paint.fillText(TEXT, x - w * 2, y);
+    paint.fillText(text, x - w * 2, y);
     paint.shadowBlur = 0;
     paint.shadowOffsetX = 0;
     gl.activeTexture(gl.TEXTURE1);
@@ -301,8 +326,8 @@ async function start(root, reducedMotion) {
     gl.viewport(0, 0, w, h);
     gl.uniform2f(uRes, w, h);
     gl.uniform1f(uSlope, blur * 0.9);
-    // where a falling drop lands: the top of the L's stem (the stone docks there, journey.js)
-    const stemX = (stemOfL() ?? 0.1 * inkWidth) * scale;
+    // where a falling drop lands: the top of the first letter's stem (the stone docks there, journey.js)
+    const stemX = (stemOf(text[0]) ?? 0.1 * inkWidth) * scale;
     stem = { x: stemX, y: padY };
     if (dropSlot) {
       dropSlot.style.left = `${stemX}px`;
@@ -349,7 +374,7 @@ async function start(root, reducedMotion) {
     gl.uniform4f(uDrop, drop.x, drop.y, drop.age, drop.age < DROP_LIFE ? drop.power : 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   };
-  // the page's stone lands on the L (journey.js); the ring runs out from there
+  // the page's stone lands on the first letter (journey.js); the ring runs out from there
   document.addEventListener('journey:splash', () => {
     if (reducedMotion || !canvas.height) return;
     drop.x = stem.x * dpr;

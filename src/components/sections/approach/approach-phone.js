@@ -4,7 +4,7 @@
  * phones: the stack»). Here each card's picture plays its short story once the card has come fully up,
  * and again after it has left the screen and come back.
  * The pictures are inline SVG in index.html (.stage__pic, .t-m: never shown above 600 px, where nothing
- * here plays), drawn in the glyph language of 5 · Чому Lumera. Only transform and opacity animate (WAAPI
+ * here plays), drawn in the glyph language of 5 · Чому ECLO. Only transform and opacity animate (WAAPI
  * on the SVG parts). The CSS default is the finished picture, so without JS nothing is hidden.
  * Reduced motion: no stories, every picture at rest with its accent lit.
  */

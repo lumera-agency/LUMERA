@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { studioName } from "@/config/site";
 
 /** An AI page's title, description, canonical and hreflang (/path ↔ /ru/path) and link preview. The site's address
  *  (metadataBase) comes from the layout. */
@@ -13,7 +14,7 @@ export async function aiMetadata({ locale, namespace, path, image }: { locale: s
     alternates: { canonical: url, languages: { uk: path, ru: `/ru${path}`, "x-default": path } },
     openGraph: {
       type: "website",
-      siteName: "Lumera Studio",
+      siteName: studioName,
       title: t("title"),
       description: t("description"),
       url,

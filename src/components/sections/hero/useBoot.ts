@@ -24,7 +24,7 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
     const introDone = () => {
       root.classList.add("intro-done");
       boot.introDone.resolve();
-      window.dispatchEvent(new Event("lumera:intro-done"));
+      window.dispatchEvent(new Event("eclo:intro-done"));
     };
 
     (async () => {

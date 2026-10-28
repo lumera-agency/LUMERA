@@ -37,7 +37,7 @@ const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-m
 
 /**
  * «Реклама й аналітика» in the main page's frame, as the AI pages and «Дизайн і сайти» are: the smooth scroll, the
- * topbar (on from the start), the phone menu, the footer with the chrome LUMERA, the button back up. The page's own
+ * topbar (on from the start), the phone menu, the footer with the chrome wordmark, the button back up. The page's own
  * behaviour (the scenes, the reveals, the quick picks) runs on top (AdsRuntime). On phones the request button stays at
  * hand once the first screen has passed (.ai-sticky), hidden again at the form.
  */

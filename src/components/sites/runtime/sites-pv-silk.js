@@ -4,7 +4,7 @@
  * Changes here: none (its React Bits notice is kept below). The original stays the main page's; edit the two together. */
 /*
  * «Анімація» · the sample hero's animated background: React Bits «Silk», ported to vanilla JS + raw
- * WebGL1 for the Lumera configurator preview (9 Oct 2026). Source:
+ * WebGL1 for the studio's configurator preview (9 Oct 2026). Source:
  * https://github.com/DavidHDev/react-bits/blob/main/src/content/Backgrounds/Silk/Silk.jsx
  *
  * The fragment shader is the original (the silk pattern, its grain and its light mode). What changed in

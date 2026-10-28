@@ -1296,7 +1296,7 @@ html.motion:not(.ai-go):not(.is-ready) .ai-hero .ai-bub { opacity: 0; }
 /* ==========================================================================
    Pure black instead of «smoke» (the owner, 19 Oct 2026). The AI page: «в Hero точно такой же фон, как на странице
    дизайн и сайты», black in the blocks; the two cases the same day: «в кейсах … тоже замени дымный фон на черный» and
-   the band behind the footer's LUMERA (the main page's film grain, one screen tall, ended across it). The ground of
+   the band behind the footer's wordmark (the main page's film grain, one screen tall, ended across it). The ground of
    all three is #000: the page, its dark blocks, the footer; the main page's moving grain and its «bridge» glow are off
    (rules here, so the main page's own page.css stays as it was). The AI page's first screen is the sites page's: its
    FluxLines (hero-fx, Hero.tsx) on #000, the stone keeps its soft glow, as there; the cases' first screens are plain

@@ -4,7 +4,7 @@
   "title": "TextFill",
   "description": "A paragraph whose words light up as you read down (scrubbed). No-break pairs light up as one.",
   "registryDependencies": [
-    "@lumera/gsap-setup"
+    "@eclo/gsap-setup"
   ],
   "files": [
     {

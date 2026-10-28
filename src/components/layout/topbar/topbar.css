@@ -48,7 +48,7 @@
   .topbar .btn--xs { padding-inline: 0.75rem; font-size: 0.8125rem; }
   .topbar__end { gap: 0.625rem; }
 }
-/* the mark alone up to where «Lumera Studio» fits beside the languages, the button and the burger */
+/* the mark alone up to where the studio's name fits beside the languages, the button and the burger */
 @media (max-width: 600px) {
   .topbar .logo__type,
   .topbar .logo__mono { display: none; }

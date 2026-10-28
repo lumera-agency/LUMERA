@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "lumera",
-  "homepage": "https://lumera-seven-eta.vercel.app/lab",
+  "name": "eclo",
+  "homepage": "/lab",
   "items": [
     {
       "name": "tokens",
@@ -72,7 +72,7 @@
       "name": "preloader",
       "type": "registry:component",
       "title": "Preloader",
-      "description": "Five columns, the words of what you do, an honest counter driven by real loading milestones (window.lumeraLoader.step / finish), a column-lift exit that hands over to the hero. Rendered outside hydration.",
+      "description": "Five columns, the words of what you do, an honest counter driven by real loading milestones (window.ecloLoader.step / finish), a column-lift exit that hands over to the hero. Rendered outside hydration.",
       "files": [
         {
           "path": "src/components/fx/preloader/Preloader.tsx",
@@ -143,7 +143,7 @@
       "title": "RunLabel",
       "description": "On hover a button's label runs like a ticker: two copies slide in a loop with faded edges; leaving, it glides to the end of the cycle and stops on the text at rest. (A library variant; the site's buttons use the liquid wave in ui/button.)",
       "registryDependencies": [
-        "@lumera/gsap-setup"
+        "@eclo/gsap-setup"
       ],
       "files": [
         {
@@ -167,7 +167,7 @@
       "title": "Magnetic",
       "description": "A gentle pull toward the cursor (mouse only, never with reduced motion); the label lags for depth, presses squash.",
       "registryDependencies": [
-        "@lumera/gsap-setup"
+        "@eclo/gsap-setup"
       ],
       "files": [
         {
@@ -182,7 +182,7 @@
       "title": "HoverReveal",
       "description": "Over a list row, its picture follows the cursor: lerped follow, lean from the pointer's speed, unmask from the side it came from. After Codrops' Rapid Image Hover Menu (MIT).",
       "registryDependencies": [
-        "@lumera/gsap-setup"
+        "@eclo/gsap-setup"
       ],
       "files": [
         {
@@ -202,7 +202,7 @@
       "title": "TextFill",
       "description": "A paragraph whose words light up as you read down (scrubbed). No-break pairs light up as one.",
       "registryDependencies": [
-        "@lumera/gsap-setup"
+        "@eclo/gsap-setup"
       ],
       "files": [
         {
@@ -217,7 +217,7 @@
       "title": "ScrollReveals",
       "description": "[data-sr] blocks rise and fade in by batches; [data-split] headings unmask line by line. Touch only fades; a jump shows what it passed at once; focus shows its block.",
       "registryDependencies": [
-        "@lumera/gsap-setup"
+        "@eclo/gsap-setup"
       ],
       "files": [
         {
@@ -247,7 +247,7 @@
         "lenis@1.3.26"
       ],
       "registryDependencies": [
-        "@lumera/gsap-setup"
+        "@eclo/gsap-setup"
       ],
       "files": [
         {
@@ -267,9 +267,9 @@
       "title": "HorizontalRide",
       "description": "A pinned horizontal ride, one panel per screen: a wheel gesture (or a sideways swipe) turns one panel, the scroll lands softly on the first and the last, arrows step, skip leaves through a fade and glides on; outlined numerals drift for depth, a HUD counts and names the panels. Selectors are options.",
       "registryDependencies": [
-        "@lumera/gsap-setup",
-        "@lumera/scroll",
-        "@lumera/css-units"
+        "@eclo/gsap-setup",
+        "@eclo/scroll",
+        "@eclo/css-units"
       ],
       "files": [
         {
