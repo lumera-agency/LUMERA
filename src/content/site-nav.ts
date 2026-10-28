@@ -59,6 +59,8 @@ type Group = Record<string, { price: number }>;
 const minPaid = (group: Group) => Math.min(...Object.values(group).map((o) => o.price).filter((p) => p > 0));
 const bold = (html: string) => /<b>(.*?)<\/b>/.exec(html)?.[1] ?? "";
 const firstSentence = (text: string) => text.split(/(?<=\.)\s/)[0].replace(/\.$/, "");
+/** «Сервіс кондиціонерів · Київ і Дніпро» → «Київ і Дніпро»: the title names the business already */
+const place = (who: string) => who.split(" · ")[1] ?? who;
 
 /**
  * The header's and the phone menu's data, built on the server: the main page's words (what, nav, start), the cases'
@@ -85,8 +87,9 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const adsCase = (n: number, id: "ac" | "pest" | "volter"): SiteNavCase => ({
     n: String(n),
     chip: t(`ads.case.${id}.chip`),
-    name: t(`ads.case.${id}.name`),
-    who: t(`ads.case.${id}.who`),
+    // the owner, 29 Oct: what we did and for whom («Ведення Google Ads: дезінсекція»), not the niche's one word
+    name: t(`nav.caseTitle.${id}`),
+    who: place(t(`ads.case.${id}.who`)),
     v: t(`ads.case.${id}.tab.v`),
     k: t(`ads.case.${id}.tab.k`),
     honest: bold(t.raw(`ads.case.${id}.honest`) as string),
@@ -159,7 +162,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       {
         n: "4",
         chip: t("ads.case.ac.chip"),
-        name: caseName,
+        name: t("nav.caseTitle.poshuk"),
         who: firstSentence(t("case.hero.lead")),
         v: caseV,
         k: caseK,
@@ -173,7 +176,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       telegram: telegramHref(),
       viber: viberHref(),
     },
-    assistant: { chip: t("ai.nav.case"), name: t("asst.crumb"), href: href("/keisy/ai-asystent") },
+    assistant: { chip: t("ai.nav.case"), name: t("nav.caseTitle.asst"), href: href("/keisy/ai-asystent") },
     labels: {
       services: t("nav.services"),
       cases: t("nav.cases"),
