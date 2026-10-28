@@ -1,4 +1,5 @@
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { studioName } from "@/config/site";
 import { PageShell } from "@/components/layout/page/PageShell";
 import { AiShell } from "@/components/ai/AiShell";
 import { AiFaq } from "@/components/ai/AiFaq";
@@ -65,7 +66,7 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
     <AiShell
       page="ai"
       nav={nav}
-      footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: "Lumera Studio" }]}
+      footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: studioName }]}
       cta={{ href: "#contact", text: c("cta.auto") }}
       barCta={{ href: "#contact", text: t("topbar.cta") }}
       claim={t("foot.claim")}

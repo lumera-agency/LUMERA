@@ -59,7 +59,7 @@
   font-family: var(--font-display);
   font-stretch: 125%;
   font-weight: 800;
-  font-size: calc((100vw - 2 * var(--gutter)) * 0.176);
+  font-size: calc((100vw - 2 * var(--gutter)) * var(--mark-fit, 0.284));
   line-height: 0.8;
   white-space: nowrap;
   color: transparent;
@@ -92,7 +92,9 @@
 }
 .footer .lang { font-size: var(--fs-caption); }
 .footer__mark { container-type: inline-size; }
-.footer__mark-text { font-size: calc(100cqw * 0.176); }
+/* the word spans the mark: --mark-fit is its font size per width of the mark, measured off the word itself
+   (fx/chrome-wordmark fitText); 0.284 is ECLO's own, for the first paint */
+.footer__mark-text { font-size: calc(100cqw * var(--mark-fit, 0.284)); }
 /* phones: the wordmark close under the last line (the desktop's rhythm left a gap) */
 @media (max-width: 600px) {
   .footer__mark { margin-top: 1.25rem; }

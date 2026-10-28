@@ -1,7 +1,7 @@
 "use client";
 /*
  * The page's start-up, shared by the components that take part in it: the preloader's clock
- * (index script, window.lumeraLoader), the hero's 3D scene (loaded → shaders compiled) and the
+ * (index script, window.ecloLoader), the hero's 3D scene (loaded → shaders compiled) and the
  * intro. Signals are one-shot promises; the scene's run state is a tiny store.
  */
 import { useSyncExternalStore } from "react";
@@ -44,17 +44,17 @@ export const useSceneRunning = () => useSyncExternalStore(sceneRun.subscribe, sc
 export type PreloaderClock = { step(progress: number, stage?: number): void; finish(): Promise<void> };
 declare global {
   interface Window {
-    lumeraLoader?: PreloaderClock;
+    ecloLoader?: PreloaderClock;
   }
 }
-export const loader = () => (typeof window === "undefined" ? undefined : window.lumeraLoader);
+export const loader = () => (typeof window === "undefined" ? undefined : window.ecloLoader);
 
 /** Back where the visitor was after a language switch (layout/lang-switch). */
 export function restoreScroll() {
   try {
-    const y = sessionStorage.getItem("lumera:lang-scroll");
+    const y = sessionStorage.getItem("eclo:lang-scroll");
     if (y == null) return false;
-    sessionStorage.removeItem("lumera:lang-scroll");
+    sessionStorage.removeItem("eclo:lang-scroll");
     window.scrollTo({ top: Number(y), behavior: "instant" });
     return true;
   } catch {
@@ -109,7 +109,7 @@ export function jumpToHash() {
   return true;
 }
 
-const PLACE_KEY = "lumera:place";
+const PLACE_KEY = "eclo:place";
 /** How this page was reached: a link or typed address ("navigate"), a reload, back / forward. */
 export function arrivedBy() {
   const nav = performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined;

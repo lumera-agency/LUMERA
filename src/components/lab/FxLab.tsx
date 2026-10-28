@@ -5,6 +5,7 @@
  * new site using the library would be.
  */
 import { useEffect, useRef } from "react";
+import { brandName } from "@/config/site";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { RollText } from "@/components/fx/roll-text/RollText";
 import { TextFill } from "@/components/fx/text-fill/TextFill";
@@ -20,7 +21,7 @@ import "@/components/fx/roll-text/roll-text.css";
 import "./lab.css";
 
 const FX = [
-  { id: "preloader", name: "Preloader", file: "fx/preloader", use: "<Preloader brand note words last stages />  ·  window.lumeraLoader.step(p, i) / finish()" },
+  { id: "preloader", name: "Preloader", file: "fx/preloader", use: "<Preloader brand note words last stages />  ·  window.ecloLoader.step(p, i) / finish()" },
   { id: "roll-text", name: "RollText", file: "fx/roll-text", use: '<a className="roll-host"><RollText>Послуги</RollText></a>' },
   { id: "invert-cursor", name: "InvertCursor", file: "fx/invert-cursor", use: "<InvertCursor scope=\"#manifesto, .footer__top\" size={110} lensGrow={1.35} />  ·  data-cursor-lens on large type" },
   { id: "invert-fill", name: "InvertFill", file: "fx/invert-fill", use: "<InvertFill /> once in the layout  ·  <ButtonLink className=\"btn--invert\">" },
@@ -58,7 +59,7 @@ export function FxLab({ locale }: { locale: string }) {
   useSpotlight(cards, ".lab-card");
 
   useEffect(() => {
-    window.lumeraLoader?.finish(); // the layout's preloader: nothing to wait for here
+    window.ecloLoader?.finish(); // the layout's preloader: nothing to wait for here
     document.documentElement.classList.add("is-ready");
     const area = smoke.current;
     const canvas = area?.querySelector("canvas");
@@ -81,7 +82,7 @@ export function FxLab({ locale }: { locale: string }) {
     <div className="lab min-h-screen bg-bg px-[var(--gutter)] pb-40 text-ink" data-lab="">
       <SmoothScroll />
       <header className="pb-16 pt-24">
-        <p className="font-mono text-label uppercase tracking-[0.16em] text-lime">Lumera · FX library</p>
+        <p className="font-mono text-label uppercase tracking-[0.16em] text-lime">{brandName} · FX library</p>
         <h1 className="mt-4 max-w-[14ch] text-[clamp(3rem,8vw,7.5rem)] font-light leading-[0.95] tracking-[-0.04em]">Effects you can build a site from.</h1>
         <nav className="mt-12 flex flex-wrap gap-2">
           {FX.map((f) => (
@@ -197,7 +198,7 @@ export function FxLab({ locale }: { locale: string }) {
 
       <Block id="chrome-wordmark" title="ChromeWordmark">
         <div className="footer__mark" data-wordmark="" aria-hidden="true">
-          <span className="footer__mark-text">LUMERA</span>
+          <span className="footer__mark-text">{brandName}</span>
           <canvas className="footer__mark-canvas" />
           <span className="footer__drop" data-slot="drop" />
         </div>

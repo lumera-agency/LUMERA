@@ -7,7 +7,7 @@ import { rich } from "@/lib/rich";
 import { Wordmark } from "./Wordmark";
 import "./footer.css";
 
-/** The footer: the claim and CTA, the page index, the bottom line, and LUMERA in liquid chrome. Another page passes
+/** The footer: the claim and CTA, the page index, the bottom line, and the brand's name in liquid chrome. Another page passes
  *  its own claim, CTA and index (ready text); the main page uses its messages and PAGE_NAV. */
 export async function Footer({ claim, links, cta }: { claim?: React.ReactNode; links?: readonly NavLink[]; cta?: NavCta } = {}) {
   const t = await getTranslations();

@@ -1,7 +1,7 @@
 {
   "ads": {
     "meta": {
-      "title": "Реклама в Google и Facebook, аналитика GA4 · Lumera Studio",
+      "title": "Реклама в Google и Facebook, аналитика GA4 · {studio}",
       "description": "Реклама в Google, Facebook и Instagram и аналитика Google Analytics 4. Видно, какая реклама приносит заявки. Открытые цены на настройку."
     },
     "nav": {
@@ -12,7 +12,7 @@
       "price": "Цена",
       "faq": "Вопросы",
       "lead": "Заявка",
-      "home": "Главная Lumera Studio",
+      "home": "Главная {studio}",
       "terms": "Условия"
     },
     "cta": "Обсудить рекламу",

@@ -9,7 +9,7 @@
  *   - Сайт 5–7 сторінок: a law firm for business (four pages);
  *   - Магазин: glass decor, whose products are the crystal cube's renders;
  *   - «Вже є сайт»: an auto service on Obolon, on a dated template (somebody's old site).
- * No renovation anywhere. Prices and numbers here belong to the sample businesses, never to Lumera.
+ * No renovation anywhere. Prices and numbers here belong to the sample businesses, never to the studio.
  * `a` holds the Авторський first screen (its concept headline). The studio's Авторський is «Синя година» (a magazine's
  * cover at night): `cover` holds its magazine furniture (the contents' title, the sticker, the rubrics, the imprint,
  * the running heads, the questions of «Питання номера»), labels only: every fact on it, every answer, is the studio's

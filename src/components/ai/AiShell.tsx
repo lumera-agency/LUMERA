@@ -33,7 +33,7 @@ type Props = {
 
 /**
  * An AI page in the main page's frame: its smooth scroll, topbar (on from the start: the first screen has no header of
- * its own), phone menu, footer with the chrome LUMERA and the button back up; the page's own behaviour on top
+ * its own), phone menu, footer with the chrome wordmark and the button back up; the page's own behaviour on top
  * (AiRuntime). On phones the request button stays at hand once the first screen has passed (.ai-sticky).
  */
 /** Where the button back up steps aside: the page's controls that can sit in its corner */

@@ -4,7 +4,7 @@
  * Changes here: none (its React Bits notice is kept below). The original stays the main page's; edit the two together. */
 /*
  * «Анімація» · text and UI motion in the sample site: React Bits components, ported to plain DOM + WAAPI
- * for the Lumera configurator preview (9 Oct 2026). Sources:
+ * for the studio's configurator preview (9 Oct 2026). Sources:
  *   BlurText     https://github.com/DavidHDev/react-bits/blob/main/src/content/TextAnimations/BlurText/BlurText.jsx
  *   RotatingText https://github.com/DavidHDev/react-bits/blob/main/src/content/TextAnimations/RotatingText/RotatingText.jsx
  *   CountUp      https://github.com/DavidHDev/react-bits/blob/main/src/content/TextAnimations/CountUp/CountUp.jsx

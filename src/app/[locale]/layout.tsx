@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { siteUrl, studioName } from "@/config/site";
 import { LogoSprite } from "@/components/ui/logo/LogoSprite";
 import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
 import "../globals.css";
@@ -10,7 +11,6 @@ import "@/components/layout/page/page.css";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads"];
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumera-seven-eta.vercel.app";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -21,13 +21,14 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const t = await getTranslations({ locale, namespace: "meta" });
   const path = locale === routing.defaultLocale ? "/" : `/${locale}`;
   return {
-    metadataBase: new URL(SITE),
+    // every page's canonical, hreflang and og:url are paths: they resolve against the site's address (config/site)
+    metadataBase: new URL(siteUrl),
     title: t("title"),
     description: t("description"),
     alternates: { canonical: path, languages: { uk: "/", ru: "/ru", "x-default": "/" } },
     openGraph: {
       type: "website",
-      siteName: "Lumera Studio",
+      siteName: studioName,
       title: t("title"),
       description: t("description"),
       url: path,
