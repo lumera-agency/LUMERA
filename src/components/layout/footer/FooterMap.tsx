@@ -1,11 +1,12 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { getSiteNav } from "@/content/site-nav";
 import { PhoneIcon, TelegramIcon, ViberIcon } from "@/components/layout/site-nav/Contacts";
+import { FooterCases } from "./FooterCases";
 
 /**
  * The footer's map of the site, on every page: the services with their «від» prices, the clients' cases, the studio's
  * own links and the contacts, in four columns with a hairline between them, as the header's panel has them. Phones:
- * the services across, the cases and the studio side by side, the contacts under them.
+ * the services across, the cases folded under a plus (FooterCases), the studio's links in a row, the contacts.
  */
 export async function FooterMap() {
   const t = await getTranslations();
@@ -32,23 +33,7 @@ export async function FooterMap() {
           ))}
         </ul>
       </div>
-      <div className="footer__col footer__col--cases">
-        <p className="footer__k">{L.casesMore}</p>
-        <ul>
-          {nav.cases.map((c) => (
-            <li key={c.n}>
-              <a className="footer__link" href={c.href}>
-                <span>{c.name}</span>
-              </a>
-            </li>
-          ))}
-          <li>
-            <a className="footer__link" href={nav.assistant.href}>
-              <span>{nav.assistant.name}</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+      <FooterCases label={L.casesMore} items={[...nav.cases.map((c) => ({ text: c.name, href: c.href })), { text: nav.assistant.name, href: nav.assistant.href }]} />
       <div className="footer__col footer__col--studio">
         <p className="footer__k">{t("footer.map.studio")}</p>
         <ul>

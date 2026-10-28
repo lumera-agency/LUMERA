@@ -94,7 +94,8 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
     k: t(`ads.case.${id}.tab.k`),
     honest: bold(t.raw(`ads.case.${id}.honest`) as string),
     service: t("services.service.meta.span.2"),
-    href: `${ads}#case`,
+    // the case's own tab on the ads page (its runtime opens it from the address)
+    href: `${ads}#case-${id}`,
   });
   // «Пошук замовлень: <hl>15 хвилин</hl> замість години щоранку»: the name, the figure and its key
   const title = t.raw("case.hero.title") as string;

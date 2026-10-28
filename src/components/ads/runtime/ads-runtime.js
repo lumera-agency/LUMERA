@@ -217,8 +217,22 @@ function arrive() {
   if (restoreScroll() || restorePlace()) return;
   const id = decodeURIComponent(location.hash.slice(1));
   const target = id && document.getElementById(id);
-  if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' });
+  if (!target) return;
+  if (openCase(target)) return $('#case')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+  target.scrollIntoView({ block: 'start', behavior: 'instant' });
 }
+
+/** A link to one case (the site's menu and footer: …#case-pest): that case is shown, on the tabs and the phones' stack. */
+function openCase(target) {
+  if (!target?.matches('[data-case-pick]')) return false;
+  pickCase(target.dataset.casePick);
+  return true;
+}
+/* the same link on this very page: the address changes its #, the page shows that case and glides to the block */
+window.addEventListener('hashchange', () => {
+  const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (openCase(target)) $('#case')?.scrollIntoView({ block: 'start', behavior: motion ? 'smooth' : 'instant' });
+});
 
 /* ---------- 8 · quick picks: a tap adds its words to «Що потрібно?», a second tap takes them out ---------- */
 function initPicks() {
@@ -388,6 +402,7 @@ function initCaseTabs() {
       row.scrollTo({ left: x, behavior: motion ? 'smooth' : 'instant' });
     }
     if (focus) pick.focus({ preventScroll: true });
+    stackTo(pick.dataset.casePick); // phones: the same case on top of the stack
   };
   tablist(picks, choosePick);
   pickCase = (id) => { const pick = picks.find((p) => p.dataset.casePick === id); if (pick) choosePick(pick); };
@@ -395,6 +410,8 @@ function initCaseTabs() {
 
 /** shows the details of the case the phones' stack has on top (set by initCaseTabs) */
 let pickCase = () => {};
+/** puts a case on top of the phones' stack at once (set by initCaseStack) */
+let stackTo = () => {};
 
 /* ---------- 4 · phones: the cases as a stack of short cards (React Bits «Stack»): a swipe or the arrows send the top
    card away (to the left, it tucks under the pile) or bring the bottom one back on top; the new top card's numbers roll
@@ -451,6 +468,14 @@ function initCaseStack() {
       }
       sync();
     }
+  };
+  stackTo = (id) => {
+    const i = order.findIndex((card) => card.dataset.caseCard === id);
+    if (i <= 0) return;
+    order.push(...order.splice(0, i));
+    order.forEach((card) => { card.style.transform = ''; });
+    place();
+    dots.forEach((d) => d.classList.toggle('is-on', d.dataset.caseDot === id)); // the details follow already (choosePick)
   };
   $$('[data-kstack-go]', stack).forEach((btn) => btn.addEventListener('click', () => go(Number(btn.dataset.kstackGo))));
   // a swipe on the top card (the page keeps its vertical scroll: touch-action pan-y)
