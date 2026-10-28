@@ -43,9 +43,8 @@ export async function FooterMap() {
             </li>
           ))}
           <li>
-            <a className="footer__link" href={nav.example.href}>
-              <span>{nav.example.name}</span>
-              <i className="footer__tag">{nav.example.chip}</i>
+            <a className="footer__link" href={nav.assistant.href}>
+              <span>{nav.assistant.name}</span>
             </a>
           </li>
         </ul>

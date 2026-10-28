@@ -1,9 +1,10 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { PAGE_NAV, type NavCta, type NavLink } from "@/content/nav";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
 import { ScrollTopLink } from "@/components/layout/page-nav/ScrollTopLink";
 import { rich } from "@/lib/rich";
+import { getSiteNav } from "@/content/site-nav";
 import { Wordmark } from "./Wordmark";
 import { FooterMap } from "./FooterMap";
 import "./footer.css";
@@ -13,7 +14,9 @@ import "./footer.css";
  *  PAGE_NAV. */
 export async function Footer({ claim, links, cta }: { claim?: React.ReactNode; links?: readonly NavLink[]; cta?: NavCta } = {}) {
   const t = await getTranslations();
-  const items = links ?? PAGE_NAV.map((l) => ({ href: l.href, text: t(l.label) }));
+  // a link to a service's page («Дизайн і розробка сайтів» on the ads page): the map below has it already
+  const services = new Set((await getSiteNav(await getLocale())).services.map((s) => s.href));
+  const items = (links ?? PAGE_NAV.map((l) => ({ href: l.href, text: t(l.label) }))).filter((l) => !services.has(l.href));
   const action = cta ?? { href: "#contact", text: t("cta.discuss") };
   return (
     <footer className="footer">

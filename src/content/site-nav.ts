@@ -6,7 +6,7 @@ import { CONTACTS, phoneText, telHref, telegramHref, viberHref } from "@/config/
 import { SITE_NAV } from "./nav";
 
 /** A section of a service's page in the phone menu: its anchor there (or another page), a price or a tag. */
-export type SiteNavSub = { text: string; href: string; price?: string; tag?: string; example?: boolean };
+export type SiteNavSub = { text: string; href: string; price?: string; tag?: string };
 /** One service in the header's panel and the phone menu: its page, picture, «від» price (none for SaaS), sections. */
 export type SiteNavService = {
   n: string;
@@ -31,7 +31,8 @@ export type SiteNavData = {
   pricing: string;
   services: SiteNavService[];
   cases: SiteNavCase[];
-  example: { chip: string; name: string; who: string; href: string };
+  /** the AI assistant: a client's case too (the owner, 28 Oct), its own page, no figure yet */
+  assistant: { chip: string; name: string; href: string };
   /** the phones (to call) and the messengers (config/contacts) */
   contacts: { phones: { text: string; href: string }[]; telegram: string; viber: string };
   labels: {
@@ -124,7 +125,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       { text: t("ai.nav.how"), href: at(AI, "#how") },
       { text: t("ai.nav.offer"), href: at(AI, "#offer") },
       { text: t("ai.nav.calc"), href: at(AI, "#calc") },
-      { text: t("asst.crumb"), href: href("/keisy/ai-asystent"), tag: t("aiCommon.nav.example"), example: true },
+      { text: t("asst.crumb"), href: href("/keisy/ai-asystent"), tag: t("ai.nav.case") },
       { text: t("aiCommon.nav.faq"), href: at(AI, "#faq") },
     ],
     [],
@@ -172,7 +173,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       telegram: telegramHref(),
       viber: viberHref(),
     },
-    example: { chip: t("aiCommon.nav.example"), name: t("asst.crumb"), who: firstSentence(t("asst.hero.lead")), href: href("/keisy/ai-asystent") },
+    assistant: { chip: t("ai.nav.case"), name: t("asst.crumb"), href: href("/keisy/ai-asystent") },
     labels: {
       services: t("nav.services"),
       cases: t("nav.cases"),
