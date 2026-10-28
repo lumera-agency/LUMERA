@@ -13,6 +13,6 @@ export const PAGE_NAV = [
 export type NavLink = { href: string; text: string; bar?: boolean };
 export type NavCta = { href: string; text: string };
 
-/** The site's own pages in the header, the topbar's panel and the phone menu. `about`: «Про нас» shows once its page
- *  (/pro-nas) is merged; until then no link leads to a missing page. */
-export const SITE_NAV = { about: false } as const;
+/** The site's own pages in the header, the topbar's panel and the phone menu. `about`: «Про нас» (/pro-nas), shown as the
+ *  owner's variant A has it (28 Oct); its page comes with the about-page merge. */
+export const SITE_NAV = { about: true } as const;
