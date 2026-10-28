@@ -1,8 +1,9 @@
 "use client";
 /*
  * The contact pill beside the header's CTA: Telegram, Viber, and the phone, whose small card lists the two numbers
- * (config/contacts). The card opens on 150 ms of hover or a click, stays while the pointer is on the pill or the
- * card, closes 220 ms after it leaves, on Esc (focus back to the button) or a click outside.
+ * (config/contacts). The card opens on 150 ms of hover or a click, stays while the pointer is on the phone or the
+ * card, closes 220 ms after it leaves the pill, at once when it moves on to Telegram or Viber, on Esc (focus back to the
+ * button) or a click outside.
  */
 import { useEffect, useRef, useState } from "react";
 import { useSiteNav } from "./SiteNavProvider";
@@ -72,6 +73,12 @@ export function Contacts() {
     clearTimeout(timer.current);
     timer.current = window.setTimeout(fn, ms);
   };
+  /** The pointer moved on to Telegram or Viber: the phone's card (opened by the hover) goes at once. */
+  const leavePhone = (e: React.PointerEvent) => {
+    if (!mouse(e)) return;
+    clearTimeout(timer.current);
+    if (open && hoverOpened.current) setOpen(false);
+  };
 
   return (
     <div
@@ -83,10 +90,10 @@ export function Contacts() {
         if (open && e.relatedTarget && !root.current?.contains(e.relatedTarget as Node)) setOpen(false);
       }}
     >
-      <a className="contacts__btn" href={c.telegram} target="_blank" rel="noopener" aria-label={L.telegram} title="Telegram">
+      <a className="contacts__btn" href={c.telegram} target="_blank" rel="noopener" aria-label={L.telegram} title="Telegram" onPointerEnter={leavePhone}>
         <TelegramIcon />
       </a>
-      <a className="contacts__btn" href={c.viber} aria-label={L.viber} title="Viber">
+      <a className="contacts__btn" href={c.viber} aria-label={L.viber} title="Viber" onPointerEnter={leavePhone}>
         <ViberIcon />
       </a>
       <button
