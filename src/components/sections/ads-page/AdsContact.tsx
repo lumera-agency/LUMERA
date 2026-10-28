@@ -96,13 +96,17 @@ export async function AdsContact({ index }: { index: number }) {
             </div>
             <textarea id="f-note" name="note" rows={3} placeholder={a("form.ph")}></textarea>
           </div>
-          {/* the site the ads will lead to: /api/lead sends it as «Сайт: …» */}
-          <div className="field">
-            <label htmlFor="f-site">
-              <span>{a("form.site")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
-            </label>
-            <input id="f-site" name="site" type="text" inputMode="url" autoComplete="url" placeholder="vash-sait.ua" />
-          </div>
+          {/* the site the ads will lead to: /api/lead sends it as «Сайт: …». Phones fold it under «+ Додати сайт» (the
+              owner, 28 Oct: fewer fields on a phone); wider screens open it (runtime: initFolds), its line hidden there */}
+          <details className="ad-site-fold" data-fold="" open>
+            <summary>{a("form.addSite")} <span className="field__opt">{t("contact.field.opt")}</span></summary>
+            <div className="field">
+              <label htmlFor="f-site">
+                <span>{a("form.site")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
+              </label>
+              <input id="f-site" name="site" type="text" inputMode="url" autoComplete="url" placeholder="vash-sait.ua" />
+            </div>
+          </details>
           {/* phones: the steps and the promises stand under the form, so the two that matter sit above its button */}
           <ul className="ad-sure">
             <li>{a("form.sure.1")}</li>

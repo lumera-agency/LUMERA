@@ -5,9 +5,10 @@ const NBSP = "\u00a0";
 
 /**
  * «Реклама й аналітика»: the prices and the setup time, from the main page's configurator engine (one source of prices).
- * The messages carry them as ICU arguments: {analytics} {ads} {adsAi} {mgmt}, the bundles {siteAds} {full}, and
- * {wAds}, the calculator's setup time for a site that is already there («≈ 1 тиждень»). Facebook / Instagram have no
- * price in the engine yet: the page says «під запит» there (an open question to the owner, _merge/MERGE.md).
+ * The messages carry them as ICU arguments: {analytics} {ads} {adsAi} {mgmt}, the bundle {siteAds}, and
+ * {wAds}, the calculator's setup time for a site that is already there («≈ 1 тиждень»); for the bridge to the sites page
+ * (block 5) the landing-with-ads bundle's time {wSiteAds} («≈ 1–2 тижні»). Facebook / Instagram have no price in the
+ * engine yet: the page says «під запит» there (an open question to the owner, _merge/MERGE.md).
  */
 export function adsFacts(locale: string) {
   const strings = STRINGS[locale === "ru" ? "ru" : "uk"];
@@ -19,15 +20,17 @@ export function adsFacts(locale: string) {
     return money(calculateProject(cfg).once) as string;
   };
   const span = calculateTimeline({ ...DEFAULT_CONFIG, format: "existing", growth: "googleAds" }) ?? { min: 1, max: 1 };
+  const siteAdsCfg = { ...DEFAULT_CONFIG, ...BUNDLES.find((x: { id: string }) => x.id === "siteAds")?.config } as Parameters<typeof calculateTimeline>[0];
+  const siteAdsSpan = calculateTimeline(siteAdsCfg) ?? { min: 1, max: 2 };
   return {
     analytics: money(g.analytics.price) as string,
     ads: money(g.googleAds.price) as string,
     adsAi: money(g.googleAdsAi.price) as string,
     mgmt: money(PRICING.adsManagement.monthly) as string,
     siteAds: bundle("siteAds"),
-    full: bundle("full"),
     // «≈ 1 тиждень» never splits
     wAds: strings.weeks(span.min, span.max).replace(/ /g, NBSP) as string,
+    wSiteAds: strings.weeks(siteAdsSpan.min, siteAdsSpan.max).replace(/ /g, NBSP) as string,
   };
 }
 export type AdsFacts = ReturnType<typeof adsFacts>;

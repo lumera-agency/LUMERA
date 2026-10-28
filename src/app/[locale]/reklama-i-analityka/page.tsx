@@ -11,6 +11,7 @@ import { AdsHow } from "@/components/sections/ads-page/AdsHow";
 import { AdsAnalytics } from "@/components/sections/ads-page/AdsAnalytics";
 import { AdsCase } from "@/components/sections/ads-page/AdsCase";
 import { AdsPause } from "@/components/sections/ads-page/AdsPause";
+import { AdsBridge } from "@/components/sections/ads-page/AdsBridge";
 import { AdsTerms } from "@/components/sections/ads-page/AdsTerms";
 import { AdsPrice } from "@/components/sections/ads-page/AdsPrice";
 import { AdsFaq } from "@/components/sections/ads-page/AdsFaq";
@@ -25,14 +26,15 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/reklama-
  * «Реклама й аналітика» — the ads section's own page (the main page's block 2, row 04, will lead here). The order of the
  * owner's brief of 21 Oct (the proof before the explaining): 1 the first screen → 2 the clients' cases (the one light
  * block) → a pause, one sentence → 3 where the ads are shown (Google, Facebook / Instagram) → 4 the analytics (GA4) →
- * 5 our terms → 6 the price → 7 how we work → 8 questions → 9 the request. Built from the AI pages' and «Дизайн і
- * сайти»'s kit.
+ * 5 the page (the bridge to the sites page: a short film, an unclear page drains the budget; the owner, 26 Oct) → 6 our terms → 7 the price →
+ * 8 how we work → 9 questions → 10 the request. Built from the AI pages' and «Дизайн і сайти»'s kit.
  */
 export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i-analityka">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("ads");
   const facts = adsFacts(locale);
+  const sites = aiHref(locale, "/dyzain-i-saity");
   const nav = [
     { href: "#case", text: t("nav.case") },
     { href: "#ads", text: t("nav.ads") },
@@ -40,13 +42,16 @@ export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i
     { href: "#price", text: t("nav.price") },
     { href: "#how", text: t("nav.how") },
     { href: "#faq", text: t("nav.faq") },
+    // the sites page (the owner's brief of 26 Oct, phase 3): the bridge from block 5, in the menu too
+    { href: sites, text: t("nav.sites") },
     { href: "#contact", text: t("nav.lead"), bar: false },
     { href: aiHref(locale, "/"), text: t("nav.home"), bar: false },
   ];
   return (
     <AdsShell
       nav={nav}
-      footerLinks={[...nav.slice(0, 6), { href: aiHref(locale, "/"), text: studioName }]}
+      // the footer's page index: the sites page by its full name, in the list (the owner, 26 Oct: a link there, no card)
+      footerLinks={[...nav.slice(0, 6), { href: sites, text: t("foot.sites") }, { href: aiHref(locale, "/"), text: studioName }]}
       cta={{ href: "#contact", text: t("cta") }}
       barCta={{ href: "#contact", text: t("topbar.cta") }}
       claim={t("foot.claim")}
@@ -57,11 +62,12 @@ export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i
         <AdsPause />
         <AdsChannels index={3} facts={facts} />
         <AdsAnalytics index={4} facts={facts} />
-        <AdsTerms index={5} />
-        <AdsPrice index={6} facts={facts} />
-        <AdsHow index={7} facts={facts} />
-        <AdsFaq index={8} facts={facts} />
-        <AdsContact index={9} />
+        <AdsBridge index={5} facts={facts} />
+        <AdsTerms index={6} />
+        <AdsPrice index={7} facts={facts} />
+        <AdsHow index={8} facts={facts} />
+        <AdsFaq index={9} facts={facts} />
+        <AdsContact index={10} />
         {/* the main page's PageShell fades in blocks marked data-sr (ScrollReveals); this page has its own reveals and
             none, and GSAP warns «target not found» on an empty list: one empty, unseen mark keeps it quiet (as on the
             sites page) */}

@@ -1,6 +1,6 @@
 /*
  * «Реклама й аналітика»: the page's behaviour, as an island (React owns the markup, this module the choreography), built
- * on the AI pages' runtime (ai/runtime/ai-runtime.js: the same scene engine, reveals, sticky bar and cover). The main
+ * on the AI pages' runtime (ai/runtime/ai-runtime.js: the same scene engine, reveals and cover). The main
  * page's own parts do the rest: the topbar, the menu, UA · RU, the FAQ, the form (sections/contact/lead-form.js) and the
  * footer's chrome wordmark.
  *
@@ -49,9 +49,10 @@ export function startAds() {
   initFaqMore();
   initCaseTabs();
   initCaseStack();
-  initSticky();
   initCover();
+  initChPick();
   initScenes();
+  initHowPick();
   initBlurText();
   initReveals();
   arrive();
@@ -66,8 +67,8 @@ const STILL = '.ad-card, .ad-kase, .ad-track';
 const REVEAL = [
   'main.ad .ai-sec .s-head__meta', 'main.ad .ai-sec .s-head__intro',
   '.ad-card', '.ad-live__how', '.ad-live__foot', '.ad-path__foot', '.ad-first', '.ad-pc', '.ad-addons__h', '.ad-addon',
-  '.ad-bundles', '.ad-price__note', '.ad-track', '.ad-kase', 'main.ad .faq', '.ad-next', '.ad-get',
-  '.ad-terms__list',
+  '.ad-price__note', '.ad-track', '.ad-kase', 'main.ad .faq', '.ad-next', '.ad-get',
+  '.ad-terms__list', '.ad-paths',
   'main.ad .lead-form',
 ].join(', ');
 /** a card's parts that follow it in (its scene, if it has one, keeps its own timing) */
@@ -225,11 +226,49 @@ function initPlans() {
     });
   }
 }
+/** a two-way switch (.ad-hseg, radios): the focus ring only from the keyboard */
+function segFocus(seg) {
+  for (const input of $$('input', seg)) {
+    const label = input.closest('label');
+    input.addEventListener('focus', () => label.classList.toggle('is-focus', input.matches(':focus-visible')));
+    input.addEventListener('blur', () => label.classList.remove('is-focus'));
+  }
+}
+
+/* ---------- 3 · phones: one network at a time under a switch (the owner, 28 Oct: the two demos one under the other took
+   two screens). Wider screens show both and hide the switch (CSS). The demo shown comes into view as any scene does and
+   plays; the one hidden, if playing, jumps to its end (the scene engine) ---------- */
+function initChPick() {
+  const seg = $('[data-ch-pick]');
+  const grid = $('.ad-ch__grid[data-pick]');
+  if (!seg || !grid) return;
+  const paint = (input) => {
+    $$('.ad-hseg__o', seg).forEach((o, i) => {
+      const on = $('input', o) === input;
+      o.classList.toggle('is-on', on);
+      if (on) seg.style.setProperty('--i', String(i));
+    });
+    grid.dataset.pick = input.value;
+  };
+  // a browser that kept the choice over a reload shows that network from the start
+  const kept = $('input:checked', seg);
+  if (kept && kept.value !== $('input', seg).value) paint(kept);
+  seg.addEventListener('change', (e) => {
+    if (e.target.name !== 'ads-ch') return;
+    paint(e.target);
+    if (motion) $(`[data-ch="${e.target.value}"]`, grid)?.animate([{ opacity: 0, transform: 'translateY(0.375rem)' }, { opacity: 1, transform: 'none' }], { duration: 380, easing: SOFT });
+  });
+  segFocus(seg);
+}
+
 /* ---------- 4 · phones: the setups' lists fold under «Що входить» (the recommended one stays open), so the three cards
    read as three prices; wider screens show every list (their «Що входить» line is hidden there, CSS) ---------- */
 function initFolds() {
   const folds = $$('details[data-fold]');
   if (!folds.length) return;
+  // the form's site field, opened on a phone: the cursor goes into it
+  const site = $('.ad-site-fold');
+  site?.addEventListener('toggle', () => { if (site.open && phoneMQ.matches) $('input', site)?.focus(); });
   // phones fold them (one marked data-fold-open stays open: the first of the terms); wider screens open them all
   const set = () => folds.forEach((d) => { d.open = !phoneMQ.matches || d.hasAttribute('data-fold-open'); });
   set();
@@ -436,47 +475,6 @@ function goToForm(kb = false) {
   setTimeout(focus, motion ? 400 : 0);
 }
 
-/* ---------- phones: the request button stays at hand once the first screen has passed, not at the form ---------- */
-function initSticky() {
-  const bar = $('[data-sticky]');
-  const hero = $('#top');
-  if (!bar || !hero) return;
-  const link = $('a', bar);
-  const ends = [$('#contact'), $('.footer')].filter(Boolean);
-  // the first screen stays pinned under block 2, so block 2 is the one to watch
-  const after = hero.nextElementSibling || hero;
-  let heroGone = false;
-  const atEnd = new Set();
-  let was = null;
-  const update = () => {
-    const on = heroGone && !atEnd.size && phoneMQ.matches;
-    bar.classList.toggle('is-on', on);
-    bar.setAttribute('aria-hidden', String(!on));
-    link.tabIndex = on ? 0 : -1;
-    // the button back up (fx/back-to-top) steps aside over this bar; it checks on scroll, so tell it the bar has moved
-    if (was !== null && was !== on) {
-      const tell = () => window.dispatchEvent(new Event('scroll'));
-      requestAnimationFrame(tell);
-      setTimeout(tell, 600);
-    }
-    was = on;
-  };
-  new IntersectionObserver((entries) => {
-    const entry = entries[entries.length - 1];
-    heroGone = after === hero ? !entry.isIntersecting : entry.isIntersecting || entry.boundingClientRect.top < 0;
-    update();
-  }, { rootMargin: '0px 0px -35% 0px' }).observe(after);
-  const io = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.isIntersecting) atEnd.add(entry.target);
-      else atEnd.delete(entry.target);
-    }
-    update();
-  });
-  ends.forEach((el) => io.observe(el));
-  phoneMQ.addEventListener('change', update);
-}
-
 /* ---------- 1 → 2 · block 2 slides over the first screen (ai.css: html.ai-stick, a first screen marked data-cover): it
    pins once its bottom reaches the screen's bottom, so its height goes to CSS (--hero-h), kept fresh on resize ---------- */
 /** the first screen pins and block 2 slides over it on wider screens only; phones scroll it away as an ordinary block
@@ -503,21 +501,20 @@ let current = null;
 const queue = [];
 /** the demos that play again each time they come back into view (their «↻ Ще раз» went in the owner's brief of 21 Oct):
  *  off the screen they go back to their first frame, so the start is never seen jumping */
-const AGAIN = new Set(['hero', 'google', 'meta', 'live', 'path']);
+const AGAIN = new Set(['hero', 'google', 'meta', 'live', 'path', 'page']);
 /** the first screen goes round while it is in sight (the owner, 21 Oct: once played, it stood still): a pause, the
  *  requests fade, a new round comes in. Covered by the page, off the screen or in a hidden tab, it waits */
 const LOOP = new Set(['hero']);
 const LOOP_HOLD = 2600;
 
 function initScenes() {
-  const defs = { hero: playHero, google: playGoogle, meta: playMeta, live: playLive, path: playPath, case: playCase, kstack: playStack, how: playHow };
+  const defs = { hero: playHero, google: playGoogle, meta: playMeta, live: playLive, path: playPath, case: playCase, kstack: playStack, how: playHow, page: playPage };
   for (const el of $$('[data-scene]')) {
     const play = defs[el.dataset.scene];
     if (!play) continue;
     const scene = { el, play, anims: [], playing: false, played: false, inView: false, ratio: 0, token: 0, again: AGAIN.has(el.dataset.scene), rerun: false, loop: LOOP.has(el.dataset.scene), covered: false, loopT: 0 };
-    // phones: the part where the scene ends (data-gate) must be above the sticky bar before the scene starts
-    scene.gate = el.dataset.gate ? $(el.dataset.gate, el) : null;
-    scene.gateOk = !scene.gate;
+    // phones: the scene's top must have come up to two thirds of the screen (ready, below)
+    scene.topOk = false;
     scenes.push(scene);
     scene.replay = $(`[data-replay~="${el.dataset.scene}"]`);
     scene.replay?.addEventListener('click', () => request(scene, true));
@@ -557,13 +554,12 @@ function initScenes() {
   }, { rootMargin: '100% 0px 100% 0px' });
   for (const scene of scenes) {
     warm.observe(scene.el);
-    if (scene.gate) {
-      new IntersectionObserver((entries) => {
-        const entry = entries[entries.length - 1];
-        scene.gateOk = entry.isIntersecting || entry.boundingClientRect.top < 0;
-        if (scene.inView && ready(scene) && !scene.played && !scene.playing) request(scene);
-      }, { rootMargin: '0px 0px -28% 0px' }).observe(scene.gate);
-    }
+    new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1];
+      scene.topOk = entry.isIntersecting || entry.boundingClientRect.top < 0;
+      maybeYield();
+      if (scene.inView && ready(scene) && !scene.played && !scene.playing) request(scene);
+    }, { rootMargin: '0px 0px -35% 0px' }).observe(scene.el);
     const start = Number(scene.el.dataset.sceneStart) || 0.12;
     new IntersectionObserver((entries) => {
       const entry = entries[entries.length - 1];
@@ -579,21 +575,22 @@ function initScenes() {
         if (i >= 0) queue.splice(i, 1);
         rewind(scene);
       }
-    }, { rootMargin: '0px 0px -18% 0px', threshold: [0, start, 0.3, 0.5] }).observe(scene.el);
+    }, { rootMargin: '0px 0px -18% 0px', threshold: [0, start, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1] }).observe(scene.el);
   }
 }
 
-/** a scene may start: wider screens at once, phones once its last beat stands above the sticky bar (the review, 20 Oct:
- *  the way's report and the «+1» used to land under it) */
+/** a scene may start: wider screens at once, phones once its top has come up to two thirds of the screen (the owner,
+ *  27 Oct: the films used to wait until they stood whole on the screen, the old sticky bar's rule) */
 function ready(scene) {
-  return scene.gateOk || !phoneMQ.matches;
+  return scene.topOk || !phoneMQ.matches;
 }
 
-/** phones (one scene at a time): when the scene waiting its turn is half on screen and the playing one is mostly off it,
- *  the playing one jumps to its end, so the reader never looks at a scene frozen on its start frame (the review, 20 Oct) */
+/** phones (one scene at a time): a scene waiting its turn that is ready and more on the screen than the playing one,
+ *  while the playing one is going (under half of it in view), takes over: the playing one jumps to its end, so the
+ *  reader never looks at a scene frozen on its start frame */
 function maybeYield() {
-  if (!phoneMQ.matches || !current || !queue.length) return;
-  if (current.ratio < 0.3 && queue.some((q) => q.ratio >= 0.5 && !q.played)) finish(current);
+  if (!phoneMQ.matches || !current || !queue.length || current.ratio >= 0.5) return;
+  if (queue.some((q) => !q.played && q.inView && ready(q) && q.ratio > current.ratio)) finish(current);
 }
 
 /** the looping scenes: the first block of the page covering the first screen (it pins on wide screens, so it never
@@ -1090,6 +1087,105 @@ function playPath(scene) {
   anim(scene, $('.ad-path__cpl', scene.el), [{ opacity: 0 }, { opacity: 1 }], { duration: 480, delay: T4 + 380 });
 }
 
+/* ---------- 5 · the page, a short film (the owner's pick of 26 Oct, «Курсор»; the storyboard by an art director after
+   prompt-motion.com's product films). Visitor 1 clicks the ad, the ad opens into the unclear page, the camera follows
+   the hunt (the headline, the menu, a scroll, a wait), the tab is closed and the paid click falls struck onto its
+   ledge; the camera crosses to the clear page, visitor 2 goes to the price and presses the button, the request comes.
+   The board is measured in u (1/64 of its width; phones 1/22.5, no camera there). About 8.6 s ---------- */
+const FALL = 'cubic-bezier(0.55, 0, 1, 0.45)';
+
+/** keyframes on a timeline: [ms, frame, easing into it] */
+function timeline(scene, el, start, pts, opts = {}) {
+  if (!el || pts.length < 2) return;
+  const D = Math.max(1, pts[pts.length - 1][0] - start);
+  anim(scene, el, pts.map(([t, f, ease]) => ({ ...f, offset: Math.min(1, Math.max(0, (t - start) / D)), easing: ease || 'linear' })), { duration: D, delay: start, easing: 'linear', ...opts });
+}
+
+/** the film's own parts: the narration (each line in, held, out; its words rise out of their masks), the plain
+ *  entrances (a rise, or a slide for the visitor's questions), the pops, the lines drawn, the taps and the trail dots */
+function filmParts(scene, u) {
+  const el = scene.el;
+  for (const ln of $$('.ad-film__line', el)) {
+    const a = +ln.dataset.in;
+    const b = ln.dataset.out ? +ln.dataset.out : null;
+    if (b == null) anim(scene, ln, [{ opacity: 0 }, { opacity: 1 }], { duration: 560, delay: a, easing: OUT });
+    else {
+      const D = b - a;
+      anim(scene, ln, [{ opacity: 0, transform: 'none' }, { opacity: 1, transform: 'none', offset: Math.min(0.45, 560 / D) }, { opacity: 1, transform: 'none', offset: Math.max(0.55, 1 - 240 / D) }, { opacity: 0, transform: `translateY(${(-0.4 * u).toFixed(1)}px)` }], { duration: D, delay: a, easing: 'linear', fill: 'none' });
+    }
+    const phrases = $$('.ad-film__ph', ln);
+    const groups = phrases.length ? phrases.map((p) => [p, +p.dataset.in]) : [[ln, a]];
+    for (const [g, t] of groups) {
+      if (g !== ln) anim(scene, g, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: t });
+      $$('.ad-film__w > span', g).forEach((w, i) => anim(scene, w, [{ transform: 'translateY(105%)' }, { transform: 'none' }], { duration: 560, delay: t + i * 45, easing: OUT }));
+    }
+  }
+  for (const n of $$('.ad-film__cam [data-in]', el)) {
+    const t = +n.dataset.in;
+    const dx = n.dataset.dx ? +n.dataset.dx * u : 0;
+    const from = dx ? `translateX(${(-dx).toFixed(1)}px)` : `translateY(${(0.4 * u).toFixed(1)}px)`;
+    anim(scene, n, [{ opacity: 0, transform: from }, { opacity: getComputedStyle(n).opacity, transform: 'none' }], { duration: dx ? 420 : 560, delay: t, easing: OUT });
+  }
+  for (const n of $$('[data-pop]', el)) pop(scene, n, +n.dataset.pop);
+  for (const n of $$('[data-draw]', el)) anim(scene, n, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 560, delay: +n.dataset.draw, easing: MOVE });
+  for (const n of $$('[data-ring]', el)) tap(scene, n, +n.dataset.ring);
+  const trail = $(phoneMQ.matches ? '.ad-cur__trail--m' : '.ad-cur__trail--d', el);
+  if (trail) for (const c of $$('[data-t]', trail)) anim(scene, c, [{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: +c.dataset.t });
+}
+
+function playPage(scene) {
+  const el = scene.el;
+  const phone = phoneMQ.matches;
+  const u = el.offsetWidth / (phone ? 22.5 : 64);
+  const px = (v) => `${(v * u).toFixed(1)}px`;
+  filmParts(scene, u);
+  // the camera (wide screens): in on page A, a touch down with the scroll, across to page B, back out
+  if (!phone) {
+    const T1 = `translate(${px(11.26)}, ${px(-4.2)}) scale(1.22)`;
+    const T1d = `translate(${px(11.26)}, ${px(-4.8)}) scale(1.22)`;
+    const T2 = `translate(${px(-25.34)}, ${px(-4.2)}) scale(1.22)`;
+    timeline(scene, $('.ad-film__cam', el), 0, [[0, { transform: 'none' }], [950, { transform: 'none' }], [1500, { transform: T1 }, MOVE], [2600, { transform: T1 }], [3200, { transform: T1d }, MOVE], [3700, { transform: T1 }, MOVE], [5300, { transform: T1 }], [6060, { transform: T2 }, MOVE], [7400, { transform: T2 }], [8300, { transform: 'none' }, MOVE]], { fill: 'none' });
+  }
+  // the ad: in at the centre, clicked, it swells away as the page opens out of it
+  timeline(scene, $('.ad-cur__ad', el), 0, [[0, { opacity: 0, transform: `translateY(${px(0.6)})` }], [560, { opacity: 1, transform: 'none' }, OUT], [950, { opacity: 1, transform: 'none' }], [1400, { opacity: 0, transform: 'scale(1.5)' }, MOVE]], { fill: 'none' });
+  const flip = phone ? 'scale(0.878)' : `translate(${px(15)}, ${px(-0.9)}) scale(0.643)`;
+  timeline(scene, $('.ad-cur__win--a', el), 950, [[950, { opacity: 0, transform: flip }], [1510, { opacity: 1, transform: 'none' }, OUT]]);
+  // page A: the menu swept, a scroll down and back, the wait (the bar stalls, the spinner), then dimmed as the tab closes
+  $$('.ad-cur__nav span', el).slice(0, 5).forEach((s, i) => timeline(scene, s, 2050 + i * 90, [[2050 + i * 90, { opacity: 0.55 }], [2140 + i * 90, { opacity: 1 }], [2320 + i * 90, { opacity: 0.55 }]], { fill: 'none' }));
+  const pageA = $('.ad-cur__page--a', el);
+  timeline(scene, pageA, 2600, [[2600, { transform: 'none' }], [3200, { transform: `translateY(${px(-14)})` }, MOVE], [3250, { transform: `translateY(${px(-14)})` }], [3700, { transform: 'none' }, MOVE]], { fill: 'none' });
+  anim(scene, $('.ad-cur__prog', el), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(0.3)' }], { duration: 900, delay: 3500, easing: OUT });
+  anim(scene, $('.ad-cur__spin i', el), [{ transform: 'rotate(0deg)' }, { transform: 'rotate(1080deg)' }], { duration: 1200, delay: 3500, easing: 'linear', fill: 'none' });
+  for (const n of [pageA, $('.ad-cur__prog', el)]) anim(scene, n, [{ opacity: 1 }, { opacity: 0.35 }], { duration: 420, delay: 4650, easing: EXIT });
+  timeline(scene, $('.ad-cur__spin', el), 3500, [[3500, { opacity: 0 }], [3800, { opacity: 1 }, OUT], [4650, { opacity: 1 }], [5070, { opacity: 0.35 }, EXIT]]);
+  // the paid click: out of the ad, into page A's corner, struck when the tab closes, down onto the ledge
+  const chip = $('.ad-cur__chip--a', el);
+  if (chip) {
+    const [click, corner] = JSON.parse(phone ? chip.dataset.clickM : chip.dataset.click);
+    const rx = parseFloat(chip.style.getPropertyValue(phone ? '--mx' : '--x'));
+    const ry = parseFloat(chip.style.getPropertyValue(phone ? '--my' : '--y'));
+    const to = ([x, y], extra = '') => `translate(${px(x - rx)}, ${px(y - ry)})${extra}`;
+    timeline(scene, chip, 840, [[840, { opacity: 0, transform: to(click, ' scale(0.6)') }], [1000, { opacity: 1, transform: to(click) }, OUT], [1510, { opacity: 1, transform: to(corner) }, MOVE], [4950, { opacity: 1, transform: to(corner) }], [5470, { opacity: 1, transform: 'none' }, FALL]]);
+    anim(scene, $('.ad-cur__ce', chip), [{ opacity: 1 }, { opacity: 0 }], { duration: 240, delay: 4700 });
+    anim(scene, $('.ad-cur__cl', chip), [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: 4700 });
+    anim(scene, $('.ad-cur__strike', chip), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 420, delay: 4800, easing: MOVE });
+  }
+  // the two visitors: their ways (one table with the trail, baked on the server), their presses
+  for (const cur of $$('.ad-cur__cur', el)) {
+    const way = JSON.parse((phone ? cur.dataset.wayM : cur.dataset.way) || '[]');
+    if (way.length < 2) continue;
+    const t0 = way[0][0];
+    const tN = way[way.length - 1][0];
+    const [, xe, ye] = way[way.length - 1];
+    anim(scene, cur, way.map(([t, x, y]) => ({ offset: (t - t0) / Math.max(1, tN - t0), transform: `translate(${px(x - xe)}, ${px(y - ye)})` })), { duration: tN - t0, delay: t0, easing: 'linear' });
+    if (cur.classList.contains('ad-cur__cur--a')) timeline(scene, cur, 250, [[250, { opacity: 0 }], [450, { opacity: 1 }], [4700, { opacity: 1 }], [4900, { opacity: 0 }]]);
+    else anim(scene, cur, [{ opacity: 0 }, { opacity: 1 }], { duration: 220, delay: 5700 });
+    for (const t of (cur.dataset.press || '').split(',').filter(Boolean).map(Number)) anim(scene, $('i', cur), [{ transform: 'none' }, { transform: 'scale(0.86)', offset: 0.4 }, { transform: 'none' }], { duration: 160, delay: t - 40, fill: 'none' });
+  }
+  // the clear page's button: a hover, a press
+  timeline(scene, $('.ad-cur__pill', el), 6650, [[6650, { transform: 'none' }], [6800, { transform: 'scale(1.04)' }, OUT], [6850, { transform: 'scale(1.04)' }], [6910, { transform: 'scale(0.96)' }], [7250, { transform: 'none' }, SPRING]], { fill: 'none' });
+}
+
 /* ---------- 4 · the case: the four tiles rise one after another and their digits roll up from 0 (React Bits Counter),
    the one segment of four fills; where the screenshot stands open beside them, it rises and gets its two rings. The
    numbers land on the account's own. About 1.8 s ---------- */
@@ -1130,21 +1226,89 @@ function playStack(scene) {
   anim(scene, top, [{ transform: 'none' }, { transform: 'translateX(-1.75rem) rotate(-2deg)', offset: 0.45 }, { transform: 'none' }], { duration: 900, delay: 1500, easing: MOVE, fill: 'none' });
 }
 
-/* ---------- 6 · how we work, picture by picture: the voices of the call rise and settle, the queries come in (the useless
+/* ---------- 8 · how we work, picture by picture: the voices of the call rise and settle, the queries come in (the useless
    one in ember), the form fills and the test request gets its tick, the ad's switch flips on, the report's bars grow.
-   About 2.8 s ---------- */
-function playHow(scene) {
-  const [call, kw, rec, live, rep] = $$('.ad-track__step', scene.el);
-  const at = (i) => 120 + i * 480;
-  $$('.ad-sp__wave b', call).forEach((b, j) =>
-    anim(scene, b, [{ transform: 'scaleY(0.2)' }, { transform: 'scaleY(1.3)', offset: 0.55 }, { transform: 'none' }], { duration: 720, delay: at(0) + j * 70, easing: MOVE }));
-  $$('.ad-sp__chips b', kw).forEach((b, j) => {
-    anim(scene, b, [{ opacity: 0 }, { opacity: 1 }], { duration: 220, delay: at(1) + j * 140 });
-    anim(scene, b, [{ transform: 'scale(0.5)' }, { transform: 'none' }], { duration: 520, delay: at(1) + j * 140, easing: SPRING });
+   The page made first: its lines are written and get your tick, the test address fills in and the page comes up under
+   your cursor, one switch lights the page and the ad together. About 2.8 s; only the list shown plays ---------- */
+const HOW_PICS = {
+  call: (scene, pic, t) => $$('.ad-sp__wave b', pic).forEach((b, j) =>
+    anim(scene, b, [{ transform: 'scaleY(0.2)' }, { transform: 'scaleY(1.3)', offset: 0.55 }, { transform: 'none' }], { duration: 720, delay: t + j * 70, easing: MOVE })),
+  kw: (scene, pic, t) => $$('.ad-sp__chips b', pic).forEach((b, j) => {
+    anim(scene, b, [{ opacity: 0 }, { opacity: 1 }], { duration: 220, delay: t + j * 140 });
+    anim(scene, b, [{ transform: 'scale(0.5)' }, { transform: 'none' }], { duration: 520, delay: t + j * 140, easing: SPRING });
+  }),
+  rec: (scene, pic, t) => {
+    $$('.ad-sp__form b', pic).forEach((b, j) => anim(scene, b, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 380, delay: t + j * 120 }));
+    anim(scene, $('.ad-sp__ok', pic), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: t + 360, easing: SPRING });
+  },
+  live: (scene, pic, t) => {
+    anim(scene, $('.ad-sp__knob', pic), [{ transform: 'translateX(0)' }, { transform: 'translateX(1.1em)' }], { duration: 600, delay: t + 80, easing: SPRING });
+    anim(scene, $('.ad-sp__off', pic), [{ opacity: 1 }, { opacity: 0 }], { duration: 360, delay: t + 160 });
+  },
+  rep: (scene, pic, t) => $$('b', pic).forEach((b, j) =>
+    anim(scene, b, [{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: 720, delay: t + j * 110, easing: SPRING })),
+  doc: (scene, pic, t) => {
+    $$('.ad-sp__page b', pic).forEach((b, j) => anim(scene, b, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 380, delay: t + j * 100 }));
+    anim(scene, $('.ad-sp__ok', pic), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: t + 440, easing: SPRING });
+  },
+  test: (scene, pic, t) => {
+    anim(scene, $('.ad-sp__bar b', pic), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 420, delay: t });
+    $$('.ad-sp__body b', pic).forEach((b, j) => show(scene, b, t + 260 + j * 90, 'translateY(0.2em)', 380));
+    anim(scene, $('.ad-sp__cur', pic), [{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: t + 380 });
+    anim(scene, $('.ad-sp__cur', pic), [{ transform: 'translate(-1.6em, -1.3em)' }, { transform: 'none', offset: 0.75 }, { transform: 'scale(0.86)', offset: 0.87 }, { transform: 'none' }], { duration: 760, delay: t + 380, easing: MOVE });
+  },
+  both: (scene, pic, t) => {
+    HOW_PICS.live(scene, pic, t);
+    $$('.ad-sp__pair > *', pic).forEach((c, j) => anim(scene, c, [{ opacity: 0.4 }, { opacity: 1 }], { duration: 420, delay: t + 260 + j * 60 }));
+  },
+};
+/** the pictures of one list, one after another */
+function playSteps(scene, list) {
+  $$('.ad-track__step', list).forEach((step, i) => {
+    const pic = $('.ad-sp', step);
+    HOW_PICS[pic?.dataset.sp]?.(scene, pic, 120 + i * 480);
   });
-  $$('.ad-sp__form b', rec).forEach((b, j) => anim(scene, b, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 380, delay: at(2) + j * 120 }));
-  anim(scene, $('.ad-sp__ok', rec), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: at(2) + 360, easing: SPRING });
-  anim(scene, $('.ad-sp__knob', live), [{ transform: 'translateX(0)' }, { transform: 'translateX(1.1em)' }], { duration: 600, delay: at(3) + 80, easing: SPRING });
-  anim(scene, $('.ad-sp__off', live), [{ opacity: 1 }, { opacity: 0 }], { duration: 360, delay: at(3) + 160 });
-  $$('.ad-sp--rep b', rep).forEach((b, j) => anim(scene, b, [{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: 720, delay: at(4) + j * 110, easing: SPRING }));
+}
+function playHow(scene) {
+  playSteps(scene, $('.ad-track__list:not([hidden])', scene.el));
+}
+
+/* ---------- 8 · the two cases (the bridge brief's phase 4): the time changes, the list chosen takes the other's place and
+   its pictures play. A scene still waiting its turn plays the list shown when it comes; reduced motion swaps at once ---------- */
+function initHowPick() {
+  const seg = $('[data-how-pick]');
+  if (!seg) return;
+  const track = seg.closest('.ad-track');
+  const out = $('[data-how-time]', track);
+  const own = { anims: [] };
+  const paint = (input) => {
+    $$('.ad-hseg__o', seg).forEach((o, i) => {
+      const on = $('input', o) === input;
+      o.classList.toggle('is-on', on);
+      if (on) seg.style.setProperty('--i', String(i));
+    });
+    out.textContent = input.dataset.time;
+    for (const list of $$('[data-how-list]', track)) list.hidden = list.dataset.howList !== input.value;
+  };
+  // a browser that kept the choice over a reload (or the way back) shows that case from the start
+  const kept = $('input:checked', seg);
+  if (kept && kept.value !== $('input', seg).value) paint(kept);
+  seg.addEventListener('change', (e) => {
+    const input = e.target;
+    if (input.name !== 'ads-how') return;
+    paint(input);
+    if (!motion) return;
+    finish(own);
+    own.anims = [];
+    anim(own, out, [{ opacity: 0.3 }, { opacity: 1 }], { duration: 380, easing: SOFT });
+    if (track.classList.contains('is-pre')) return;
+    const list = $(`[data-how-list="${input.value}"]`, track);
+    $$('.ad-track__step', list).forEach((step, i) => show(own, step, i * 60, 'translateY(0.375rem)', 420));
+    playSteps(own, list);
+  });
+  for (const input of $$('input', seg)) {
+    const label = input.closest('label');
+    input.addEventListener('focus', () => label.classList.toggle('is-focus', input.matches(':focus-visible')));
+    input.addEventListener('blur', () => label.classList.remove('is-focus'));
+  }
 }
