@@ -1,7 +1,6 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich as R } from "@/components/ai/rich";
-import { aiHref } from "@/components/ai/links";
 import { priceLine, type AdsFacts } from "@/components/ads/facts";
 
 type Card = {
@@ -13,24 +12,28 @@ type Card = {
   period: "once" | "month" | null;
   items: number;
   featured?: boolean;
+  /** the bundle with a site: its own badge (a quiet one) and its own time */
+  bundle?: boolean;
 };
 
 /**
  * 4 · Ціна (dark): what each part costs, from the configurator engine (facts). The art director's order (20 Oct): the
- * three one-time setups in a row on shared lines (title, sum, text, list, footer line up across the cards; the Google ads
- * one recommended, the only one in signal; the ChatGPT note under the row), then what can be added as thin strips (the
+ * one-time setups in a row on shared lines (title, sum, text, list, footer line up across the cards; the Google ads one
+ * recommended, the only one in signal; the ChatGPT note under the row), then what can be added as thin strips (the
  * monthly management, with its list under «Що входить»; Facebook / Instagram, no price in the engine yet), then the first
- * month in plain text, then the bundles with a site. «Обговорити» puts
+ * month in plain text. The landing with the ads stands in the row as the fourth card (the owner's brief of 26 Oct: the
+ * bridge from block 5 ends on a price; «якщо сайту немає», its own ≈ 1–2 тижні); the line of bundles with a site that
+ * closed the block (the full system, the calculator link) went at the owner's word the same day. «Обговорити» puts
  * that choice into the form's plan box and glides there (runtime). On phones the other setups' lists fold under «Що
  * входить» (runtime closes them; the recommended one stays open).
  */
 export async function AdsPrice({ index, facts }: { index: number; facts: AdsFacts }) {
   const t = await getTranslations("ads");
-  const home = aiHref(await getLocale(), "/");
   const setups: Card[] = [
     { id: "analytics", key: "a", sum: facts.analytics, period: "once", items: 3 },
     { id: "googleAds", key: "g", sum: facts.ads, period: "once", items: 4, featured: true },
     { id: "googleAdsAi", key: "ai", sum: facts.adsAi, period: "once", items: 6 },
+    { id: "siteAds", key: "s", sum: facts.siteAds, period: "once", items: 4, bundle: true },
   ];
   const mgmt: Card = { id: "mgmt", key: "m", sum: facts.mgmt, period: "month", items: 3 };
   const meta: Card = { id: "meta", key: "fb", sum: null, period: null, items: 0 };
@@ -74,10 +77,11 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
         {/* the setups: one row, shared lines */}
         <ul className="ad-prices">
           {setups.map((c) => (
-            <li className={`ad-pc${c.featured ? " ad-pc--featured" : ""}`} data-card={c.id} key={c.id}>
+            <li className={`ad-pc${c.featured ? " ad-pc--featured" : ""}${c.bundle ? " ad-pc--bundle" : ""}`} data-card={c.id} key={c.id}>
               <div className="ad-pc__top">
                 <h3 className="ad-pc__t">{t(`price.${c.key}.t`)}</h3>
                 {c.featured && <span className="ad-pc__badge">{t("price.g.badge")}</span>}
+                {c.bundle && <span className="ad-pc__badge ad-pc__badge--q">{t("price.s.badge")}</span>}
               </div>
               <p className="ad-pc__sum">
                 <b>{c.sum}</b>
@@ -92,7 +96,7 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
                 {items(c)}
               </details>
               <div className="ad-pc__foot">
-                <span className="ad-pc__wk">{facts.wAds}</span>
+                <span className="ad-pc__wk">{c.bundle ? facts.wSiteAds : facts.wAds}</span>
                 {go(c, c.featured)}
               </div>
             </li>
@@ -138,27 +142,6 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
             <dd>{t("price.out.v")}</dd>
           </div>
         </dl>
-
-        <div className="ad-bundles">
-          <p className="ad-bundles__k">{t("price.with")}</p>
-          <ul className="ad-bundles__list">
-            {(["siteAds", "full"] as const).map((b) => (
-              <li className="ad-bundle" key={b}>
-                <span className="ad-bundle__t">{t(`price.b.${b}.t`)}</span>
-                <span className="ad-bundle__d">{t(`price.b.${b}.d`)}</span>
-                <b className="ad-bundle__v">{facts[b]}</b>
-                <a className="ad-bundle__go" href="#contact" data-plan={`${t(`price.b.${b}.t`)} · ${facts[b]}`} data-details={t(`price.b.${b}.d`)}>
-                  <span>{t("price.b.go")}</span>
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-arrow" /></svg>
-                </a>
-              </li>
-            ))}
-          </ul>
-          <a className="ad-bundles__calc" href={home === "/" ? "/#pricing" : `${home}#pricing`}>
-            <span>{t("price.calc")}</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-arrow" /></svg>
-          </a>
-        </div>
       </div>
     </section>
   );

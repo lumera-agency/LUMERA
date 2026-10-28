@@ -73,11 +73,24 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
           <p className="s-head__intro">{t("ch.intro")}</p>
         </header>
 
-        <div className="ad-ch__grid">
+        {/* phones: one network at a time (the owner, 28 Oct: the two demos one under the other took two screens); the
+            switch is «Як працюємо»'s (.ad-hseg). Wider screens show both side by side and hide it (runtime: initChPick) */}
+        <div className="ad-hseg ad-ch__pick" role="radiogroup" aria-label={t("ch.pick")} data-ch-pick="">
+          <label className="ad-hseg__o is-on">
+            <input type="radio" name="ads-ch" value="google" defaultChecked />
+            <span>{t("ch.tab.g")}</span>
+          </label>
+          <label className="ad-hseg__o">
+            <input type="radio" name="ads-ch" value="meta" />
+            <span>{t("ch.tab.m")}</span>
+          </label>
+        </div>
+
+        <div className="ad-ch__grid" data-pick="google">
           {/* Google */}
-          <article className="ad-card" aria-labelledby="ch-g">
+          <article className="ad-card" data-ch="google" aria-labelledby="ch-g">
             <div className="ad-card__media">
-              <div className="ad-serp" data-scene="google" data-gate=".ad-toast" role="img" aria-label={m("aG")}>
+              <div className="ad-serp" data-scene="google" role="img" aria-label={m("aG")}>
                 <div className="ai-sheet__bar">
                   <i aria-hidden="true" />
                   <i aria-hidden="true" />
@@ -135,9 +148,9 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
           </article>
 
           {/* Facebook · Instagram */}
-          <article className="ad-card" aria-labelledby="ch-m">
+          <article className="ad-card" data-ch="meta" aria-labelledby="ch-m">
             <div className="ad-card__media">
-              <div className="ad-feed" data-scene="meta" data-gate=".ad-toast" role="img" aria-label={m("aM")}>
+              <div className="ad-feed" data-scene="meta" role="img" aria-label={m("aM")}>
                 {/* the people of the city: each chip leaves some out, three light up (React Bits' Radar was the first idea;
                     the review of 20 Oct asked for cause and effect instead of a sonar) */}
                 <div className="ad-crowd" aria-hidden="true">

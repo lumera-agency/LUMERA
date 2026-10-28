@@ -1,7 +1,7 @@
 /*
  * «Реклама й аналітика» (/reklama-i-analityka): this page's own blocks. The kit (tokens, sections and heads, buttons,
- * topbar, footer, FAQ, form) is the main page's; the first screen's frame, the mock windows' bar, «Ще раз», the sticky
- * bar, the quick picks and the reveal are the AI pages' (ai/ai.css, loaded before this file). Colour roles on this
+ * topbar, footer, FAQ, form) is the main page's; the first screen's frame, the mock windows' bar, «Ще раз», the quick
+ * picks and the reveal are the AI pages' (ai/ai.css, loaded before this file). Colour roles on this
  * page (the owner's brief of 21 Oct): lime = an action (the buttons, the links that lead to the request; and, the owner's
  * choice, the frames of the demos and of the setups), ember = a result (each heading's key word, the case numbers, the
  * counts and «+1 заявка» in the scenes); the rest white and greys.
@@ -195,9 +195,21 @@ main.ai .ad-fl__src { display: grid; grid-template-columns: repeat(3, minmax(0, 
    small moving picture of what happens in it (drawn in CSS, sized in em by its tile). Wide: across; below 861: rows
    ========================================================================== */
 .ad-track { color: var(--ink); }
-.ad-track__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.875rem; margin: 0 0 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--line); }
+.ad-track__head { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 2rem; margin: 0 0 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--line); }
+.ad-track__time { display: grid; }
+.ad-track__time > * { grid-area: 1 / 1; }
+.ad-track__ghost { visibility: hidden; }
 .ad-track__v { font-size: clamp(2rem, 3.2vw, 2.75rem); font-weight: 300; line-height: 1; letter-spacing: -0.035em; white-space: nowrap; }
-.ad-track__k { font: 400 var(--fs-label)/1.3 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.ai .ad-track__list[hidden] { display: none; }
+/* the two cases (the bridge brief's phase 4): the sites page's time switch (.st-hseg), dark; the ivory pill slides */
+.ad-hseg { --i: 0; position: relative; isolation: isolate; display: inline-grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 3px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.24); }
+.ad-hseg::before { content: ""; position: absolute; z-index: -1; left: 3px; top: 3px; bottom: 3px; width: calc((100% - 6px) / 2); border-radius: 999px; background: var(--ink); transform: translateX(calc(var(--i) * 100%)); transition: transform 0.45s var(--ease-out); }
+.ad-hseg__o { position: relative; display: grid; place-items: center; min-height: 44px; padding: 0.5rem 1.125rem; border-radius: 999px; font-size: 0.9375rem; line-height: 1.2; text-align: center; white-space: nowrap; color: var(--ink-soft); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: color 0.3s ease; }
+.ad-hseg__o input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ad-hseg__o.is-on { color: #0f0e0d; }
+.ad-hseg__o.is-focus { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (hover: hover) { .ad-hseg__o:not(.is-on):hover { color: var(--ink); } }
+html:not(.motion) .ad-hseg::before, html:not(.motion) .ad-hseg__o { transition: none; }
 main.ai .ad-track__list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--col-gap); margin: 0; padding: 0; list-style: none; }
 .ad-track__step { position: relative; display: grid; align-content: start; gap: 1rem; min-width: 0; }
 /* a small arrow from each picture to the next */
@@ -251,6 +263,33 @@ main.ai .ad-track__list { display: grid; grid-template-columns: repeat(5, minmax
 .ad-sp--rep b:nth-child(1) { height: 2.9em; background: var(--ember); }
 .ad-sp--rep b:nth-child(2) { height: 1.3em; }
 .ad-sp--rep b:nth-child(3) { height: 0.9em; }
+/* the page made first · 2: the page's texts written, your tick on them */
+.ad-sp--doc { width: 4.6em; height: 4.5em; }
+.ad-sp__page { position: absolute; left: 0; top: 0; display: grid; align-content: start; gap: 0.3em; width: 3.5em; height: 4.1em; padding: 0.5em 0.45em; border-radius: 0.45em; background: rgba(246, 246, 243, 0.08); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12); }
+.ad-sp__page b { height: 0.2em; border-radius: 0.1em; background: rgba(246, 246, 243, 0.24); transform-origin: 0 50%; }
+.ad-sp__page b:first-child { width: 80%; height: 0.42em; margin-bottom: 0.1em; background: rgba(246, 246, 243, 0.55); }
+.ad-sp__page b:nth-child(3) { width: 88%; }
+.ad-sp__page b:nth-child(4) { width: 62%; }
+.ad-sp__page i { width: 1.5em; height: 0.48em; margin-top: 0.2em; border-radius: 0.3em; background: var(--ink-soft); }
+/* 3: the page on its test address, your cursor on it */
+.ad-sp--test { width: 6em; height: 4.3em; }
+.ad-sp__win { position: absolute; left: 0; top: 0; display: grid; grid-template-rows: auto 1fr; width: 5.3em; height: 3.7em; overflow: hidden; border-radius: 0.45em; background: rgba(246, 246, 243, 0.06); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.14); }
+.ad-sp__bar { display: flex; align-items: center; gap: 0.3em; height: 0.9em; padding: 0 0.35em; background: rgba(246, 246, 243, 0.08); }
+.ad-sp__bar i { flex: none; width: 0.2em; height: 0.2em; margin-right: 0.6em; border-radius: 50%; background: rgba(246, 246, 243, 0.45); box-shadow: 0.3em 0 0 rgba(246, 246, 243, 0.45), 0.6em 0 0 rgba(246, 246, 243, 0.45); }
+.ad-sp__bar b { flex: 1; height: 0.42em; border-radius: 0.21em; box-shadow: inset 0 0 0 0.07em rgba(246, 246, 243, 0.5); transform-origin: 0 50%; }
+.ad-sp__body { display: grid; align-content: start; gap: 0.26em; padding: 0.42em 0.45em; }
+.ad-sp__body b { height: 0.2em; border-radius: 0.1em; background: rgba(246, 246, 243, 0.24); }
+.ad-sp__body b:first-child { width: 70%; height: 0.55em; background: rgba(246, 246, 243, 0.42); }
+.ad-sp__body b:last-child { width: 55%; }
+.ad-sp__cur { position: absolute; right: 0.1em; bottom: 0; width: 1.35em; height: 1.35em; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M5 2.5v16.6l4.4-4.1 2.9 6.3 2.8-1.3-2.9-6.2 6.1-.2z' fill='%23f6f6f3' stroke='%230b0b0b' stroke-width='1.6' stroke-linejoin='round'/></svg>") center / contain no-repeat; }
+/* 4: the page and the ad, one switch for both */
+.ad-sp--both { gap: 0.55em; }
+.ad-sp__pair { display: grid; gap: 0.3em; }
+.ad-sp__mini { display: grid; gap: 0.22em; width: 3.2em; padding: 0.4em 0.45em; border-radius: 0.4em; background: rgba(246, 246, 243, 0.08); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12); }
+.ad-sp__mini b { height: 0.18em; border-radius: 0.1em; background: rgba(246, 246, 243, 0.24); }
+.ad-sp__mini b:first-child { height: 0.5em; background: rgba(246, 246, 243, 0.42); }
+.ad-sp__mini b:last-child { width: 60%; }
+.ad-sp--both .ad-sp__ad { width: 3.2em; padding: 0.4em 0.45em; }
 
 /* ==========================================================================
    3 · Аналітика (dark): wide screens get the live report (C), phones and narrow tablets one request's way (A)
@@ -384,7 +423,7 @@ main.ai .ad-path__facts { margin: 0; padding: 0; list-style: none; }
 .ad-first dd { margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
 .ad-first dd b { font-weight: 500; color: var(--ink); }
 /* (each card spans the list's five rows as a subgrid: title, sum, text, list, footer stand on the same lines) */
-main.ai .ad-prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--card-gap); row-gap: 0; margin: 0; padding: 0; list-style: none; }
+main.ai .ad-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--card-gap); row-gap: var(--card-gap); margin: 0; padding: 0; list-style: none; }
 .ad-pc { grid-row: span 5; display: grid; grid-template-rows: subgrid; row-gap: 0.875rem; min-width: 0; padding: 1.625rem 1.625rem 1.375rem; border-radius: var(--radius-lg); background: #050505; box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.45); }
 /* «Що входить» folds only on phones; elsewhere the list is simply there */
 .ad-pc__more > summary { display: none; }
@@ -394,6 +433,8 @@ main.ai .ad-prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1
 .ad-pc__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 0.75rem; }
 .ad-pc__t { font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
 .ad-pc__badge { padding: 0.3125rem 0.625rem; border-radius: 62.4375rem; font: 500 0.6875rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; color: var(--on-ink); background: var(--ink); }
+/* the bundle with a site (the fourth card): a quiet badge, the ring of the other setups */
+.ad-pc__badge--q { color: var(--ink-soft); background: none; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.32); }
 .ad-pc__sum { display: flex; align-items: baseline; gap: 0.625rem; }
 .ad-pc__sum b { font-size: clamp(2.4rem, 3.4vw, 3.25rem); font-weight: 300; line-height: 1; letter-spacing: -0.035em; color: var(--ink); }
 .ad-pc__sum span { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
@@ -433,21 +474,6 @@ main.ai .ad-prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1
 .ad-addon__sum b { font-size: clamp(1.6rem, 2.2vw, 2rem); font-weight: 300; letter-spacing: -0.03em; color: var(--ink); }
 .ad-addon__sum span { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
 .ad-addon__sum .ad-addon__talk { font-size: clamp(1.25rem, 1.7vw, 1.5rem); letter-spacing: -0.02em; color: var(--ink-soft); }
-.ad-bundles { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1rem 2rem; margin-top: var(--card-gap); padding: 1.25rem 0 0; border-top: 1px solid var(--line); }
-.ad-bundles__k { font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.ad-bundles__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 2rem; }
-.ad-bundle { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; column-gap: 1rem; row-gap: 0.125rem; }
-.ad-bundle__t { font-size: var(--fs-body); font-weight: 500; color: var(--ink); }
-.ad-bundle__d { grid-column: 1; font-size: var(--fs-small); line-height: 1.4; color: var(--ink-mute); }
-.ad-bundle__v { grid-column: 2; grid-row: 1 / span 2; font-size: var(--fs-h4); font-weight: 300; white-space: nowrap; color: var(--ink); }
-.ad-bundle__go { grid-column: 1; display: inline-flex; align-items: center; gap: 0.4rem; justify-self: start; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(218, 255, 2, 0.8); text-underline-offset: 0.1875rem; }
-.ad-bundle__go svg { width: 0.8125rem; height: 0.8125rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
-.ad-bundle__go:hover { color: var(--ink); }
-.ad-bundle__go:hover svg { transform: translate(0.125rem, -0.125rem); }
-.ad-bundles__calc { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(218, 255, 2, 0.8); text-underline-offset: 0.1875rem; white-space: nowrap; }
-.ad-bundles__calc svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
-.ad-bundles__calc:hover { color: var(--ink); }
-.ad-bundles__calc:hover svg { transform: translate(0.125rem, -0.125rem); }
 .ad-price__note { max-width: 72ch; }
 
 
@@ -487,6 +513,9 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 .ad-track.is-pre .ad-sp__knob { transform: none; }
 .ad-track.is-pre .ad-sp__off { opacity: 1; }
 .ad-track.is-pre .ad-sp--rep b { transform: scaleY(0); }
+.ad-track.is-pre :is(.ad-sp__page b, .ad-sp__bar b) { transform: scaleX(0); }
+.ad-track.is-pre :is(.ad-sp__body b, .ad-sp__cur) { opacity: 0; }
+.ad-track.is-pre .ad-sp__pair > * { opacity: 0.4; }
 .ad-kase.is-pre .ad-kase__m { opacity: 0; }
 .ad-kase.is-pre .ad-count__strip { transform: none; }
 .ad-kase.is-pre .ad-kase__seg i.is-on { transform: scaleX(0); }
@@ -495,7 +524,7 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 .ad-path.is-pre .ad-path__flow { opacity: 0; }
 /* a scene waiting or playing keeps its moving parts on their own layers (gone at rest) */
 .ad-fl.is-warm :is(.ad-inbox__row, .ad-inbox__src, .ad-part__strip, .ad-fl__run, .ad-fl__run b, .ad-fl__hub, .ad-fl__n),
-.ad-track.is-warm :is(.ad-sp__wave b, .ad-sp__chips b, .ad-sp__form b, .ad-sp__ok, .ad-sp__knob, .ad-sp__off, .ad-sp--rep b),
+.ad-track.is-warm :is(.ad-sp__wave b, .ad-sp__chips b, .ad-sp__form b, .ad-sp__ok, .ad-sp__knob, .ad-sp__off, .ad-sp--rep b, .ad-sp__page b, .ad-sp__bar b, .ad-sp__body b, .ad-sp__cur, .ad-sp__pair > *),
 .ad-kase.is-warm :is(.ad-kase__m, .ad-count__strip, .ad-kase__seg i, .ad-case__win, .ad-case__ring),
 .ad-serp.is-warm :is(.ad-serp__ad, .ad-toast, .ad-type__caret),
 .ad-serp.is-warm .ad-serp__org,
@@ -508,6 +537,10 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 /* ==========================================================================
    Widths
    ========================================================================== */
+@media (max-width: 1439px) {
+  /* the four setups two by two (four across only where each card keeps its button whole) */
+  main.ai .ad-prices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 1279px) {
 }
 @media (max-width: 1100px) {
@@ -520,7 +553,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   /* the setups stack: one card under another, each on its own lines */
   main.ai .ad-prices { grid-template-columns: minmax(0, 1fr); row-gap: var(--card-gap); }
   .ad-pc { grid-row: auto; grid-template-rows: none; }
-  .ad-bundles { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 860px) {
   /* block 3: one request's way (A) instead of the live report (C) */
@@ -577,9 +609,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .ad-fl .ad-inbox__ava { display: none; }
   .ad-fl .ad-inbox__who time { display: none; }
   .ad-fl .ad-inbox__who b { overflow: hidden; font-size: 0.8125rem; white-space: nowrap; text-overflow: ellipsis; }
-  /* iOS Safari tints its bottom bar with a fixed element at the screen's foot: the hidden request button tinted it
-     ember on the first screen (the owner's iPhone, 20 Oct). Hidden, it is out of the picture; it fades out first */
-  main[data-ai-page="ads"] ~ .ai-sticky:not(.is-on) { visibility: hidden; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s linear 0.45s; }
   .ad-inbox__row { grid-template-columns: 2rem minmax(0, 1fr) auto; column-gap: 0.625rem; min-height: 2.875rem; padding: 0.375rem 0.75rem; }
   .ad-inbox__ava { width: 2rem; height: 2rem; font-size: 0.8125rem; }
   .ad-inbox__who b { font-size: 0.875rem; }
@@ -597,8 +626,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   /* the long source label stays for screen readers (hidden from sight only: the short one is aria-hidden) */
   .ad-inbox__l { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .ad-inbox__s { display: inline; }
-  /* a field or a question reached from the keyboard never hides under the sticky request button */
-  html:has(.ai-sticky.is-on) { scroll-padding-bottom: 5.5rem; }
   .ad-addon__more > summary { min-height: 2.75rem; }
   .ad-card__go { width: 100%; justify-content: space-between; }
   .ad-toast { left: 0.75rem; bottom: 0.75rem; max-width: calc(100% - 6.75rem); }
@@ -633,9 +660,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .ad-addon .btn { grid-column: 1 / -1; width: 100%; justify-content: space-between; }
   .ad-pc { padding: 1.375rem 1.125rem 1.125rem; border-radius: 1.25rem; }
   .ad-pc__foot .btn { flex: 1 1 100%; justify-content: space-between; }
-  .ad-bundles { padding: 1.125rem 0 0; }
-  .ad-bundles__list { grid-template-columns: minmax(0, 1fr); }
-  .ad-bundles__calc { white-space: normal; }
 
   .ad-get { margin-top: 1.5rem; }
   main[data-ai-page="ads"] #f-contact-hint { display: none; }
@@ -735,7 +759,9 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .ad-track__txt { gap: 0.25rem; }
 }
 @media (max-width: 600px) {
-  .ad-track__head { margin-bottom: 1.375rem; padding-bottom: 1rem; }
+  .ad-track__head { margin-bottom: 1.375rem; padding-bottom: 1rem; gap: 1rem; }
+  .ad-hseg { width: 100%; }
+  .ad-hseg__o { min-height: 52px; padding: 0.5rem 0.75rem; font-size: 0.875rem; white-space: normal; text-wrap: balance; }
   .ad-track__step { grid-template-columns: 5.25rem minmax(0, 1fr); gap: 0.875rem; }
   .ad-track__pic { height: 4.5rem; font-size: 0.66rem; }
   .ad-track__t { font-size: 1.0625rem; }
@@ -849,9 +875,9 @@ main[data-ai-page="ads"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { p
    stack); the scenes play again when they come back, their «Приклад · дані умовні» a quiet line under them
    ========================================================================== */
 /* 1 · every button that leads to the request in lime (the kit's are ember after the first screen): the page's, the
-   phones' sticky bar, the footer's; on the ivory a dark edge, as lime alone would not hold there */
+   footer's; on the ivory a dark edge, as lime alone would not hold there */
 main[data-ai-page="ads"] .btn--primary,
-main[data-ai-page="ads"] ~ :is(.ai-sticky, .footer) .btn--primary { --btn-bg: var(--lime); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.5); }
+main[data-ai-page="ads"] ~ .footer .btn--primary { --btn-bg: var(--lime); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.5); }
 main[data-ai-page="ads"] .section--ivory .btn--primary { --btn-line: var(--ink-dark); --btn-wave: var(--ink-dark); }
 main[data-ai-page="ads"] .section--ivory .btn--primary:is(:hover, :focus-visible) { --btn-ink: var(--ivory); }
 /* a quick pick chosen in the form is the visitor's action too */
@@ -909,7 +935,7 @@ main.ai .ad-track__list::before { content: ""; position: absolute; left: 0; righ
 /* the pause: one sentence on a screen of its own (the main page's manifesto, on black), its key words in ember */
 .ad-pause { padding: 0 var(--gutter); }
 .ad-pause > .container { display: grid; align-content: center; min-height: min(80svh, 48rem); padding-block: var(--rhythm-section); }
-.ad-pause__text { justify-self: center; max-width: 21ch; margin: 0 auto; font-size: clamp(2rem, 4.4vw, 4.6rem); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.12; letter-spacing: -0.035em; text-align: center; text-wrap: balance; color: var(--ink); }
+.ad-pause__text { justify-self: center; max-width: 21ch; margin: 0 auto; font-size: clamp(2.5rem, 6.2vw, 6.25rem); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.12; letter-spacing: -0.035em; text-align: center; text-wrap: balance; color: var(--ink); }
 .ad-pause__text .hl { font-style: normal; color: var(--ember); }
 /* its words, wrapped by the runtime for the blur-in; hidden until the sentence reaches the screen */
 .ad-bw { display: inline-block; }
@@ -983,14 +1009,13 @@ main[data-ai-page="ads"] #contact { padding-top: var(--ad-after-l); }
   .ad-hero .ai-hero__title--auto { font-size: min(4.3vw, 4.75rem); }
 }
 
-/* the links beside a button or under a list (the prices, a bundle, the calculator): white words and a round arrow, no
-   underline, so they never read as one more lime action next to the button (the owner, 21 Oct) */
-main[data-ai-page="ads"] :is(.ai-down, .ad-bundle__go, .ad-bundles__calc) { gap: 0.625rem; color: var(--ink); text-decoration: none; }
-main[data-ai-page="ads"] :is(.ai-down, .ad-bundle__go, .ad-bundles__calc) svg { box-sizing: content-box; flex: none; padding: 0.5rem; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.35); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
+/* the links beside a button or under a list: white words and a round arrow, no underline, so they never read as one
+   more lime action next to the button (the owner, 21 Oct) */
+main[data-ai-page="ads"] .ai-down { gap: 0.625rem; color: var(--ink); text-decoration: none; }
+main[data-ai-page="ads"] .ai-down svg { box-sizing: content-box; flex: none; padding: 0.5rem; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.35); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
 main[data-ai-page="ads"] .ai-down svg { width: 1rem; height: 1rem; padding: 0.625rem; }
-main[data-ai-page="ads"] :is(.ai-down, .ad-bundle__go, .ad-bundles__calc):hover svg { color: var(--on-ink); background: var(--ink); box-shadow: none; }
+main[data-ai-page="ads"] .ai-down:hover svg { color: var(--on-ink); background: var(--ink); box-shadow: none; }
 main[data-ai-page="ads"] .ai-down:hover svg { transform: translateY(0.125rem); }
-main[data-ai-page="ads"] :is(.ad-bundle__go, .ad-bundles__calc):hover svg { transform: translate(0.125rem, -0.125rem); }
 
 /* each case links the client's site (the owner, 21 Oct): a label and the address with the round arrow of the page's
    links, in the ivory's dark ink; it opens in a new tab */
@@ -1003,15 +1028,203 @@ main[data-ai-page="ads"] :is(.ad-bundle__go, .ad-bundles__calc):hover svg { tran
    owner, 21 Oct) */
 .ad-case__ok--before { margin-left: auto; }
 
-/* phones: iOS Safari tints its bottom bar with the colour of a fixed element at the screen's foot, and the sticky request
-   button turned it lime (the owner's iPhone, 21 Oct). The bar now stands on a black band of its own that reaches the
-   foot (a short fade above it), so the tint is black, as the page */
-@media (max-width: 600px) {
-  main[data-ai-page="ads"] ~ .ai-sticky { padding-top: 0.625rem; background-color: #000; }
-  main[data-ai-page="ads"] ~ .ai-sticky::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 1.5rem; background: linear-gradient(rgba(0, 0, 0, 0), #000); pointer-events: none; }
+/* the rhythm of the type (Impeccable critique, 26 Oct: one heading size on every block, the first screen's title smaller
+   than the blocks', the pause and the request ask no louder than the rest). Four tiers: the pause and the request ask the
+   largest, then the first screen's title, the story blocks (cases, ads, analytics, price), and the utility blocks (terms,
+   how we work, questions) quietest */
+@media (min-width: 601px) {
+  main[data-ai-page="ads"] { --fs-display: clamp(2.2rem, 3.6vw, 4rem); }
 }
-/* phones: the button back up stands above the sticky request bar (its black band reaches 4.5 rem up), so both are at
-   hand once the first screen has passed (the owner, 22 Oct: on phones it never showed) */
+main[data-ai-page="ads"] :is(#terms, #how, #faq) .s-head__title { font-size: clamp(1.75rem, 2.6vw, 2.75rem); }
+main[data-ai-page="ads"] #contact .s-head__title { font-size: clamp(2.6rem, 5.2vw, 4.75rem); }
 @media (max-width: 600px) {
-  main[data-ai-page="ads"] ~ .to-top { bottom: calc(5.25rem + env(safe-area-inset-bottom)); }
+  main[data-ai-page="ads"] :is(#terms, #how, #faq) .s-head__title { font-size: 1.75rem; }
+  main[data-ai-page="ads"] #contact .s-head__title { font-size: clamp(2.25rem, 10vw, 2.625rem); }
+  .ad-pause__text { font-size: clamp(2.125rem, 10vw, 2.5rem); }
+}
+
+/* the request block: the black of the page (the owner, 26 Oct: no ember light behind the form), the form on a surface of
+   its own in the lime frame of the page's actions */
+main[data-ai-page="ads"] #contact .lead-form { border-color: transparent; background: #0f0e0d; box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.45), 0 2.5rem 5rem -2.5rem rgba(0, 0, 0, 0.9); }
+/* the footer's request button sat right under the form and led back up to it: on this page the footer keeps its claim */
+main[data-ai-page="ads"] ~ .footer .footer__lead > .btn { display: none; }
+
+/* ==========================================================================
+   5 · Сторінка: the bridge to the sites page, a short film (the owner's pick of 26 Oct, «Курсор»). A fixed artboard in u
+   (1/64 of its width; phones: a portrait board 22.5u wide), in the demos' lime frame: one visitor hunts the unclear
+   page and closes the tab, the paid click falls onto «Бюджет зливається»; on the clear page the same visitor goes
+   straight to the button. The CSS is the last frame (reduced motion shows it); the runtime plays it (scene «page»).
+   Ember is the result and the paid click, a muted red-grey what is lost; lime only on the frame and the real buttons
+   ========================================================================== */
+main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
+.ad-film { container-type: inline-size; margin-top: var(--rhythm-m); }
+.ad-film__b { --u: calc(100cqw / 64); position: relative; aspect-ratio: 2 / 1; overflow: hidden; border-radius: 1.375rem; color: var(--ink); background: radial-gradient(70% 45% at 50% 0, rgb(246 246 243 / 0.045), transparent), #050505; }
+.ad-film__b::after { content: ""; position: absolute; inset: 0; z-index: 20; border-radius: inherit; box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.55); pointer-events: none; }
+.ad-film__b [style*="--x"] { position: absolute; left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u)); width: calc(var(--w) * var(--u)); height: calc(var(--h) * var(--u)); }
+.ad-film__b [style*="--ix"] { position: absolute; left: calc(var(--ix) * var(--u)); top: calc(var(--iy) * var(--u)); width: calc(var(--iw) * var(--u)); height: calc(var(--ih) * var(--u)); }
+.ad-film__say, .ad-film__cam { position: absolute; inset: 0; }
+.ad-film__say { z-index: 12; pointer-events: none; }
+.ad-film__cam { transform-origin: 0 0; }
+:is(.ad-film__b.is-pre, html.motion:not(.ad-go):not(.is-ready) .ad-film__b) :is(.ad-film__say, .ad-film__cam) { opacity: 0; }
+.ad-film__cap { margin: 0.75rem 0 0; font: 400 0.6875rem/1 var(--font-mono); color: rgb(246 246 243 / 0.55); }
+
+/* the narration, the labels, the visitor's questions, the request */
+.ad-film__b .ad-film__line { margin: 0; font-size: calc(var(--u) * 1.6); font-weight: 300; line-height: 1.12; letter-spacing: -0.03em; opacity: 0; }
+.ad-film__b .ad-film__line--last { opacity: 1; }
+.ad-film__line em { font-style: normal; color: #f08a52; }
+.ad-film__w { display: inline-block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; vertical-align: top; }
+.ad-film__w > span { display: inline-block; }
+.ad-film__lost { color: #9a8a84; }
+.ad-film__lab { font: 400 max(calc(var(--u) * 0.625), 9px)/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; color: rgb(246 246 243 / 0.55); }
+.ad-film__tag { z-index: 6; display: inline-flex; align-items: center; gap: calc(var(--u) * 0.3); padding: calc(var(--u) * 0.24) calc(var(--u) * 0.5); border-radius: 99px; white-space: nowrap; font: 400 max(calc(var(--u) * 0.6), 9px)/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: #9a8a84; background: #050505; box-shadow: inset 0 0 0 1px rgb(154 138 132 / 0.35); }
+.ad-film__tag i { flex: none; width: calc(var(--u) * 0.25); height: calc(var(--u) * 0.25); border-radius: 50%; background: #6f625d; }
+.ad-film__toast { z-index: 9; display: flex; align-items: center; gap: calc(var(--u) * 0.6); margin: 0; padding: 0 calc(var(--u) * 0.8) 0 calc(var(--u) * 0.7); border-radius: calc(var(--u) * 0.875); background: #141414; box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.1), 0 calc(var(--u) * 1.5) calc(var(--u) * 3) calc(var(--u) * -1) rgb(0 0 0 / 0.8), 0 0 calc(var(--u) * 3) rgb(210 86 28 / 0.22); }
+.ad-film__tick { flex: none; display: grid; place-items: center; width: calc(var(--u) * 2); height: calc(var(--u) * 2); border-radius: calc(var(--u) * 0.5); color: #0f0e0d; background: #d2561c; }
+.ad-film__tick svg, .ad-cur__ok svg { width: 58%; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.ad-film__tt { display: grid; gap: calc(var(--u) * 0.22); min-width: 0; }
+.ad-film__tt b { font-size: max(calc(var(--u) * 0.9375), 12px); font-weight: 500; line-height: 1.1; }
+.ad-film__tt small { font: 400 max(calc(var(--u) * 0.58), 9px)/1.2 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; color: rgb(246 246 243 / 0.55); }
+.ad-film__ring { z-index: 11; border-radius: 50%; box-shadow: 0 0 0 1.5px var(--ink); opacity: 0; pointer-events: none; }
+
+/* the two windows: the unclear page and the clear one */
+.ad-cur__win { overflow: hidden; border-radius: calc(var(--u) * 0.9); background: #0b0b0b; box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.1), 0 calc(var(--u) * 2) calc(var(--u) * 4) calc(var(--u) * -1) rgb(0 0 0 / 0.7); }
+.ad-cur__win--a { transform-origin: 50% 50%; }
+.ad-cur__in { position: absolute; left: 0; top: 0; width: calc(var(--u) * 28); height: calc(var(--u) * 20); transform-origin: 0 0; }
+.ad-cur__in p { margin: 0; }
+.ad-cur__bar { z-index: 3; display: flex; align-items: center; gap: calc(var(--u) * 0.3); padding: 0 calc(var(--u) * 0.7); font: 400 max(calc(var(--u) * 0.55), 8px)/1 var(--font-mono); color: rgb(246 246 243 / 0.5); background: #0b0b0b; border-bottom: 1px solid rgb(246 246 243 / 0.08); box-sizing: border-box; }
+.ad-cur__bar i { width: calc(var(--u) * 0.3); height: calc(var(--u) * 0.3); border-radius: 50%; background: rgb(246 246 243 / 0.18); }
+.ad-cur__bar span { margin-left: calc(var(--u) * 0.6); padding: calc(var(--u) * 0.2) calc(var(--u) * 0.6); border-radius: 99px; background: rgb(246 246 243 / 0.05); }
+.ad-cur__x { margin-left: auto; font-size: calc(var(--u) * 0.9); font-weight: 400; line-height: 1; color: rgb(246 246 243 / 0.6); }
+.ad-cur__prog { z-index: 3; background: #9a8a84; transform: scaleX(0.3); transform-origin: 0 50%; opacity: 0.35; }
+.ad-cur__page--a, .ad-cur__spin { opacity: 0.35; }
+.ad-cur__nav { display: flex; gap: calc(var(--u) * 0.7); font-size: calc(var(--u) * 0.55); white-space: nowrap; }
+.ad-cur__nav span { opacity: 0.55; }
+.ad-cur__hero { border-radius: calc(var(--u) * 0.5); background: repeating-linear-gradient(135deg, rgb(246 246 243 / 0.06) 0 1px, transparent 1px 7px), #121212; }
+.ad-cur__arr { font-size: calc(var(--u) * 1.1); line-height: 1; color: rgb(246 246 243 / 0.4); }
+.ad-cur__sl { display: flex; gap: calc(var(--u) * 0.3); }
+.ad-cur__sl i { width: calc(var(--u) * 0.35); height: calc(var(--u) * 0.35); border-radius: 50%; background: rgb(246 246 243 / 0.25); }
+.ad-cur__vague { font-size: calc(var(--u) * 1.3); font-weight: 300; line-height: 1.15; color: rgb(246 246 243 / 0.5); }
+.ad-cur__txt { border-radius: 99px; background: rgb(246 246 243 / 0.08); }
+.ad-cur__img { border-radius: calc(var(--u) * 0.4); background: rgb(246 246 243 / 0.05); }
+.ad-cur__ghost { display: grid; place-items: center; border-radius: 99px; font-size: calc(var(--u) * 0.6); color: rgb(246 246 243 / 0.4); box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.2); }
+.ad-cur__spin { z-index: 3; display: grid; place-items: center; border-radius: 50%; background: rgb(5 5 5 / 0.75); }
+.ad-cur__spin i { width: 62%; height: 62%; border-radius: 50%; border: 2px solid rgb(246 246 243 / 0.15); border-top-color: rgb(246 246 243 / 0.65); box-sizing: border-box; }
+.ad-cur__stamp { z-index: 5; padding: calc(var(--u) * 0.4) calc(var(--u) * 0.8); border-radius: 99px; white-space: nowrap; font: 400 calc(var(--u) * 0.75)/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: #9a8a84; background: #050505; box-shadow: inset 0 0 0 1px #9a8a84; }
+.ad-cur__brand { font: 400 max(calc(var(--u) * 0.55), 8px)/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(246 246 243 / 0.55); }
+.ad-cur__h { font-size: calc(var(--u) * 2); font-weight: 400; line-height: 1.08; letter-spacing: -0.02em; }
+.ad-cur__price { font-size: calc(var(--u) * 1.2); color: rgb(246 246 243 / 0.78); }
+.ad-cur__pill { display: grid; place-items: center; border-radius: 99px; font-size: calc(var(--u) * 0.8); font-weight: 500; color: #0d0d0d; background: #f6f6f3; }
+.ad-cur__tile { border-radius: calc(var(--u) * 0.5); background: repeating-linear-gradient(135deg, rgb(246 246 243 / 0.05) 0 1px, transparent 1px 6px), #141414; }
+.ad-cur__quote { display: grid; align-content: start; gap: calc(var(--u) * 0.35); padding: calc(var(--u) * 0.5) calc(var(--u) * 0.7); border-radius: calc(var(--u) * 0.5); font-size: calc(var(--u) * 1.4); line-height: 0.8; color: rgb(246 246 243 / 0.5); background: #121212; box-sizing: border-box; }
+.ad-cur__quote i { height: calc(var(--u) * 0.3); border-radius: 99px; background: rgb(246 246 243 / 0.1); }
+
+/* the paid clicks (the first one struck and fallen onto its ledge), the ad, the visitors and their trails */
+.ad-cur__chip { z-index: 7; display: inline-flex; align-items: center; gap: calc(var(--u) * 0.4); padding: calc(var(--u) * 0.32) calc(var(--u) * 0.6); border-radius: 99px; white-space: nowrap; font: 400 max(calc(var(--u) * 0.6), 9px)/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.ad-cur__chip--b { color: #f08a52; background: #0b0b0b; box-shadow: inset 0 0 0 1px #d2561c; }
+.ad-cur__ok { display: grid; place-items: center; width: calc(var(--u) * 0.9); height: calc(var(--u) * 0.9); border-radius: 50%; color: #0f0e0d; background: #d2561c; }
+.ad-film__b .ad-cur__chip--a { display: grid; padding: 0; }
+.ad-cur__chip--a > span { grid-area: 1 / 1; padding: calc(var(--u) * 0.32) calc(var(--u) * 0.6); border-radius: 99px; background: #050505; }
+.ad-cur__ce { color: #f08a52; box-shadow: inset 0 0 0 1px #d2561c; opacity: 0; }
+.ad-cur__cl { color: #9a8a84; box-shadow: inset 0 0 0 1px rgb(154 138 132 / 0.6); }
+.ad-cur__strike { grid-area: 1 / 1; align-self: center; height: 1px; margin: 0 calc(var(--u) * 0.5); background: #9a8a84; transform-origin: 0 50%; }
+.ad-cur__ledge { background: rgb(154 138 132 / 0.35); transform-origin: 0 50%; }
+.ad-cur__drain { font: 400 max(calc(var(--u) * 0.625), 9px)/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; color: #9a8a84; }
+.ad-cur__ad { z-index: 8; display: grid; align-content: center; gap: calc(var(--u) * 0.4); padding: 0 calc(var(--u) * 1); border-radius: calc(var(--u) * 0.7); background: #141414; box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.12), 0 calc(var(--u) * 1.5) calc(var(--u) * 3) calc(var(--u) * -1) #000; opacity: 0; box-sizing: border-box; }
+.ad-cur__ad p { margin: 0; font-size: max(calc(var(--u) * 0.6), 9px); color: rgb(246 246 243 / 0.55); }
+.ad-cur__ad b { font-weight: 500; color: rgb(246 246 243 / 0.75); }
+.ad-cur__ad .ad-cur__adt { font-size: calc(var(--u) * 1.05); color: var(--ink); text-decoration: underline; text-underline-offset: 0.2em; text-decoration-color: rgb(246 246 243 / 0.35); }
+.ad-cur__trail { position: absolute; inset: 0; z-index: 9; width: 100%; height: 100%; pointer-events: none; }
+.ad-cur__trail--m { display: none; }
+.ad-cur__td--a { fill: rgb(154 138 132 / 0.55); }
+.ad-cur__td--b { fill: rgb(240 138 82 / 0.7); }
+.ad-cur__cur { z-index: 13; }
+.ad-cur__cur i { position: absolute; left: 0; top: 0; display: block; width: calc(var(--u) * 1.3); transform-origin: 0 0; }
+.ad-cur__cur svg { display: block; width: 100%; fill: #f6f6f3; stroke: #000; stroke-width: 1; stroke-linejoin: round; filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.6)); }
+.ad-cur__cur--a { opacity: 0; }
+
+/* the two ways under the film: hairline rows, the bundle's button the one lime fill */
+.ad-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2.5rem; margin-top: 2.5rem; }
+.ad-paths__cell { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1.5rem; align-content: start; padding-top: 1.5rem; border-top: 1px solid rgb(246 246 243 / 0.14); }
+.ad-paths__cell > p { grid-column: 1; margin: 0; }
+.ad-paths__k { font: 400 0.75rem/1.3 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: rgb(246 246 243 / 0.55); }
+.ad-paths__t { margin-top: 0.375rem !important; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
+.ad-paths__p { margin-top: 0.375rem !important; font-size: var(--fs-body); color: rgb(246 246 243 / 0.7); }
+.ad-paths__p b { font-weight: 500; white-space: nowrap; color: var(--ink); }
+.ad-paths__go { grid-column: 2; grid-row: 1 / span 3; align-self: end; }
+.ad-paths__sites { grid-column: 1 / -1; justify-self: end; display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; font-size: var(--fs-body); color: var(--ink); text-decoration: none; }
+.ad-paths__sites svg { box-sizing: content-box; flex: none; width: 0.875rem; height: 0.875rem; padding: 0.5rem; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.35); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
+.ad-paths__sites:hover svg { color: var(--on-ink); background: var(--ink); box-shadow: none; transform: translate(0.125rem, -0.125rem); }
+
+/* phones: the portrait board, the windows stacked, their insides scaled as one; the ways stacked, full-width buttons */
+@media (max-width: 600px) {
+  .ad-film { max-width: 26rem; margin: 2rem auto 0; }
+  .ad-film__b { --u: calc(100cqw / 22.5); aspect-ratio: 22.5 / 38; }
+  .ad-film__b [style*="--x"] { left: calc(var(--mx) * var(--u)); top: calc(var(--my) * var(--u)); width: calc(var(--mw) * var(--u)); height: calc(var(--mh) * var(--u)); }
+  .ad-film__b [data-m="off"] { display: none; }
+  .ad-film__b .ad-film__line { font-size: calc(var(--u) * 1.12); }
+  .ad-cur__in { transform: scale(0.732); }
+  .ad-cur__in .ad-film__tag { font-size: max(calc(var(--u) * 0.85), 12px); }
+  .ad-cur__trail--d { display: none; }
+  .ad-cur__trail--m { display: block; }
+  .ad-cur__cur i { width: calc(var(--u) * 1.1); }
+  .ad-paths { grid-template-columns: minmax(0, 1fr); }
+  .ad-paths__cell { grid-template-columns: minmax(0, 1fr); }
+  .ad-paths__go { grid-column: 1; grid-row: auto; justify-self: stretch; width: 100%; justify-content: space-between; margin-top: 1rem; }
+  .ad-paths__sites { justify-self: start; }
+}
+
+/* ==========================================================================
+   Phones, shorter (the owner, 28 Oct: the phone page was 18 screens)
+   ========================================================================== */
+/* 3 · one network at a time: the switch over the demos (phones only; wider screens show both side by side) */
+.ad-ch__pick { display: none; }
+/* the form's site field: a field on wider screens; on phones it folds under «+ Додати сайт» (open in the HTML, so wider
+   screens never move; the runtime closes it on phones, and until then CSS keeps it folded) */
+.ad-site-fold > summary { display: none; }
+@media (max-width: 600px) {
+  .ad-ch__pick { display: inline-grid; width: 100%; margin: 0 0 1.25rem; }
+  .ad-ch__grid[data-pick="google"] > [data-ch="meta"],
+  .ad-ch__grid[data-pick="meta"] > [data-ch="google"] { display: none; }
+
+  .ad-site-fold:not([open]) > summary,
+  html.js:not(.ad-go) .ad-site-fold > summary { display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; list-style: none; cursor: pointer; font-size: 0.9375rem; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+  .ad-site-fold > summary::-webkit-details-marker { display: none; }
+  .ad-site-fold > summary::before { content: "+"; content: "+" / ""; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.32); font: 400 0.9375rem/1 var(--font-mono); color: var(--ink-soft); }
+  .ad-site-fold > summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 0.375rem; }
+  html.js:not(.ad-go) .ad-site-fold > :not(summary) { display: none; }
+}
+@media (max-width: 600px) {
+  /* 7 · the prices as a list: «Реклама в Google» stays a card with its button, first; the other setups are rows, the name
+     and the sum on one line and «Що входить +» under them, a row's button coming with its list. Every price stays in
+     sight (the owner, 28 Oct) */
+  main.ai .ad-prices { row-gap: 0; }
+  .ad-pc--featured { order: -1; margin-bottom: 1.25rem; }
+  .ad-pc:not(.ad-pc--featured) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "top sum" "more more" "foot foot"; align-items: start; row-gap: 0; column-gap: 1rem; padding: 1rem 0 0.25rem; border-radius: 0; background: none; box-shadow: none; border-top: 1px solid var(--line); }
+  .ad-pc:not(.ad-pc--featured):last-child { border-bottom: 1px solid var(--line); }
+  .ad-pc:not(.ad-pc--featured) > .ad-pc__top { grid-area: top; flex-direction: column; align-items: flex-start; justify-content: start; gap: 0.375rem; }
+  .ad-pc:not(.ad-pc--featured) .ad-pc__t { font-size: 1.125rem; }
+  .ad-pc:not(.ad-pc--featured) > .ad-pc__sum { grid-area: sum; justify-self: end; gap: 0.375rem; }
+  .ad-pc:not(.ad-pc--featured) > .ad-pc__sum b { font-size: 1.75rem; }
+  .ad-pc:not(.ad-pc--featured) > .ad-pc__more { grid-area: more; }
+  .ad-pc:not(.ad-pc--featured) > .ad-pc__more > summary { padding-top: 0; border-top: 0; }
+  .ad-pc:not(.ad-pc--featured) > .ad-pc__foot { grid-area: foot; padding: 0.5rem 0 0.75rem; border-top: 0; }
+  .ad-pc:not(.ad-pc--featured):not(:has(> .ad-pc__more[open])) > .ad-pc__foot { display: none; }
+  /* what can be added: one line each, the name and the sum (or the ask) side by side */
+  .ad-addons { row-gap: 0; margin-top: 1.75rem; }
+  .ad-addon { padding: 0.875rem 0; row-gap: 0; }
+  .ad-addon__main { grid-column: 1 / -1; grid-row: 1; }
+  .ad-addon__d { display: none; }
+  .ad-addon__t { font-size: 1.125rem; }
+  /* management: the sum at the name's right, «Що входить +» across the row as in the setups */
+  .ad-addon__sum { grid-column: 2; grid-row: 1; align-self: start; justify-self: end; }
+  .ad-addon__sum b { font-size: 1.75rem; }
+  .ad-addon__more { justify-self: stretch; }
+  .ad-addon__more > summary { display: flex; justify-content: space-between; }
+  /* Facebook · Instagram: the name, then «за запитом» and its button on one line */
+  .ad-addon:has(> .btn) { row-gap: 0.625rem; }
+  .ad-addon:has(> .btn) .ad-addon__sum { grid-column: 1; grid-row: 2; align-self: center; justify-self: start; }
+  .ad-addon > .btn { grid-column: 2; grid-row: 2; align-self: center; width: auto; }
+
+  /* the pause: as tall as its sentence */
+  .ad-pause > .container { padding-block: 2.5rem; }
 }
