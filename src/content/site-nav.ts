@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { getPathname } from "@/i18n/navigation";
 import { PRICING, money } from "@/components/sections/pricing/configurator/engine.js";
+import { PRODUCTS } from "@/components/sections/ai-page/prices";
 import { SITE_NAV } from "./nav";
 
 /** One service in the header's panel and the phone menu: its page, picture and «від» price (none for SaaS). */
@@ -47,7 +48,7 @@ const firstSentence = (text: string) => text.split(/(?<=\.)\s/)[0].replace(/\.$/
 /**
  * The header's and the phone menu's data, built on the server: the main page's words (what, nav, start), the cases'
  * from their own pages (ads, case, asst; those messages never reach the browser) and the prices from the configurator's
- * engine, so no number is written twice.
+ * engine and the AI page's list, so no number is written twice.
  */
 export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const t = await getTranslations({ locale });
@@ -85,9 +86,10 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
     about: SITE_NAV.about ? href("/pro-nas") : null,
     services: [
       service(1, "/dyzain-i-saity", minPaid(PRICING.formats)),
-      service(2, "/ai-avtomatyzatsiia", minPaid(PRICING.automation)),
+      // the owner, 28 Oct: automation from the AI page's cheapest product (the assistant), ads from the Google Ads setup
+      service(2, "/ai-avtomatyzatsiia", Math.min(...Object.values(PRODUCTS).flatMap((p) => (p.price ? [p.price] : [])))),
       service(3, null, null),
-      service(4, "/reklama-i-analityka", minPaid(PRICING.growth)),
+      service(4, "/reklama-i-analityka", minPaid(Object.fromEntries(Object.entries(PRICING.growth).filter(([, o]) => "ads" in o && o.ads)))),
     ],
     cases: [
       adsCase(1, "ac"),
