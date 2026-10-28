@@ -5,10 +5,12 @@ import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
 import { ScrollTopLink } from "@/components/layout/page-nav/ScrollTopLink";
 import { rich } from "@/lib/rich";
 import { Wordmark } from "./Wordmark";
+import { FooterMap } from "./FooterMap";
 import "./footer.css";
 
-/** The footer: the claim and CTA, the page index, the bottom line, and the brand's name in liquid chrome. Another page passes
- *  its own claim, CTA and index (ready text); the main page uses its messages and PAGE_NAV. */
+/** The footer: the claim and CTA, the page index, the map of the site (FooterMap), the bottom line, and the brand's name
+ *  in liquid chrome. Another page passes its own claim, CTA and index (ready text); the main page uses its messages and
+ *  PAGE_NAV. */
 export async function Footer({ claim, links, cta }: { claim?: React.ReactNode; links?: readonly NavLink[]; cta?: NavCta } = {}) {
   const t = await getTranslations();
   const items = links ?? PAGE_NAV.map((l) => ({ href: l.href, text: t(l.label) }));
@@ -28,6 +30,7 @@ export async function Footer({ claim, links, cta }: { claim?: React.ReactNode; l
           ))}
         </nav>
       </div>
+      <FooterMap />
       <div className="container footer__bottom">
         <p className="footer__legal">{t("footer.legal")}</p>
         <div className="footer__end">
