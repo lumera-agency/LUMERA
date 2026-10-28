@@ -1,0 +1,321 @@
+/* The panels under «Послуги» and «Кейси» (NavPanel.tsx): four dark columns with a hairline between them, a card per
+   column, the strip under a line. Over the page, never in its flow: CLS stays 0. */
+.navp {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  color: var(--ink);
+  text-align: left;
+}
+.navp[hidden] { display: none; }
+/* the strip the pointer crosses from the trigger down to the panel */
+.navp::before { content: ""; position: absolute; left: 0; right: 0; top: -0.75rem; height: 0.75rem; }
+.navp__frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: 0 2.5rem 5rem -2rem rgb(0 0 0 / 0.8);
+}
+.navp__cols { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); }
+.navp__cols i { background: #0d0d0d; box-shadow: inset -1px 0 0 var(--border); will-change: transform; }
+.navp__cols i:last-child { box-shadow: none; }
+.navp__grid { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.navp__grid > li { display: flex; }
+
+.navp__card {
+  position: relative;
+  flex: 1;
+  display: block;
+  padding: clamp(1.125rem, 1.7vw, 1.75rem) clamp(1.125rem, 1.7vw, 1.75rem) 1.5rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.navp__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgb(246 246 243 / 0.035);
+  opacity: 0;
+  transition: opacity var(--dur-fast);
+}
+.navp__in { position: relative; display: flex; flex-direction: column; height: 100%; transition: opacity 0.3s; }
+.navp__main,
+.navp__foot { display: block; color: inherit; text-decoration: none; }
+.navp__main:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.25rem; border-radius: var(--radius-md); }
+
+/* the page's sections under the name: the formats with their prices, the cases with a chip */
+.navp__subs { margin-top: 0.75rem; }
+.navp__sub { display: block; overflow: hidden; color: var(--ink-soft); text-decoration: none; transition: color var(--dur-fast); }
+.navp__sub > span { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 1.875rem; font-size: var(--fs-small); line-height: 1.25; }
+.navp__sub b { font: 400 var(--fs-label) / 1 var(--font-mono); color: var(--ink-mute); white-space: nowrap; transition: color var(--dur-fast); }
+.navp__sub:is(:hover, :focus-visible) { color: var(--lime); }
+.navp__sub:is(:hover, :focus-visible) b { color: var(--lime); }
+.navp__sub:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.125rem; border-radius: 0.25rem; }
+.navp__tag {
+  flex: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-ivory);
+  color: var(--on-ink);
+  font: 400 0.625rem / 1 var(--font-mono);
+  font-style: normal;
+  letter-spacing: 0.08em;
+}
+.navp__tag--ex { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-soft); }
+.navp__card:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.5rem; border-radius: var(--radius-md); }
+
+/* each line rises out of its own mask */
+.navp__meta,
+.navp__name,
+.navp__desc,
+.navp__who,
+.navp__honest,
+.navp__foot { display: block; overflow: hidden; }
+.navp__meta > span,
+.navp__name > span,
+.navp__who > span,
+.navp__honest > span { display: block; }
+
+.navp__meta > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font: 400 var(--fs-label) / 1 var(--font-mono);
+  letter-spacing: var(--track-num);
+  color: var(--ink-mute);
+}
+.navp__pic {
+  display: block;
+  margin-top: 1rem;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #151515;
+}
+.navp__pic img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 46%;
+  transition: transform 0.6s var(--ease-out);
+}
+.navp__name {
+  margin-top: 1.125rem;
+  font-size: var(--fs-h4);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variation-settings: "SHRP" 64;
+  transition: transform 0.5s var(--ease-out);
+}
+.navp__desc { margin-top: 0.5rem; }
+.navp__desc > span {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.navp__foot { margin-top: auto; padding-top: 1.25rem; }
+.navp__foot > span { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.navp__price {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: 400 0.8125rem / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.navp__price::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--lime); }
+.navp__go { display: inline-flex; align-items: center; gap: 0.625rem; font-size: var(--fs-small); color: var(--ink-soft); }
+.navp__disc {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: background 0.3s, box-shadow 0.3s, color 0.3s;
+}
+.navp__disc svg,
+.navp__strip svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.5s var(--ease-out);
+}
+
+/* a hover or the keyboard on a card: its surface, the picture closer, the name leans in, the disc fills lime;
+   the other cards step back */
+@media (hover: hover) {
+  .navp__card:hover::before { opacity: 1; }
+  .navp__card:hover .navp__pic img { transform: scale(1.04); }
+  .navp__card:hover .navp__name { transform: translateX(0.375rem); }
+  .navp__card:hover .navp__disc { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+  .navp__card:hover .navp__disc svg { transform: rotate(45deg); }
+  .navp__grid:has(.navp__card:hover) .navp__card:not(:hover) > .navp__in { opacity: 0.55; }
+}
+.navp__card:focus-visible::before { opacity: 1; }
+.navp__card:focus-visible .navp__disc { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+/* the page you are on: a lime index and dot */
+.navp__card[data-current] .navp__meta > span { color: var(--lime); }
+.navp__card[data-current] .navp__meta > span::after {
+  content: "";
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 0.625rem rgb(218 255 2 / 0.7);
+}
+
+/* cases: the chip, the figure in the picture's place, who, the honest sentence */
+.navp__chip {
+  display: inline-block;
+  padding: 0.375rem 0.625rem;
+  border-radius: 999px;
+  background: var(--color-ivory);
+  color: var(--on-ink);
+  font: 400 0.6875rem / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+}
+.navp__chip--ex { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-soft); }
+.navp__fig {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  aspect-ratio: 16 / 9;
+  padding: 1.125rem;
+  border-radius: var(--radius-md);
+  background: #141414;
+}
+.navp__fig::before {
+  content: "";
+  position: absolute;
+  left: 1.125rem;
+  top: 1.125rem;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--lime);
+}
+.navp__fig b {
+  font-weight: 400;
+  font-size: clamp(1.75rem, 2.3vw, 2.5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variation-settings: "SHRP" 64;
+  font-variant-numeric: tabular-nums;
+}
+.navp__fig span { margin-top: 0.375rem; font-size: var(--fs-caption); color: var(--ink-soft); }
+.navp__who { margin-top: 0.25rem; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
+.navp__honest { margin-top: 0.5rem; font-size: var(--fs-small); line-height: 1.45; font-weight: 500; }
+.navp__svc { font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: 0.04em; color: var(--ink-mute); }
+
+/* the strip: the calculator, the other panel, «Про нас» */
+.navp__strip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  height: 3.5rem;
+  padding: 0 clamp(1.125rem, 1.7vw, 1.75rem);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-small);
+}
+.navp__strip-k { font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.navp__strip-end { margin-left: auto; display: flex; align-items: center; gap: 2rem; }
+.navp__strip a,
+.navp__strip button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--dur-fast);
+}
+.navp__strip a:is(:hover, :focus-visible),
+.navp__strip button:is(:hover, :focus-visible) { color: var(--lime); }
+.navp__strip a:hover svg { transform: rotate(45deg); }
+.navp__strip :focus-visible { outline: 2px solid var(--lime); outline-offset: 0.25rem; border-radius: 0.25rem; }
+
+/* low screens (a laptop's browser): the pictures stay, only lower, so the panel still fits under the header */
+@media (max-height: 820px) {
+  .navp__pic,
+  .navp__fig { aspect-ratio: auto; height: clamp(4.5rem, calc(100vh - 35rem), 9.75rem); }
+  .navp__fig { padding: 0.875rem 1rem; }
+  .navp__fig::before { top: 0.875rem; left: 1rem; }
+}
+
+/* the dim over the page while a panel is open: inside the bar, under the panel */
+.navp-scrim {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  z-index: 1;
+  background: rgb(5 5 5 / 0.5);
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* the trigger: as a link, with a chevron; open: the chevron turns lime, a lime line grows under the word */
+.nav__link.nav__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.nav__trigger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.4rem;
+  height: 1px;
+  background: var(--lime);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.45s var(--ease-out);
+}
+.nav__trigger[aria-expanded="true"]::after { transform: scaleX(1); }
+.nav__chev {
+  width: 0.625rem;
+  height: 0.375rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--ink-mute);
+  transition: transform 0.3s var(--ease-out), color 0.3s;
+}
+.nav__trigger[aria-expanded="true"] .nav__chev { transform: rotate(180deg); color: var(--lime); }
+.nav__trigger[aria-expanded="true"] .roll__c > span:first-child { color: var(--lime); }
+.nav__trigger:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.25rem; border-radius: 0.25rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav__chev,
+  .nav__trigger::after { transition: none; }
+}
