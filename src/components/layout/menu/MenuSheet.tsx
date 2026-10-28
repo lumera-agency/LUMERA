@@ -1,7 +1,8 @@
 "use client";
 /*
  * The site menu on phones (both burgers open it): an island over the page, dimmed behind it. Three segments: the
- * services (their pages, «від» prices), the clients' cases and this page's blocks (the one you are in is lime); under them «Ціни» (and «Про нас» once its page is out), the CTA and the languages. A row on this page takes
+ * services (their pages, «від» prices), the clients' cases and this page's blocks (the one you are in is lime); under
+ * them «Ціни» and «Про нас», the two phones, Telegram and Viber, the CTA and the languages. A row on this page takes
  * the page to its block under the island, so the block is there when it closes.
  * A modal dialog in <body> (never inside a transformed header): the page holds still under it, Esc and the cross
  * close it, Tab stays inside, focus goes back to the burger. Reduced motion: fades.
@@ -17,6 +18,7 @@ import { LogoContent } from "@/components/ui/logo/Logo";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
 import { useSiteNav } from "@/components/layout/site-nav/SiteNavProvider";
+import { PhoneIcon, TelegramIcon, ViberIcon } from "@/components/layout/site-nav/Contacts";
 import { menu, useMenuOpen } from "./menu-store";
 import "./menu-sheet.css";
 
@@ -314,6 +316,24 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
                 {nav.labels.about}
               </a>
             )}
+          </div>
+          <div className="menu-sheet__phones">
+            {nav.contacts.phones.map((p) => (
+              <a key={p.href} href={p.href} aria-label={`${nav.labels.call}: ${p.text}`}>
+                <PhoneIcon />
+                {p.text}
+              </a>
+            ))}
+          </div>
+          <div className="menu-sheet__chats">
+            <a href={nav.contacts.telegram} target="_blank" rel="noopener" aria-label={nav.labels.telegram}>
+              <TelegramIcon />
+              Telegram
+            </a>
+            <a href={nav.contacts.viber} aria-label={nav.labels.viber}>
+              <ViberIcon />
+              Viber
+            </a>
           </div>
           <ButtonLink href={action.href} variant="primary" className="menu-sheet__cta" onClick={(e) => go(e, action.href)}>
             {action.text}

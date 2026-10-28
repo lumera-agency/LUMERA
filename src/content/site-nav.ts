@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { getPathname } from "@/i18n/navigation";
 import { PRICING, money } from "@/components/sections/pricing/configurator/engine.js";
 import { PRODUCTS } from "@/components/sections/ai-page/prices";
+import { CONTACTS, phoneText, telHref, telegramHref, viberHref } from "@/config/contacts";
 import { SITE_NAV } from "./nav";
 
 /** One service in the header's panel and the phone menu: its page, picture and «від» price (none for SaaS). */
@@ -25,6 +26,8 @@ export type SiteNavData = {
   services: SiteNavService[];
   cases: SiteNavCase[];
   example: { chip: string; name: string; who: string; href: string };
+  /** the phones (to call) and the messengers (config/contacts) */
+  contacts: { phones: { text: string; href: string }[]; telegram: string; viber: string };
   labels: {
     services: string;
     cases: string;
@@ -36,6 +39,12 @@ export type SiteNavData = {
     more: string;
     page: string;
     pageShort: string;
+    how: string;
+    contacts: string;
+    phones: string;
+    telegram: string;
+    viber: string;
+    call: string;
   };
 };
 
@@ -107,6 +116,11 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
         href: href("/keisy/poshuk-zamovlen"),
       },
     ],
+    contacts: {
+      phones: CONTACTS.phones.map((n) => ({ text: phoneText(n), href: telHref(n) })),
+      telegram: telegramHref(),
+      viber: viberHref(),
+    },
     example: { chip: t("aiCommon.nav.example"), name: t("asst.crumb"), who: firstSentence(t("asst.hero.lead")), href: href("/keisy/ai-asystent") },
     labels: {
       services: t("nav.services"),
@@ -119,6 +133,12 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       more: t("what.more"),
       page: t("nav.page"),
       pageShort: t("nav.pageShort"),
+      how: t("nav.how"),
+      contacts: t("nav.contacts.label"),
+      phones: t("nav.contacts.phones"),
+      telegram: t("nav.contacts.telegram"),
+      viber: t("nav.contacts.viber"),
+      call: t("nav.contacts.call"),
     },
   };
 }

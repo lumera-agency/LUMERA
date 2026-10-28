@@ -11,7 +11,9 @@
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  /* five items, the contact pill and the CTA: the nav sits centred between the logo and the end group */
+  grid-template-columns: auto 1fr auto;
+  column-gap: 2rem;
   align-items: center;
   height: var(--header-h);
 }
@@ -28,6 +30,7 @@
 
 .nav {
   display: flex;
+  justify-self: center;
   align-items: center;
   gap: clamp(1.5rem, 2.6vw, 3rem);
 }
@@ -67,7 +70,8 @@
 }
 .lang__dot { color: var(--ink-mute); }
 
-.header__cta { justify-self: end; }
+/* the contact pill, then the CTA */
+.header__cta { justify-self: end; display: flex; align-items: center; gap: 0.75rem; }
 
 .menu-toggle {
   display: none;
@@ -100,6 +104,20 @@
 
 @media (max-width: 1100px) {
   .nav, .nav__list { gap: 1.5rem; }
+}
+/* narrower screens, step by step: «Як працюємо» leaves (the topbar has «Підхід»), a compact CTA; then the pill keeps
+   the phone alone (its card has Telegram and Viber) and the logo its mark */
+@media (max-width: 1279px) {
+  .header__inner { column-gap: 1.5rem; }
+  .header__cta .btn { --h: 2.75rem; height: 2.75rem; gap: 1rem; padding: 0 0.9rem 0 1.1rem; font-size: var(--fs-small); }
+}
+@media (max-width: 1365px) {
+  .nav__item--how { display: none; }
+}
+@media (max-width: 1099px) {
+  .nav, .nav__list { gap: 1.25rem; }
+  .header .contacts__btn:not([aria-controls]) { display: none; }
+  .header .logo__mono { display: none; }
 }
 
 .header .lang--bar { display: none; }

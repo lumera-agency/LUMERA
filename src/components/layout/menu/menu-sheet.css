@@ -173,6 +173,42 @@
 }
 .menu-sheet__site a + a { border-left: 1px solid var(--border); }
 .menu-sheet__site a:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; border-radius: 0.5rem; }
+/* the two phones (a call), then Telegram and Viber */
+.menu-sheet__phones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--border); }
+.menu-sheet__phones a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 3rem;
+  padding: 0 0.75rem;
+  font: 400 var(--fs-caption) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ink);
+  text-decoration: none;
+}
+.menu-sheet__phones a + a { border-left: 1px solid var(--border); }
+.menu-sheet__chats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+.menu-sheet__chats a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: var(--fs-small);
+  color: var(--ink);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.menu-sheet__phones svg,
+.menu-sheet__chats svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.menu-sheet__phones svg { color: var(--ink-mute); }
+.menu-sheet__phones a:is(:active, :focus-visible) { color: var(--lime); }
+.menu-sheet__chats a:is(:active, :focus-visible) { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+.menu-sheet__phones a:focus-visible,
+.menu-sheet__chats a:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; }
 .menu-sheet__cta { width: 100%; justify-content: space-between; }
 .menu-sheet .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.55); }
 .menu-sheet__meta {
@@ -190,6 +226,11 @@
 .menu-sheet__meta .lang__link { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 0.25rem; }
 .menu-sheet__meta > span { text-align: right; }
 
+/* narrow phones: the numbers a size smaller, without the handset */
+@media (max-width: 380px) {
+  .menu-sheet__phones a { padding: 0 0.625rem; font-size: var(--fs-label); }
+  .menu-sheet__phones svg { display: none; }
+}
 @media (max-height: 640px) {
   .menu-sheet__row { min-height: 3.75rem; }
   .menu-sheet__line { display: none; }

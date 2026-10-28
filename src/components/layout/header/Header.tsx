@@ -9,6 +9,7 @@ import { menu, useMenuOpen } from "@/components/layout/menu/menu-store";
 import { useSiteNav } from "@/components/layout/site-nav/SiteNavProvider";
 import { NavChevron, NavPanel } from "@/components/layout/site-nav/NavPanel";
 import { navDisclosure } from "@/components/layout/site-nav/disclosure";
+import { Contacts } from "@/components/layout/site-nav/Contacts";
 import { boot, pageLetGo } from "@/lib/boot";
 import { fadeJumpTo } from "@/lib/scroll";
 import "./header.css";
@@ -17,8 +18,9 @@ import "./header.css";
 const NAV_SHOWN = 1600;
 
 /**
- * The first screen's header: logo, «Послуги ⌄» and «Кейси ⌄» (their panels drop under the header: NavPanel), «Ціни»,
- * «Про нас» once its page is out, UA · RU, the ghost CTA; on phones the burger opens the site menu (MenuSheet).
+ * The first screen's header: logo, «Послуги ⌄» and «Кейси ⌄» (their panels drop under the header: NavPanel), «Як
+ * працюємо», «Ціни», «Про нас», UA · RU, the contact pill and the ghost CTA; on phones the burger opens the site menu
+ * (MenuSheet).
  */
 export function Header() {
   const t = useTranslations();
@@ -76,6 +78,11 @@ export function Header() {
                 <NavPanel kind={id} id={`navp-${id}`} />
               </li>
             ))}
+            <li className="nav__item--how">
+              <a className="nav__link" href="#approach" data-navp-plain="" data-reveal="nav">
+                <RollText>{nav.labels.how}</RollText>
+              </a>
+            </li>
             <li>
               <a className="nav__link" href="#pricing" data-navp-plain="" data-reveal="nav">
                 <RollText>{nav.labels.pricing}</RollText>
@@ -97,6 +104,7 @@ export function Header() {
         <LangSwitch className="lang--bar" data-reveal="nav" />
 
         <div className="header__cta" data-reveal="nav">
+          <Contacts />
           <ButtonLink href="#contact" variant="ghost">{t("cta.discuss")}</ButtonLink>
         </div>
 
