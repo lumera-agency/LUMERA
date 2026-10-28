@@ -29,9 +29,10 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: clamp(1.75rem, 4.2vw, 4.75rem);
+  gap: clamp(1.5rem, 2.6vw, 3rem);
 }
-.nav__list { display: flex; gap: clamp(1.75rem, 4.2vw, 4.75rem); }
+/* the items stay static: the panels (site-nav/NavPanel) hang from .header__inner, gutter to gutter */
+.nav__list { display: flex; gap: clamp(1.5rem, 2.6vw, 3rem); }
 
 .nav__link {
   position: relative;
@@ -95,7 +96,7 @@
 
 
 @media (max-width: 1100px) {
-  .nav, .nav__list { gap: 2rem; }
+  .nav, .nav__list { gap: 1.5rem; }
 }
 
 .header .lang--bar { display: none; }

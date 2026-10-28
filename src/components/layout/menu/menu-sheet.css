@@ -1,5 +1,5 @@
-/* The site menu (MenuSheet.tsx): five black columns like the preloader's, numbered rows, a lime
-   index where you are, the CTA and the languages at the foot. Hidden until opened (GSAP shows it). */
+/* The site menu on phones (MenuSheet.tsx): an island over the dimmed page, three segments (services, cases, this
+   page), «Ціни», the CTA and the languages at the foot. Hidden until opened (GSAP shows it). */
 .menu-sheet {
   position: fixed;
   inset: 0;
@@ -8,44 +8,31 @@
   color: var(--ink);
   overscroll-behavior: contain;
 }
-.menu-sheet__cols { position: absolute; inset: 0; display: flex; }
-.menu-sheet__cols i {
-  flex: 1 0 0;
-  margin-right: -1px;
-  background: #0a0a0a;
-  box-shadow: inset -1px 0 0 rgb(246 246 243 / 0.05);
-  will-change: transform; /* no start transform here: GSAP would read it as px under its yPercent */
-}
-.menu-sheet__cols i:last-child { margin-right: 0; box-shadow: none; }
-.menu-sheet__glow {
+.menu-sheet__shade { position: absolute; inset: 0; background: rgb(0 0 0 / 0.55); }
+
+.menu-sheet__box {
   position: absolute;
-  right: -30vw;
-  bottom: -20vh;
-  width: 110vw;
-  height: 70vh;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgb(218 255 2 / 0.12), transparent);
-  pointer-events: none;
+  top: calc(0.5rem + env(safe-area-inset-top));
+  left: 0.5rem;
+  right: 0.5rem;
+  max-height: calc(100svh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: #0d0d0d;
+  box-shadow: inset 0 0 0 1px var(--line), 0 2rem 4rem rgb(0 0 0 / 0.6);
+  transform-origin: 50% 0;
 }
 
-.menu-sheet__frame {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  padding: 0 var(--gutter) calc(1.5rem + env(safe-area-inset-bottom));
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-.menu-sheet__top { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); }
+.menu-sheet__top { display: flex; align-items: center; justify-content: space-between; height: 3.5rem; padding: 0 0.375rem 0 1rem; }
 .menu-sheet__logo { color: var(--ink); text-decoration: none; }
 
-/* the cross: where the burger was, its two lines turned */
+/* the cross */
 .menu-sheet__close {
   position: relative;
-  width: 3rem;
-  height: 3rem;
-  margin-right: -0.625rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -56,8 +43,8 @@
 }
 .menu-sheet__close i {
   position: absolute;
-  left: 0.8125rem;
-  right: 0.8125rem;
+  left: 0.75rem;
+  right: 0.75rem;
   top: calc(50% - 0.75px);
   height: 1.5px;
   background: currentColor;
@@ -69,75 +56,140 @@
 .menu-sheet__close:is(:hover, :focus-visible, :active) i:first-child { transform: rotate(135deg); }
 .menu-sheet__close:is(:hover, :focus-visible, :active) i:last-child { transform: rotate(45deg); }
 
-/* the rows */
-.menu-sheet__nav { position: relative; align-self: center; padding-block: 1.5rem; }
-.menu-sheet__rule {
-  display: block;
-  height: 1px;
-  background: var(--line);
-  transform-origin: 0 50%;
-}
-.menu-sheet__list { margin: 0; padding: 0; list-style: none; counter-reset: none; }
-.menu-sheet__list li { border-bottom: 1px solid var(--line); }
-.menu-sheet__link {
+/* the segments: a soft pill glides under the chosen one */
+.menu-sheet__seg {
+  position: relative;
   display: grid;
-  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+  grid-template-columns: repeat(3, 1fr);
+  height: 2.75rem;
+  margin: 0 0.75rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.menu-sheet__glide {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: calc((100% - 0.5rem) / 3);
+  height: 2.25rem;
+  border-radius: 999px;
+  background: rgb(246 246 243 / 0.1);
+  transition: transform 0.42s var(--ease-out);
+}
+.menu-sheet__seg button {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-fast);
+}
+.menu-sheet__seg button[aria-selected="true"] { color: var(--ink); }
+.menu-sheet__seg button:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; }
+
+/* the rows */
+.menu-sheet__panes { overflow-y: auto; overscroll-behavior: contain; padding: 0.5rem 0.5rem 0; }
+.menu-sheet__pane[hidden] { display: none; }
+.menu-sheet__pane li { position: relative; }
+.menu-sheet__pane li + li::before { content: ""; position: absolute; left: 0.75rem; right: 0.75rem; top: 0; height: 1px; background: var(--border); }
+.menu-sheet__row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
   align-items: center;
-  min-height: clamp(3.5rem, 8.2vh, 4.75rem);
+  column-gap: 0.5rem;
+  min-height: 4.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem;
   color: var(--ink);
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s;
 }
+.menu-sheet__row--page { min-height: 3.25rem; }
+.menu-sheet__row--ex { background: var(--hatch); }
+.menu-sheet__row:is(:hover, :active) { background-color: rgb(246 246 243 / 0.06); }
+.menu-sheet__row:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; }
 .menu-sheet__index {
   position: relative;
-  align-self: start;
-  padding-top: 1.35em;
   font: 400 var(--fs-label) / 1 var(--font-mono);
   letter-spacing: var(--track-num);
   color: var(--ink-mute);
   transition: color 0.3s;
 }
-.menu-sheet__name { display: block; overflow: hidden; padding-bottom: 0.06em; }
-.menu-sheet__name > span {
-  display: inline-block;
-  font-size: clamp(1.875rem, 8.6vw, 2.75rem);
-  font-weight: 400;
-  font-variation-settings: "SHRP" 64;
-  line-height: 1.1;
-  letter-spacing: -0.04em;
-  transition: transform 0.5s var(--ease-out), color 0.3s;
+.menu-sheet__text { min-width: 0; }
+.menu-sheet__name { display: block; font-size: 1.125rem; line-height: 1.2; letter-spacing: -0.01em; }
+.menu-sheet__line {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.menu-sheet__price {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font: 400 var(--fs-caption) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.menu-sheet__price::before { content: ""; width: 0.3125rem; height: 0.3125rem; border-radius: 50%; background: var(--lime); }
+.menu-sheet__chip {
+  padding: 0.375rem 0.625rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font: 400 0.6875rem / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
 }
 .menu-sheet__arrow {
-  width: 1.375rem;
-  height: 1.375rem;
+  justify-self: end;
+  width: 1rem;
+  height: 1rem;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.4;
   stroke-linecap: round;
   stroke-linejoin: round;
   color: var(--ink-mute);
-  transition: transform 0.5s var(--ease-out), color 0.3s;
 }
-/* where you are */
-.menu-sheet__link[aria-current] .menu-sheet__index { color: var(--lime); }
-.menu-sheet__link[aria-current] .menu-sheet__index::before {
+/* where you are: the page (a service) or the block (this page) */
+.menu-sheet__row[aria-current] .menu-sheet__index { color: var(--lime); }
+.menu-sheet__row[aria-current] .menu-sheet__index::before {
   content: "";
   position: absolute;
-  left: -0.75rem;
-  top: calc(1.35em + 0.5em - 0.1875rem);
+  left: -0.625rem;
+  top: calc(50% - 0.1875rem);
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 50%;
   background: var(--lime);
   box-shadow: 0 0 0.625rem rgb(218 255 2 / 0.7);
 }
-/* a press: the name leans in, the arrow turns lime and points on */
-.menu-sheet__link:is(:hover, :focus-visible, :active) .menu-sheet__name > span { transform: translateX(0.5rem); color: var(--lime); }
-.menu-sheet__link:is(:hover, :focus-visible, :active) .menu-sheet__arrow { transform: rotate(45deg); color: var(--lime); }
-.menu-sheet__link:focus-visible { outline: none; }
 
-/* the foot */
-.menu-sheet__foot { display: grid; gap: 1.25rem; }
+/* the foot: «Ціни» (and «Про нас»), the CTA, the languages */
+.menu-sheet__foot { display: grid; gap: 0.5rem; padding: 0.5rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom)); }
+.menu-sheet__site { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-top: 1px solid var(--border); }
+.menu-sheet__site a {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  padding: 0 0.75rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.menu-sheet__site a + a { border-left: 1px solid var(--border); }
+.menu-sheet__site a:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; border-radius: 0.5rem; }
 .menu-sheet__cta { width: 100%; justify-content: space-between; }
 .menu-sheet .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.55); }
 .menu-sheet__meta {
@@ -145,6 +197,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  padding: 0 0.25rem;
   font: 400 var(--fs-label) / 1.4 var(--font-mono);
   letter-spacing: var(--track-caps);
   text-transform: uppercase;
@@ -155,6 +208,9 @@
 .menu-sheet__meta > span { text-align: right; }
 
 @media (max-height: 640px) {
-  .menu-sheet__link { min-height: 3.125rem; }
-  .menu-sheet__name > span { font-size: clamp(1.5rem, 7vw, 2.125rem); }
+  .menu-sheet__row { min-height: 3.75rem; }
+  .menu-sheet__line { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-sheet__glide { transition: none; }
 }
