@@ -124,7 +124,7 @@ export function initWordmark({ reducedMotion, textOnly = false }) {
   const text = root?.textContent.trim();
   if (!text) return;
   fitText(root, text);
-  if (textOnly || !window.WebGLRenderingContext) return;
+  if (textOnly || !window.WebGLRenderingContext) return asText(root);
   // set up ahead, while the visitor is still far up the page and not scrolling: a moment after the
   // hero's intro has played (after the «Чому ECLO» clip, so the two don't share a frame), in a
   // pause in the scrolling; reaching the footer sooner than that starts it there. The shader
@@ -135,6 +135,7 @@ export function initWordmark({ reducedMotion, textOnly = false }) {
     io.disconnect();
     started = start(root, text, reducedMotion).catch((error) => {
       root.classList.remove('is-live');
+      asText(root);
       console.warn('[wordmark] static fallback.', error);
     });
     return started;
@@ -156,6 +157,14 @@ export function initWordmark({ reducedMotion, textOnly = false }) {
   else window.addEventListener('eclo:intro-done', afterIntro, { once: true });
   // main.js may have it built sooner: before the intro, while nothing on the first screen moves
   return { prepare: go };
+}
+
+/* No WebGL (lite graphics, none in the browser, a shader that failed, a lost context): the live text stays, filled
+   with the same chrome (a frame of this shader, footer.css .is-text); its metal drifts only while it is on screen */
+function asText(root) {
+  if (root.classList.contains('is-text')) return;
+  root.classList.add('is-text');
+  new IntersectionObserver((entries) => root.classList.toggle('is-in', entries[entries.length - 1].isIntersecting)).observe(root);
 }
 
 /* The live text's size off its own width (--mark-fit in footer.css: font size per width of the mark), once the
@@ -230,7 +239,7 @@ async function start(root, text, reducedMotion) {
   await Promise.race([document.fonts?.load(font(100)), new Promise((resolve) => setTimeout(resolve, 3000))]).catch(() => {});
 
   const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
-  if (!gl) return;
+  if (!gl) return asText(root);
   const program = gl.createProgram();
   const vs = compile(gl, gl.VERTEX_SHADER, VERT);
   const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
@@ -433,5 +442,6 @@ async function start(root, text, reducedMotion) {
     visible = false;
     root.classList.remove('is-live');
     root.style.height = '';
+    asText(root);
   });
 }

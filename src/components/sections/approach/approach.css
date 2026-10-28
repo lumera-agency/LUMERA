@@ -151,8 +151,10 @@
     height: max(18.75rem, calc(var(--deck-h, 15rem) + 5rem));
     transform: translateY(-50%);
   }
-  /* lite graphics or no WebGL: a still of the stone, as tall as the 3D one stands in its canvas */
-  .process__still { position: absolute; left: 50%; top: 50%; width: auto; max-width: 95%; height: 80%; object-fit: contain; transform: translate(-50%, -50%); }
+  /* lite graphics or no WebGL: a frame of the stone's own scene (img/still/stage-stone.webp), as tall as the 3D one
+     stands in its canvas; with motion it breathes as the 3D one does at rest (transform only) */
+  .process__still { position: absolute; left: 50%; top: 50%; width: auto; max-width: 95%; height: 80%; object-fit: contain; translate: -50% -50%; }
+  html.motion .process__still { animation: stage-still-sway 6s ease-in-out infinite alternate; }
   .process__body.is-deck .stages { height: var(--deck-h, 15rem); border-top: 0; clip-path: inset(-5rem -1.5rem 0 -1.5rem); }
   .process__body.is-deck .stage {
     position: absolute;
@@ -251,3 +253,7 @@
 .stage__pic :is(.g-tick, .g-k3, .g-lock, .g-key, .g-ping) { transform-box: fill-box; transform-origin: 50% 50%; }
 .stage__pic .g-cur { transform-box: fill-box; transform-origin: 0 0; }
 .after__head .hl { font-style: normal; color: var(--ember-ink); }
+@keyframes stage-still-sway {
+  from { transform: translate3d(0, -1.5%, 0) rotate(-2deg); }
+  to { transform: translate3d(0, 1.5%, 0) rotate(1.5deg); }
+}

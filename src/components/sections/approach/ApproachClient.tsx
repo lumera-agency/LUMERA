@@ -81,8 +81,8 @@ export function StageStoneSlot() {
   if (!on || !near) return <span className="process__stone" aria-hidden="true" ref={slot} />;
   const still = (
     <span className="process__stone" aria-hidden="true">
-      {/* eslint-disable-next-line @next/next/no-img-element -- a still of the 3D stone */}
-      <img className="process__still" src="/img/stone-cutout.webp" alt="" width={734} height={883} loading="lazy" decoding="async" />
+      {/* eslint-disable-next-line @next/next/no-img-element -- a frame of the 3D stone's own scene */}
+      <img className="process__still" src="/img/still/stage-stone.webp" alt="" width={366} height={423} loading="lazy" decoding="async" />
     </span>
   );
   return liteGraphics() ? still : <WebGLGate fallback={still}><StageStone /></WebGLGate>;

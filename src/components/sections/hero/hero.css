@@ -34,22 +34,37 @@
 /* a layer of its own only while the scene runs and moves it each frame (HeroShell .is-live) */
 .hero.is-live .hero__glow { will-change: transform; }
 
-/* lite graphics (reduced motion, Save-Data, a weak device) or no WebGL: a still of the stone where the 3D
-   one stands (HeroShell sets --still-*); with motion it comes out of the dark as the stone would */
-.hero__still {
+/* lite graphics (reduced motion, Save-Data, a weak device) or no WebGL: a frame of the scene itself (the stone, its
+   orbit with the services, the dust; img/still/hero-*.webp) where the 3D stone stands. HeroShell sets --still-x/y
+   (the stone's centre) and --still-s (its height); the frame's box and the stone's place in it are in those units.
+   With motion it comes out of the dark as the stone does, then sways slowly and leans toward the pointer a little:
+   transform and opacity only, paused off-screen; reduced motion keeps it still. */
+.hero__still { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.hero__still img {
   position: absolute;
-  left: var(--still-x, 65.5%);
-  top: var(--still-y, 54%);
-  z-index: 2;
+  left: calc(var(--still-x, 65.5vw) - var(--still-s, 66vh) * 0.7868);
+  top: calc(var(--still-y, 54vh) - var(--still-s, 66vh) * 0.7244);
   width: auto;
-  height: var(--still-s, 74%);
-  aspect-ratio: 734 / 883;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+  max-width: none;
+  height: calc(var(--still-s, 66vh) * 1.3389);
+  aspect-ratio: 1970 / 1506;
+  transform-origin: 44.9% 54.1%; /* the stone's centre */
+  translate: calc(var(--px, 0) * 1.2vw) calc(var(--py, 0) * 0.8vw);
+  transition: translate 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
-html.motion .hero__still { opacity: 0; transition: opacity 2.8s cubic-bezier(0.45, 0, 0.55, 1) 0.5s; }
-html.motion.is-ready .hero__still { opacity: 1; }
+html.motion .hero__still img {
+  opacity: 0;
+  scale: 0.92;
+  transition: opacity 2.8s cubic-bezier(0.45, 0, 0.55, 1) 0.5s, scale 3s cubic-bezier(0.16, 1, 0.3, 1) 0.45s, translate 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: hero-still-sway 8s ease-in-out infinite alternate;
+}
+html.motion.is-ready .hero__still img { opacity: 1; scale: 1; }
+.hero.is-away .hero__still img { animation-play-state: paused; }
+@keyframes hero-still-sway {
+  from { transform: translate3d(0, -0.7%, 0) rotate(-1.6deg); }
+  to { transform: translate3d(0, 0.7%, 0) rotate(1.6deg); }
+}
 
 .hero__shards,
 .hero__canvas,

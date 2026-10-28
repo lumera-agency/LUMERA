@@ -70,7 +70,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <body>
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>
-        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" size={110} grow={1.15} lensGrow={1.35} />
+        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom, .footer__mark" quiet="[data-wordmark].is-live" size={110} grow={1.15} lensGrow={1.35} />
         <NextIntlClientProvider messages={clientMessages}>{children}</NextIntlClientProvider>
       </body>
     </html>

@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
+import { useLocale } from "next-intl";
 import { boot, sceneRun, useSceneRunning } from "@/lib/boot";
 import { liteGraphics } from "@/lib/device";
 import { useReducedMotion } from "@/lib/hooks";
@@ -54,6 +55,7 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
   const hero = useRef<HTMLDivElement>(null);
   const glow = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  const lang = useLocale() === "ru" ? "ru" : "uk";
   const lite = useSyncExternalStore(subscribeMotion, liteGraphics, () => null);
   const [failed, setFailed] = useState(false);
   const [near, setNear] = useState(false);
@@ -130,7 +132,9 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     };
   }, []);
 
-  // the still stands where the 3D stone would (three/hero/state stonePlacement), the glow behind it
+  // the still (a frame of the scene itself: the stone, its orbit, the dust) stands where the 3D stone would
+  // (three/hero/state stonePlacement), the glow behind it; with a mouse it leans toward the pointer a little, as the
+  // stone does (hero.css moves it: transform and opacity only)
   useEffect(() => {
     const el = hero.current;
     if (!el || !still) return;
@@ -144,7 +148,27 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     place();
     const ro = new ResizeObserver(place);
     ro.observe(el);
-    return () => ro.disconnect();
+    const img = el.querySelector<HTMLElement>(".hero__still img");
+    const lean = matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let frame = 0;
+    let px = 0;
+    let py = 0;
+    const move = (e: PointerEvent) => {
+      px = (e.clientX / window.innerWidth) * 2 - 1;
+      py = (e.clientY / window.innerHeight) * 2 - 1;
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        img?.style.setProperty("--px", px.toFixed(3));
+        img?.style.setProperty("--py", py.toFixed(3));
+      });
+    };
+    if (lean && img) window.addEventListener("pointermove", move, { passive: true });
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", move);
+    };
   }, [still]);
 
   // the lift. Touch screens scroll natively, a step ahead of a script: there the browser runs it
@@ -184,8 +208,19 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
         <div className="hero__glow" data-glow ref={glow} />
       </div>
       {still && (
-        // eslint-disable-next-line @next/next/no-img-element -- a still of the 3D stone, placed by the script (stonePlacement)
-        <img className="hero__still" src="/img/stone-cutout.webp" alt="" width={734} height={883} decoding="async" fetchPriority="high" />
+        <div className="hero__still" aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element -- a frame of the 3D scene in this language (its orbit names the services), placed by the script */}
+          <img
+            src={`/img/still/hero-${lang}-1960.webp`}
+            srcSet={`/img/still/hero-${lang}-980.webp 980w, /img/still/hero-${lang}-1960.webp 1960w`}
+            sizes="(max-width: 860px) 160vw, 80vw"
+            alt=""
+            width={1970}
+            height={1506}
+            decoding="async"
+            fetchPriority="high"
+          />
+        </div>
       )}
       {lite === false && near && (
         <WebGLGate onSkip={onSkip}>

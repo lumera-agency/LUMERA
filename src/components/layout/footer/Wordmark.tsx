@@ -21,7 +21,9 @@ export function Wordmark() {
     };
   }, []);
   return (
-    <div className="container footer__mark" data-wordmark="" aria-hidden="true">
+    // data-cursor-size: without WebGL the site's invert cursor is the lens over the word (layout.tsx); data-art: the word's
+    // chrome is pre-rendered for this name (img/still/wordmark-eclo*.webp, footer.css), another name keeps the gradient
+    <div className="container footer__mark" data-wordmark="" data-cursor-size="220" data-art={brandName === "ECLO" ? "" : undefined} aria-hidden="true">
       <span className="footer__mark-text">{brandName}</span>
       <canvas className="footer__mark-canvas" />
       <span className="footer__drop" data-slot="drop" />
