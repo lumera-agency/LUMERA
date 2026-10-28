@@ -116,6 +116,24 @@ function initReveals() {
     if (batch.length && !queued) queued = requestAnimationFrame(flush);
   }, { rootMargin: '0px 0px -8% 0px' });
   waiting.forEach((el) => io.observe(el));
+  // a safety net: whatever is still waiting once the page stops moving and stands on the screen comes in now (a jump
+  // to a kept place, a tab the browser held in the background: the observer's call can come late, and a block stood
+  // empty, the owner's phone, 28 Oct)
+  let still = 0;
+  const sweep = () => {
+    const vh = window.innerHeight;
+    for (const el of $$('.ai-rv')) {
+      const r = el.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < vh && el.getClientRects().length && !batch.includes(el)) {
+        io.unobserve(el);
+        batch.push(el);
+      }
+    }
+    if (batch.length && !queued) queued = requestAnimationFrame(flush);
+  };
+  window.addEventListener('scroll', () => { clearTimeout(still); still = setTimeout(sweep, 260); }, { passive: true });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(sweep, 120); });
+  setTimeout(sweep, 1200);
   document.addEventListener('focusin', (e) => {
     const el = e.target.closest?.('.ai-rv');
     if (!el) return;
@@ -179,7 +197,23 @@ function initBlurText() {
 }
 
 /* ---------- where the visitor lands: back where they were after a language switch or a reload, else at the #block ---------- */
+/** the place a language switch keeps (layout/lang-switch, sessionStorage) is this page's only when the visitor comes
+ *  from this very page in the other language; one left by another page (the main page, opened in the other language
+ *  and left before its intro had used it) would open this page in the middle (the owner, 28 Oct: from the main page's
+ *  block 2 the page opened at its block 2) */
+function fromThisPage() {
+  try {
+    const bare = (path) => path.replace(/^\/ru(?=\/|$)/, '') || '/';
+    const from = new URL(document.referrer);
+    return from.origin === location.origin && bare(from.pathname) === bare(location.pathname);
+  } catch {
+    return false;
+  }
+}
 function arrive() {
+  if (!fromThisPage()) {
+    try { sessionStorage.removeItem('eclo:lang-scroll'); } catch { /* private mode */ }
+  }
   if (restoreScroll() || restorePlace()) return;
   const id = decodeURIComponent(location.hash.slice(1));
   const target = id && document.getElementById(id);
