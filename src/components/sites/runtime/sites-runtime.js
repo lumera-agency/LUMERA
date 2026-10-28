@@ -162,7 +162,14 @@ function arrive() {
   if (restoreScroll() || restorePlace()) return;
   const id = decodeURIComponent(location.hash.slice(1));
   const target = id && document.getElementById(id);
-  if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' });
+  if (!target) return;
+  // a link to one format (the site menu: …#fmt-tab-landingPlus): that format is chosen, the page opens at block 2
+  if (target.matches('.st-rail__t')) {
+    setFormat(target.dataset.tab);
+    $('#formats')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    return;
+  }
+  target.scrollIntoView({ block: 'start', behavior: 'instant' });
 }
 
 /* ---------- the cards' touches (js/sites-fx-page.js): the light under the mouse on the rail and the extras, the first

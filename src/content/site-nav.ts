@@ -102,11 +102,15 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const SITES = "/dyzain-i-saity";
   const AI = "/ai-avtomatyzatsiia";
   const ADS = "/reklama-i-analityka";
-  const formats = (["landing", "plus", "corp", "shop"] as const).map((k) => ({
-    text: t(`sites.f.${k}.t`),
-    href: at(SITES, "#formats"),
-    price: money(PRICING.formats[({ landing: "landing", plus: "landingPlus", corp: "corporate", shop: "ecommerce" } as const)[k]].price),
-  }));
+  // each format opens as itself: its tab on «Дизайн і сайти» (the page's runtime picks it from the address)
+  const formats = (
+    [
+      ["landing", "landing"],
+      ["plus", "landingPlus"],
+      ["corp", "corporate"],
+      ["shop", "ecommerce"],
+    ] as const
+  ).map(([k, f]) => ({ text: t(`sites.f.${k}.t`), href: at(SITES, `#fmt-tab-${f}`), price: money(PRICING.formats[f].price) }));
   const subs: SiteNavSub[][] = [
     [
       ...formats,

@@ -6,7 +6,7 @@
  * Hidden until opened (disclosure.ts animates them).
  */
 import { usePathname } from "@/i18n/navigation";
-import { focusBlock } from "@/lib/scroll";
+import { focusBlock, goToBlock } from "@/lib/scroll";
 import { useSiteNav } from "./SiteNavProvider";
 import type { NavPanelId } from "./disclosure";
 import "./nav-panel.css";
@@ -36,6 +36,21 @@ function goToService(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
   if (panel) focusBlock(panel);
 }
 
+/** A section of this very page (a format on «Дизайн і сайти»): no reload, a tab is chosen, the page glides there. */
+function goToSection(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+  const url = new URL(href, location.href);
+  if (url.pathname !== location.pathname || !url.hash) return;
+  let target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+  if (!target) return;
+  e.preventDefault();
+  if (target.matches('[role="tab"]')) {
+    target.click();
+    target = target.closest("section") ?? target;
+  }
+  goToBlock(target);
+  focusBlock(target);
+}
+
 export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
   const nav = useSiteNav();
   const path = usePathname();
@@ -54,39 +69,47 @@ export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
       ? nav.services.map((s) => {
           const saas = s.path === null;
           const ids = `${id}-${s.n}`;
+          const page = saas && onMain ? "#svc-4" : s.href;
+          const toPage = saas && onMain ? (e: React.MouseEvent<HTMLAnchorElement>) => goToService(e, "svc-4") : undefined;
           return (
             <li key={s.n}>
-              <a
-                className="navp__card"
-                href={saas && onMain ? "#svc-4" : s.href}
-                aria-current={s.path === path ? "page" : undefined}
-                aria-labelledby={`${ids}-name`}
-                aria-describedby={[`${ids}-desc`, s.price && `${ids}-price`].filter(Boolean).join(" ")}
-                onClick={saas && onMain ? (e) => goToService(e, "svc-4") : undefined}
-              >
-                <span className="navp__in">
-                  <span className="navp__meta">
-                    <span data-line="">{s.n}</span>
-                  </span>
-                  <span className="navp__pic" data-pic="">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- the What block's 4:5 picture, cropped */}
-                    <img src={s.img} alt="" width={680} height={850} loading="lazy" decoding="async" />
-                  </span>
-                  <span className="navp__name" id={`${ids}-name`}>
-                    <span data-line="">{s.name}</span>
-                  </span>
-                  <span className="navp__desc" id={`${ids}-desc`}>
-                    <span data-line="">{s.desc}</span>
-                  </span>
-                  <span className="navp__foot">
+              <div className="navp__card" data-current={s.path === path ? "" : undefined}>
+                <div className="navp__in">
+                  <a className="navp__main" href={page} aria-current={s.path === path ? "page" : undefined} aria-labelledby={`${ids}-name`} onClick={toPage}>
+                    <span className="navp__meta">
+                      <span data-line="">{s.n}</span>
+                    </span>
+                    <span className="navp__pic" data-pic="">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- the What block's 4:5 picture, cropped */}
+                      <img src={s.img} alt="" width={680} height={850} loading="lazy" decoding="async" />
+                    </span>
+                    <span className="navp__name" id={`${ids}-name`}>
+                      <span data-line="">{s.name}</span>
+                    </span>
+                    {s.subs.length === 0 && (
+                      <span className="navp__desc">
+                        <span data-line="">{s.desc}</span>
+                      </span>
+                    )}
+                  </a>
+                  {/* the page's sections, as the phone menu has them: the formats with their prices, the cases */}
+                  {s.subs.length > 0 && (
+                    <ul className="navp__subs" aria-label={s.name}>
+                      {s.subs.map((sub) => (
+                        <li key={sub.text}>
+                          <a className="navp__sub" href={sub.href} onClick={(e) => goToSection(e, sub.href)}>
+                            <span data-line="">
+                              <span>{sub.text}</span>
+                              {sub.price ? <b>{sub.price}</b> : sub.tag ? <i className={sub.example ? "navp__tag navp__tag--ex" : "navp__tag"}>{sub.tag}</i> : null}
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <a className="navp__foot" href={page} onClick={toPage} tabIndex={-1} aria-hidden="true">
                     <span data-line="">
-                      {s.price ? (
-                        <span className="navp__price" id={`${ids}-price`}>
-                          {s.price}
-                        </span>
-                      ) : (
-                        <span />
-                      )}
+                      {s.price ? <span className="navp__price">{s.price}</span> : <span />}
                       <span className="navp__go">
                         {L.more}
                         <span className="navp__disc">
@@ -94,9 +117,9 @@ export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
                         </span>
                       </span>
                     </span>
-                  </span>
-                </span>
-              </a>
+                  </a>
+                </div>
+              </div>
             </li>
           );
         })

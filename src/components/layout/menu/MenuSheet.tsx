@@ -163,7 +163,12 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     if (!here || !hash) return void menu.set(false);
     e.preventDefault();
     menu.set(false);
-    const target = document.querySelector<HTMLElement>(hash);
+    let target = document.querySelector<HTMLElement>(hash);
+    // a tab (a format on «Дизайн і сайти»): it is chosen, and the page goes to its block
+    if (target?.matches('[role="tab"]')) {
+      target.click();
+      target = target.closest<HTMLElement>("section") ?? target;
+    }
     requestAnimationFrame(() => {
       if (!target) return;
       const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;

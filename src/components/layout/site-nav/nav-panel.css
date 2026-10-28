@@ -41,6 +41,29 @@
   transition: opacity var(--dur-fast);
 }
 .navp__in { position: relative; display: flex; flex-direction: column; height: 100%; transition: opacity 0.3s; }
+.navp__main,
+.navp__foot { display: block; color: inherit; text-decoration: none; }
+.navp__main:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.25rem; border-radius: var(--radius-md); }
+
+/* the page's sections under the name: the formats with their prices, the cases with a chip */
+.navp__subs { margin-top: 0.75rem; }
+.navp__sub { display: block; overflow: hidden; color: var(--ink-soft); text-decoration: none; transition: color var(--dur-fast); }
+.navp__sub > span { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 1.875rem; font-size: var(--fs-small); line-height: 1.25; }
+.navp__sub b { font: 400 var(--fs-label) / 1 var(--font-mono); color: var(--ink-mute); white-space: nowrap; transition: color var(--dur-fast); }
+.navp__sub:is(:hover, :focus-visible) { color: var(--lime); }
+.navp__sub:is(:hover, :focus-visible) b { color: var(--lime); }
+.navp__sub:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.125rem; border-radius: 0.25rem; }
+.navp__tag {
+  flex: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-ivory);
+  color: var(--on-ink);
+  font: 400 0.625rem / 1 var(--font-mono);
+  font-style: normal;
+  letter-spacing: 0.08em;
+}
+.navp__tag--ex { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-soft); }
 .navp__card:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.5rem; border-radius: var(--radius-md); }
 
 /* each line rises out of its own mask */
@@ -145,8 +168,8 @@
 .navp__card:focus-visible::before { opacity: 1; }
 .navp__card:focus-visible .navp__disc { background: var(--lime); color: var(--on-ink); box-shadow: none; }
 /* the page you are on: a lime index and dot */
-.navp__card[aria-current="page"] .navp__meta > span { color: var(--lime); }
-.navp__card[aria-current="page"] .navp__meta > span::after {
+.navp__card[data-current] .navp__meta > span { color: var(--lime); }
+.navp__card[data-current] .navp__meta > span::after {
   content: "";
   width: 0.375rem;
   height: 0.375rem;
@@ -236,7 +259,7 @@
 /* low screens (a laptop's browser): the pictures stay, only lower, so the panel still fits under the header */
 @media (max-height: 820px) {
   .navp__pic,
-  .navp__fig { aspect-ratio: auto; height: clamp(4.5rem, calc(100vh - 27rem), 9.75rem); }
+  .navp__fig { aspect-ratio: auto; height: clamp(4.5rem, calc(100vh - 35rem), 9.75rem); }
   .navp__fig { padding: 0.875rem 1rem; }
   .navp__fig::before { top: 0.875rem; left: 1rem; }
 }
