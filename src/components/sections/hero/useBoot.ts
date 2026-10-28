@@ -19,6 +19,9 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
     const hero = heroRef.current;
     if (!hero || started) return;
     started = true;
+    // the media query itself: this runs once, and on the hydrating render the hook's value is still the server's
+    // (false), which sent reduced motion down the intro's path and left the first screen at its start states
+    const reduced = reducedMotion || matchMedia("(prefers-reduced-motion: reduce)").matches;
     const root = document.documentElement;
     const clock = loader();
     const introDone = () => {
@@ -44,7 +47,7 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
       // once the preloader lets the page go (not before: the page is held, Lenis stopped): back where
       // the visitor was (a language switch, a reload), or at the block a link from outside named
       const arrive = () => void pageLetGo().then(() => restoreScroll() || restorePlace() || jumpToHash());
-      if (reducedMotion) {
+      if (reduced) {
         settleHero();
         sceneRun.set(true);
         await clock?.finish();
