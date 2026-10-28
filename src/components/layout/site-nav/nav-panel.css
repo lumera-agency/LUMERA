@@ -233,11 +233,12 @@
 .navp__strip a:hover svg { transform: rotate(45deg); }
 .navp__strip :focus-visible { outline: 2px solid var(--lime); outline-offset: 0.25rem; border-radius: 0.25rem; }
 
-/* short screens: text cards, the figure compact */
+/* low screens (a laptop's browser): the pictures stay, only lower, so the panel still fits under the header */
 @media (max-height: 820px) {
-  .navp__pic { display: none; }
-  .navp__fig { aspect-ratio: auto; padding: 0.875rem 1rem; }
-  .navp__fig::before { display: none; }
+  .navp__pic,
+  .navp__fig { aspect-ratio: auto; height: clamp(4.5rem, calc(100vh - 27rem), 9.75rem); }
+  .navp__fig { padding: 0.875rem 1rem; }
+  .navp__fig::before { top: 0.875rem; left: 1rem; }
 }
 
 /* the dim over the page while a panel is open: inside the bar, under the panel */
