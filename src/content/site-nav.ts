@@ -55,7 +55,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const from = (n: number) => `${t("start.from")} ${money(n)}`;
   const home = href("/");
   const service = (n: number, path: string | null, price: number | null): SiteNavService => ({
-    n: `0${n}`,
+    n: String(n),
     name: t(`what.${n}.name`),
     short: t(`nav.svc.${n}`),
     desc: t(`what.${n}.desc`),
@@ -66,7 +66,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   });
   const ads = href("/reklama-i-analityka");
   const adsCase = (n: number, id: "ac" | "pest" | "volter"): SiteNavCase => ({
-    n: `0${n}`,
+    n: String(n),
     chip: t(`ads.case.${id}.chip`),
     name: t(`ads.case.${id}.name`),
     who: t(`ads.case.${id}.who`),
@@ -94,7 +94,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       adsCase(2, "pest"),
       adsCase(3, "volter"),
       {
-        n: "04",
+        n: "4",
         chip: t("ads.case.ac.chip"),
         name: caseName,
         who: firstSentence(t("case.hero.lead")),

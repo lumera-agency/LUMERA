@@ -111,6 +111,7 @@ export function Topbar({ links, cta, always = false, home }: { links?: readonly 
         <button className="topbar__menu" type="button" aria-expanded={open} aria-controls="site-menu" aria-label={t("topbar.menu")} onClick={(e) => menu.toggle(e.currentTarget)}>
           <i />
           <i />
+          <span className="topbar__menu-label" aria-hidden="true">{t("topbar.menu")}</span>
         </button>
       </div>
       <div className="navp-scrim" aria-hidden="true" data-navp-scrim="" />

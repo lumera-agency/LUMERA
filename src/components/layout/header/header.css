@@ -73,26 +73,29 @@
   display: none;
   justify-self: end;
   position: relative;
-  width: 3rem;
+  align-items: center;
+  min-width: 3rem;
   height: 3rem;
   margin-right: -0.625rem;
+  padding: 0 2.75rem 0 0.375rem; /* the word, then the two lines in the last 3rem */
   border: 0;
   background: transparent;
   color: var(--ink);
   cursor: pointer;
 }
+.menu-toggle__label { font-size: var(--fs-small); letter-spacing: 0.02em; }
 .menu-toggle__line {
   position: absolute;
-  left: 0.8125rem;
   right: 0.8125rem;
+  width: 1.375rem;
   height: 1.5px;
   background: currentColor;
   transition: transform var(--dur) var(--ease-out);
 }
-.menu-toggle__line:first-child { top: 1.25rem; }
-.menu-toggle__line:last-child { top: 1.6875rem; }
-.menu-toggle[aria-expanded="true"] .menu-toggle__line:first-child { transform: translateY(0.2188rem) rotate(45deg); }
-.menu-toggle[aria-expanded="true"] .menu-toggle__line:last-child { transform: translateY(-0.2188rem) rotate(-45deg); }
+.menu-toggle__line:nth-child(1) { top: 1.25rem; }
+.menu-toggle__line:nth-child(2) { top: 1.6875rem; }
+.menu-toggle[aria-expanded="true"] .menu-toggle__line:nth-child(1) { transform: translateY(0.2188rem) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] .menu-toggle__line:nth-child(2) { transform: translateY(-0.2188rem) rotate(-45deg); }
 
 
 @media (max-width: 1100px) {
@@ -104,7 +107,7 @@
   .header__inner { grid-template-columns: 1fr auto auto; column-gap: 0.75rem; }
   .nav, .header__cta { display: none; }
   .header .lang--bar { display: flex; }
-  .menu-toggle { display: block; }
+  .menu-toggle { display: inline-flex; }
 }
 .nav__link { transition: color var(--dur-fast) ease; }
 .nav__link:hover,

@@ -32,20 +32,22 @@
 .topbar__menu {
   position: relative;
   display: none;
-  width: 2.75rem;
+  align-items: center;
+  min-width: 2.75rem;
   height: 2.75rem;
   margin-right: -0.625rem;
-  padding: 0;
+  padding: 0 2.5rem 0 0.25rem; /* the word, then the two lines in the last 2.75rem */
   border: 0;
   background: transparent;
   color: var(--ink);
   cursor: pointer;
 }
-.topbar__menu i { position: absolute; left: 0.75rem; right: 0.75rem; height: 1.5px; background: currentColor; transition: transform 0.35s var(--ease-out); }
-.topbar__menu i:first-child { top: 1.0625rem; }
-.topbar__menu i:last-child { top: 1.5625rem; }
-.topbar__menu[aria-expanded="true"] i:first-child { transform: translateY(0.25rem) rotate(45deg); }
-.topbar__menu[aria-expanded="true"] i:last-child { transform: translateY(-0.25rem) rotate(-45deg); }
+.topbar__menu-label { font-size: var(--fs-small); letter-spacing: 0.02em; }
+.topbar__menu i { position: absolute; right: 0.75rem; width: 1.25rem; height: 1.5px; background: currentColor; transition: transform 0.35s var(--ease-out); }
+.topbar__menu i:first-of-type { top: 1.0625rem; }
+.topbar__menu i:last-of-type { top: 1.5625rem; }
+.topbar__menu[aria-expanded="true"] i:first-of-type { transform: translateY(0.25rem) rotate(45deg); }
+.topbar__menu[aria-expanded="true"] i:last-of-type { transform: translateY(-0.25rem) rotate(-45deg); }
 .topbar__menu:focus-visible { outline: 2px solid var(--ink); outline-offset: -0.25rem; border-radius: 0.5rem; }
 @media (max-width: 420px) {
   .topbar .btn--xs .btn__icon { display: none; }
@@ -68,8 +70,12 @@
   /* phones: logo and languages on the left, the button and the menu on the right */
   .topbar { grid-template-columns: auto 1fr auto; column-gap: 1rem; }
   .topbar__nav { display: none; }
-  .topbar__menu { display: block; }
+  .topbar__menu { display: inline-flex; }
   .topbar .logo { min-width: 2.75rem; min-height: 2.75rem; }
   .topbar .lang--start { display: flex; justify-self: start; }
   .topbar__end .lang { display: none; }
+}
+/* narrow phones: the button and «Меню» take the room; the languages stay in the menu's foot */
+@media (max-width: 420px) {
+  .topbar .lang--start { display: none; }
 }

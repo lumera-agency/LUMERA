@@ -1,8 +1,7 @@
 "use client";
 /*
  * The site menu on phones (both burgers open it): an island over the page, dimmed behind it. Three segments: the
- * services (their pages, «від» prices), the clients' cases and this page's blocks (the one you are in has a lime
- * index); under them «Ціни» (and «Про нас» once its page is out), the CTA and the languages. A row on this page takes
+ * services (their pages, «від» prices), the clients' cases and this page's blocks (the one you are in is lime); under them «Ціни» (and «Про нас» once its page is out), the CTA and the languages. A row on this page takes
  * the page to its block under the island, so the block is there when it closes.
  * A modal dialog in <body> (never inside a transformed header): the page holds still under it, Esc and the cross
  * close it, Tab stays inside, focus goes back to the burger. Reduced motion: fades.
@@ -56,7 +55,7 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
   const lastPane = useRef(0);
   const tabs = [nav.labels.services, nav.labels.cases, nav.labels.pageShort];
 
-  // the block being read: its row gets the lime index
+  // the block being read: its row turns lime
   useEffect(() => {
     const blocks = hrefs.split(" ").filter((h) => h.startsWith("#")).map((h) => document.querySelector(h)).filter((el): el is Element => Boolean(el));
     const io = new IntersectionObserver(
@@ -249,7 +248,6 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
                       aria-current={s.path === path ? "page" : undefined}
                       onClick={saas && onMain ? goSaas : (e) => go(e, s.href)}
                     >
-                      <span className="menu-sheet__index">{s.n}</span>
                       <span className="menu-sheet__text">
                         <span className="menu-sheet__name">{s.short}</span>
                         <span className="menu-sheet__line">{s.desc}</span>
@@ -267,7 +265,6 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
               {nav.cases.map((c) => (
                 <li key={c.n}>
                   <a className="menu-sheet__row" href={c.href} onClick={(e) => go(e, c.href)}>
-                    <span className="menu-sheet__index">{c.n}</span>
                     <span className="menu-sheet__text">
                       <span className="menu-sheet__name">{c.name}</span>
                       <span className="menu-sheet__line">{c.k}</span>
@@ -278,7 +275,6 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
               ))}
               <li>
                 <a className="menu-sheet__row menu-sheet__row--ex" href={nav.example.href} onClick={(e) => go(e, nav.example.href)}>
-                  <span className="menu-sheet__index">05</span>
                   <span className="menu-sheet__text">
                     <span className="menu-sheet__name">{nav.example.name}</span>
                     <span className="menu-sheet__line">{nav.example.who}</span>
@@ -291,7 +287,7 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
 
           <div className="menu-sheet__pane" id="site-menu-pane-2" role="tabpanel" aria-labelledby="site-menu-tab-2" hidden={pane !== 2}>
             <ul>
-              {items.map((l, i) => (
+              {items.map((l) => (
                 <li key={l.href}>
                   <a
                     className="menu-sheet__row menu-sheet__row--page"
@@ -299,7 +295,6 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
                     aria-current={current === l.href ? "location" : undefined}
                     onClick={(e) => go(e, l.href)}
                   >
-                    <span className="menu-sheet__index">{String(i + 1).padStart(2, "0")}</span>
                     <span className="menu-sheet__name">{l.text}</span>
                     <Arrow />
                   </a>

@@ -111,6 +111,7 @@ export function Header() {
         >
           <span className="menu-toggle__line" />
           <span className="menu-toggle__line" />
+          <span className="menu-toggle__label" aria-hidden="true">{t("topbar.menu")}</span>
         </button>
       </div>
       <span className="header__rule" aria-hidden="true" data-rule />
