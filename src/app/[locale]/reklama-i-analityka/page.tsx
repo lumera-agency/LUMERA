@@ -18,7 +18,7 @@ import { AdsContact } from "@/components/sections/ads-page/AdsContact";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/reklama-i-analityka">) {
   const { locale } = await params;
-  return aiMetadata({ locale, namespace: "ads.meta", path: "/reklama-i-analityka", image: "/img/ads/og-ads.jpg" });
+  return aiMetadata({ locale, namespace: "ads.meta", path: "/reklama-i-analityka" });
 }
 
 /**
