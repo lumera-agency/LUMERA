@@ -18,7 +18,7 @@ import { Fit } from "@/components/sections/ai-case/Fit";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/keisy/poshuk-zamovlen">) {
   const { locale } = await params;
-  return aiMetadata({ locale, namespace: "case.meta", path: "/keisy/poshuk-zamovlen", image: "/img/ai/og-case.jpg" });
+  return aiMetadata({ locale, namespace: "case.meta", path: "/keisy/poshuk-zamovlen" });
 }
 
 /**

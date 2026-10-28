@@ -34,7 +34,6 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
       url: path,
       locale: locale === "ru" ? "ru_RU" : "uk_UA",
       alternateLocale: locale === "ru" ? ["uk_UA"] : ["ru_RU"],
-      images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
     },
     twitter: { card: "summary_large_image" },
     icons: {

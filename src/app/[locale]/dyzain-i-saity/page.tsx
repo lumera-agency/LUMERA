@@ -15,7 +15,7 @@ import { SitesContact } from "@/components/sections/sites-page/SitesContact";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/dyzain-i-saity">) {
   const { locale } = await params;
-  return aiMetadata({ locale, namespace: "sites.meta", path: "/dyzain-i-saity", image: "/img/sites/og-sites.jpg" });
+  return aiMetadata({ locale, namespace: "sites.meta", path: "/dyzain-i-saity" });
 }
 
 /**

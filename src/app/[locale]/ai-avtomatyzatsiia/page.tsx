@@ -22,7 +22,7 @@ import "@/components/sections/ai-page/ai-page.css";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/ai-avtomatyzatsiia">) {
   const { locale } = await params;
-  return aiMetadata({ locale, namespace: "ai.meta", path: "/ai-avtomatyzatsiia", image: "/img/ai/og-ai.jpg" });
+  return aiMetadata({ locale, namespace: "ai.meta", path: "/ai-avtomatyzatsiia" });
 }
 
 /**

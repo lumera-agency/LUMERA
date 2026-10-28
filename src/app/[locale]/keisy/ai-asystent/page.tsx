@@ -16,7 +16,7 @@ import { Fit } from "@/components/sections/ai-asst/Fit";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/keisy/ai-asystent">) {
   const { locale } = await params;
-  return aiMetadata({ locale, namespace: "asst.meta", path: "/keisy/ai-asystent", image: "/img/ai/og-assistant.jpg" });
+  return aiMetadata({ locale, namespace: "asst.meta", path: "/keisy/ai-asystent" });
 }
 
 /**

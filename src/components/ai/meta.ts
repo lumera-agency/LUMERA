@@ -4,8 +4,8 @@ import { routing } from "@/i18n/routing";
 import { studioName } from "@/config/site";
 
 /** An AI page's title, description, canonical and hreflang (/path ↔ /ru/path) and link preview. The site's address
- *  (metadataBase) comes from the layout. */
-export async function aiMetadata({ locale, namespace, path, image }: { locale: string; namespace: string; path: string; image: string }): Promise<Metadata> {
+ *  (metadataBase) comes from the layout; the preview's picture, from the page's opengraph-image (components/og). */
+export async function aiMetadata({ locale, namespace, path }: { locale: string; namespace: string; path: string }): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace });
   const url = locale === routing.defaultLocale ? path : `/${locale}${path}`;
   return {
@@ -20,7 +20,6 @@ export async function aiMetadata({ locale, namespace, path, image }: { locale: s
       url,
       locale: locale === "ru" ? "ru_RU" : "uk_UA",
       alternateLocale: locale === "ru" ? ["uk_UA"] : ["ru_RU"],
-      images: [{ url: image, width: 1200, height: 630 }],
     },
     twitter: { card: "summary_large_image" },
   };
