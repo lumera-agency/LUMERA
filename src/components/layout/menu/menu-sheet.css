@@ -197,7 +197,6 @@
   font: 400 0.625rem / 1 var(--font-mono);
   letter-spacing: 0.08em;
 }
-.menu-sheet__tag--ex { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-soft); }
 .menu-sheet__page .menu-sheet__sub { border-bottom: 1px solid var(--border); padding-left: 0; }
 
 /* the site's links, the phones, the chats */

@@ -6,7 +6,7 @@ import { CONTACTS, phoneText, telHref, telegramHref, viberHref } from "@/config/
 import { SITE_NAV } from "./nav";
 
 /** A section of a service's page in the phone menu: its anchor there (or another page), a price or a tag. */
-export type SiteNavSub = { text: string; href: string; price?: string; tag?: string; example?: boolean };
+export type SiteNavSub = { text: string; href: string; price?: string; tag?: string };
 /** One service in the header's panel and the phone menu: its page, picture, «від» price (none for SaaS), sections. */
 export type SiteNavService = {
   n: string;
@@ -31,7 +31,8 @@ export type SiteNavData = {
   pricing: string;
   services: SiteNavService[];
   cases: SiteNavCase[];
-  example: { chip: string; name: string; who: string; href: string };
+  /** the AI assistant: a client's case too (the owner, 28 Oct), its own page, no figure yet */
+  assistant: { chip: string; name: string; href: string };
   /** the phones (to call) and the messengers (config/contacts) */
   contacts: { phones: { text: string; href: string }[]; telegram: string; viber: string };
   labels: {
@@ -58,6 +59,8 @@ type Group = Record<string, { price: number }>;
 const minPaid = (group: Group) => Math.min(...Object.values(group).map((o) => o.price).filter((p) => p > 0));
 const bold = (html: string) => /<b>(.*?)<\/b>/.exec(html)?.[1] ?? "";
 const firstSentence = (text: string) => text.split(/(?<=\.)\s/)[0].replace(/\.$/, "");
+/** «Сервіс кондиціонерів · Київ і Дніпро» → «Київ і Дніпро»: the title names the business already */
+const place = (who: string) => who.split(" · ")[1] ?? who;
 
 /**
  * The header's and the phone menu's data, built on the server: the main page's words (what, nav, start), the cases'
@@ -84,13 +87,15 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const adsCase = (n: number, id: "ac" | "pest" | "volter"): SiteNavCase => ({
     n: String(n),
     chip: t(`ads.case.${id}.chip`),
-    name: t(`ads.case.${id}.name`),
-    who: t(`ads.case.${id}.who`),
+    // the owner, 29 Oct: what we did and for whom («Ведення Google Ads: дезінсекція»), not the niche's one word
+    name: t(`nav.caseTitle.${id}`),
+    who: place(t(`ads.case.${id}.who`)),
     v: t(`ads.case.${id}.tab.v`),
     k: t(`ads.case.${id}.tab.k`),
     honest: bold(t.raw(`ads.case.${id}.honest`) as string),
     service: t("services.service.meta.span.2"),
-    href: `${ads}#case`,
+    // the case's own tab on the ads page (its runtime opens it from the address)
+    href: `${ads}#case-${id}`,
   });
   // «Пошук замовлень: <hl>15 хвилин</hl> замість години щоранку»: the name, the figure and its key
   const title = t.raw("case.hero.title") as string;
@@ -124,7 +129,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       { text: t("ai.nav.how"), href: at(AI, "#how") },
       { text: t("ai.nav.offer"), href: at(AI, "#offer") },
       { text: t("ai.nav.calc"), href: at(AI, "#calc") },
-      { text: t("asst.crumb"), href: href("/keisy/ai-asystent"), tag: t("aiCommon.nav.example"), example: true },
+      { text: t("asst.crumb"), href: href("/keisy/ai-asystent"), tag: t("ai.nav.case") },
       { text: t("aiCommon.nav.faq"), href: at(AI, "#faq") },
     ],
     [],
@@ -158,7 +163,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       {
         n: "4",
         chip: t("ads.case.ac.chip"),
-        name: caseName,
+        name: t("nav.caseTitle.poshuk"),
         who: firstSentence(t("case.hero.lead")),
         v: caseV,
         k: caseK,
@@ -172,7 +177,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       telegram: telegramHref(),
       viber: viberHref(),
     },
-    example: { chip: t("aiCommon.nav.example"), name: t("asst.crumb"), who: firstSentence(t("asst.hero.lead")), href: href("/keisy/ai-asystent") },
+    assistant: { chip: t("ai.nav.case"), name: t("nav.caseTitle.asst"), href: href("/keisy/ai-asystent") },
     labels: {
       services: t("nav.services"),
       cases: t("nav.cases"),

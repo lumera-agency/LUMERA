@@ -288,7 +288,7 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
                                   {sub.price ? (
                                     <b>{sub.price}</b>
                                   ) : sub.tag ? (
-                                    <span className={sub.example ? "menu-sheet__tag menu-sheet__tag--ex" : "menu-sheet__tag"}>{sub.tag}</span>
+                                    <span className="menu-sheet__tag">{sub.tag}</span>
                                   ) : (
                                     <Arrow />
                                   )}

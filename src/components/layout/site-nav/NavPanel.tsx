@@ -100,7 +100,7 @@ export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
                           <a className="navp__sub" href={sub.href} onClick={(e) => goToSection(e, sub.href)}>
                             <span data-line="">
                               <span>{sub.text}</span>
-                              {sub.price ? <b>{sub.price}</b> : sub.tag ? <i className={sub.example ? "navp__tag navp__tag--ex" : "navp__tag"}>{sub.tag}</i> : null}
+                              {sub.price ? <b>{sub.price}</b> : sub.tag ? <i className="navp__tag">{sub.tag}</i> : null}
                             </span>
                           </a>
                         </li>
@@ -193,9 +193,9 @@ export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
           </div>
         ) : (
           <div className="navp__strip">
-            <span className="navp__chip navp__chip--ex">{nav.example.chip}</span>
-            <a href={nav.example.href}>
-              {nav.example.name} · {nav.example.who}
+            <span className="navp__chip">{nav.assistant.chip}</span>
+            <a href={nav.assistant.href}>
+              {nav.assistant.name}
               <Arrow />
             </a>
             <span className="navp__strip-end">

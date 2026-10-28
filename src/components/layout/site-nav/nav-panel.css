@@ -63,7 +63,6 @@
   font-style: normal;
   letter-spacing: 0.08em;
 }
-.navp__tag--ex { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-soft); }
 .navp__card:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.5rem; border-radius: var(--radius-md); }
 
 /* each line rises out of its own mask */
@@ -188,7 +187,6 @@
   font: 400 0.6875rem / 1 var(--font-mono);
   letter-spacing: 0.08em;
 }
-.navp__chip--ex { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-soft); }
 .navp__fig {
   position: relative;
   display: flex;
