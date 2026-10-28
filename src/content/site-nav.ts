@@ -5,7 +5,9 @@ import { PRODUCTS } from "@/components/sections/ai-page/prices";
 import { CONTACTS, phoneText, telHref, telegramHref, viberHref } from "@/config/contacts";
 import { SITE_NAV } from "./nav";
 
-/** One service in the header's panel and the phone menu: its page, picture and «від» price (none for SaaS). */
+/** A section of a service's page in the phone menu: its anchor there (or another page), a price or a tag. */
+export type SiteNavSub = { text: string; href: string; price?: string; tag?: string; example?: boolean };
+/** One service in the header's panel and the phone menu: its page, picture, «від» price (none for SaaS), sections. */
 export type SiteNavService = {
   n: string;
   name: string;
@@ -16,6 +18,7 @@ export type SiteNavService = {
   path: string | null;
   href: string;
   img: string;
+  subs: SiteNavSub[];
 };
 /** A client's case: the chip, who it is for, the figure with its key and the honest sentence beside it. */
 export type SiteNavCase = { n: string; chip: string; name: string; who: string; v: string; k: string; honest: string; service: string; href: string };
@@ -23,6 +26,9 @@ export type SiteNavData = {
   /** the main page in this language: «/» or «/ru» */
   home: string;
   about: string | null;
+  /** the main page's «Як працюємо» and «Ціни», from any page */
+  approach: string;
+  pricing: string;
   services: SiteNavService[];
   cases: SiteNavCase[];
   example: { chip: string; name: string; who: string; href: string };
@@ -38,7 +44,6 @@ export type SiteNavData = {
     calc: string;
     more: string;
     page: string;
-    pageShort: string;
     how: string;
     contacts: string;
     phones: string;
@@ -73,6 +78,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
     path,
     href: path ? href(path) : `${home}#services`,
     img: `/img/what/what-${n}-${locale}.webp`,
+    subs: [],
   });
   const ads = href("/reklama-i-analityka");
   const adsCase = (n: number, id: "ac" | "pest" | "volter"): SiteNavCase => ({
@@ -90,16 +96,57 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const title = t.raw("case.hero.title") as string;
   const [, caseName = "", caseV = "", caseK = ""] = /^(.*?):\s*<hl>(.*?)<\/hl>\s*(.*)$/.exec(title) ?? [];
 
+  // the services' sections in the phone menu: each page's own blocks, in its own words (its nav), the formats with
+  // the engine's prices, the cases where they are
+  const at = (path: string, hash: string) => `${href(path)}${hash}`;
+  const SITES = "/dyzain-i-saity";
+  const AI = "/ai-avtomatyzatsiia";
+  const ADS = "/reklama-i-analityka";
+  const formats = (["landing", "plus", "corp", "shop"] as const).map((k) => ({
+    text: t(`sites.f.${k}.t`),
+    href: at(SITES, "#formats"),
+    price: money(PRICING.formats[({ landing: "landing", plus: "landingPlus", corp: "corporate", shop: "ecommerce" } as const)[k]].price),
+  }));
+  const subs: SiteNavSub[][] = [
+    [
+      ...formats,
+      { text: t("sites.nav.design"), href: at(SITES, "#design") },
+      { text: t("sites.nav.how"), href: at(SITES, "#how") },
+      { text: t("sites.x.nav.faq"), href: at(SITES, "#faq") },
+    ],
+    [
+      { text: caseName, href: href("/keisy/poshuk-zamovlen"), tag: t("ai.nav.case") },
+      { text: t("ai.nav.services"), href: at(AI, "#niches") },
+      { text: t("ai.nav.how"), href: at(AI, "#how") },
+      { text: t("ai.nav.offer"), href: at(AI, "#offer") },
+      { text: t("ai.nav.calc"), href: at(AI, "#calc") },
+      { text: t("asst.crumb"), href: href("/keisy/ai-asystent"), tag: t("aiCommon.nav.example"), example: true },
+      { text: t("aiCommon.nav.faq"), href: at(AI, "#faq") },
+    ],
+    [],
+    [
+      { text: t("nav.casesMore"), href: at(ADS, "#case"), tag: t("ads.nav.case") },
+      { text: t("services.service.meta.span.2"), href: at(ADS, "#ads") },
+      { text: t("ads.nav.analytics"), href: at(ADS, "#analytics") },
+      { text: t("ads.nav.price"), href: at(ADS, "#price") },
+      { text: t("ads.nav.how"), href: at(ADS, "#how") },
+      { text: t("ads.nav.faq"), href: at(ADS, "#faq") },
+    ],
+  ];
+  const services = [
+    service(1, SITES, minPaid(PRICING.formats)),
+    // the owner, 28 Oct: automation from the AI page's cheapest product (the assistant), ads from the Google Ads setup
+    service(2, AI, Math.min(...Object.values(PRODUCTS).flatMap((p) => (p.price ? [p.price] : [])))),
+    service(3, null, null),
+    service(4, ADS, minPaid(Object.fromEntries(Object.entries(PRICING.growth).filter(([, o]) => "ads" in o && o.ads)))),
+  ].map((sv, i) => ({ ...sv, subs: subs[i] }));
+
   return {
     home,
+    approach: `${home}#approach`,
+    pricing: `${home}#pricing`,
     about: SITE_NAV.about ? href("/pro-nas") : null,
-    services: [
-      service(1, "/dyzain-i-saity", minPaid(PRICING.formats)),
-      // the owner, 28 Oct: automation from the AI page's cheapest product (the assistant), ads from the Google Ads setup
-      service(2, "/ai-avtomatyzatsiia", Math.min(...Object.values(PRODUCTS).flatMap((p) => (p.price ? [p.price] : [])))),
-      service(3, null, null),
-      service(4, "/reklama-i-analityka", minPaid(Object.fromEntries(Object.entries(PRICING.growth).filter(([, o]) => "ads" in o && o.ads)))),
-    ],
+    services,
     cases: [
       adsCase(1, "ac"),
       adsCase(2, "pest"),
@@ -132,7 +179,6 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       calc: t("nav.calc"),
       more: t("what.more"),
       page: t("nav.page"),
-      pageShort: t("nav.pageShort"),
       how: t("nav.how"),
       contacts: t("nav.contacts.label"),
       phones: t("nav.contacts.phones"),

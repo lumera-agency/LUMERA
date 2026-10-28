@@ -1,18 +1,20 @@
 "use client";
 /*
- * The site menu on phones (both burgers open it): an island over the page, dimmed behind it. Three segments: the
- * services (their pages, «від» prices), the clients' cases and this page's blocks (the one you are in is lime); under
- * them «Ціни» and «Про нас», the two phones, Telegram and Viber, the CTA and the languages. A row on this page takes
- * the page to its block under the island, so the block is there when it closes.
+ * The site menu on phones (both burgers open it), «Колони»: a black sheet drops in as the preloader's five columns,
+ * left to right, as the desktop panel does. The four services rise out of their masks, each with its «від» price; a
+ * tap opens a service's sections (its page's blocks, its formats and cases) as an accordion, one at a time; on a
+ * service's own page it is open already, and the block being read is lime. Under them: «Як працюємо», «Ціни», «Про
+ * нас», the two phones, Telegram and Viber; the CTA stays at the foot. A link to a block on this page takes the page
+ * there under the sheet, so the block is there when the columns lift.
  * A modal dialog in <body> (never inside a transformed header): the page holds still under it, Esc and the cross
- * close it, Tab stays inside, focus goes back to the burger. Reduced motion: fades.
+ * close it, Tab stays inside, focus goes back to the burger. Reduced motion: a fade.
  */
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { gsap } from "@/lib/gsap";
 import { focusBlock, scrollToY } from "@/lib/scroll";
-import { PAGE_NAV, type NavCta, type NavLink } from "@/content/nav";
+import { type NavCta, type NavLink } from "@/content/nav";
 import { usePathname } from "@/i18n/navigation";
 import { LogoContent } from "@/components/ui/logo/Logo";
 import { ButtonLink } from "@/components/ui/button/Button";
@@ -24,8 +26,6 @@ import "./menu-sheet.css";
 
 const noSubscribe = () => () => {};
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-/** the main page's blocks the services segment and «Ціни» already lead to */
-const COVERED = ["#services", "#pricing"];
 
 function Arrow() {
   return (
@@ -35,40 +35,46 @@ function Arrow() {
   );
 }
 
-/** Another page passes its own blocks and CTA as ready text (Topbar does the same); the main page uses PAGE_NAV. With
- *  `home` the logo leads to the main page instead of back to the top. */
+/** «/ru/reklama-i-analityka#ads» → its path and hash, against this page */
+const split = (href: string) => {
+  const url = new URL(href, location.href);
+  return { here: url.pathname === location.pathname, hash: url.hash };
+};
+
+/** Another page passes its own blocks and CTA as ready text (Topbar does the same); they show here only on a page that
+ *  is neither the main page nor a service's (the cases). With `home` the logo leads to the main page. */
 export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; cta?: NavCta; home?: string } = {}) {
   const t = useTranslations();
   const nav = useSiteNav();
   const path = usePathname();
   const onMain = path === "/";
-  // this page's blocks without what the services segment and «Ціни» lead to (a service's page included)
-  const items = (links ?? PAGE_NAV.filter((l) => !COVERED.includes(l.href)).map((l) => ({ href: l.href, text: t(l.label) }))).filter(
-    (l) => !nav.services.some((s) => s.href === l.href),
-  );
+  const own = nav.services.findIndex((s) => s.path === path);
+  const pageLinks = !onMain && own < 0 ? (links ?? []).filter((l) => l.href.startsWith("#")) : [];
   const action = cta ?? { href: "#contact", text: t("cta.discuss") };
-  const hrefs = items.map((l) => l.href).join(" ");
   const open = useMenuOpen();
   const mounted = useSyncExternalStore(noSubscribe, () => true, () => false);
   const sheet = useRef<HTMLDivElement>(null);
   const wasOpen = useRef(false);
+  const [expanded, setExpanded] = useState<number | null>(own >= 0 ? own : null);
   const [current, setCurrent] = useState<string | null>(null);
-  const [pane, setPane] = useState(0);
-  const lastPane = useRef(0);
-  const tabs = [nav.labels.services, nav.labels.cases, nav.labels.pageShort];
+  // the blocks of this page the menu leads to: its service's sections, or its own links
+  const watched = [...(own >= 0 ? nav.services[own].subs.map((s) => s.href) : []), ...pageLinks.map((l) => l.href)]
+    .map((h) => (h.includes("#") ? `#${h.split("#")[1]}` : ""))
+    .filter(Boolean)
+    .join(" ");
 
   // the block being read: its row turns lime
   useEffect(() => {
-    const blocks = hrefs.split(" ").filter((h) => h.startsWith("#")).map((h) => document.querySelector(h)).filter((el): el is Element => Boolean(el));
+    const blocks = [...new Set(watched.split(" "))].filter(Boolean).map((h) => document.querySelector(h)).filter((el): el is Element => Boolean(el));
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && setCurrent(`#${e.target.id}`)),
       { rootMargin: "-45% 0px -50% 0px" },
     );
     blocks.forEach((b) => io.observe(b));
     return () => io.disconnect();
-  }, [hrefs]);
+  }, [watched]);
 
-  // open / close: the page lock, the choreography, focus
+  // open / close: the page lock, the columns, focus
   useEffect(() => {
     const root = sheet.current;
     if (!root) return;
@@ -76,47 +82,43 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     wasOpen.current = open;
     document.documentElement.classList.toggle("menu-open", open);
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const shade = root.querySelector(".menu-sheet__shade");
-    const box = root.querySelector(".menu-sheet__box");
-    const rows = root.querySelectorAll(".menu-sheet__pane:not([hidden]) .menu-sheet__row");
-    gsap.killTweensOf([root, shade, box, rows]);
+    const cols = root.querySelectorAll(".menu-sheet__cols i");
+    const rows = root.querySelectorAll(".menu-sheet__name > span");
+    const fades = root.querySelectorAll("[data-menu-fade]");
+    const frame = root.querySelector(".menu-sheet__frame");
+    gsap.killTweensOf([root, cols, rows, fades, frame]);
 
     if (open) {
       gsap.set(root, { visibility: "visible", autoAlpha: 1 });
       if (reduced) {
-        gsap.set([box, rows], { clearProps: "all" });
-        gsap.fromTo([shade, box], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 });
+        gsap.set([cols, rows, fades, frame], { clearProps: "all" });
+        gsap.fromTo(root, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 });
       } else {
         gsap.timeline()
-          .fromTo(shade, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 0)
-          .fromTo(box, { autoAlpha: 0, y: -24, scale: 0.98 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, ease: "expo.out" }, 0)
-          .fromTo(rows, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "expo.out", stagger: 0.03, clearProps: "transform,opacity,visibility" }, 0.1);
+          .fromTo(cols, { yPercent: -101 }, { yPercent: 0, duration: 0.8, ease: "expo.inOut", stagger: 0.055 }, 0)
+          // the frame (its lines, the cross) only once the columns cover the page
+          .fromTo(frame, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 0.62)
+          .fromTo(rows, { yPercent: 115 }, { yPercent: 0, duration: 1, ease: "expo.out", stagger: 0.06 }, 0.62)
+          .fromTo(fades, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: "expo.out", stagger: 0.04 }, 0.7);
       }
       root.querySelector<HTMLElement>(".menu-sheet__close")?.focus({ preventScroll: true });
     } else {
       const done = () => {
         gsap.set(root, { visibility: "hidden" });
-        setPane(0); // the next time it opens on the services
+        setExpanded(own >= 0 ? own : null); // the next time it opens as it did the first
       };
-      if (reduced) gsap.to([shade, box], { autoAlpha: 0, duration: 0.15, onComplete: done });
+      if (reduced) gsap.to(root, { autoAlpha: 0, duration: 0.2, onComplete: done });
       else {
         gsap.timeline({ onComplete: done })
-          .to(box, { autoAlpha: 0, y: -12, scale: 0.98, duration: 0.2, ease: "power2.in" }, 0)
-          .to(shade, { autoAlpha: 0, duration: 0.2, ease: "power1.in" }, 0);
+          .to(rows, { yPercent: -115, duration: 0.4, ease: "power3.in", stagger: 0.025 }, 0)
+          .to(fades, { autoAlpha: 0, y: -10, duration: 0.3, ease: "power2.in" }, 0)
+          .to(frame, { autoAlpha: 0, duration: 0.3, ease: "power1.in" }, 0.1)
+          .to(cols, { yPercent: -101, duration: 0.75, ease: "expo.inOut", stagger: { each: 0.05, from: "end" } }, 0.3);
       }
       const back = menu.opener();
       if (back?.isConnected && back.offsetParent) back.focus({ preventScroll: true });
     }
-  }, [open, mounted]);
-
-  // a segment: its rows come in from the side it was on
-  useEffect(() => {
-    const dir = Math.sign(pane - lastPane.current);
-    lastPane.current = pane;
-    if (!dir || !sheet.current || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const rows = sheet.current.querySelectorAll(`#site-menu-pane-${pane} .menu-sheet__row`);
-    gsap.fromTo(rows, { x: 24 * dir, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.34, ease: "expo.out", stagger: 0.03, clearProps: "transform,opacity,visibility" });
-  }, [pane]);
+  }, [open, mounted, own]);
 
   // Esc, Tab kept inside, a wide screen closes it
   useEffect(() => {
@@ -137,12 +139,12 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     };
     const wide = matchMedia("(min-width: 861px)");
     const onWide = (e: MediaQueryListEvent) => e.matches && menu.set(false);
-    // a finger on the island never scrolls the page under it (older iOS ignores the overflow lock); the rows still
-    // scroll when they don't fit
+    // a finger on the sheet never scrolls the page under it (older iOS ignores the overflow lock); the list still
+    // scrolls when it doesn't fit
     const sheetEl = sheet.current;
     const onTouch = (e: TouchEvent) => {
-      const panes = (e.target as Element).closest?.<HTMLElement>(".menu-sheet__panes");
-      if (panes && panes.scrollHeight > panes.clientHeight + 1) return;
+      const list = (e.target as Element).closest?.<HTMLElement>(".menu-sheet__scroll");
+      if (list && list.scrollHeight > list.clientHeight + 1) return;
       if (e.cancelable) e.preventDefault();
     };
     document.addEventListener("keydown", onKey);
@@ -155,22 +157,24 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     };
   }, [open]);
 
-  /** A row: the page goes to its block under the island, then the island lifts off it. */
+  /** A link: a block on this page — the page goes there under the sheet, then the sheet lifts; another page opens. */
   const go = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // another page (a service, a case, the main site): the link opens it, the island just closes
-    if (!href.startsWith("#")) return void menu.set(false);
+    const { here, hash } = split(href);
+    if (!here || !hash) return void menu.set(false);
     e.preventDefault();
     menu.set(false);
-    const target = document.querySelector<HTMLElement>(href);
+    const target = document.querySelector<HTMLElement>(hash);
     requestAnimationFrame(() => {
       if (!target) return;
-      scrollToY(target.getBoundingClientRect().top + window.scrollY, { immediate: true });
+      const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+      scrollToY(target.getBoundingClientRect().top + window.scrollY - margin, { immediate: true });
       focusBlock(target); // after the menu gave the focus back to the burger
     });
   };
 
   /** SaaS has no page: on the main page its panel in the services block (the ride takes it when it runs). */
   const goSaas = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!onMain) return void menu.set(false);
     e.preventDefault();
     menu.set(false);
     requestAnimationFrame(() => {
@@ -184,20 +188,24 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     });
   };
 
-  const onTabKey = (e: React.KeyboardEvent<HTMLButtonElement>, i: number) => {
-    const to = e.key === "ArrowRight" ? (i + 1) % 3 : e.key === "ArrowLeft" ? (i + 2) % 3 : e.key === "Home" ? 0 : e.key === "End" ? 2 : -1;
-    if (to < 0) return;
-    e.preventDefault();
-    setPane(to);
-    sheet.current?.querySelector<HTMLElement>(`#site-menu-tab-${to}`)?.focus();
-  };
-
   if (!mounted) return null;
-  const pricing = onMain ? "#pricing" : `${nav.home}#pricing`;
+  const L = nav.labels;
+  const local = (hash: string) => (onMain ? hash : `${nav.home}${hash}`);
+  const site = [
+    { text: L.how, href: local("#approach") },
+    { text: L.pricing, href: local("#pricing") },
+    ...(nav.about ? [{ text: L.about, href: nav.about }] : []),
+  ];
   return createPortal(
     <div ref={sheet} className="menu-sheet" id="site-menu" role="dialog" aria-modal="true" aria-label={t("nav.mobileLabel")} inert={!open}>
-      <div className="menu-sheet__shade" aria-hidden="true" onClick={() => menu.set(false)} />
-      <div className="menu-sheet__box">
+      <div className="menu-sheet__cols" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="menu-sheet__frame">
         <div className="menu-sheet__top">
           <a
             className="logo menu-sheet__logo"
@@ -212,136 +220,144 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
           >
             <LogoContent />
           </a>
+          <LangSwitch />
           <button className="menu-sheet__close" type="button" aria-label={t("menu.close")} onClick={() => menu.set(false)}>
+            <span aria-hidden="true">{t("nav.closeShort")}</span>
             <i />
             <i />
           </button>
         </div>
 
-        <div className="menu-sheet__seg" role="tablist" aria-label={t("nav.mobileLabel")}>
-          <span className="menu-sheet__glide" aria-hidden="true" style={{ transform: `translateX(${pane * 100}%)` }} />
-          {tabs.map((label, i) => (
-            <button
-              key={label}
-              id={`site-menu-tab-${i}`}
-              type="button"
-              role="tab"
-              aria-selected={pane === i}
-              aria-controls={`site-menu-pane-${i}`}
-              tabIndex={pane === i ? 0 : -1}
-              onClick={() => setPane(i)}
-              onKeyDown={(e) => onTabKey(e, i)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className="menu-sheet__panes">
-          <div className="menu-sheet__pane" id="site-menu-pane-0" role="tabpanel" aria-labelledby="site-menu-tab-0" hidden={pane !== 0}>
-            <ul>
-              {nav.services.map((s) => {
-                const saas = s.path === null;
-                return (
-                  <li key={s.n}>
-                    <a
-                      className="menu-sheet__row"
-                      href={saas && onMain ? "#svc-4" : s.href}
-                      aria-current={s.path === path ? "page" : undefined}
-                      onClick={saas && onMain ? goSaas : (e) => go(e, s.href)}
-                    >
-                      <span className="menu-sheet__text">
-                        <span className="menu-sheet__name">{s.short}</span>
-                        <span className="menu-sheet__line">{s.desc}</span>
+        <div className="menu-sheet__scroll">
+          <nav aria-label={t("nav.mobileLabel")}>
+            <p className="menu-sheet__k" data-menu-fade="">
+              {L.what}
+            </p>
+            <ul className="menu-sheet__list">
+              {nav.services.map((s, i) => {
+                const isOpen = expanded === i;
+                const id = `menu-svc-${i}`;
+                const head = (
+                  <>
+                    <span className="menu-sheet__name">
+                      <span>{s.short}</span>
+                    </span>
+                    {s.price ? (
+                      <span className="menu-sheet__price" data-menu-fade="">
+                        {s.price}
                       </span>
-                      {s.price ? <span className="menu-sheet__price">{s.price}</span> : <Arrow />}
-                    </a>
+                    ) : (
+                      <span />
+                    )}
+                  </>
+                );
+                return (
+                  <li key={s.n} className="menu-sheet__item" data-current={own === i ? "" : undefined}>
+                    {s.subs.length ? (
+                      <button className="menu-sheet__svc" type="button" aria-expanded={isOpen} aria-controls={id} onClick={() => setExpanded(isOpen ? null : i)}>
+                        {head}
+                        <svg className="menu-sheet__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false" data-menu-fade="">
+                          <path d="M2.5 4.5 6 8l3.5-3.5" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <a className="menu-sheet__svc" href={onMain ? "#svc-4" : s.href} onClick={goSaas}>
+                        {head}
+                        <Arrow />
+                      </a>
+                    )}
+                    {s.subs.length > 0 && (
+                      <div className="menu-sheet__subs" id={id} data-open={isOpen ? "" : undefined} inert={!isOpen}>
+                        <ul>
+                          {s.subs.map((sub, j) => {
+                            const hash = sub.href.includes("#") ? `#${sub.href.split("#")[1]}` : null;
+                            return (
+                              <li key={sub.text} style={{ "--j": j } as React.CSSProperties}>
+                                <a
+                                  className="menu-sheet__sub"
+                                  href={sub.href}
+                                  aria-current={own === i && hash && current === hash ? "location" : undefined}
+                                  onClick={(e) => go(e, sub.href)}
+                                >
+                                  <span>{sub.text}</span>
+                                  {sub.price ? (
+                                    <b>{sub.price}</b>
+                                  ) : sub.tag ? (
+                                    <span className={sub.example ? "menu-sheet__tag menu-sheet__tag--ex" : "menu-sheet__tag"}>{sub.tag}</span>
+                                  ) : (
+                                    <Arrow />
+                                  )}
+                                </a>
+                              </li>
+                            );
+                          })}
+                          <li style={{ "--j": s.subs.length } as React.CSSProperties}>
+                            <a className="menu-sheet__sub menu-sheet__sub--page" href={s.href} onClick={(e) => go(e, s.href)}>
+                              <span>{t("nav.openPage")}</span>
+                              <Arrow />
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </li>
                 );
               })}
             </ul>
-          </div>
 
-          <div className="menu-sheet__pane" id="site-menu-pane-1" role="tabpanel" aria-labelledby="site-menu-tab-1" hidden={pane !== 1}>
-            <ul>
-              {nav.cases.map((c) => (
-                <li key={c.n}>
-                  <a className="menu-sheet__row" href={c.href} onClick={(e) => go(e, c.href)}>
-                    <span className="menu-sheet__text">
-                      <span className="menu-sheet__name">{c.name}</span>
-                      <span className="menu-sheet__line">{c.k}</span>
-                    </span>
-                    <span className="menu-sheet__price menu-sheet__price--fig">{c.v}</span>
-                  </a>
-                </li>
-              ))}
-              <li>
-                <a className="menu-sheet__row menu-sheet__row--ex" href={nav.example.href} onClick={(e) => go(e, nav.example.href)}>
-                  <span className="menu-sheet__text">
-                    <span className="menu-sheet__name">{nav.example.name}</span>
-                    <span className="menu-sheet__line">{nav.example.who}</span>
-                  </span>
-                  <span className="menu-sheet__chip">{nav.example.chip}</span>
+            {pageLinks.length > 0 && (
+              <>
+                <p className="menu-sheet__k" data-menu-fade="">
+                  {L.page}
+                </p>
+                <ul className="menu-sheet__page" data-menu-fade="">
+                  {pageLinks.map((l) => (
+                    <li key={l.href}>
+                      <a className="menu-sheet__sub" href={l.href} aria-current={current === l.href ? "location" : undefined} onClick={(e) => go(e, l.href)}>
+                        <span>{l.text}</span>
+                        <Arrow />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </nav>
+
+          <div className="menu-sheet__util">
+            <div className="menu-sheet__site" data-menu-fade="">
+              {site.map((l) => (
+                <a key={l.href} href={l.href} onClick={(e) => go(e, l.href)}>
+                  {l.text}
                 </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="menu-sheet__pane" id="site-menu-pane-2" role="tabpanel" aria-labelledby="site-menu-tab-2" hidden={pane !== 2}>
-            <ul>
-              {items.map((l) => (
-                <li key={l.href}>
-                  <a
-                    className="menu-sheet__row menu-sheet__row--page"
-                    href={l.href}
-                    aria-current={current === l.href ? "location" : undefined}
-                    onClick={(e) => go(e, l.href)}
-                  >
-                    <span className="menu-sheet__name">{l.text}</span>
-                    <Arrow />
-                  </a>
-                </li>
               ))}
-            </ul>
+            </div>
+            <div className="menu-sheet__phones" data-menu-fade="">
+              {nav.contacts.phones.map((p) => (
+                <a key={p.href} href={p.href} aria-label={`${L.call}: ${p.text}`}>
+                  <PhoneIcon />
+                  {p.text}
+                </a>
+              ))}
+            </div>
+            <div className="menu-sheet__chats" data-menu-fade="">
+              <a href={nav.contacts.telegram} target="_blank" rel="noopener" aria-label={L.telegram}>
+                <TelegramIcon />
+                Telegram
+              </a>
+              <a href={nav.contacts.viber} aria-label={L.viber}>
+                <ViberIcon />
+                Viber
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="menu-sheet__foot">
-          <div className="menu-sheet__site">
-            <a href={pricing} onClick={(e) => go(e, pricing)}>
-              {nav.labels.pricing}
-            </a>
-            {nav.about && (
-              <a href={nav.about} onClick={() => menu.set(false)}>
-                {nav.labels.about}
-              </a>
-            )}
-          </div>
-          <div className="menu-sheet__phones">
-            {nav.contacts.phones.map((p) => (
-              <a key={p.href} href={p.href} aria-label={`${nav.labels.call}: ${p.text}`}>
-                <PhoneIcon />
-                {p.text}
-              </a>
-            ))}
-          </div>
-          <div className="menu-sheet__chats">
-            <a href={nav.contacts.telegram} target="_blank" rel="noopener" aria-label={nav.labels.telegram}>
-              <TelegramIcon />
-              Telegram
-            </a>
-            <a href={nav.contacts.viber} aria-label={nav.labels.viber}>
-              <ViberIcon />
-              Viber
-            </a>
-          </div>
+        <div className="menu-sheet__foot" data-menu-fade="">
           <ButtonLink href={action.href} variant="primary" className="menu-sheet__cta" onClick={(e) => go(e, action.href)}>
             {action.text}
           </ButtonLink>
-          <div className="menu-sheet__meta">
-            <LangSwitch />
-            <span>{t("preloader.note")}</span>
-          </div>
+          <p className="menu-sheet__note">{t("preloader.note")}</p>
         </div>
       </div>
     </div>,

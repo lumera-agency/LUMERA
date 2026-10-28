@@ -1,5 +1,5 @@
-/* The site menu on phones (MenuSheet.tsx): an island over the dimmed page, three segments (services, cases, this
-   page), «Ціни», the CTA and the languages at the foot. Hidden until opened (GSAP shows it). */
+/* The site menu on phones (MenuSheet.tsx), «Колони»: five black columns like the preloader's, the services as an
+   accordion of their pages' sections, the site's links and contacts, the CTA at the foot. Hidden until opened. */
 .menu-sheet {
   position: fixed;
   inset: 0;
@@ -8,148 +8,147 @@
   color: var(--ink);
   overscroll-behavior: contain;
 }
-.menu-sheet__shade { position: absolute; inset: 0; background: rgb(0 0 0 / 0.55); }
-
-.menu-sheet__box {
-  position: absolute;
-  top: calc(0.5rem + env(safe-area-inset-top));
-  left: 0.5rem;
-  right: 0.5rem;
-  max-height: calc(100svh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  background: #0d0d0d;
-  box-shadow: inset 0 0 0 1px var(--line), 0 2rem 4rem rgb(0 0 0 / 0.6);
-  transform-origin: 50% 0;
+.menu-sheet__cols { position: absolute; inset: 0; display: flex; }
+.menu-sheet__cols i {
+  flex: 1 0 0;
+  margin-right: -1px;
+  background: #0a0a0a;
+  box-shadow: inset -1px 0 0 rgb(246 246 243 / 0.05);
+  will-change: transform; /* no start transform here: GSAP would read it as px under its yPercent */
 }
+.menu-sheet__cols i:last-child { margin-right: 0; box-shadow: none; }
 
-.menu-sheet__top { display: flex; align-items: center; justify-content: space-between; height: 3.5rem; padding: 0 0.375rem 0 1rem; }
-.menu-sheet__logo { color: var(--ink); text-decoration: none; }
+.menu-sheet__frame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--gutter);
+}
+.menu-sheet__top {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--header-h);
+  border-bottom: 1px solid var(--line);
+}
+.menu-sheet__logo { margin-right: auto; color: var(--ink); text-decoration: none; }
+.menu-sheet__top .lang { display: flex; }
 
-/* the cross */
+/* the cross with its word, where the burger and «Меню» were */
 .menu-sheet__close {
   position: relative;
-  width: 2.75rem;
+  display: inline-flex;
+  align-items: center;
   height: 2.75rem;
-  padding: 0;
+  margin-right: -0.625rem;
+  padding: 0 2.75rem 0 0.375rem;
   border: 0;
-  border-radius: 50%;
+  border-radius: 999px;
   background: transparent;
+  font: inherit;
+  font-size: var(--fs-small);
   color: var(--ink);
   cursor: pointer;
   transition: background 0.3s, color 0.3s;
 }
 .menu-sheet__close i {
   position: absolute;
-  left: 0.75rem;
-  right: 0.75rem;
+  right: 0.8125rem;
+  width: 1.125rem;
   top: calc(50% - 0.75px);
   height: 1.5px;
   background: currentColor;
   transition: transform var(--dur) var(--ease-out);
 }
-.menu-sheet__close i:first-child { transform: rotate(45deg); }
-.menu-sheet__close i:last-child { transform: rotate(-45deg); }
-.menu-sheet__close:is(:hover, :focus-visible, :active) { background: var(--lime); color: var(--on-ink); }
-.menu-sheet__close:is(:hover, :focus-visible, :active) i:first-child { transform: rotate(135deg); }
-.menu-sheet__close:is(:hover, :focus-visible, :active) i:last-child { transform: rotate(45deg); }
+.menu-sheet__close i:nth-of-type(1) { transform: rotate(45deg); }
+.menu-sheet__close i:nth-of-type(2) { transform: rotate(-45deg); }
+.menu-sheet__close:is(:hover, :focus-visible, :active) i:nth-of-type(1) { transform: rotate(135deg); }
+.menu-sheet__close:is(:hover, :focus-visible, :active) i:nth-of-type(2) { transform: rotate(45deg); }
+.menu-sheet__close:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; }
 
-/* the segments: a soft pill glides under the chosen one */
-.menu-sheet__seg {
-  position: relative;
+/* the list scrolls inside the sheet; the CTA stays at the foot */
+.menu-sheet__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 0 var(--gutter) 1.5rem;
+}
+.menu-sheet__k {
+  padding: 1rem 0 0.25rem;
+  font: 400 var(--fs-label) / 1 var(--font-mono);
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.menu-sheet__item { border-bottom: 1px solid var(--line); }
+.menu-sheet__svc {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  height: 2.75rem;
-  margin: 0 0.75rem;
-  padding: 0.25rem;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--line);
-}
-.menu-sheet__glide {
-  position: absolute;
-  top: 0.25rem;
-  left: 0.25rem;
-  width: calc((100% - 0.5rem) / 3);
-  height: 2.25rem;
-  border-radius: 999px;
-  background: rgb(246 246 243 / 0.1);
-  transition: transform 0.42s var(--ease-out);
-}
-.menu-sheet__seg button {
-  position: relative;
-  z-index: 1;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 4.25rem;
   padding: 0;
   border: 0;
-  border-radius: 999px;
   background: none;
   font: inherit;
-  font-size: var(--fs-small);
-  color: var(--ink-soft);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: color var(--dur-fast);
-}
-.menu-sheet__seg button[aria-selected="true"] { color: var(--ink); }
-.menu-sheet__seg button:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; }
-
-/* the rows */
-.menu-sheet__panes { overflow-y: auto; overscroll-behavior: contain; padding: 0.5rem 0.5rem 0; }
-.menu-sheet__pane[hidden] { display: none; }
-.menu-sheet__pane li { position: relative; }
-.menu-sheet__pane li + li::before { content: ""; position: absolute; left: 0.75rem; right: 0.75rem; top: 0; height: 1px; background: var(--border); }
-.menu-sheet__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: 0.75rem;
-  min-height: 4.5rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 1rem;
+  text-align: left;
   color: var(--ink);
   text-decoration: none;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.2s;
 }
-.menu-sheet__row--page { min-height: 3.25rem; }
-.menu-sheet__row--ex { background: var(--hatch); }
-.menu-sheet__row:is(:hover, :active) { background-color: rgb(246 246 243 / 0.06); }
-.menu-sheet__row:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; }
-
-.menu-sheet__text { min-width: 0; }
-.menu-sheet__name { display: block; font-size: 1.125rem; line-height: 1.2; letter-spacing: -0.01em; }
-.menu-sheet__line {
-  display: block;
-  margin-top: 0.125rem;
-  font-size: var(--fs-caption);
-  line-height: 1.4;
-  color: var(--ink-soft);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.menu-sheet__svc:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.25rem; border-radius: 0.375rem; }
+.menu-sheet__name { display: block; overflow: hidden; padding-bottom: 0.06em; }
+.menu-sheet__name > span {
+  display: inline-block;
+  font-size: clamp(1.25rem, 5.6vw, 1.5rem);
+  font-weight: 400;
+  font-variation-settings: "SHRP" 64;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+/* the service of the page you are on: a lime dot before its name */
+.menu-sheet__item[data-current] .menu-sheet__name > span::before {
+  content: "";
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  margin: 0 0.5rem 0.2em 0;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 0.625rem rgb(218 255 2 / 0.7);
+  vertical-align: middle;
 }
 .menu-sheet__price {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font: 400 var(--fs-caption) / 1 var(--font-mono);
+  font: 400 var(--fs-label) / 1 var(--font-mono);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .menu-sheet__price::before { content: ""; width: 0.3125rem; height: 0.3125rem; border-radius: 50%; background: var(--lime); }
-.menu-sheet__chip {
-  padding: 0.375rem 0.625rem;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--line);
-  font: 400 0.6875rem / 1 var(--font-mono);
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
+.menu-sheet__chev {
+  width: 0.75rem;
+  height: 0.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--ink-mute);
+  transition: transform 0.45s var(--ease-out), color 0.3s;
 }
+.menu-sheet__svc[aria-expanded="true"] .menu-sheet__chev { transform: rotate(180deg); color: var(--lime); }
 .menu-sheet__arrow {
   justify-self: end;
-  width: 1rem;
-  height: 1rem;
+  width: 0.875rem;
+  height: 0.875rem;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.4;
@@ -157,47 +156,87 @@
   stroke-linejoin: round;
   color: var(--ink-mute);
 }
-/* where you are: the page (a service) or the block (this page) */
-.menu-sheet__row[aria-current] .menu-sheet__name { color: var(--lime); }
 
-/* the foot: «Ціни» (and «Про нас»), the CTA, the languages */
-.menu-sheet__foot { display: grid; gap: 0.5rem; padding: 0.5rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom)); }
-.menu-sheet__site { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-top: 1px solid var(--border); }
-.menu-sheet__site a {
+/* a service's sections: the accordion opens on the grid's row (no measuring), the links come in one by one */
+.menu-sheet__subs { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.5s var(--ease-out); }
+.menu-sheet__subs[data-open] { grid-template-rows: 1fr; }
+.menu-sheet__subs > ul { min-height: 0; overflow: hidden; margin-left: 0.25rem; padding-left: 0.75rem; border-left: 1px solid var(--line); }
+.menu-sheet__subs[data-open] > ul { margin-bottom: 0.75rem; }
+.menu-sheet__subs li { opacity: 0; transform: translateY(-0.5rem); transition: opacity 0.2s, transform 0.2s; }
+.menu-sheet__subs[data-open] li {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+  transition-delay: calc(0.05s + var(--j, 0) * 0.03s);
+}
+.menu-sheet__sub {
   display: flex;
   align-items: center;
-  height: 3rem;
-  padding: 0 0.75rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding-left: 0.5rem;
+  font-size: 1rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.25s;
+}
+.menu-sheet__sub b { font: 400 var(--fs-label) / 1 var(--font-mono); color: var(--ink-mute); white-space: nowrap; }
+.menu-sheet__sub--page > span { color: var(--ink); text-decoration: underline; text-underline-offset: 0.3em; text-decoration-color: var(--line); }
+.menu-sheet__sub:is(:active, :focus-visible) { color: var(--lime); }
+.menu-sheet__sub:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; border-radius: 0.375rem; }
+/* the block being read on this page */
+.menu-sheet__sub[aria-current] { color: var(--lime); box-shadow: inset 2px 0 0 var(--lime); }
+.menu-sheet__tag {
+  flex: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-ivory);
+  color: var(--on-ink);
+  font: 400 0.625rem / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+}
+.menu-sheet__tag--ex { background: var(--hatch); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-soft); }
+.menu-sheet__page .menu-sheet__sub { border-bottom: 1px solid var(--border); padding-left: 0; }
+
+/* the site's links, the phones, the chats */
+.menu-sheet__util { display: grid; gap: 1rem; margin-top: 1.25rem; }
+.menu-sheet__site { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.menu-sheet__site a {
+  display: inline-flex;
+  align-items: center;
+  height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: var(--fs-body-s);
   color: var(--ink);
   text-decoration: none;
 }
-.menu-sheet__site a + a { border-left: 1px solid var(--border); }
-.menu-sheet__site a:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; border-radius: 0.5rem; }
-/* the two phones (a call), then Telegram and Viber */
-.menu-sheet__phones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--border); }
+.menu-sheet__site a:is(:active, :focus-visible) { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+.menu-sheet__phones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .menu-sheet__phones a {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  height: 3rem;
-  padding: 0 0.75rem;
+  height: 2.75rem;
   font: 400 var(--fs-caption) / 1 var(--font-mono);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   color: var(--ink);
   text-decoration: none;
 }
-.menu-sheet__phones a + a { border-left: 1px solid var(--border); }
 .menu-sheet__chats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
 .menu-sheet__chats a {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  height: 2.75rem;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--line);
-  font-size: var(--fs-small);
+  height: 3rem;
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.16);
+  font-size: var(--fs-body-s);
   color: var(--ink);
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
@@ -207,34 +246,23 @@
 .menu-sheet__phones svg { color: var(--ink-mute); }
 .menu-sheet__phones a:is(:active, :focus-visible) { color: var(--lime); }
 .menu-sheet__chats a:is(:active, :focus-visible) { background: var(--lime); color: var(--on-ink); box-shadow: none; }
-.menu-sheet__phones a:focus-visible,
-.menu-sheet__chats a:focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; }
+.menu-sheet__util a:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.125rem; }
+
+/* the foot: the CTA over a fade, the line under it */
+.menu-sheet__foot { position: relative; flex: none; display: grid; gap: 0.75rem; padding: 0.75rem 0 calc(1rem + env(safe-area-inset-bottom)); }
+.menu-sheet__foot::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 1.5rem; background: linear-gradient(transparent, #0a0a0a); pointer-events: none; }
 .menu-sheet__cta { width: 100%; justify-content: space-between; }
 .menu-sheet .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.55); }
-.menu-sheet__meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0 0.25rem;
-  font: 400 var(--fs-label) / 1.4 var(--font-mono);
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
-.menu-sheet__meta .lang { display: flex; align-items: center; gap: 0.625rem; font-size: 0.875rem; letter-spacing: 0.08em; }
-.menu-sheet__meta .lang__link { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 0.25rem; }
-.menu-sheet__meta > span { text-align: right; }
+.menu-sheet__note { font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
 
-/* narrow phones: the numbers a size smaller, without the handset */
+/* narrow phones: the numbers a size smaller, without the handset; the cross without its word */
 @media (max-width: 380px) {
-  .menu-sheet__phones a { padding: 0 0.625rem; font-size: var(--fs-label); }
+  .menu-sheet__phones a { font-size: var(--fs-label); }
   .menu-sheet__phones svg { display: none; }
-}
-@media (max-height: 640px) {
-  .menu-sheet__row { min-height: 3.75rem; }
-  .menu-sheet__line { display: none; }
+  .menu-sheet__close { padding-left: 0; }
+  .menu-sheet__close > span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .menu-sheet__glide { transition: none; }
+  .menu-sheet__subs,
+  .menu-sheet__subs li { transition: none; }
 }
