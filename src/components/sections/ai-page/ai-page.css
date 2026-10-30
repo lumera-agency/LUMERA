@@ -216,23 +216,6 @@ main[data-ai-page="ai"] .ai-pcalc .ai-calc__note + .ai-calc__note { margin-top: 
 main[data-ai-page="ai"] .ai-out__list { display: grid; max-width: 56rem; margin: var(--rhythm-m) 0 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
 main[data-ai-page="ai"] .ai-out__item { padding: 1.125rem 0; border-bottom: 1px solid var(--line); font-size: var(--fs-lead); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
 
-/* ---------- phones: the request bar at the bottom (components/ai: .ai-sticky). Safari on iOS 26 paints its bottom
-   toolbar in the colour of a fixed bar docked to the bottom edge across the whole width: it showed ember there even
-   while the bar was hidden (the owner's screenshot, 21 Oct 2026). Here the bar floats clear of the edges (1rem from
-   the sides, above the safe area) and, when hidden, is gone for the browser too (visibility, once it has slid away) ---------- */
-@media (max-width: 600px) {
-  body:has(main[data-ai-page="ai"]) .ai-sticky {
-    left: 1rem;
-    right: 1rem;
-    bottom: calc(0.75rem + env(safe-area-inset-bottom));
-    padding: 0;
-    visibility: hidden;
-    transform: translateY(calc(100% + 0.75rem + env(safe-area-inset-bottom)));
-    transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s linear 0.45s;
-  }
-  body:has(main[data-ai-page="ai"]) .ai-sticky.is-on { visibility: visible; transform: none; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s; }
-}
-
 /* ---------- 1 → 2 on a phone (the owner, 26 Oct 2026: «убери наезд экрана на мобильном телефоне, он не нужен»): the
    first screen no longer pins and block 2 no longer slides over it as a sheet; the page simply scrolls. Computers keep
    the sheet (ai.css: html.ai-stick .ai-hero[data-cover]). ---------- */

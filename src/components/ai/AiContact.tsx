@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { ContactClient } from "@/components/sections/contact/ContactClient";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
+import { CONTACTS, phoneText, telHref } from "@/config/contacts";
 import { aiRich } from "./rich";
 import "@/components/sections/contact/contact.css";
 
@@ -90,6 +91,18 @@ export async function AiContact({ index, placeholder, picks, plan }: Props) {
               <ArrowIcon />
             </button>
             <p className="lead-form__note">{t("contact.lead-form.note")}</p>
+            {/* the form is sent by its script: without one it would only reload the page, so the phones take over */}
+            <noscript>
+              <p className="lead-form__fail">
+                {c("form.noscript")}{" "}
+                {CONTACTS.phones.map((n, i) => (
+                  <span key={n}>
+                    {i > 0 && ", "}
+                    <a className="link" href={telHref(n)}>{phoneText(n)}</a>
+                  </span>
+                ))}
+              </p>
+            </noscript>
             <p className="lead-form__fail" data-form-fail="" role="alert" tabIndex={-1} hidden>{t("contact.lead-form.fail")}</p>
             <p className="lead-form__fail" data-form-fail-server="" role="alert" tabIndex={-1} hidden>{t("contact.lead-form.fail-server")}</p>
           </div>

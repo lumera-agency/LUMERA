@@ -1334,3 +1334,39 @@ main[data-ai-page="ai"] .ai-dlg__head::after { content: ""; position: absolute; 
   }
 }
 @keyframes ai-hero-dim { to { opacity: 0.3; } }
+
+/* ---------- phones: the request bar at the bottom (components/ai: .ai-sticky). Safari on iOS 26 paints its bottom
+   toolbar in the colour of a fixed bar docked to the bottom edge across the whole width: it showed ember there even
+   while the bar was hidden (the owner's screenshot, 21 Oct 2026). On the AI page and both cases the bar floats clear of the edges (1rem from
+   the sides, above the safe area) and, when hidden, is gone for the browser too (visibility, once it has slid away) ---------- */
+@media (max-width: 600px) {
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky {
+    left: 1rem;
+    right: 1rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    padding: 0;
+    visibility: hidden;
+    transform: translateY(calc(100% + 0.75rem + env(safe-area-inset-bottom)));
+    transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s linear 0.45s;
+  }
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky.is-on { visibility: visible; transform: none; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s; }
+}
+
+/* ---------- narrow phones: the long buttons fit (at 320 px «Хочу такое для своего бизнеса» and «Надіслати розрахунок» pushed
+   their arrow out of the button and, on the case page, the page wider than the screen) ---------- */
+@media (max-width: 374px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .btn--primary,
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky .btn--primary { gap: 0.5rem; padding: 0 0.9rem 0 1.1rem; font-size: 0.9375rem; }
+}
+@media (max-width: 343px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .btn--primary,
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky .btn--primary { font-size: 0.875rem; }
+}
+
+/* ---------- the narrowest phones (under 360 px): nothing is cut at the edge. A section title's longest glued line
+   («відбирає замовлення») is 10 em wide, and a fact in the case's list («До 100 км від Дрездена») can't wrap: it takes the
+   whole width, under its label ---------- */
+@media (max-width: 359px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .section .s-head__title { font-size: 1.6875rem; }
+  main[data-ai-page="case"] .ai-about__f { grid-template-columns: minmax(0, 1fr); row-gap: 0.25rem; }
+}
