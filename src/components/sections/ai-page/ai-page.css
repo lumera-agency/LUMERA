@@ -160,9 +160,16 @@ main[data-ai-page="ai"] .ai-proof__ex-go { display: inline-flex; align-items: ce
 /* a dark block right before an ivory one gets the same air below its last line as above its title (the audit and the
    niches' last line had touched the ivory edge: the owner, 21 Oct 2026) */
 main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: 4.5rem; }
+}
 
 /* ---------- the pause: one phrase, a lot of air ---------- */
 main[data-ai-page="ai"] .ai-pause { display: grid; align-items: center; min-height: 80svh; padding-block: clamp(6rem, 18vh, 12rem); }
+/* (a phone: the pause stays a pause, without a whole empty screen around one phrase) */
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-pause { min-height: 62svh; padding-block: 5rem; }
+}
 main[data-ai-page="ai"] .ai-pause__text { max-width: 22ch; margin: 0 auto; font-size: var(--fs-display); font-weight: 300; line-height: 1.12; letter-spacing: -0.03em; text-align: center; color: var(--ink-mute); text-wrap: balance; }
 main[data-ai-page="ai"] .ai-pause__b { font-weight: 400; color: var(--ink); }
 /* BlurText's words move on their own (fx/BlurText) */

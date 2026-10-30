@@ -1370,3 +1370,16 @@ main[data-ai-page="ai"] .ai-dlg__head::after { content: ""; position: absolute; 
   main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .section .s-head__title { font-size: 1.6875rem; }
   main[data-ai-page="case"] .ai-about__f { grid-template-columns: minmax(0, 1fr); row-gap: 0.25rem; }
 }
+
+/* ---------- phones: one spacing for one role on the AI page and both cases. A title stays close to what it heads (2rem;
+   this file's own rule lost to page.css on the AI page, by load order: 59 px there, 32 px on the cases), and the form
+   and the questions follow their heads at the same distance (at the form two gaps added up to over 100 px) ---------- */
+@media (max-width: 600px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .s-head:not(.s-head--side) { margin-bottom: 2rem; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .contact { row-gap: 0; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .contact .lead-form { margin-top: 2rem; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .ai-sec .s-head:not(.s-head--side) + * { margin-top: 0; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .faq-wrap { row-gap: 2rem; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .faq-wrap .faq { margin-top: 0; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .faq-wrap .s-head { margin-bottom: 0; }
+}
