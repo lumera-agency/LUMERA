@@ -16,7 +16,6 @@ import { Path } from "@/components/sections/ai-page/Path";
 import { Offer } from "@/components/sections/ai-page/Offer";
 import { Terms } from "@/components/sections/ai-page/Terms";
 import { Calc } from "@/components/sections/ai-page/Calc";
-import { NotIncluded } from "@/components/sections/ai-page/NotIncluded";
 import { AUDIT, PRODUCTS, daysText, usd, weeksText } from "@/components/sections/ai-page/prices";
 import "@/components/sections/ai-page/ai-page.css";
 
@@ -28,8 +27,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/ai-avtom
 /**
  * «AI-автоматизація для бізнесу» — the AI section's own page (paid traffic leads here; the owner's rework, 21 Oct 2026:
  * the result first, the proof before the explanation, open prices): 1 the first screen → 2 the case (with «Як зараз /
- * Як буде») → a pause → 3 the niches → 4 one letter's way → 5 the lineup → 6 the terms → 7 the price calculator → 8 what
- * is not included → 9 questions → 10 the request. The section numbers are counted here, so a block can be added
+ * Як буде») → a pause → 3 the niches → 4 one letter's way → 5 the lineup → 6 the terms and what is not included → 7 the
+ * price calculator → 8 questions → 9 the request. The section numbers are counted here, so a block can be added
  * (phase 2: the losses calculator after the lineup) without renumbering by hand.
  */
 export default async function AiAutomationPage({ params }: PageProps<"/[locale]/ai-avtomatyzatsiia">) {
@@ -80,10 +79,11 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
         <Offer index={next()} />
         <Terms index={next()} />
         <Calc index={next()} />
-        <NotIncluded index={next()} />
         <AiFaq index={next()} items={faq} intro={t.rich("faq.intro", aiRich)} />
         <AiContact
           index={next()}
+          title={t.rich("form.title", aiRich)}
+          text={t("form.text")}
           placeholder={t("form.ph")}
           picks={{ label: t("form.chips.label"), items: [1, 2, 3, 4, 5].map((i) => t(`form.chip.${i}`)) }}
           plan={{ label: t("calc.att.text"), clear: t("calc.att.x") }}

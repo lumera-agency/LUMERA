@@ -86,7 +86,7 @@ export async function Hero() {
             {t.rich("hero.title", aiRich)}
           </h1>
           <p className="ai-hero__lead">
-            <span>{t("hero.lead")}</span> <span className="ai-hero__lead2">{t("hero.lead2")}</span>
+            {t("hero.lead")}
           </p>
           <div className="ai-hero__actions">
             <ButtonLink href="#contact" variant="primary">{c("cta.auto")}</ButtonLink>
