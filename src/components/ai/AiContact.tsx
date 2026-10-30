@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { ContactClient } from "@/components/sections/contact/ContactClient";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
+import { CONTACTS, phoneText, telHref } from "@/config/contacts";
+import { FormMore } from "./FormMore";
 import { aiRich } from "./rich";
 import "@/components/sections/contact/contact.css";
 
@@ -12,13 +14,16 @@ type Props = {
   picks?: { label: string; items: string[] };
   /** the calculator's result in the form (the main form's plan box): its label and its «take it out» */
   plan?: { label: string; clear: string };
+  /** this page's own title and line, in place of the shared ones */
+  title?: React.ReactNode;
+  text?: string;
 };
 
 /**
  * The request, on the main page's form (sections/contact: lead-form.js validates and sends it to /api/lead): the task
  * is fixed («Автоматизація», a hidden field), the note asks what is still done by hand.
  */
-export async function AiContact({ index, placeholder, picks, plan }: Props) {
+export async function AiContact({ index, placeholder, picks, plan, title, text }: Props) {
   const t = await getTranslations();
   const c = await getTranslations("aiCommon");
   return (
@@ -31,9 +36,9 @@ export async function AiContact({ index, placeholder, picks, plan }: Props) {
               <span>{c("nav.lead")}</span>
             </p>
             <h2 className="s-head__title s-head__title--stone" id="contact-title" data-split="">
-              <span className="tone tone--key">{c.rich("lead.title", aiRich)}</span>
+              <span className="tone tone--key">{title ?? c.rich("lead.title", aiRich)}</span>
             </h2>
-            <p className="s-head__intro">{c("lead.text")}</p>
+            <p className="s-head__intro">{text ?? c("lead.text")}</p>
           </header>
         </div>
         {/* /api/lead forwards leads to the channel set in the host's environment variables, never in this code */}
@@ -69,8 +74,9 @@ export async function AiContact({ index, placeholder, picks, plan }: Props) {
             <label htmlFor="f-contact">{t("contact.field.label.2")}</label>
             <input id="f-contact" name="contact" type="text" autoComplete="tel" required aria-describedby="f-contact-hint f-contact-err" />
             <p className="field__hint" id="f-contact-hint">{t("contact.field.hint")}</p>
-            <p className="field__err" id="f-contact-err" hidden>{t("contact.field.err.2")}</p>
+            <p className="field__err" id="f-contact-err" hidden>{c("form.contact.err")}</p>
           </div>
+          <FormMore label={c("form.more")}>
           <div className="field">
             <label htmlFor="f-note">
               <span>{c("form.manual.text")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
@@ -84,19 +90,32 @@ export async function AiContact({ index, placeholder, picks, plan }: Props) {
             )}
             <textarea id="f-note" name="note" rows={3} placeholder={placeholder}></textarea>
           </div>
+          </FormMore>
           <div className="lead-form__foot">
             <button className="btn btn--primary" type="submit" data-form-submit="">
               <span className="btn__label">{t("contact.btn.label")}</span>
               <ArrowIcon />
             </button>
             <p className="lead-form__note">{t("contact.lead-form.note")}</p>
+            {/* the form is sent by its script: without one it would only reload the page, so the phones take over */}
+            <noscript>
+              <p className="lead-form__fail">
+                {c("form.noscript")}{" "}
+                {CONTACTS.phones.map((n, i) => (
+                  <span key={n}>
+                    {i > 0 && ", "}
+                    <a className="link" href={telHref(n)}>{phoneText(n)}</a>
+                  </span>
+                ))}
+              </p>
+            </noscript>
             <p className="lead-form__fail" data-form-fail="" role="alert" tabIndex={-1} hidden>{t("contact.lead-form.fail")}</p>
             <p className="lead-form__fail" data-form-fail-server="" role="alert" tabIndex={-1} hidden>{t("contact.lead-form.fail-server")}</p>
           </div>
           <div className="lead-form__done" data-form-done="" hidden tabIndex={-1}>
             <span className="check check--lg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7" /></svg></span>
             <p className="lead-form__done-title">{t("contact.lead-form.done-title")}</p>
-            <p>{t("contact.lead-form.done.p")}</p>
+            <p>{c("form.done.text")}</p>
           </div>
         </form>
       </div>

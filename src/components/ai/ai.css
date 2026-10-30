@@ -1334,3 +1334,67 @@ main[data-ai-page="ai"] .ai-dlg__head::after { content: ""; position: absolute; 
   }
 }
 @keyframes ai-hero-dim { to { opacity: 0.3; } }
+
+/* ---------- phones: the request bar at the bottom (components/ai: .ai-sticky). Safari on iOS 26 paints its bottom
+   toolbar in the colour of a fixed bar docked to the bottom edge across the whole width: it showed ember there even
+   while the bar was hidden (the owner's screenshot, 21 Oct 2026). On the AI page and both cases the bar floats clear of the edges (1rem from
+   the sides, above the safe area) and, when hidden, is gone for the browser too (visibility, once it has slid away) ---------- */
+@media (max-width: 600px) {
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky {
+    left: 1rem;
+    /* room for the button back up, which stays on beside the bar as on the main page (the owner, 30 Oct 2026) */
+    right: calc(1rem + 2.875rem + 0.5rem);
+    bottom: calc(0.875rem + env(safe-area-inset-bottom));
+    padding: 0;
+    visibility: hidden;
+    transform: translateY(calc(100% + 0.875rem + env(safe-area-inset-bottom)));
+    transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s linear 0.45s;
+  }
+  /* the two stand on one line, above the safe area too */
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .to-top { bottom: calc(1rem + env(safe-area-inset-bottom)); }
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky.is-on { visibility: visible; transform: none; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s; }
+}
+
+/* ---------- narrow phones: the long buttons fit (at 320 px «Хочу такое для своего бизнеса» and «Надіслати розрахунок» pushed
+   their arrow out of the button and, on the case page, the page wider than the screen) ---------- */
+@media (max-width: 374px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .btn--primary,
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky .btn--primary { gap: 0.5rem; padding: 0 0.9rem 0 1.1rem; font-size: 0.9375rem; }
+}
+@media (max-width: 343px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .btn--primary,
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky .btn--primary { font-size: 0.875rem; }
+  body:has(main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .ai-sticky .btn--primary { gap: 0.375rem; padding: 0 0.625rem 0 0.875rem; font-size: 0.8125rem; }
+}
+
+/* ---------- the narrowest phones (under 360 px): nothing is cut at the edge. A section title's longest glued line
+   («відбирає замовлення») is 10 em wide, and a fact in the case's list («До 100 км від Дрездена») can't wrap: it takes the
+   whole width, under its label ---------- */
+@media (max-width: 359px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .section .s-head__title { font-size: 1.6875rem; }
+  main[data-ai-page="case"] .ai-about__f { grid-template-columns: minmax(0, 1fr); row-gap: 0.25rem; }
+}
+
+/* ---------- phones: one spacing for one role on the AI page and both cases. A title stays close to what it heads (2rem;
+   this file's own rule lost to page.css on the AI page, by load order: 59 px there, 32 px on the cases), and the form
+   and the questions follow their heads at the same distance (at the form two gaps added up to over 100 px) ---------- */
+@media (max-width: 600px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .s-head:not(.s-head--side) { margin-bottom: 2rem; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .contact { row-gap: 0; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .contact .lead-form { margin-top: 2rem; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .ai-sec .s-head:not(.s-head--side) + * { margin-top: 0; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .faq-wrap { row-gap: 2rem; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .faq-wrap .faq { margin-top: 0; }
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .faq-wrap .s-head { margin-bottom: 0; }
+}
+
+/* ---------- the form on a phone (the owner, 30 Oct 2026: «сократить»): two fields and a button; the note and the quick
+   picks wait behind one line (FormMore), the hint under the contact goes ---------- */
+.ai-fmore { display: grid; gap: inherit; }
+.ai-fmore__btn { display: none; }
+@media (max-width: 600px) {
+  main:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"]) .lead-form .field__hint { display: none; }
+  .ai-fmore:not(.is-open) .ai-fmore__body { display: none; }
+  .ai-fmore:not(.is-open) .ai-fmore__btn { display: inline-flex; align-items: center; justify-self: start; min-height: 2.75rem; padding: 0; border: 0; font: 400 var(--fs-small)/1.2 var(--font-sans); color: var(--ink-soft); background: none; cursor: pointer; }
+  .ai-fmore__btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.125rem; }
+}

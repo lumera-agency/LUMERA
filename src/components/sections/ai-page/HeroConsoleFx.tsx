@@ -123,7 +123,7 @@ function conduct(stage: HTMLElement, lines: ConsoleLine[]): Conductor | null {
     return [{ opacity: 0 }, { opacity: peak, offset: 80 / d }, { opacity: peak, offset: (to - 100 - from) / d }, { opacity: 0 }];
   };
 
-  /** 0 ms: the head card leaves to the right, the ghosts move up into its place */
+  /** 0 ms: the head card leaves upward, out of the queue's frame; the ghosts move up into its place */
   const advance = () => {
     start = performance.now();
     const old = head;

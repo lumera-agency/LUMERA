@@ -86,7 +86,7 @@ export async function Hero() {
             {t.rich("hero.title", aiRich)}
           </h1>
           <p className="ai-hero__lead">
-            <span>{t("hero.lead")}</span> <span className="ai-hero__lead2">{t("hero.lead2")}</span>
+            {t("hero.lead")}
           </p>
           <div className="ai-hero__actions">
             <ButtonLink href="#contact" variant="primary">{c("cta.auto")}</ButtonLink>
@@ -195,7 +195,10 @@ export async function Hero() {
                   {/* the third counter: «Записів» (+1 when a booking lands); «Загублених 0» waits for the owner's OK */}
                   {[1, 2, 3].map((n, k) => (
                     <div key={n} className="ai-console__cell">
-                      <p className="ai-console__lbl">{t(`console.met.${n}`)}</p>
+                      <p className="ai-console__lbl">
+                        <span className="ai-console__mtf">{t(`console.met.${n}`)}</span>
+                        <span className="ai-console__mts">{t(`console.metS.${n}`)}</span>
+                      </p>
                       <Num value={METRICS[k]} slots={3} start />
                     </div>
                   ))}
