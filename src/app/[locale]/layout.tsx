@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import { siteUrl, studioName } from "@/config/site";
+import { allowIndexing, siteUrl, studioName } from "@/config/site";
 import { LogoSprite } from "@/components/ui/logo/LogoSprite";
 import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
 import { SiteNavProvider } from "@/components/layout/site-nav/SiteNavProvider";
@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   return {
     // every page's canonical, hreflang and og:url are paths: they resolve against the site's address (config/site)
     metadataBase: new URL(siteUrl),
+    robots: allowIndexing ? undefined : { index: false, follow: false },
     title: t("title"),
     description: t("description"),
     alternates: { canonical: path, languages: { uk: "/", ru: "/ru", "x-default": "/" } },

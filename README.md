@@ -133,7 +133,10 @@ npx shadcn add @eclo/hover-reveal @eclo/horizontal-ride @eclo/preloader
 ## Переменные окружения
 
 `NEXT_PUBLIC_SITE_URL` — адрес сайта: из него собираются canonical, hreflang, Open Graph, robots и sitemap
-(`src/config/site.ts`). Обязательна, значения по умолчанию в коде нет: без неё сборка остановится. Образец —
-`.env.example`; на Vercel — Settings → Environment Variables. Переезд на другой домен — смена этой переменной.
+(`src/config/site.ts`). Без неё берётся `https://eclo.com.ua`. Образец — `.env.example`; на Vercel — Settings →
+Environment Variables. Переезд на другой домен — смена этой переменной.
+`NEXT_PUBLIC_ALLOW_INDEXING` — пока не `true`, сайт закрыт от поисковиков: заголовок `X-Robots-Tag` (`next.config.ts`)
+и `<meta name="robots">` (`app/[locale]/layout.tsx`). Читается при сборке: чтобы открыть, поставьте `true` в Vercel
+для Production и сделайте redeploy.
 Заявки: `LEAD_WEBHOOK_URL` **или** `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID`. Без них форма
 честно говорит, что заявка не ушла (локально — имитирует отправку).
