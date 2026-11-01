@@ -63,20 +63,20 @@ export function startAds() {
    as the events). In a card the parts follow their frame in, one after another. A part already on the screen or passed
    stays as it is ---------- */
 /** frames that hold a scene: they only fade in, so a mock never slides while its own story starts (the review, 20 Oct) */
-const STILL = '.ad-card, .ad-kase, .ad-track';
+const STILL = '.rk-card, .rk-kase, .rk-track';
 const REVEAL = [
-  'main.ad .ai-sec .s-head__meta', 'main.ad .ai-sec .s-head__intro',
-  '.ad-card', '.ad-live__how', '.ad-live__foot', '.ad-path__foot', '.ad-first', '.ad-pc', '.ad-addons__h', '.ad-addon',
-  '.ad-price__note', '.ad-track', '.ad-kase', 'main.ad .faq', '.ad-next', '.ad-get',
-  '.ad-terms__list', '.ad-paths',
-  'main.ad .lead-form',
+  'main.rk .ai-sec .s-head__meta', 'main.rk .ai-sec .s-head__intro',
+  '.rk-card', '.rk-live__how', '.rk-live__foot', '.rk-path__foot', '.rk-first', '.rk-pc', '.rk-addons__h', '.rk-addon',
+  '.rk-price__note', '.rk-track', '.rk-kase', 'main.rk .faq', '.rk-next', '.rk-get',
+  '.rk-terms__list', '.rk-paths',
+  'main.rk .lead-form',
 ].join(', ');
 /** a card's parts that follow it in (its scene, if it has one, keeps its own timing) */
 const PARTS = [
-  ['.ad-card', '.ad-card__body > *'],
-  ['.ad-pc', ':scope > *'],
-  ['.ad-get', ':scope > *'],
-  ['.ad-terms__list', ':scope > li'],
+  ['.rk-card', '.rk-card__body > *'],
+  ['.rk-pc', ':scope > *'],
+  ['.rk-get', ':scope > *'],
+  ['.rk-terms__list', ':scope > li'],
 ];
 
 function initReveals() {
@@ -150,7 +150,7 @@ function initReveals() {
 const BLUR_STEP = 50;
 function initBlurText() {
   if (!motion) return;
-  for (const el of $$('.ad-pause__text')) {
+  for (const el of $$('.rk-pause__text')) {
     if (el.getBoundingClientRect().bottom < 0) continue;
     const words = [];
     const walk = (node) => {
@@ -163,7 +163,7 @@ function initBlurText() {
         const prev = words[words.length - 1];
         if (lead && prev) {
           const p = document.createElement('span');
-          p.className = 'ad-bw-p';
+          p.className = 'rk-bw-p';
           p.textContent = lead[0];
           prev.append(p);
           child.textContent = child.textContent.slice(lead[0].length);
@@ -173,7 +173,7 @@ function initBlurText() {
           if (!part) continue;
           if (/^\s+$/.test(part)) { frag.append(part); continue; }
           const w = document.createElement('span');
-          w.className = 'ad-bw';
+          w.className = 'rk-bw';
           w.textContent = part;
           frag.append(w);
           words.push(w);
@@ -274,7 +274,7 @@ function initPlans() {
     });
   }
 }
-/** a two-way switch (.ad-hseg, radios): the focus ring only from the keyboard */
+/** a two-way switch (.rk-hseg, radios): the focus ring only from the keyboard */
 function segFocus(seg) {
   for (const input of $$('input', seg)) {
     const label = input.closest('label');
@@ -288,10 +288,10 @@ function segFocus(seg) {
    plays; the one hidden, if playing, jumps to its end (the scene engine) ---------- */
 function initChPick() {
   const seg = $('[data-ch-pick]');
-  const grid = $('.ad-ch__grid[data-pick]');
+  const grid = $('.rk-ch__grid[data-pick]');
   if (!seg || !grid) return;
   const paint = (input) => {
-    $$('.ad-hseg__o', seg).forEach((o, i) => {
+    $$('.rk-hseg__o', seg).forEach((o, i) => {
       const on = $('input', o) === input;
       o.classList.toggle('is-on', on);
       if (on) seg.style.setProperty('--i', String(i));
@@ -315,17 +315,17 @@ function initFolds() {
   const folds = $$('details[data-fold]');
   if (!folds.length) return;
   // the form's site field, opened on a phone: the cursor goes into it
-  const site = $('.ad-site-fold');
+  const site = $('.rk-site-fold');
   site?.addEventListener('toggle', () => { if (site.open && phoneMQ.matches) $('input', site)?.focus(); });
   // phones fold them (one marked data-fold-open stays open: the first of the terms); wider screens open them all
   const set = () => folds.forEach((d) => { d.open = !phoneMQ.matches || d.hasAttribute('data-fold-open'); });
   set();
   phoneMQ.addEventListener('change', set);
   // a term opened on a phone: its sentence comes in softly (opacity and a few pixels, no height animation)
-  for (const d of $$('.ad-terms__fold')) {
+  for (const d of $$('.rk-terms__fold')) {
     d.addEventListener('toggle', () => {
       if (!d.open || !motion || !phoneMQ.matches) return;
-      $('.ad-terms__p', d)?.animate([{ opacity: 0, translate: '0 -0.375rem' }, { opacity: 1, translate: '0 0' }], { duration: 380, easing: SOFT });
+      $('.rk-terms__p', d)?.animate([{ opacity: 0, translate: '0 -0.375rem' }, { opacity: 1, translate: '0 0' }], { duration: 380, easing: SOFT });
     });
   }
 }
@@ -340,7 +340,7 @@ function initMore() {
       const open = btn.getAttribute('aria-expanded') !== 'true';
       btn.setAttribute('aria-expanded', String(open));
       list.classList.toggle('is-open', open);
-      if (open) cascadeIn($$('.ad-pc__extra', list), 8);
+      if (open) cascadeIn($$('.rk-pc__extra', list), 8);
     });
   }
 }
@@ -369,7 +369,7 @@ function initCaseTabs() {
       choose(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length], true);
     });
   });
-  for (const card of $$('.ad-kase')) {
+  for (const card of $$('.rk-kase')) {
     const tabs = $$('[data-case-tab]', card);
     tablist(tabs, (tab, focus = false) => {
       for (const t of tabs) {
@@ -382,7 +382,7 @@ function initCaseTabs() {
       }
       if (focus) tab.focus();
     });
-    const shot = $('.ad-kase__shot', card);
+    const shot = $('.rk-kase__shot', card);
     shot?.addEventListener('toggle', () => { if (shot.open && motion) caseShot(shot, 0, (el, k, o) => el.animate(k, { fill: 'backwards', easing: OUT, ...o })); });
   }
   const picks = $$('[data-case-pick]');
@@ -417,9 +417,9 @@ let stackTo = () => {};
    card away (to the left, it tucks under the pile) or bring the bottom one back on top; the new top card's numbers roll
    up and the details below follow it ---------- */
 function initCaseStack() {
-  const stack = $('.ad-kstack');
+  const stack = $('.rk-kstack');
   if (!stack) return;
-  const order = $$('.ad-kstack__card', stack);
+  const order = $$('.rk-kstack__card', stack);
   const dots = $$('[data-case-dot]', stack);
   let busy = false;
   const place = () => order.forEach((card, i) => { card.dataset.pos = String(i); card.setAttribute('aria-hidden', String(i > 0)); });
@@ -430,7 +430,7 @@ function initCaseStack() {
   };
   const roll = (card) => {
     if (!motion) return;
-    $$('.ad-count__strip', card).forEach((strip, j) => {
+    $$('.rk-count__strip', card).forEach((strip, j) => {
       const d = Number(strip.parentElement.style.getPropertyValue('--d')) || 0;
       strip.animate([{ transform: 'translateY(0%)' }, { transform: `translateY(${-d * 10}%)` }], { duration: 900 + j * 60, delay: 140, easing: SOFT, fill: 'backwards' });
     });
@@ -481,7 +481,7 @@ function initCaseStack() {
   // a swipe on the top card (the page keeps its vertical scroll: touch-action pan-y)
   let drag = null;
   stack.addEventListener('pointerdown', (e) => {
-    const card = e.target.closest('.ad-kstack__card');
+    const card = e.target.closest('.rk-kstack__card');
     if (!card || card !== order[0] || busy) return;
     drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, card, on: false };
   });
@@ -579,7 +579,7 @@ function initScenes() {
     scene.replay?.addEventListener('click', () => request(scene, true));
   }
   if (!motion) {
-    root.classList.add('ad-go');
+    root.classList.add('rk-go');
     scenes.forEach((s) => { s.played = true; });
     return;
   }
@@ -601,7 +601,7 @@ function initScenes() {
       if (ready(scene)) request(scene);
     }
   }
-  root.classList.add('ad-go');
+  root.classList.add('rk-go');
   initLoops();
   // the layers for a scene's moving parts (.is-warm: will-change) come one screen ahead of it and leave once it has played
   const warm = new IntersectionObserver((entries) => {
@@ -657,7 +657,7 @@ function maybeYield() {
 function initLoops() {
   const loops = scenes.filter((s) => s.loop);
   if (!loops.length) return;
-  const cover = $('main.ad .ai-hero ~ *');
+  const cover = $('main.rk .ai-hero ~ *');
   if (cover) {
     new IntersectionObserver((entries) => {
       const e = entries[entries.length - 1];
@@ -674,7 +674,7 @@ function loopAgain(scene, hold = LOOP_HOLD) {
   clearTimeout(scene.loopT);
   scene.loopT = setTimeout(async () => {
     if (!scene.inView || scene.covered || scene.playing || !scene.played || document.hidden) return;
-    const parts = $$('.ad-inbox__row, .ad-fl__n', scene.el);
+    const parts = $$('.rk-inbox__row, .rk-fl__n', scene.el);
     const fades = parts.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: EXIT, fill: 'forwards' }));
     try { await Promise.all(fades.map((a) => a.finished)); } catch { /* cancelled */ }
     if (!scene.inView || scene.covered || scene.playing || document.hidden) { fades.forEach((a) => a.cancel()); return; }
@@ -790,13 +790,13 @@ const tap = (scene, el, delay) =>
    earlier ones step down), and that network's count goes up. About 4 s ---------- */
 const HERO_STEP = 820;
 function playHero(scene, replay) {
-  const rows = $$('.ad-inbox__row', scene.el); // newest first, as at rest
+  const rows = $$('.rk-inbox__row', scene.el); // newest first, as at rest
   const n = rows.length;
   // the first light leaves once the window has risen into place (its own CSS rise ends at about 1.1 s)
   const base = replay ? 200 : Math.max(250, 1000 - performance.now());
-  const runs = $$('.ad-fl__bus .ad-fl__run', scene.el);
-  const link = $('.ad-fl__link .ad-fl__run', scene.el);
-  const hub = $('.ad-fl__hub', scene.el);
+  const runs = $$('.rk-fl__bus .rk-fl__run', scene.el);
+  const link = $('.rk-fl__link .rk-fl__run', scene.el);
+  const hub = $('.rk-fl__hub', scene.el);
   const COL = { google: 0, insta: 1, fb: 2 };
   const SHIFT_X = ['33.333%', '0%', '-33.333%'];
   const BUS = 640;
@@ -824,8 +824,8 @@ function playHero(scene, replay) {
     const turn = n - 1 - i; // the bottom row came first
     const t = times[turn];
     pop(scene, row, t);
-    show(scene, $('.ad-inbox__src', row), t + 160, 'translateX(-0.375rem)', 420);
-    anim(scene, $('.ad-inbox__tick', row), [{ transform: 'scale(0.3)' }, { transform: 'none' }], { duration: 420, delay: t + 180, easing: SPRING });
+    show(scene, $('.rk-inbox__src', row), t + 160, 'translateX(-0.375rem)', 420);
+    anim(scene, $('.rk-inbox__tick', row), [{ transform: 'scale(0.3)' }, { transform: 'none' }], { duration: 420, delay: t + 180, easing: SPRING });
     if (!i) return;
     // it comes in at the top and steps down one place as each later one arrives (translate, apart from the pop's transform)
     const y = (arrived) => `0 ${slot[i - (n - arrived)] - slot[i]}px`;
@@ -839,8 +839,8 @@ function playHero(scene, replay) {
   });
   // each network's count stands at zero from the start and goes up as its requests land; its badge answers each time
   const STEP = 420;
-  for (const li of $$('.ad-fl__src > li', scene.el)) {
-    const strip = $('.ad-part__strip', li);
+  for (const li of $$('.rk-fl__src > li', scene.el)) {
+    const strip = $('.rk-part__strip', li);
     const ts = (at[li.dataset.src] || []).sort((p, q) => p - q);
     const k = ts.length;
     if (!strip || !k) continue;
@@ -852,7 +852,7 @@ function playHero(scene, replay) {
       frames.push({ offset: j === k - 1 ? 1 : (tt + STEP) / end, transform: yy(j + 1) });
     });
     anim(scene, strip, frames, { duration: end, delay: 0, easing: 'linear' });
-    ts.forEach((tt) => anim(scene, $('.ad-fl__n', li), [{ transform: 'none' }, { transform: 'scale(1.2)', offset: 0.35 }, { transform: 'none' }], { duration: 420, delay: tt - 60, easing: MOVE, fill: 'none' }));
+    ts.forEach((tt) => anim(scene, $('.rk-fl__n', li), [{ transform: 'none' }, { transform: 'scale(1.2)', offset: 0.35 }, { transform: 'none' }], { duration: 420, delay: tt - 60, easing: MOVE, fill: 'none' }));
   }
 }
 
@@ -861,8 +861,8 @@ function playHero(scene, replay) {
    and pushes them down, a tap on it, «+1 заявка». About 3.3 s ---------- */
 function playGoogle(scene) {
   googleAt = performance.now();
-  const chars = $$('.ad-type > i', scene.el);
-  const caret = $('.ad-type__caret', scene.el);
+  const chars = $$('.rk-type > i', scene.el);
+  const caret = $('.rk-type__caret', scene.el);
   // the pace: 40–60 ms a letter, a little longer after a space (deterministic, so a replay types the same way)
   let t = 250;
   const times = chars.map((ch, i) => {
@@ -893,21 +893,21 @@ function playGoogle(scene) {
       { opacity: 0, offset: 1 },
     ], { duration: res, easing: 'linear', fill: 'none' });
   }
-  const ad = $('.ad-serp__ad', scene.el);
-  const list = $('.ad-serp__res', scene.el);
+  const ad = $('.rk-serp__ad', scene.el);
+  const list = $('.rk-serp__res', scene.el);
   // the ordinary results first stand where the ad will be, then slide down by its height as it comes in
   const shift = ad && list ? ad.offsetHeight + (parseFloat(getComputedStyle(list).rowGap) || 0) : 0;
   const adAt = res + 450;
-  $$('.ad-serp__org', scene.el).forEach((org, i) => {
+  $$('.rk-serp__org', scene.el).forEach((org, i) => {
     anim(scene, org, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: res + i * 80 });
     anim(scene, org, [{ transform: `translateY(${-shift}px)` }, { transform: 'none' }], { duration: 480, delay: adAt + i * 40, easing: MOVE });
   });
   anim(scene, ad, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: adAt + 60 });
   anim(scene, ad, [{ transform: 'translateY(-0.5rem) scale(0.97)' }, { transform: 'none' }], { duration: 560, delay: adAt + 60, easing: SPRING });
   const press = adAt + 760;
-  finger(scene, $('.ad-serp__ad .ad-tap', scene.el), press);
-  tap(scene, $('.ad-serp__ad .ad-tap', scene.el), press);
-  pop(scene, $('.ad-toast', scene.el), press + 250);
+  finger(scene, $('.rk-serp__ad .rk-tap', scene.el), press);
+  tap(scene, $('.rk-serp__ad .rk-tap', scene.el), press);
+  pop(scene, $('.rk-toast', scene.el), press + 250);
 }
 
 /** where an element's middle stands inside the scene, from the layout (not from the transforms the scene is about to play) */
@@ -922,7 +922,7 @@ function spot(el, root) {
 }
 /** the person's finger (ember): it glides in from below to `target`, presses at `at`, lifts and goes (transient) */
 function finger(scene, target, at) {
-  const f = $('.ad-finger', scene.el);
+  const f = $('.rk-finger', scene.el);
   if (!f || !target) return;
   const to = spot(target, scene.el);
   const from = { x: scene.el.offsetWidth * 0.82, y: scene.el.offsetHeight + 16 };
@@ -956,9 +956,9 @@ function playMeta(scene, replay) {
     if (google?.playing) lag = Math.max(0, googleAt + PAIR - performance.now());
   }
   const d = (ms) => ms + lag;
-  const dots = $$('.ad-crowd__dot', scene.el);
-  const chips = $$('.ad-aud__chips li', scene.el);
-  show(scene, $('.ad-aud__k', scene.el), d(100), 'translateY(0.25rem)', 420);
+  const dots = $$('.rk-crowd__dot', scene.el);
+  const chips = $$('.rk-aud__chips li', scene.el);
+  show(scene, $('.rk-aud__k', scene.el), d(100), 'translateY(0.25rem)', 420);
   const CHIP = 450;
   chips.forEach((chip, i) => pop(scene, chip, d(250 + i * CHIP)));
   // chip 1 (the city) and chip 2 (the age): those outside dim and shrink in a wave that starts at the chip
@@ -978,12 +978,12 @@ function playMeta(scene, replay) {
     anim(scene, dot, [{ opacity: 0.55 }, { opacity: 1 }], { duration: 240, delay: lit + j * 110, easing: 'linear' });
     anim(scene, $('b', dot), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'scale(1.35)', offset: 0.45 }, { opacity: 1, transform: 'none' }], { duration: 560, delay: lit + j * 110 });
   });
-  const postEl = $('.ad-post', scene.el);
+  const postEl = $('.rk-post', scene.el);
   const post = lit + 520;
   if (postEl) {
     const edge = spot(postEl, scene.el);
     edge.x -= postEl.offsetWidth / 2;
-    $$('.ad-beam', scene.el).forEach((beam, j) => {
+    $$('.rk-beam', scene.el).forEach((beam, j) => {
       const dot = fit[j];
       if (!dot) return;
       const q = spot(dot, scene.el);
@@ -1000,9 +1000,9 @@ function playMeta(scene, replay) {
   // the ad comes in from the people's side
   anim(scene, postEl, [{ opacity: 0, transform: 'translateX(-1.5rem)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: post });
   const press = post + 680;
-  finger(scene, $('.ad-post__cta .ad-tap', scene.el), press);
-  tap(scene, $('.ad-post__cta .ad-tap', scene.el), press);
-  pop(scene, $('.ad-toast', scene.el), press + 250);
+  finger(scene, $('.rk-post__cta .rk-tap', scene.el), press);
+  tap(scene, $('.rk-post__cta .rk-tap', scene.el), press);
+  pop(scene, $('.rk-toast', scene.el), press + 250);
 }
 
 /* ---------- 3 · wide screens, the live report (Magic UI's / React Bits' Animated List, React Bits' Counter): the sheet
@@ -1011,7 +1011,7 @@ function playMeta(scene, replay) {
    About 3.4 s ---------- */
 function playLive(scene, replay) {
   anim(scene, scene.el, [{ opacity: 0, transform: 'translateY(1.25rem)' }, { opacity: 1, transform: 'none' }], { duration: 700 });
-  const rows = $$('.ad-live__row', scene.el);
+  const rows = $$('.rk-live__row', scene.el);
   const n = rows.length;
   if (!n) return;
   const h = rows[0].offsetHeight;
@@ -1036,8 +1036,8 @@ function playLive(scene, replay) {
     anim(scene, row, frames, { duration: D, easing: 'linear' });
   });
   // the totals: which source each arrival adds to
-  const came = [...rows].reverse().map((row) => $('.ad-live__src', row)?.dataset.src);
-  for (const tot of $$('.ad-live__t', scene.el)) {
+  const came = [...rows].reverse().map((row) => $('.rk-live__src', row)?.dataset.src);
+  for (const tot of $$('.rk-live__t', scene.el)) {
     const from = Number(tot.dataset.from);
     const last = Number($('.visually-hidden', tot)?.textContent) || from;
     const times = [];
@@ -1053,7 +1053,7 @@ function playLive(scene, replay) {
       dk.push({ offset: at(t + 460), transform: digit(m + 1) });
       bk.push({ offset: at(t), transform: share(m), easing: OUT });
       bk.push({ offset: at(t + 460), transform: share(m + 1) });
-      anim(scene, $('.ad-live__plus', tot), [
+      anim(scene, $('.rk-live__plus', tot), [
         { opacity: 0, transform: 'translateY(0.375rem)' },
         { opacity: 1, transform: 'none', offset: 0.2 },
         { opacity: 1, transform: 'none', offset: 0.7 },
@@ -1064,8 +1064,8 @@ function playLive(scene, replay) {
       dk.push({ offset: 1, transform: dk[dk.length - 1].transform });
       bk.push({ offset: 1, transform: 'none' });
     }
-    anim(scene, $('.ad-count__d[data-last] .ad-count__strip', tot), dk, { duration: D, easing: 'linear' });
-    anim(scene, $('.ad-live__tb i', tot), bk, { duration: D, easing: 'linear' });
+    anim(scene, $('.rk-count__d[data-last] .rk-count__strip', tot), dk, { duration: D, easing: 'linear' });
+    anim(scene, $('.rk-live__tb i', tot), bk, { duration: D, easing: 'linear' });
   }
 }
 
@@ -1074,7 +1074,7 @@ function playLive(scene, replay) {
    form is filled and sent (an ember tap); «Записано»; «+1 заявка» runs on to the report; Google 14 → 15, its bar
    reaches the end; the formula line. About 4.4 s ---------- */
 function playPath(scene) {
-  const flow = $('.ad-path__flow', scene.el);
+  const flow = $('.rk-path__flow', scene.el);
   if (!flow) return;
   /** an element's box inside the way, from the layout (not from the transforms about to play) */
   const box = (el) => {
@@ -1088,21 +1088,21 @@ function playPath(scene) {
   };
   const tr = (p, extra = '') => `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px)${extra}`;
   const up = [{ opacity: 0, transform: 'translateY(1rem)' }, { opacity: 1, transform: 'none' }];
-  $$('.ad-path__frame', scene.el).forEach((f, i) => {
-    anim(scene, $('.ad-path__shot', f), up, { duration: 640, delay: i * 90 });
-    anim(scene, $('.ad-path__cap', f), [{ opacity: 0 }, { opacity: 1 }], { duration: 520, delay: 160 + i * 90 });
+  $$('.rk-path__frame', scene.el).forEach((f, i) => {
+    anim(scene, $('.rk-path__shot', f), up, { duration: 640, delay: i * 90 });
+    anim(scene, $('.rk-path__cap', f), [{ opacity: 0 }, { opacity: 1 }], { duration: 520, delay: 160 + i * 90 });
   });
   // 1 · the label drops onto the ad
-  const tag1 = $('.ad-path__tag[data-slot="1"]', scene.el);
-  const tag2 = $('.ad-path__tag[data-slot="2"]', scene.el);
+  const tag1 = $('.rk-path__tag[data-slot="1"]', scene.el);
+  const tag2 = $('.rk-path__tag[data-slot="2"]', scene.el);
   anim(scene, tag1, [{ opacity: 0, transform: 'translateY(-0.875rem) rotate(-9deg)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: 480, easing: SPRING });
   // 2 · it rides the link to the site
   const T1 = 1080, D1 = 760;
-  const rails = $$('.ad-path__seg i', scene.el);
+  const rails = $$('.rk-path__seg i', scene.el);
   if (tag1 && tag2) {
     const a = box(tag1), b = box(tag2);
     const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-    anim(scene, $('.ad-path__run--tag', scene.el), [
+    anim(scene, $('.rk-path__run--tag', scene.el), [
       { offset: 0, opacity: 0, transform: tr(a) },
       { offset: 0.08, opacity: 1, transform: tr(a, ' scale(1.06)') },
       { offset: 0.5, opacity: 1, transform: tr(mid, ' scale(1.06)') },
@@ -1114,16 +1114,16 @@ function playPath(scene) {
   anim(scene, tag2, [{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: T1 + D1 - 60, easing: 'linear' });
   // 3 · the form is filled and sent
   const T2 = T1 + D1 + 80;
-  anim(scene, $('.ad-path__fv', scene.el), [{ opacity: 0, transform: 'translateX(-0.375rem)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: T2 });
-  tap(scene, $('.ad-path__tap', scene.el), T2 + 460);
-  anim(scene, $('.ad-path__send', scene.el), [{ transform: 'none' }, { transform: 'scale(0.94)', offset: 0.4 }, { transform: 'none' }], { duration: 300, delay: T2 + 460, fill: 'none' });
-  const rec = $('.ad-path__rec', scene.el);
+  anim(scene, $('.rk-path__fv', scene.el), [{ opacity: 0, transform: 'translateX(-0.375rem)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: T2 });
+  tap(scene, $('.rk-path__tap', scene.el), T2 + 460);
+  anim(scene, $('.rk-path__send', scene.el), [{ transform: 'none' }, { transform: 'scale(0.94)', offset: 0.4 }, { transform: 'none' }], { duration: 300, delay: T2 + 460, fill: 'none' });
+  const rec = $('.rk-path__rec', scene.el);
   anim(scene, rec, [{ opacity: 0, transform: 'translateY(0.5rem)' }, { opacity: 1, transform: 'none' }], { duration: 460, delay: T2 + 700 });
-  anim(scene, $('.ad-path__tick', scene.el), [{ transform: 'scale(0.3)' }, { transform: 'none' }], { duration: 480, delay: T2 + 800, easing: SPRING });
+  anim(scene, $('.rk-path__tick', scene.el), [{ transform: 'scale(0.3)' }, { transform: 'none' }], { duration: 480, delay: T2 + 800, easing: SPRING });
   // 4 · «+1 заявка» runs on to the report
   const T3 = T2 + 1150, D3 = 760;
-  const hit = $('.ad-path__run--hit', scene.el);
-  const row = $('.ad-path__row[data-src="google"]', scene.el);
+  const hit = $('.rk-path__run--hit', scene.el);
+  const row = $('.rk-path__row[data-src="google"]', scene.el);
   if (rec && hit && row) {
     const r = box(rec), g = box(row);
     const from = { x: r.x + 8, y: r.y + r.h / 2 - hit.offsetHeight / 2 };
@@ -1140,10 +1140,10 @@ function playPath(scene) {
   anim(scene, rails[1], [{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: D3 * 0.8, delay: T3 + 60, easing: MOVE });
   // 5 · Google 14 → 15
   const T4 = T3 + D3 - 80;
-  anim(scene, $('.ad-path__flash', scene.el), [{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 0 }], { duration: 1100, delay: T4, easing: 'linear', fill: 'none' });
-  anim(scene, $('.ad-path__row[data-src="google"] .ad-count__d[data-last] .ad-count__strip', scene.el), [{ transform: 'translateY(-40%)' }, { transform: 'translateY(-50%)' }], { duration: 520, delay: T4 + 60 });
-  anim(scene, $('.ad-path__row[data-src="google"] .ad-path__bar i', scene.el), [{ transform: 'scaleX(0.9333)' }, { transform: 'none' }], { duration: 520, delay: T4 + 60 });
-  anim(scene, $('.ad-path__cpl', scene.el), [{ opacity: 0 }, { opacity: 1 }], { duration: 480, delay: T4 + 380 });
+  anim(scene, $('.rk-path__flash', scene.el), [{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 0 }], { duration: 1100, delay: T4, easing: 'linear', fill: 'none' });
+  anim(scene, $('.rk-path__row[data-src="google"] .rk-count__d[data-last] .rk-count__strip', scene.el), [{ transform: 'translateY(-40%)' }, { transform: 'translateY(-50%)' }], { duration: 520, delay: T4 + 60 });
+  anim(scene, $('.rk-path__row[data-src="google"] .rk-path__bar i', scene.el), [{ transform: 'scaleX(0.9333)' }, { transform: 'none' }], { duration: 520, delay: T4 + 60 });
+  anim(scene, $('.rk-path__cpl', scene.el), [{ opacity: 0 }, { opacity: 1 }], { duration: 480, delay: T4 + 380 });
 }
 
 /* ---------- 5 · the page, a short film (the owner's pick of 26 Oct, «Курсор»; the storyboard by an art director after
@@ -1164,7 +1164,7 @@ function timeline(scene, el, start, pts, opts = {}) {
  *  entrances (a rise, or a slide for the visitor's questions), the pops, the lines drawn, the taps and the trail dots */
 function filmParts(scene, u) {
   const el = scene.el;
-  for (const ln of $$('.ad-film__line', el)) {
+  for (const ln of $$('.rk-film__line', el)) {
     const a = +ln.dataset.in;
     const b = ln.dataset.out ? +ln.dataset.out : null;
     if (b == null) anim(scene, ln, [{ opacity: 0 }, { opacity: 1 }], { duration: 560, delay: a, easing: OUT });
@@ -1172,14 +1172,14 @@ function filmParts(scene, u) {
       const D = b - a;
       anim(scene, ln, [{ opacity: 0, transform: 'none' }, { opacity: 1, transform: 'none', offset: Math.min(0.45, 560 / D) }, { opacity: 1, transform: 'none', offset: Math.max(0.55, 1 - 240 / D) }, { opacity: 0, transform: `translateY(${(-0.4 * u).toFixed(1)}px)` }], { duration: D, delay: a, easing: 'linear', fill: 'none' });
     }
-    const phrases = $$('.ad-film__ph', ln);
+    const phrases = $$('.rk-film__ph', ln);
     const groups = phrases.length ? phrases.map((p) => [p, +p.dataset.in]) : [[ln, a]];
     for (const [g, t] of groups) {
       if (g !== ln) anim(scene, g, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: t });
-      $$('.ad-film__w > span', g).forEach((w, i) => anim(scene, w, [{ transform: 'translateY(105%)' }, { transform: 'none' }], { duration: 560, delay: t + i * 45, easing: OUT }));
+      $$('.rk-film__w > span', g).forEach((w, i) => anim(scene, w, [{ transform: 'translateY(105%)' }, { transform: 'none' }], { duration: 560, delay: t + i * 45, easing: OUT }));
     }
   }
-  for (const n of $$('.ad-film__cam [data-in]', el)) {
+  for (const n of $$('.rk-film__cam [data-in]', el)) {
     const t = +n.dataset.in;
     const dx = n.dataset.dx ? +n.dataset.dx * u : 0;
     const from = dx ? `translateX(${(-dx).toFixed(1)}px)` : `translateY(${(0.4 * u).toFixed(1)}px)`;
@@ -1188,7 +1188,7 @@ function filmParts(scene, u) {
   for (const n of $$('[data-pop]', el)) pop(scene, n, +n.dataset.pop);
   for (const n of $$('[data-draw]', el)) anim(scene, n, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 560, delay: +n.dataset.draw, easing: MOVE });
   for (const n of $$('[data-ring]', el)) tap(scene, n, +n.dataset.ring);
-  const trail = $(phoneMQ.matches ? '.ad-cur__trail--m' : '.ad-cur__trail--d', el);
+  const trail = $(phoneMQ.matches ? '.rk-cur__trail--m' : '.rk-cur__trail--d', el);
   if (trail) for (const c of $$('[data-t]', trail)) anim(scene, c, [{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: +c.dataset.t });
 }
 
@@ -1203,68 +1203,68 @@ function playPage(scene) {
     const T1 = `translate(${px(11.26)}, ${px(-4.2)}) scale(1.22)`;
     const T1d = `translate(${px(11.26)}, ${px(-4.8)}) scale(1.22)`;
     const T2 = `translate(${px(-25.34)}, ${px(-4.2)}) scale(1.22)`;
-    timeline(scene, $('.ad-film__cam', el), 0, [[0, { transform: 'none' }], [950, { transform: 'none' }], [1500, { transform: T1 }, MOVE], [2600, { transform: T1 }], [3200, { transform: T1d }, MOVE], [3700, { transform: T1 }, MOVE], [5300, { transform: T1 }], [6060, { transform: T2 }, MOVE], [7400, { transform: T2 }], [8300, { transform: 'none' }, MOVE]], { fill: 'none' });
+    timeline(scene, $('.rk-film__cam', el), 0, [[0, { transform: 'none' }], [950, { transform: 'none' }], [1500, { transform: T1 }, MOVE], [2600, { transform: T1 }], [3200, { transform: T1d }, MOVE], [3700, { transform: T1 }, MOVE], [5300, { transform: T1 }], [6060, { transform: T2 }, MOVE], [7400, { transform: T2 }], [8300, { transform: 'none' }, MOVE]], { fill: 'none' });
   }
   // the ad: in at the centre, clicked, it swells away as the page opens out of it
-  timeline(scene, $('.ad-cur__ad', el), 0, [[0, { opacity: 0, transform: `translateY(${px(0.6)})` }], [560, { opacity: 1, transform: 'none' }, OUT], [950, { opacity: 1, transform: 'none' }], [1400, { opacity: 0, transform: 'scale(1.5)' }, MOVE]], { fill: 'none' });
+  timeline(scene, $('.rk-cur__ad', el), 0, [[0, { opacity: 0, transform: `translateY(${px(0.6)})` }], [560, { opacity: 1, transform: 'none' }, OUT], [950, { opacity: 1, transform: 'none' }], [1400, { opacity: 0, transform: 'scale(1.5)' }, MOVE]], { fill: 'none' });
   const flip = phone ? 'scale(0.878)' : `translate(${px(15)}, ${px(-0.9)}) scale(0.643)`;
-  timeline(scene, $('.ad-cur__win--a', el), 950, [[950, { opacity: 0, transform: flip }], [1510, { opacity: 1, transform: 'none' }, OUT]]);
+  timeline(scene, $('.rk-cur__win--a', el), 950, [[950, { opacity: 0, transform: flip }], [1510, { opacity: 1, transform: 'none' }, OUT]]);
   // page A: the menu swept, a scroll down and back, the wait (the bar stalls, the spinner), then dimmed as the tab closes
-  $$('.ad-cur__nav span', el).slice(0, 5).forEach((s, i) => timeline(scene, s, 2050 + i * 90, [[2050 + i * 90, { opacity: 0.55 }], [2140 + i * 90, { opacity: 1 }], [2320 + i * 90, { opacity: 0.55 }]], { fill: 'none' }));
-  const pageA = $('.ad-cur__page--a', el);
+  $$('.rk-cur__nav span', el).slice(0, 5).forEach((s, i) => timeline(scene, s, 2050 + i * 90, [[2050 + i * 90, { opacity: 0.55 }], [2140 + i * 90, { opacity: 1 }], [2320 + i * 90, { opacity: 0.55 }]], { fill: 'none' }));
+  const pageA = $('.rk-cur__page--a', el);
   timeline(scene, pageA, 2600, [[2600, { transform: 'none' }], [3200, { transform: `translateY(${px(-14)})` }, MOVE], [3250, { transform: `translateY(${px(-14)})` }], [3700, { transform: 'none' }, MOVE]], { fill: 'none' });
-  anim(scene, $('.ad-cur__prog', el), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(0.3)' }], { duration: 900, delay: 3500, easing: OUT });
-  anim(scene, $('.ad-cur__spin i', el), [{ transform: 'rotate(0deg)' }, { transform: 'rotate(1080deg)' }], { duration: 1200, delay: 3500, easing: 'linear', fill: 'none' });
-  for (const n of [pageA, $('.ad-cur__prog', el)]) anim(scene, n, [{ opacity: 1 }, { opacity: 0.35 }], { duration: 420, delay: 4650, easing: EXIT });
-  timeline(scene, $('.ad-cur__spin', el), 3500, [[3500, { opacity: 0 }], [3800, { opacity: 1 }, OUT], [4650, { opacity: 1 }], [5070, { opacity: 0.35 }, EXIT]]);
+  anim(scene, $('.rk-cur__prog', el), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(0.3)' }], { duration: 900, delay: 3500, easing: OUT });
+  anim(scene, $('.rk-cur__spin i', el), [{ transform: 'rotate(0deg)' }, { transform: 'rotate(1080deg)' }], { duration: 1200, delay: 3500, easing: 'linear', fill: 'none' });
+  for (const n of [pageA, $('.rk-cur__prog', el)]) anim(scene, n, [{ opacity: 1 }, { opacity: 0.35 }], { duration: 420, delay: 4650, easing: EXIT });
+  timeline(scene, $('.rk-cur__spin', el), 3500, [[3500, { opacity: 0 }], [3800, { opacity: 1 }, OUT], [4650, { opacity: 1 }], [5070, { opacity: 0.35 }, EXIT]]);
   // the paid click: out of the ad, into page A's corner, struck when the tab closes, down onto the ledge
-  const chip = $('.ad-cur__chip--a', el);
+  const chip = $('.rk-cur__chip--a', el);
   if (chip) {
     const [click, corner] = JSON.parse(phone ? chip.dataset.clickM : chip.dataset.click);
     const rx = parseFloat(chip.style.getPropertyValue(phone ? '--mx' : '--x'));
     const ry = parseFloat(chip.style.getPropertyValue(phone ? '--my' : '--y'));
     const to = ([x, y], extra = '') => `translate(${px(x - rx)}, ${px(y - ry)})${extra}`;
     timeline(scene, chip, 840, [[840, { opacity: 0, transform: to(click, ' scale(0.6)') }], [1000, { opacity: 1, transform: to(click) }, OUT], [1510, { opacity: 1, transform: to(corner) }, MOVE], [4950, { opacity: 1, transform: to(corner) }], [5470, { opacity: 1, transform: 'none' }, FALL]]);
-    anim(scene, $('.ad-cur__ce', chip), [{ opacity: 1 }, { opacity: 0 }], { duration: 240, delay: 4700 });
-    anim(scene, $('.ad-cur__cl', chip), [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: 4700 });
-    anim(scene, $('.ad-cur__strike', chip), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 420, delay: 4800, easing: MOVE });
+    anim(scene, $('.rk-cur__ce', chip), [{ opacity: 1 }, { opacity: 0 }], { duration: 240, delay: 4700 });
+    anim(scene, $('.rk-cur__cl', chip), [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: 4700 });
+    anim(scene, $('.rk-cur__strike', chip), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 420, delay: 4800, easing: MOVE });
   }
   // the two visitors: their ways (one table with the trail, baked on the server), their presses
-  for (const cur of $$('.ad-cur__cur', el)) {
+  for (const cur of $$('.rk-cur__cur', el)) {
     const way = JSON.parse((phone ? cur.dataset.wayM : cur.dataset.way) || '[]');
     if (way.length < 2) continue;
     const t0 = way[0][0];
     const tN = way[way.length - 1][0];
     const [, xe, ye] = way[way.length - 1];
     anim(scene, cur, way.map(([t, x, y]) => ({ offset: (t - t0) / Math.max(1, tN - t0), transform: `translate(${px(x - xe)}, ${px(y - ye)})` })), { duration: tN - t0, delay: t0, easing: 'linear' });
-    if (cur.classList.contains('ad-cur__cur--a')) timeline(scene, cur, 250, [[250, { opacity: 0 }], [450, { opacity: 1 }], [4700, { opacity: 1 }], [4900, { opacity: 0 }]]);
+    if (cur.classList.contains('rk-cur__cur--a')) timeline(scene, cur, 250, [[250, { opacity: 0 }], [450, { opacity: 1 }], [4700, { opacity: 1 }], [4900, { opacity: 0 }]]);
     else anim(scene, cur, [{ opacity: 0 }, { opacity: 1 }], { duration: 220, delay: 5700 });
     for (const t of (cur.dataset.press || '').split(',').filter(Boolean).map(Number)) anim(scene, $('i', cur), [{ transform: 'none' }, { transform: 'scale(0.86)', offset: 0.4 }, { transform: 'none' }], { duration: 160, delay: t - 40, fill: 'none' });
   }
   // the clear page's button: a hover, a press
-  timeline(scene, $('.ad-cur__pill', el), 6650, [[6650, { transform: 'none' }], [6800, { transform: 'scale(1.04)' }, OUT], [6850, { transform: 'scale(1.04)' }], [6910, { transform: 'scale(0.96)' }], [7250, { transform: 'none' }, SPRING]], { fill: 'none' });
+  timeline(scene, $('.rk-cur__pill', el), 6650, [[6650, { transform: 'none' }], [6800, { transform: 'scale(1.04)' }, OUT], [6850, { transform: 'scale(1.04)' }], [6910, { transform: 'scale(0.96)' }], [7250, { transform: 'none' }, SPRING]], { fill: 'none' });
 }
 
 /* ---------- 4 · the case: the four tiles rise one after another and their digits roll up from 0 (React Bits Counter),
    the one segment of four fills; where the screenshot stands open beside them, it rises and gets its two rings. The
    numbers land on the account's own. About 1.8 s ---------- */
 function playCase(scene) {
-  const tiles = $$('.ad-kase__m', scene.el);
+  const tiles = $$('.rk-kase__m', scene.el);
   tiles.forEach((tile, i) => {
     show(scene, tile, 80 + i * 110, 'translateY(0.75rem)', 560);
-    $$('.ad-count__strip', tile).forEach((strip, j) => {
+    $$('.rk-count__strip', tile).forEach((strip, j) => {
       const d = Number(strip.parentElement.style.getPropertyValue('--d')) || 0;
       anim(scene, strip, [{ transform: 'translateY(0%)' }, { transform: `translateY(${-d * 10}%)` }], { duration: 1100 + j * 80, delay: 220 + i * 110, easing: SOFT });
     });
   });
-  anim(scene, $('.ad-kase__seg i', scene.el), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 700, delay: 900, easing: MOVE });
-  const shot = $('.ad-kase__shot', scene.el);
+  anim(scene, $('.rk-kase__seg i', scene.el), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 700, delay: 900, easing: MOVE });
+  const shot = $('.rk-kase__shot', scene.el);
   if (shot?.open) caseShot(shot, 300, (el, k, o) => anim(scene, el, k, o));
 }
 /** the account's window rises, then its two key cells get their rings */
 function caseShot(shot, at, run) {
-  run($('.ad-case__win', shot), [{ opacity: 0, transform: 'translateY(1rem)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: at });
-  $$('.ad-case__ring', shot).forEach((ring, i) => {
+  run($('.rk-case__win', shot), [{ opacity: 0, transform: 'translateY(1rem)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: at });
+  $$('.rk-case__ring', shot).forEach((ring, i) => {
     run(ring, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: at + 600 + i * 160 });
     run(ring, [{ transform: 'scale(1.12)' }, { transform: 'none' }], { duration: 560, delay: at + 600 + i * 160, easing: SPRING });
   });
@@ -1273,15 +1273,15 @@ function caseShot(shot, at, run) {
 /* ---------- 4 · phones: the stack deals itself in (the cards land on the pile one by one), the top card's numbers roll
    up, then it leans to the left once and back, so the next case shows its edge. About 2.4 s ---------- */
 function playStack(scene) {
-  const cards = $$('.ad-kstack__card', scene.el).sort((a, b) => Number(a.dataset.pos) - Number(b.dataset.pos));
+  const cards = $$('.rk-kstack__card', scene.el).sort((a, b) => Number(a.dataset.pos) - Number(b.dataset.pos));
   cards.slice().reverse().forEach((card, i) =>
     anim(scene, card, [{ offset: 0, opacity: 0, transform: 'translateY(2.5rem) scale(0.9) rotate(-4deg)' }], { duration: 640, delay: 80 + i * 140, easing: SOFT }));
   const top = cards[0];
-  $$('.ad-count__strip', top).forEach((strip, j) => {
+  $$('.rk-count__strip', top).forEach((strip, j) => {
     const d = Number(strip.parentElement.style.getPropertyValue('--d')) || 0;
     anim(scene, strip, [{ transform: 'translateY(0%)' }, { transform: `translateY(${-d * 10}%)` }], { duration: 1000 + j * 60, delay: 560, easing: SOFT });
   });
-  anim(scene, $('.ad-kstack__nav', scene.el), [{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: 640 });
+  anim(scene, $('.rk-kstack__nav', scene.el), [{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: 640 });
   anim(scene, top, [{ transform: 'none' }, { transform: 'translateX(-1.75rem) rotate(-2deg)', offset: 0.45 }, { transform: 'none' }], { duration: 900, delay: 1500, easing: MOVE, fill: 'none' });
 }
 
@@ -1290,46 +1290,46 @@ function playStack(scene) {
    The page made first: its lines are written and get your tick, the test address fills in and the page comes up under
    your cursor, one switch lights the page and the ad together. About 2.8 s; only the list shown plays ---------- */
 const HOW_PICS = {
-  call: (scene, pic, t) => $$('.ad-sp__wave b', pic).forEach((b, j) =>
+  call: (scene, pic, t) => $$('.rk-sp__wave b', pic).forEach((b, j) =>
     anim(scene, b, [{ transform: 'scaleY(0.2)' }, { transform: 'scaleY(1.3)', offset: 0.55 }, { transform: 'none' }], { duration: 720, delay: t + j * 70, easing: MOVE })),
-  kw: (scene, pic, t) => $$('.ad-sp__chips b', pic).forEach((b, j) => {
+  kw: (scene, pic, t) => $$('.rk-sp__chips b', pic).forEach((b, j) => {
     anim(scene, b, [{ opacity: 0 }, { opacity: 1 }], { duration: 220, delay: t + j * 140 });
     anim(scene, b, [{ transform: 'scale(0.5)' }, { transform: 'none' }], { duration: 520, delay: t + j * 140, easing: SPRING });
   }),
   rec: (scene, pic, t) => {
-    $$('.ad-sp__form b', pic).forEach((b, j) => anim(scene, b, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 380, delay: t + j * 120 }));
-    anim(scene, $('.ad-sp__ok', pic), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: t + 360, easing: SPRING });
+    $$('.rk-sp__form b', pic).forEach((b, j) => anim(scene, b, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 380, delay: t + j * 120 }));
+    anim(scene, $('.rk-sp__ok', pic), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: t + 360, easing: SPRING });
   },
   live: (scene, pic, t) => {
-    anim(scene, $('.ad-sp__knob', pic), [{ transform: 'translateX(0)' }, { transform: 'translateX(1.1em)' }], { duration: 600, delay: t + 80, easing: SPRING });
-    anim(scene, $('.ad-sp__off', pic), [{ opacity: 1 }, { opacity: 0 }], { duration: 360, delay: t + 160 });
+    anim(scene, $('.rk-sp__knob', pic), [{ transform: 'translateX(0)' }, { transform: 'translateX(1.1em)' }], { duration: 600, delay: t + 80, easing: SPRING });
+    anim(scene, $('.rk-sp__off', pic), [{ opacity: 1 }, { opacity: 0 }], { duration: 360, delay: t + 160 });
   },
   rep: (scene, pic, t) => $$('b', pic).forEach((b, j) =>
     anim(scene, b, [{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: 720, delay: t + j * 110, easing: SPRING })),
   doc: (scene, pic, t) => {
-    $$('.ad-sp__page b', pic).forEach((b, j) => anim(scene, b, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 380, delay: t + j * 100 }));
-    anim(scene, $('.ad-sp__ok', pic), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: t + 440, easing: SPRING });
+    $$('.rk-sp__page b', pic).forEach((b, j) => anim(scene, b, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 380, delay: t + j * 100 }));
+    anim(scene, $('.rk-sp__ok', pic), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: t + 440, easing: SPRING });
   },
   test: (scene, pic, t) => {
-    anim(scene, $('.ad-sp__bar b', pic), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 420, delay: t });
-    $$('.ad-sp__body b', pic).forEach((b, j) => show(scene, b, t + 260 + j * 90, 'translateY(0.2em)', 380));
-    anim(scene, $('.ad-sp__cur', pic), [{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: t + 380 });
-    anim(scene, $('.ad-sp__cur', pic), [{ transform: 'translate(-1.6em, -1.3em)' }, { transform: 'none', offset: 0.75 }, { transform: 'scale(0.86)', offset: 0.87 }, { transform: 'none' }], { duration: 760, delay: t + 380, easing: MOVE });
+    anim(scene, $('.rk-sp__bar b', pic), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 420, delay: t });
+    $$('.rk-sp__body b', pic).forEach((b, j) => show(scene, b, t + 260 + j * 90, 'translateY(0.2em)', 380));
+    anim(scene, $('.rk-sp__cur', pic), [{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: t + 380 });
+    anim(scene, $('.rk-sp__cur', pic), [{ transform: 'translate(-1.6em, -1.3em)' }, { transform: 'none', offset: 0.75 }, { transform: 'scale(0.86)', offset: 0.87 }, { transform: 'none' }], { duration: 760, delay: t + 380, easing: MOVE });
   },
   both: (scene, pic, t) => {
     HOW_PICS.live(scene, pic, t);
-    $$('.ad-sp__pair > *', pic).forEach((c, j) => anim(scene, c, [{ opacity: 0.4 }, { opacity: 1 }], { duration: 420, delay: t + 260 + j * 60 }));
+    $$('.rk-sp__pair > *', pic).forEach((c, j) => anim(scene, c, [{ opacity: 0.4 }, { opacity: 1 }], { duration: 420, delay: t + 260 + j * 60 }));
   },
 };
 /** the pictures of one list, one after another */
 function playSteps(scene, list) {
-  $$('.ad-track__step', list).forEach((step, i) => {
-    const pic = $('.ad-sp', step);
+  $$('.rk-track__step', list).forEach((step, i) => {
+    const pic = $('.rk-sp', step);
     HOW_PICS[pic?.dataset.sp]?.(scene, pic, 120 + i * 480);
   });
 }
 function playHow(scene) {
-  playSteps(scene, $('.ad-track__list:not([hidden])', scene.el));
+  playSteps(scene, $('.rk-track__list:not([hidden])', scene.el));
 }
 
 /* ---------- 8 · the two cases (the bridge brief's phase 4): the time changes, the list chosen takes the other's place and
@@ -1337,11 +1337,11 @@ function playHow(scene) {
 function initHowPick() {
   const seg = $('[data-how-pick]');
   if (!seg) return;
-  const track = seg.closest('.ad-track');
+  const track = seg.closest('.rk-track');
   const out = $('[data-how-time]', track);
   const own = { anims: [] };
   const paint = (input) => {
-    $$('.ad-hseg__o', seg).forEach((o, i) => {
+    $$('.rk-hseg__o', seg).forEach((o, i) => {
       const on = $('input', o) === input;
       o.classList.toggle('is-on', on);
       if (on) seg.style.setProperty('--i', String(i));
@@ -1362,7 +1362,7 @@ function initHowPick() {
     anim(own, out, [{ opacity: 0.3 }, { opacity: 1 }], { duration: 380, easing: SOFT });
     if (track.classList.contains('is-pre')) return;
     const list = $(`[data-how-list="${input.value}"]`, track);
-    $$('.ad-track__step', list).forEach((step, i) => show(own, step, i * 60, 'translateY(0.375rem)', 420));
+    $$('.rk-track__step', list).forEach((step, i) => show(own, step, i * 60, 'translateY(0.375rem)', 420));
     playSteps(own, list);
   });
   for (const input of $$('input', seg)) {

@@ -63,17 +63,17 @@ const METRICS = ["cpl", "n", "spend", "cr"] as const;
 function Roll({ text, sr = true }: { text: string; sr?: boolean }) {
   return (
     <>
-      <span className="ad-count" aria-hidden="true">
+      <span className="rk-count" aria-hidden="true">
         {Array.from(text).map((ch, i) =>
           /\d/.test(ch) ? (
-            <span className="ad-count__d" style={{ "--d": ch } as React.CSSProperties} key={i}>
-              <span className="ad-count__sizer">0</span>
-              <span className="ad-count__strip">
+            <span className="rk-count__d" style={{ "--d": ch } as React.CSSProperties} key={i}>
+              <span className="rk-count__sizer">0</span>
+              <span className="rk-count__strip">
                 {"0123456789".split("").map((n) => <span key={n}>{n}</span>)}
               </span>
             </span>
           ) : (
-            <span className="ad-count__c" key={i}>{ch}</span>
+            <span className="rk-count__c" key={i}>{ch}</span>
           ),
         )}
       </span>
@@ -88,8 +88,8 @@ function Value({ text }: { text: string }) {
   if (!now) return <Roll text={text} />;
   return (
     <>
-      <span className="ad-kase__ba" aria-hidden="true">
-        <s className="ad-kase__was">{was}</s>
+      <span className="rk-kase__ba" aria-hidden="true">
+        <s className="rk-kase__was">{was}</s>
         <Roll text={now} sr={false} />
       </span>
       <span className="visually-hidden">{text}</span>
@@ -110,7 +110,7 @@ function Value({ text }: { text: string }) {
 export async function AdsCase({ index }: { index: number }) {
   const t = await getTranslations("ads");
   return (
-    <section className="section section--ivory ai-sec ad-case" id="case" aria-labelledby="case-title">
+    <section className="section section--ivory ai-sec rk-case" id="case" aria-labelledby="case-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
@@ -126,20 +126,20 @@ export async function AdsCase({ index }: { index: number }) {
         {/* the cases as a stack of short cards (React Bits «Stack»; phones on 21 Oct, then wide screens too): the top one
             is swiped or sent away and tucks under the pile; the case's details follow it, beside the stack on wide screens,
             under it on phones (runtime: initCaseStack, scene «kstack») */}
-        <div className="ad-kgrid">
-          <div className="ad-kstack" data-scene="kstack">
-            <div className="ad-kstack__pile">
+        <div className="rk-kgrid">
+          <div className="rk-kstack" data-scene="kstack">
+            <div className="rk-kstack__pile">
               {CASES.map((c, i) => (
-                <article className="ad-kstack__card" data-case-card={c.id} data-pos={i} aria-hidden={i > 0} key={c.id}>
-                  <p className="ad-kstack__top">
-                    <span className="ad-kstack__chip">{t(`case.${c.id}.chip`)}</span>
-                    <span className="ad-kstack__of">{t("case.of", { n: i + 1, total: CASES.length })}</span>
+                <article className="rk-kstack__card" data-case-card={c.id} data-pos={i} aria-hidden={i > 0} key={c.id}>
+                  <p className="rk-kstack__top">
+                    <span className="rk-kstack__chip">{t(`case.${c.id}.chip`)}</span>
+                    <span className="rk-kstack__of">{t("case.of", { n: i + 1, total: CASES.length })}</span>
                   </p>
-                  <h3 className="ad-kstack__name">{t(`case.${c.id}.name`)}</h3>
-                  <p className="ad-kstack__when">{t(`case.${c.id}.when`)}</p>
-                  <p className="ad-kstack__v"><Value text={t(`case.${c.id}.tab.v`)} /></p>
-                  <p className="ad-kstack__k">{t(`case.${c.id}.tab.k`)}</p>
-                  <dl className="ad-kstack__mini">
+                  <h3 className="rk-kstack__name">{t(`case.${c.id}.name`)}</h3>
+                  <p className="rk-kstack__when">{t(`case.${c.id}.when`)}</p>
+                  <p className="rk-kstack__v"><Value text={t(`case.${c.id}.tab.v`)} /></p>
+                  <p className="rk-kstack__k">{t(`case.${c.id}.tab.k`)}</p>
+                  <dl className="rk-kstack__mini">
                     {(["n", "cr"] as const).map((m) => (
                       <div key={m}>
                         <dt>{t(`case.${c.id}.m.${m}.k`)}</dt>
@@ -150,48 +150,48 @@ export async function AdsCase({ index }: { index: number }) {
                 </article>
               ))}
             </div>
-            <div className="ad-kstack__nav">
-              <button type="button" className="ad-kstack__btn" data-kstack-go="-1" aria-label={t("case.prev")}>
+            <div className="rk-kstack__nav">
+              <button type="button" className="rk-kstack__btn" data-kstack-go="-1" aria-label={t("case.prev")}>
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5.5 8.5 12l6.5 6.5" /></svg>
               </button>
-              <span className="ad-kstack__dots" aria-hidden="true">
+              <span className="rk-kstack__dots" aria-hidden="true">
                 {CASES.map((c, i) => <i className={i === 0 ? "is-on" : undefined} data-case-dot={c.id} key={c.id} />)}
               </span>
-              <button type="button" className="ad-kstack__btn" data-kstack-go="1" aria-label={t("case.next")}>
+              <button type="button" className="rk-kstack__btn" data-kstack-go="1" aria-label={t("case.next")}>
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5.5 15.5 12 9 18.5" /></svg>
               </button>
             </div>
           </div>
 
           {/* the switcher: one case at a time (runtime: initCasePick; arrow keys move between them) */}
-          <div className="ad-kase-pick" role="tablist" aria-label={t("case.pick")}>
+          <div className="rk-kase-pick" role="tablist" aria-label={t("case.pick")}>
             {CASES.map((c, i) => (
-              <button type="button" className="ad-kase-pick__b" role="tab" id={`case-${c.id}`} aria-controls={`case-${c.id}-panel`} aria-selected={i === 0} tabIndex={i === 0 ? 0 : -1} data-case-pick={c.id} key={c.id}>
-                <span className="ad-kase-pick__n">{t(`case.${c.id}.name`)}</span>
-                <b className="ad-kase-pick__v">{t(`case.${c.id}.tab.v`)}</b>
-                <small className="ad-kase-pick__k">{t(`case.${c.id}.tab.k`)}</small>
+              <button type="button" className="rk-kase-pick__b" role="tab" id={`case-${c.id}`} aria-controls={`case-${c.id}-panel`} aria-selected={i === 0} tabIndex={i === 0 ? 0 : -1} data-case-pick={c.id} key={c.id}>
+                <span className="rk-kase-pick__n">{t(`case.${c.id}.name`)}</span>
+                <b className="rk-kase-pick__v">{t(`case.${c.id}.tab.v`)}</b>
+                <small className="rk-kase-pick__k">{t(`case.${c.id}.tab.k`)}</small>
               </button>
             ))}
           </div>
 
           {CASES.map((c, i) => (
-            <div className="ad-kase-panel" role="tabpanel" id={`case-${c.id}-panel`} aria-labelledby={`case-${c.id}`} data-case-panel={c.id} hidden={i > 0} key={c.id}>
-              <article className="ad-kase" data-scene="case" aria-labelledby={`case-${c.id}-who`}>
-                <div className="ad-kase__main">
-                  <p className="ad-kase__who" id={`case-${c.id}-who`}>
-                    <span className="ad-kase__chip">{t(`case.${c.id}.chip`)}</span>
+            <div className="rk-kase-panel" role="tabpanel" id={`case-${c.id}-panel`} aria-labelledby={`case-${c.id}`} data-case-panel={c.id} hidden={i > 0} key={c.id}>
+              <article className="rk-kase" data-scene="case" aria-labelledby={`case-${c.id}-who`}>
+                <div className="rk-kase__main">
+                  <p className="rk-kase__who" id={`case-${c.id}-who`}>
+                    <span className="rk-kase__chip">{t(`case.${c.id}.chip`)}</span>
                     <span>{t(`case.${c.id}.who`)}</span>
                   </p>
-                  <p className="ad-kase__per">{t(`case.${c.id}.per`)}</p>
-                  <dl className="ad-kase__stats">
+                  <p className="rk-kase__per">{t(`case.${c.id}.per`)}</p>
+                  <dl className="rk-kase__stats">
                     {METRICS.map((m) => (
-                      <div className={`ad-kase__m ad-kase__m--${m}`} key={m}>
-                        <dt className="ad-kase__k">{t(`case.${c.id}.m.${m}.k`)}</dt>
-                        <dd className="ad-kase__v"><Value text={t(`case.${c.id}.m.${m}.v`)} /></dd>
-                        <dd className="ad-kase__s">
+                      <div className={`rk-kase__m rk-kase__m--${m}`} key={m}>
+                        <dt className="rk-kase__k">{t(`case.${c.id}.m.${m}.k`)}</dt>
+                        <dd className="rk-kase__v"><Value text={t(`case.${c.id}.m.${m}.v`)} /></dd>
+                        <dd className="rk-kase__s">
                           {t(`case.${c.id}.m.${m}.s`)}
                           {m === "cr" && c.seg && (
-                            <span className="ad-kase__seg" aria-hidden="true">
+                            <span className="rk-kase__seg" aria-hidden="true">
                               {Array.from({ length: c.seg[1] }, (_, k) => <i className={k < c.seg![0] ? "is-on" : undefined} key={k} />)}
                             </span>
                           )}
@@ -199,55 +199,55 @@ export async function AdsCase({ index }: { index: number }) {
                       </div>
                     ))}
                   </dl>
-                  <p className="ad-kase__site">
+                  <p className="rk-kase__site">
                     <span>{t("case.site")}</span>
-                    <a className="ad-kase__go" href={c.site} target="_blank" rel="noopener">
+                    <a className="rk-kase__go" href={c.site} target="_blank" rel="noopener">
                       {new URL(c.site).hostname}
                       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-arrow" /></svg>
                     </a>
                   </p>
-                  <p className="ad-kase__how">{t.rich(`case.${c.id}.how`, R)}</p>
+                  <p className="rk-kase__how">{t.rich(`case.${c.id}.how`, R)}</p>
                 </div>
 
-                <details className="ad-kase__shot" open>
-                  <summary className="ad-kase__sum">{t("case.shot")}</summary>
-                  <div className="ad-case__win">
-                    <div className="ad-case__bar">
+                <details className="rk-kase__shot" open>
+                  <summary className="rk-kase__sum">{t("case.shot")}</summary>
+                  <div className="rk-case__win">
+                    <div className="rk-case__bar">
                       <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
-                      <span className="ad-case__host">ads.google.com</span>
+                      <span className="rk-case__host">ads.google.com</span>
                       {/* tabs only when there is more than one screenshot */}
                       {c.shots.length > 1 && (
-                        <span className="ad-case__tabs" role="tablist" aria-label={t("case.tabs")}>
+                        <span className="rk-case__tabs" role="tablist" aria-label={t("case.tabs")}>
                           {c.shots.map((s, k) => (
-                            <button type="button" className="ad-case__tab" role="tab" id={`case-${c.id}-tab-${s.id}`} aria-controls={`case-${c.id}-pic-${s.id}`} aria-selected={k === 0} tabIndex={k === 0 ? 0 : -1} data-case-tab={s.id} key={s.id}>
+                            <button type="button" className="rk-case__tab" role="tab" id={`case-${c.id}-tab-${s.id}`} aria-controls={`case-${c.id}-pic-${s.id}`} aria-selected={k === 0} tabIndex={k === 0 ? 0 : -1} data-case-tab={s.id} key={s.id}>
                               {t(`case.${c.id}.shots.${s.id}`)}
                             </button>
                           ))}
                         </span>
                       )}
                       {c.before ? (
-                        <span className="ad-case__ok ad-case__ok--before">{t("case.before")}</span>
+                        <span className="rk-case__ok rk-case__ok--before">{t("case.before")}</span>
                       ) : (
-                        <span className="ad-case__ok"><b aria-hidden="true" />{t("case.ok")}</span>
+                        <span className="rk-case__ok"><b aria-hidden="true" />{t("case.ok")}</span>
                       )}
                     </div>
                     {c.shots.map((s, k) => (
-                      <div className="ad-case__pic" id={`case-${c.id}-pic-${s.id}`} role={c.shots.length > 1 ? "tabpanel" : undefined} aria-labelledby={c.shots.length > 1 ? `case-${c.id}-tab-${s.id}` : undefined} tabIndex={0} data-case-pic={s.id} hidden={k > 0} key={s.id}>
-                        <div className="ad-case__in">
+                      <div className="rk-case__pic" id={`case-${c.id}-pic-${s.id}`} role={c.shots.length > 1 ? "tabpanel" : undefined} aria-labelledby={c.shots.length > 1 ? `case-${c.id}-tab-${s.id}` : undefined} tabIndex={0} data-case-pic={s.id} hidden={k > 0} key={s.id}>
+                        <div className="rk-case__in">
                           <img src={s.src} width={s.w} height={s.h} alt={t(`case.${c.id}.alt.${s.id}`)} loading="lazy" decoding="async" />
                           {s.rings?.map((r, j) => (
-                            <span className="ad-case__ring" aria-hidden="true" key={j} style={{ left: `${r.left}%`, top: `${r.top}%`, width: `${r.width}%`, height: `${r.height}%` }} />
+                            <span className="rk-case__ring" aria-hidden="true" key={j} style={{ left: `${r.left}%`, top: `${r.top}%`, width: `${r.width}%`, height: `${r.height}%` }} />
                           ))}
                         </div>
                       </div>
                     ))}
                   </div>
-                  <p className="ad-case__swipe" aria-hidden="true">← {t("case.swipe")} →</p>
-                  <p className="ad-case__cap">{c.before ? t(`case.${c.id}.cap`) : t("case.cap")}</p>
+                  <p className="rk-case__swipe" aria-hidden="true">← {t("case.swipe")} →</p>
+                  <p className="rk-case__cap">{c.before ? t(`case.${c.id}.cap`) : t("case.cap")}</p>
                 </details>
 
-                <div className="ad-kase__end">
-                  <p className="ad-kase__honest">{t.rich(`case.${c.id}.honest`, R)}</p>
+                <div className="rk-kase__end">
+                  <p className="rk-kase__honest">{t.rich(`case.${c.id}.honest`, R)}</p>
                   <ButtonLink href="#contact" variant="primary">{t("cta")}</ButtonLink>
                 </div>
               </article>

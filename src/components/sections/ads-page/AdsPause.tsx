@@ -9,9 +9,9 @@ import { aiRich as R } from "@/components/ai/rich";
 export async function AdsPause() {
   const t = await getTranslations("ads");
   return (
-    <section className="section ad-pause" aria-labelledby="pause-text">
+    <section className="section rk-pause" aria-labelledby="pause-text">
       <div className="container">
-        <h2 className="ad-pause__text" id="pause-text">{t.rich("pause.text", R)}</h2>
+        <h2 className="rk-pause__text" id="pause-text">{t.rich("pause.text", R)}</h2>
       </div>
     </section>
   );

@@ -24,7 +24,7 @@ const ICON: Record<number, React.ReactNode> = {
 export async function AdsTerms({ index }: { index: number }) {
   const t = await getTranslations("ads");
   return (
-    <section className="section ai-sec ad-terms" id="terms" aria-labelledby="terms-title">
+    <section className="section ai-sec rk-terms" id="terms" aria-labelledby="terms-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
@@ -35,18 +35,18 @@ export async function AdsTerms({ index }: { index: number }) {
             <span className="tone">{t.rich("terms.title", R)}</span>
           </h2>
         </header>
-        <ol className="ad-terms__list">
+        <ol className="rk-terms__list">
           {Array.from({ length: COUNT }, (_, i) => i + 1).map((n) => (
-            <li className="ad-terms__item" key={n}>
-              <details className="ad-terms__fold" data-fold="" data-fold-open={n === 1 ? "" : undefined} open>
-                <summary className="ad-terms__sum">
-                  <span className="ad-terms__ico" aria-hidden="true">
+            <li className="rk-terms__item" key={n}>
+              <details className="rk-terms__fold" data-fold="" data-fold-open={n === 1 ? "" : undefined} open>
+                <summary className="rk-terms__sum">
+                  <span className="rk-terms__ico" aria-hidden="true">
                     <svg viewBox="0 0 24 24" focusable="false">{ICON[n]}</svg>
                   </span>
-                  <span className="ad-terms__lab">{t(`terms.labels.${n}`)}</span>
+                  <span className="rk-terms__lab">{t(`terms.labels.${n}`)}</span>
                 </summary>
-                <span className="ad-terms__n" aria-hidden="true">{String(n).padStart(2, "0")}</span>
-                <p className="ad-terms__p">{t(`terms.items.${n}`)}</p>
+                <span className="rk-terms__n" aria-hidden="true">{String(n).padStart(2, "0")}</span>
+                <p className="rk-terms__p">{t(`terms.items.${n}`)}</p>
               </details>
             </li>
           ))}

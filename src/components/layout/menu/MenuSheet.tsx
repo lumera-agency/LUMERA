@@ -35,7 +35,7 @@ function Arrow() {
   );
 }
 
-/** «/ru/reklama-i-analityka#ads» → its path and hash, against this page */
+/** «/ru/reklama-i-analityka#kanaly» → its path and hash, against this page */
 const split = (href: string) => {
   const url = new URL(href, location.href);
   return { here: url.pathname === location.pathname, hash: url.hash };

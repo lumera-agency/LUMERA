@@ -135,7 +135,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
     [],
     [
       { text: t("nav.casesMore"), href: at(ADS, "#case"), tag: t("ads.nav.case") },
-      { text: t("services.service.meta.span.2"), href: at(ADS, "#ads") },
+      { text: t("services.service.meta.span.2"), href: at(ADS, "#kanaly") },
       { text: t("ads.nav.analytics"), href: at(ADS, "#analytics") },
       { text: t("ads.nav.price"), href: at(ADS, "#price") },
       { text: t("ads.nav.how"), href: at(ADS, "#how") },

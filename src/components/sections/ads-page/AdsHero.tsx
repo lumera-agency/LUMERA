@@ -44,11 +44,11 @@ const ICON: Record<Src, React.ReactNode> = {
 export async function AdsHero({ facts }: { facts: AdsFacts }) {
   const t = await getTranslations("ads");
   return (
-    <section className="ai-hero ad-hero" id="top" aria-labelledby="ad-title" data-cover="">
-      <div className="ai-hero__bg" aria-hidden="true"><HeroFlux under="#ads" /></div>
+    <section className="ai-hero rk-hero" id="top" aria-labelledby="rk-title" data-cover="">
+      <div className="ai-hero__bg" aria-hidden="true"><HeroFlux under="#kanaly" /></div>
       <div className="ai-hero__in">
         <div className="ai-hero__copy">
-          <h1 className="s-head__title s-head__title--stone ai-hero__title ai-hero__title--auto" id="ad-title">
+          <h1 className="s-head__title s-head__title--stone ai-hero__title ai-hero__title--auto" id="rk-title">
             {t.rich("hero.title", aiRich)}
           </h1>
           <p className="ai-hero__lead">{t("hero.lead")}</p>
@@ -60,31 +60,31 @@ export async function AdsHero({ facts }: { facts: AdsFacts }) {
             </a>
           </div>
           {/* the facts, each kept whole: a line breaks only between them */}
-          <p className="ad-hero__facts">
+          <p className="rk-hero__facts">
             {(t.raw("hero.facts") as string).split(" · ").map((part, i, all) => (
               <span key={i}>
-                <span className="ad-hero__f">{priceLine(part, facts)}{i < all.length - 1 && "\u00a0·"}</span>{i < all.length - 1 && " "}
+                <span className="rk-hero__f">{priceLine(part, facts)}{i < all.length - 1 && "\u00a0·"}</span>{i < all.length - 1 && " "}
               </span>
             ))}
           </p>
         </div>
 
         <div className="ai-hero__visual">
-          <div className="ad-fl" data-scene="hero">
-            <div className="ad-fl__win" role="img" aria-label={t("hero.alt")}>
-              <p className="ad-fl__top" aria-hidden="true">
+          <div className="rk-fl" data-scene="hero">
+            <div className="rk-fl__win" role="img" aria-label={t("hero.alt")}>
+              <p className="rk-fl__top" aria-hidden="true">
                 <span>{t("hero.sum")}</span>
               </p>
               {/* the networks, each with its count of the week's requests (a strip 0…n, rolled by the runtime) */}
-              <ul className="ad-fl__src" aria-hidden="true">
+              <ul className="rk-fl__src" aria-hidden="true">
                 {SOURCES.map((s) => (
                   <li data-src={s.src} key={s.src}>
-                    <span className="ad-fl__chip">
-                      <svg className="ad-fl__ico" viewBox="0 0 24 24" focusable="false">{ICON[s.src]}</svg>
-                      <span className="ad-fl__name"><b>{NAME[s.src]}</b><small>{t(`hero.s.${s.src}`)}</small></span>
-                      <span className="ad-fl__n">
-                        <span className="ad-part__n" style={{ "--n": s.n } as React.CSSProperties}>
-                          <span className="ad-part__strip">
+                    <span className="rk-fl__chip">
+                      <svg className="rk-fl__ico" viewBox="0 0 24 24" focusable="false">{ICON[s.src]}</svg>
+                      <span className="rk-fl__name"><b>{NAME[s.src]}</b><small>{t(`hero.s.${s.src}`)}</small></span>
+                      <span className="rk-fl__n">
+                        <span className="rk-part__n" style={{ "--n": s.n } as React.CSSProperties}>
+                          <span className="rk-part__strip">
                             {Array.from({ length: s.n + 1 }, (_, k) => <span key={k}>{k}</span>)}
                           </span>
                         </span>
@@ -94,40 +94,40 @@ export async function AdsHero({ facts }: { facts: AdsFacts }) {
                 ))}
               </ul>
               {/* the lines: from each network down, together, into the site; a light runs along them (runtime) */}
-              <div className="ad-fl__bus" aria-hidden="true">
+              <div className="rk-fl__bus" aria-hidden="true">
                 {SOURCES.map((s, i) => (
-                  <span className="ad-fl__run" data-i={i} key={s.src}><b /></span>
+                  <span className="rk-fl__run" data-i={i} key={s.src}><b /></span>
                 ))}
               </div>
-              <p className="ad-fl__hub" aria-hidden="true">
+              <p className="rk-fl__hub" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false"><rect x="3.5" y="5" width="17" height="14" rx="2.5" /><path d="M3.5 9h17M7 13h6M7 15.8h4" /></svg>
                 <b>{t("an.shot.site")}</b>
                 <small>{t("hero.hub")}</small>
               </p>
-              <div className="ad-fl__link" aria-hidden="true"><span className="ad-fl__run"><b /></span></div>
-              <div className="ad-fl__box" aria-hidden="true">
-                <p className="ad-fl__k">{t("hero.win")}</p>
-                <ul className="ad-inbox__list">
+              <div className="rk-fl__link" aria-hidden="true"><span className="rk-fl__run"><b /></span></div>
+              <div className="rk-fl__box" aria-hidden="true">
+                <p className="rk-fl__k">{t("hero.win")}</p>
+                <ul className="rk-inbox__list">
                   {ROWS.map((r) => (
-                    <li className="ad-inbox__row" data-src={r.src} key={r.n}>
-                      <span className="ad-inbox__ava">
+                    <li className="rk-inbox__row" data-src={r.src} key={r.n}>
+                      <span className="rk-inbox__ava">
                         <svg viewBox="0 0 24 24" focusable="false"><rect x="5" y="4" width="14" height="16" rx="2" /><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4" /></svg>
                       </span>
-                      <span className="ad-inbox__who">
+                      <span className="rk-inbox__who">
                         <b>{t(`hero.req.${r.n}`)}</b>
                         <time>{r.time}</time>
                       </span>
-                      <span className="ad-inbox__src">
-                        <span className="ad-inbox__tick">✓</span>
-                        <span className="ad-inbox__l">{t(`hero.src.${r.src}`)}</span>
-                        <span className="ad-inbox__s">{NAME[r.src]}</span>
+                      <span className="rk-inbox__src">
+                        <span className="rk-inbox__tick">✓</span>
+                        <span className="rk-inbox__l">{t(`hero.src.${r.src}`)}</span>
+                        <span className="rk-inbox__s">{NAME[r.src]}</span>
                       </span>
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
-            <p className="ad-note">{t("sample")}</p>
+            <p className="rk-note">{t("sample")}</p>
           </div>
         </div>
       </div>
