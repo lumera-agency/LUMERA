@@ -28,7 +28,7 @@ export async function AdsContact({ index }: { index: number }) {
             <p className="s-head__intro">{a("lead.text")}</p>
           </header>
           {/* what happens after the request: the main page's three steps (contact.next) */}
-          <ol className="ad-next" aria-label={t("contact.next.label")}>
+          <ol className="rk-next" aria-label={t("contact.next.label")}>
             {[1, 2, 3].map((n) => (
               <li key={n}>
                 <span aria-hidden="true">{n}</span>
@@ -39,9 +39,9 @@ export async function AdsContact({ index }: { index: number }) {
               </li>
             ))}
           </ol>
-          <div className="ad-get">
-            <p className="ad-get__h">{a("get.h")}</p>
-            <ul className="ad-get__list">
+          <div className="rk-get">
+            <p className="rk-get__h">{a("get.h")}</p>
+            <ul className="rk-get__list">
               {[1, 2, 3].map((n) => (
                 <li key={n}>{a(`get.${n}`)}</li>
               ))}
@@ -98,7 +98,7 @@ export async function AdsContact({ index }: { index: number }) {
           </div>
           {/* the site the ads will lead to: /api/lead sends it as «Сайт: …». Phones fold it under «+ Додати сайт» (the
               owner, 28 Oct: fewer fields on a phone); wider screens open it (runtime: initFolds), its line hidden there */}
-          <details className="ad-site-fold" data-fold="" open>
+          <details className="rk-site-fold" data-fold="" open>
             <summary>{a("form.addSite")} <span className="field__opt">{t("contact.field.opt")}</span></summary>
             <div className="field">
               <label htmlFor="f-site">
@@ -108,7 +108,7 @@ export async function AdsContact({ index }: { index: number }) {
             </div>
           </details>
           {/* phones: the steps and the promises stand under the form, so the two that matter sit above its button */}
-          <ul className="ad-sure">
+          <ul className="rk-sure">
             <li>{a("form.sure.1")}</li>
             <li>{a("form.sure.2")}</li>
           </ul>

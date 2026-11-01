@@ -8,55 +8,55 @@ import type { AdsFacts } from "@/components/ads/facts";
  *  together */
 const PICS: Record<string, React.ReactNode> = {
   call: (
-    <span className="ad-sp ad-sp--call" data-sp="call">
-      <i className="ad-sp__ava ad-sp__ava--you" />
-      <span className="ad-sp__wave">{[0, 1, 2, 3, 4].map((i) => <b key={i} />)}</span>
-      <i className="ad-sp__ava" />
+    <span className="rk-sp rk-sp--call" data-sp="call">
+      <i className="rk-sp__ava rk-sp__ava--you" />
+      <span className="rk-sp__wave">{[0, 1, 2, 3, 4].map((i) => <b key={i} />)}</span>
+      <i className="rk-sp__ava" />
     </span>
   ),
   kw: (
-    <span className="ad-sp ad-sp--kw" data-sp="kw">
-      <i className="ad-sp__q" />
-      <span className="ad-sp__chips"><b className="is-in" /><b className="is-in" /><b className="is-out" /></span>
+    <span className="rk-sp rk-sp--kw" data-sp="kw">
+      <i className="rk-sp__q" />
+      <span className="rk-sp__chips"><b className="is-in" /><b className="is-in" /><b className="is-out" /></span>
     </span>
   ),
   rec: (
-    <span className="ad-sp ad-sp--rec" data-sp="rec">
-      <span className="ad-sp__form"><b /><b /><i /></span>
-      <i className="ad-sp__ok" />
+    <span className="rk-sp rk-sp--rec" data-sp="rec">
+      <span className="rk-sp__form"><b /><b /><i /></span>
+      <i className="rk-sp__ok" />
     </span>
   ),
   live: (
-    <span className="ad-sp ad-sp--live" data-sp="live">
-      <span className="ad-sp__ad"><b /><b /></span>
-      <i className="ad-sp__sw"><b className="ad-sp__off" /><b className="ad-sp__knob" /></i>
+    <span className="rk-sp rk-sp--live" data-sp="live">
+      <span className="rk-sp__ad"><b /><b /></span>
+      <i className="rk-sp__sw"><b className="rk-sp__off" /><b className="rk-sp__knob" /></i>
     </span>
   ),
   rep: (
-    <span className="ad-sp ad-sp--rep" data-sp="rep"><b /><b /><b /></span>
+    <span className="rk-sp rk-sp--rep" data-sp="rep"><b /><b /><b /></span>
   ),
   doc: (
-    <span className="ad-sp ad-sp--doc" data-sp="doc">
-      <span className="ad-sp__page"><b /><b /><b /><b /><i /></span>
-      <i className="ad-sp__ok" />
+    <span className="rk-sp rk-sp--doc" data-sp="doc">
+      <span className="rk-sp__page"><b /><b /><b /><b /><i /></span>
+      <i className="rk-sp__ok" />
     </span>
   ),
   test: (
-    <span className="ad-sp ad-sp--test" data-sp="test">
-      <span className="ad-sp__win">
-        <span className="ad-sp__bar"><i /><b /></span>
-        <span className="ad-sp__body"><b /><b /><b /></span>
+    <span className="rk-sp rk-sp--test" data-sp="test">
+      <span className="rk-sp__win">
+        <span className="rk-sp__bar"><i /><b /></span>
+        <span className="rk-sp__body"><b /><b /><b /></span>
       </span>
-      <i className="ad-sp__cur" />
+      <i className="rk-sp__cur" />
     </span>
   ),
   both: (
-    <span className="ad-sp ad-sp--both" data-sp="both">
-      <span className="ad-sp__pair">
-        <span className="ad-sp__mini"><b /><b /><b /></span>
-        <span className="ad-sp__ad"><b /><b /></span>
+    <span className="rk-sp rk-sp--both" data-sp="both">
+      <span className="rk-sp__pair">
+        <span className="rk-sp__mini"><b /><b /><b /></span>
+        <span className="rk-sp__ad"><b /><b /></span>
       </span>
-      <i className="ad-sp__sw"><b className="ad-sp__off" /><b className="ad-sp__knob" /></i>
+      <i className="rk-sp__sw"><b className="rk-sp__off" /><b className="rk-sp__knob" /></i>
     </span>
   ),
 };
@@ -101,7 +101,7 @@ export async function AdsHow({ index, facts }: { index: number; facts: AdsFacts 
     },
   ];
   return (
-    <section className="section ai-sec ad-how" id="how" aria-labelledby="how-title">
+    <section className="section ai-sec rk-how" id="how" aria-labelledby="how-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
@@ -114,17 +114,17 @@ export async function AdsHow({ index, facts }: { index: number; facts: AdsFacts 
           <p className="s-head__intro">{t("how.intro")}</p>
         </header>
 
-        <div className="ad-track" data-scene="how">
-          <div className="ad-track__head">
+        <div className="rk-track" data-scene="how">
+          <div className="rk-track__head">
             {/* the time, as wide as the longest of the two (each stands unseen in the same cell), so the switch beside
                 it never moves under the finger */}
-            <div className="ad-track__time">
-              <output className="ad-track__v" data-how-time="" aria-live="polite">{cases[0].time}</output>
-              {cases.map((c) => <span className="ad-track__v ad-track__ghost" aria-hidden="true" key={c.id}>{c.time}</span>)}
+            <div className="rk-track__time">
+              <output className="rk-track__v" data-how-time="" aria-live="polite">{cases[0].time}</output>
+              {cases.map((c) => <span className="rk-track__v rk-track__ghost" aria-hidden="true" key={c.id}>{c.time}</span>)}
             </div>
-            <div className="ad-hseg" role="radiogroup" aria-label={t("how.pick")} data-how-pick="">
+            <div className="rk-hseg" role="radiogroup" aria-label={t("how.pick")} data-how-pick="">
               {cases.map((c, i) => (
-                <label className={`ad-hseg__o${i === 0 ? " is-on" : ""}`} key={c.id}>
+                <label className={`rk-hseg__o${i === 0 ? " is-on" : ""}`} key={c.id}>
                   <input type="radio" name="ads-how" value={c.id} data-time={c.time} defaultChecked={i === 0} />
                   <span>{t(`how.${c.id}`)}</span>
                 </label>
@@ -132,17 +132,17 @@ export async function AdsHow({ index, facts }: { index: number; facts: AdsFacts 
             </div>
           </div>
           {cases.map((c, i) => (
-            <ol className="ad-track__list" data-how-list={c.id} hidden={i > 0} key={c.id}>
+            <ol className="rk-track__list" data-how-list={c.id} hidden={i > 0} key={c.id}>
               {c.steps.map((s, k) => (
-                <li className="ad-track__step" key={k}>
-                  <span className="ad-track__pic" aria-hidden="true">{PICS[s.pic]}</span>
-                  <div className="ad-track__txt">
-                    <h3 className="ad-track__t">
-                      <span className="ad-track__n" aria-hidden="true">{String(k + 1).padStart(2, "0")}</span>
+                <li className="rk-track__step" key={k}>
+                  <span className="rk-track__pic" aria-hidden="true">{PICS[s.pic]}</span>
+                  <div className="rk-track__txt">
+                    <h3 className="rk-track__t">
+                      <span className="rk-track__n" aria-hidden="true">{String(k + 1).padStart(2, "0")}</span>
                       {s.t}
                     </h3>
-                    <p className="ad-track__p">{s.p}</p>
-                    {s.tag && <p className="ad-track__tag">{s.tag}</p>}
+                    <p className="rk-track__p">{s.p}</p>
+                    {s.tag && <p className="rk-track__tag">{s.tag}</p>}
                   </div>
                 </li>
               ))}

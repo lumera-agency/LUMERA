@@ -37,7 +37,7 @@ export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i
   const sites = aiHref(locale, "/dyzain-i-saity");
   const nav = [
     { href: "#case", text: t("nav.case") },
-    { href: "#ads", text: t("nav.ads") },
+    { href: "#kanaly", text: t("nav.ads") },
     { href: "#analytics", text: t("nav.analytics") },
     { href: "#price", text: t("nav.price") },
     { href: "#how", text: t("nav.how") },

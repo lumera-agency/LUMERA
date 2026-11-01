@@ -49,7 +49,7 @@ export async function AdsShell({ nav, footerLinks, cta, barCta, claim, children 
       {/* a slower glide than the default 0.095: the owner asked for smoother motion (20 Oct) */}
       <SmoothScroll lerp={0.08} />
       <Topbar always links={nav} cta={barCta} home={home} />
-      <main id="main" className="ai ad" data-ai-page="ads">
+      <main id="main" className="ai rk" data-ai-page="ads">
         {children}
       </main>
       <Footer claim={claim} links={footerLinks} cta={cta} />

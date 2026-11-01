@@ -8,11 +8,11 @@ import { priceLine, type AdsFacts } from "@/components/ads/facts";
 function Typed({ text }: { text: string }) {
   return (
     <>
-      <span className="ad-type" aria-hidden="true">
+      <span className="rk-type" aria-hidden="true">
         {Array.from(text).map((ch, i) => (
           <i key={i}>{ch}</i>
         ))}
-        <b className="ad-type__caret" />
+        <b className="rk-type__caret" />
       </span>
       <span className="visually-hidden">{text}</span>
     </>
@@ -60,87 +60,87 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
   const google = { plan: `${t("price.g.t")} · ${facts.ads}`, details: [1, 2, 3, 4].map((n) => t(`price.g.${n}`)).join("\n") };
   const meta = { plan: `${t("price.fb.t")} · ${t("price.talk")}`, details: "" };
   return (
-    <section className="section ai-sec ad-ch" id="ads" aria-labelledby="ads-title">
+    <section className="section ai-sec rk-ch" id="kanaly" aria-labelledby="kanaly-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
             <span className="s-head__index">{index}</span>
             <span>{t("nav.ads")}</span>
           </p>
-          <h2 className="s-head__title" id="ads-title" data-split="">
+          <h2 className="s-head__title" id="kanaly-title" data-split="">
             <span className="tone">{t.rich("ch.title", R)}</span>
           </h2>
           <p className="s-head__intro">{t("ch.intro")}</p>
         </header>
 
         {/* phones: one network at a time (the owner, 28 Oct: the two demos one under the other took two screens); the
-            switch is «Як працюємо»'s (.ad-hseg). Wider screens show both side by side and hide it (runtime: initChPick) */}
-        <div className="ad-hseg ad-ch__pick" role="radiogroup" aria-label={t("ch.pick")} data-ch-pick="">
-          <label className="ad-hseg__o is-on">
+            switch is «Як працюємо»'s (.rk-hseg). Wider screens show both side by side and hide it (runtime: initChPick) */}
+        <div className="rk-hseg rk-ch__pick" role="radiogroup" aria-label={t("ch.pick")} data-ch-pick="">
+          <label className="rk-hseg__o is-on">
             <input type="radio" name="ads-ch" value="google" defaultChecked />
             <span>{t("ch.tab.g")}</span>
           </label>
-          <label className="ad-hseg__o">
+          <label className="rk-hseg__o">
             <input type="radio" name="ads-ch" value="meta" />
             <span>{t("ch.tab.m")}</span>
           </label>
         </div>
 
-        <div className="ad-ch__grid" data-pick="google">
+        <div className="rk-ch__grid" data-pick="google">
           {/* Google */}
-          <article className="ad-card" data-ch="google" aria-labelledby="ch-g">
-            <div className="ad-card__media">
-              <div className="ad-serp" data-scene="google" role="img" aria-label={m("aG")}>
+          <article className="rk-card" data-ch="google" aria-labelledby="ch-g">
+            <div className="rk-card__media">
+              <div className="rk-serp" data-scene="google" role="img" aria-label={m("aG")}>
                 <div className="ai-sheet__bar">
                   <i aria-hidden="true" />
                   <i aria-hidden="true" />
                   <i aria-hidden="true" />
                   <span>{m("host")}</span>
                 </div>
-                <div className="ad-serp__in">
-                  <p className="ad-serp__field">
+                <div className="rk-serp__in">
+                  <p className="rk-serp__field">
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6" /><path d="m20 20-4.3-4.3" /></svg>
                     <Typed text={m("query")} />
                   </p>
                   {/* the results: our ad on top (Google's mark above the address, quick links under the text), then two
                       ordinary results it pushes down as it comes in */}
-                  <div className="ad-serp__res">
-                    <div className="ad-serp__ad">
-                      <p className="ad-serp__site"><b>{m("ad")}</b><span>{m("site")}</span></p>
-                      <p className="ad-serp__head">{m("head")}</p>
-                      <p className="ad-serp__desc">{m("desc")}</p>
-                      <p className="ad-serp__links"><span>{m("l1")}</span><span>{m("l2")}</span><span>{m("l3")}</span></p>
-                      <i className="ad-tap" aria-hidden="true" />
+                  <div className="rk-serp__res">
+                    <div className="rk-serp__ad">
+                      <p className="rk-serp__site"><b>{m("ad")}</b><span>{m("site")}</span></p>
+                      <p className="rk-serp__head">{m("head")}</p>
+                      <p className="rk-serp__desc">{m("desc")}</p>
+                      <p className="rk-serp__links"><span>{m("l1")}</span><span>{m("l2")}</span><span>{m("l3")}</span></p>
+                      <i className="rk-tap" aria-hidden="true" />
                     </div>
                     {[1, 2].map((n) => (
-                      <div className="ad-serp__org" key={n}>
-                        <p className="ad-serp__url"><i aria-hidden="true" />{m(`o${n}s`)}</p>
-                        <p className="ad-serp__otitle">{m(`o${n}t`)}</p>
+                      <div className="rk-serp__org" key={n}>
+                        <p className="rk-serp__url"><i aria-hidden="true" />{m(`o${n}s`)}</p>
+                        <p className="rk-serp__otitle">{m(`o${n}t`)}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-                <p className="ad-toast">
-                  <span className="ad-toast__ico" aria-hidden="true"><Check /></span>
+                <p className="rk-toast">
+                  <span className="rk-toast__ico" aria-hidden="true"><Check /></span>
                   <span><b>{m("lead")}</b> {m("leadG")}</span>
                 </p>
                 {/* the person's finger, only while the scene plays */}
-                <i className="ad-finger" aria-hidden="true" />
+                <i className="rk-finger" aria-hidden="true" />
               </div>
             </div>
-            <p className="ad-note">{t("sample")}</p>
-            <div className="ad-card__body">
-              <p className="ad-card__tag">{t("ch.g.tag")}</p>
-              <h3 className="ad-card__t" id="ch-g">{t("ch.g.t")}</h3>
-              <p className="ad-card__p">{t("ch.g.p")}</p>
-              <ul className="ad-checks">
+            <p className="rk-note">{t("sample")}</p>
+            <div className="rk-card__body">
+              <p className="rk-card__tag">{t("ch.g.tag")}</p>
+              <h3 className="rk-card__t" id="ch-g">{t("ch.g.t")}</h3>
+              <p className="rk-card__p">{t("ch.g.p")}</p>
+              <ul className="rk-checks">
                 <li>{t("ch.g.1")}</li>
                 <li>{t("ch.g.2")}</li>
                 <li>{t("ch.g.3")}</li>
               </ul>
-              <div className="ad-card__foot">
-                <p className="ad-card__price">{priceLine(t.raw("ch.g.price"), facts)}</p>
-                <ButtonLink href="#contact" variant="ghost" size="sm" className="ad-card__go" data-plan={google.plan} data-details={google.details}>
+              <div className="rk-card__foot">
+                <p className="rk-card__price">{priceLine(t.raw("ch.g.price"), facts)}</p>
+                <ButtonLink href="#contact" variant="ghost" size="sm" className="rk-card__go" data-plan={google.plan} data-details={google.details}>
                   {t("ch.g.go")}
                 </ButtonLink>
               </div>
@@ -148,71 +148,71 @@ export async function AdsChannels({ index, facts }: { index: number; facts: AdsF
           </article>
 
           {/* Facebook · Instagram */}
-          <article className="ad-card" data-ch="meta" aria-labelledby="ch-m">
-            <div className="ad-card__media">
-              <div className="ad-feed" data-scene="meta" role="img" aria-label={m("aM")}>
+          <article className="rk-card" data-ch="meta" aria-labelledby="ch-m">
+            <div className="rk-card__media">
+              <div className="rk-feed" data-scene="meta" role="img" aria-label={m("aM")}>
                 {/* the people of the city: each chip leaves some out, three light up (React Bits' Radar was the first idea;
                     the review of 20 Oct asked for cause and effect instead of a sonar) */}
-                <div className="ad-crowd" aria-hidden="true">
+                <div className="rk-crowd" aria-hidden="true">
                   {CROWD.map((p, i) => (
-                    <i className={`ad-crowd__dot${p.fit ? " is-fit" : ""}`} data-k={p.k} style={{ "--x": `${p.x}%`, "--y": `${p.y}%` } as React.CSSProperties} key={i}>
+                    <i className={`rk-crowd__dot${p.fit ? " is-fit" : ""}`} data-k={p.k} style={{ "--x": `${p.x}%`, "--y": `${p.y}%` } as React.CSSProperties} key={i}>
                       {p.fit && <b />}
                     </i>
                   ))}
                 </div>
-                <div className="ad-aud">
-                  <p className="ad-aud__k">{m("who")}</p>
-                  <ul className="ad-aud__chips">
+                <div className="rk-aud">
+                  <p className="rk-aud__k">{m("who")}</p>
+                  <ul className="rk-aud__chips">
                     <li>{m("city")}</li>
                     <li>{m("age")}</li>
                     <li>{m("likes")}</li>
                   </ul>
                 </div>
-                <div className="ad-post">
-                  <p className="ad-post__head">
-                    <span className="ad-post__ava" aria-hidden="true">
+                <div className="rk-post">
+                  <p className="rk-post__head">
+                    <span className="rk-post__ava" aria-hidden="true">
                       <svg viewBox="0 0 24 24" focusable="false"><path d="M6 5h4v4H6zM14 5h4v4h-4zM6 15h4v4H6zM14 15h4v4h-4z" /></svg>
                     </span>
-                    <span className="ad-post__who">
+                    <span className="rk-post__who">
                       <b>{m("brand")}</b>
                       <span>{m("sponsored")}</span>
                     </span>
                   </p>
-                  <div className="ad-post__img" aria-hidden="true">
+                  <div className="rk-post__img" aria-hidden="true">
                     {/* eslint-disable-next-line @next/next/no-img-element -- the brand's stone in every mock-up (a still, 62 KB) */}
                     <img src="/img/stone.webp" width={520} height={626} alt="" loading="lazy" decoding="async" />
                   </div>
-                  <p className="ad-post__cap">{m("caption")}</p>
-                  <p className="ad-post__cta">
+                  <p className="rk-post__cap">{m("caption")}</p>
+                  <p className="rk-post__cta">
                     <span>{m("more")}</span>
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 6 6 6-6 6" /></svg>
-                    <i className="ad-tap" aria-hidden="true" />
+                    <i className="rk-tap" aria-hidden="true" />
                   </p>
                 </div>
                 {/* the three who fit, reached by the ad: beams that pass and fade (runtime) */}
-                <i className="ad-beam" aria-hidden="true" />
-                <i className="ad-beam" aria-hidden="true" />
-                <i className="ad-beam" aria-hidden="true" />
-                <i className="ad-finger" aria-hidden="true" />
-                <p className="ad-toast ad-toast--meta">
-                  <span className="ad-toast__ico" aria-hidden="true"><Check /></span>
+                <i className="rk-beam" aria-hidden="true" />
+                <i className="rk-beam" aria-hidden="true" />
+                <i className="rk-beam" aria-hidden="true" />
+                <i className="rk-finger" aria-hidden="true" />
+                <p className="rk-toast rk-toast--meta">
+                  <span className="rk-toast__ico" aria-hidden="true"><Check /></span>
                   <span><b>{m("lead")}</b> {m("leadM")}</span>
                 </p>
               </div>
             </div>
-            <p className="ad-note">{t("sample")}</p>
-            <div className="ad-card__body">
-              <p className="ad-card__tag">{t("ch.m.tag")}</p>
-              <h3 className="ad-card__t" id="ch-m">{t("ch.m.t")}</h3>
-              <p className="ad-card__p">{t("ch.m.p")}</p>
-              <ul className="ad-checks">
+            <p className="rk-note">{t("sample")}</p>
+            <div className="rk-card__body">
+              <p className="rk-card__tag">{t("ch.m.tag")}</p>
+              <h3 className="rk-card__t" id="ch-m">{t("ch.m.t")}</h3>
+              <p className="rk-card__p">{t("ch.m.p")}</p>
+              <ul className="rk-checks">
                 <li>{t("ch.m.1")}</li>
                 <li>{t("ch.m.2")}</li>
                 <li>{t("ch.m.3")}</li>
               </ul>
-              <div className="ad-card__foot">
-                <p className="ad-card__price ad-card__price--talk">{t("ch.m.price")}</p>
-                <ButtonLink href="#contact" variant="ghost" size="sm" className="ad-card__go" data-plan={meta.plan} data-details={meta.details}>
+              <div className="rk-card__foot">
+                <p className="rk-card__price rk-card__price--talk">{t("ch.m.price")}</p>
+                <ButtonLink href="#contact" variant="ghost" size="sm" className="rk-card__go" data-plan={meta.plan} data-details={meta.details}>
                   {t("price.fb.go")}
                 </ButtonLink>
               </div>

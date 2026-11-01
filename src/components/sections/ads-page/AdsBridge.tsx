@@ -108,18 +108,18 @@ const CURSOR = <svg viewBox="0 0 16 22" aria-hidden="true" focusable="false"><pa
 /** a narration line: in at `inn`, out at `out` (none: the last line, it stays); its words rise out of their masks */
 function Line({ inn, out, children }: { inn: number; out?: number; children: React.ReactNode }) {
   return (
-    <p className={`ad-film__line${out == null ? " ad-film__line--last" : ""}`} data-in={inn} data-out={out} style={at([3, 1.5, 58], [1, 1, 20.5])}>
+    <p className={`rk-film__line${out == null ? " rk-film__line--last" : ""}`} data-in={inn} data-out={out} style={at([3, 1.5, 58], [1, 1, 20.5])}>
       {children}
     </p>
   );
 }
-const words = (s: string) => s.split(" ").flatMap((w, i) => [<span className="ad-film__w" key={i}><span>{w}</span></span>, " "]);
+const words = (s: string) => s.split(" ").flatMap((w, i) => [<span className="rk-film__w" key={i}><span>{w}</span></span>, " "]);
 
 function Trails({ a, b, vb, cls }: { a: WP[]; b: WP[]; vb: [number, number]; cls: string }) {
   return (
-    <svg className={`ad-cur__trail ${cls}`} viewBox={`0 0 ${vb[0]} ${vb[1]}`} aria-hidden="true" focusable="false">
-      {a.map(([t, x, y], i) => <circle className="ad-cur__td ad-cur__td--a" cx={x} cy={y} r="0.09" data-t={t} key={`a${i}`} />)}
-      {b.map(([t, x, y], i) => <circle className="ad-cur__td ad-cur__td--b" cx={x} cy={y} r="0.1" data-t={t} key={`b${i}`} />)}
+    <svg className={`rk-cur__trail ${cls}`} viewBox={`0 0 ${vb[0]} ${vb[1]}`} aria-hidden="true" focusable="false">
+      {a.map(([t, x, y], i) => <circle className="rk-cur__td rk-cur__td--a" cx={x} cy={y} r="0.09" data-t={t} key={`a${i}`} />)}
+      {b.map(([t, x, y], i) => <circle className="rk-cur__td rk-cur__td--b" cx={x} cy={y} r="0.1" data-t={t} key={`b${i}`} />)}
     </svg>
   );
 }
@@ -132,17 +132,17 @@ export async function AdsBridge({ index, facts }: { index: number; facts: AdsFac
   // the unclear page's crowded menu, one string in the messages («|» between the items)
   const nav = t("bridge.nav").split("|");
   const tag = (key: string, inn: number, x: number, y: number) => (
-    <span className="ad-film__tag" data-in={inn} data-dx="-0.4" style={ip(x, y)}><i />{t(`bridge.tags.${key}`)}</span>
+    <span className="rk-film__tag" data-in={inn} data-dx="-0.4" style={ip(x, y)}><i />{t(`bridge.tags.${key}`)}</span>
   );
   const ring = (x: number, y: number, m: WP, inn: number) => (
-    <i className="ad-film__ring" data-ring={inn} style={at([x - 0.8, y - 0.8, 1.6, 1.6], [m[1] - 0.6, m[2] - 0.6, 1.2, 1.2])} />
+    <i className="rk-film__ring" data-ring={inn} style={at([x - 0.8, y - 0.8, 1.6, 1.6], [m[1] - 0.6, m[2] - 0.6, 1.2, 1.2])} />
   );
   const navX = NAV_X[locale] ?? NAV_X.uk;
   // the two ways under the film: the price cards' plans and their details, so the form opens on the same plan
   const pack = { plan: `${t("price.b.siteAds.t")} · ${facts.siteAds}`, details: t("price.b.siteAds.d") };
   const ads = { plan: `${t("price.g.t")} · ${facts.ads}`, details: [1, 2, 3, 4].map((n) => t(`price.g.${n}`)).join("\n") };
   return (
-    <section className="section ai-sec ad-bridge" id="storinka" aria-labelledby="bridge-title">
+    <section className="section ai-sec rk-bridge" id="storinka" aria-labelledby="bridge-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
@@ -155,113 +155,113 @@ export async function AdsBridge({ index, facts }: { index: number; facts: AdsFac
           <p className="s-head__intro">{t("bridge.intro")}</p>
         </header>
 
-        <div className="ad-film">
-          <div className="ad-film__b ad-cur" data-scene="page" role="img" aria-label={t("bridge.alt")}>
-            <div className="ad-film__say" aria-hidden="true">
+        <div className="rk-film">
+          <div className="rk-film__b rk-cur" data-scene="page" role="img" aria-label={t("bridge.alt")}>
+            <div className="rk-film__say" aria-hidden="true">
               <Line inn={0} out={1300}>{words(t("bridge.l1"))}</Line>
               <Line inn={2050} out={5400}>
-                <span className="ad-film__ph" data-in="2050">{words(t("bridge.l2.a"))}</span> <span className="ad-film__ph" data-in="2600">{words(t("bridge.l2.b"))}</span>{" "}
-                <span className="ad-film__ph" data-in="3700">{words(t("bridge.l2.c"))}</span> <span className="ad-film__ph ad-film__lost" data-in="4650">{words(t("bridge.l2.d"))}</span>
+                <span className="rk-film__ph" data-in="2050">{words(t("bridge.l2.a"))}</span> <span className="rk-film__ph" data-in="2600">{words(t("bridge.l2.b"))}</span>{" "}
+                <span className="rk-film__ph" data-in="3700">{words(t("bridge.l2.c"))}</span> <span className="rk-film__ph rk-film__lost" data-in="4650">{words(t("bridge.l2.d"))}</span>
               </Line>
               <Line inn={5500} out={7400}>{words(t("bridge.l3"))}</Line>
               <Line inn={7500}>{words(t("bridge.l4"))} <em>{words(t("bridge.l4hl"))}</em></Line>
             </div>
 
-            <div className="ad-film__cam" aria-hidden="true">
-              <span className="ad-film__lab" data-in="1000" style={at([3, 5.7], [1, 4.7])}>{t("bridge.unclear")}</span>
-              <span className="ad-film__lab" data-in="5400" style={at([33, 5.7], [1, 20.9])}>{t("bridge.clear")}</span>
+            <div className="rk-film__cam" aria-hidden="true">
+              <span className="rk-film__lab" data-in="1000" style={at([3, 5.7], [1, 4.7])}>{t("bridge.unclear")}</span>
+              <span className="rk-film__lab" data-in="5400" style={at([33, 5.7], [1, 20.9])}>{t("bridge.clear")}</span>
 
               {/* window A: the unclear page */}
-              <div className="ad-cur__win ad-cur__win--a" style={at([3, 7, 28, 20], [1, 5.6, 20.5, 14.64])}>
-                <div className="ad-cur__in">
-                  <p className="ad-cur__bar" style={ip(0, 0, 28, 1.6)}><i /><i /><i /><span>vash-sait.ua</span><b className="ad-cur__x">×</b></p>
-                  <i className="ad-cur__prog" style={ip(0, 1.6, 28, 0.14)} />
-                  <div className="ad-cur__page ad-cur__page--a" style={ip(0, 1.6, 28, 44)}>
-                    <p className="ad-cur__nav" style={ip(1.2, 0.7, 26)}>{nav.map((n) => <span key={n}>{n}</span>)}</p>
-                    <div className="ad-cur__hero" style={ip(1.2, 2.4, 25.6, 8.6)}>
-                      <span className="ad-cur__arr" style={ip(0.6, 3.6)}>‹</span>
-                      <span className="ad-cur__arr" style={ip(24.2, 3.6)}>›</span>
-                      <span className="ad-cur__sl" style={ip(11.4, 7.4)}><i /><i /><i /><i /></span>
+              <div className="rk-cur__win rk-cur__win--a" style={at([3, 7, 28, 20], [1, 5.6, 20.5, 14.64])}>
+                <div className="rk-cur__in">
+                  <p className="rk-cur__bar" style={ip(0, 0, 28, 1.6)}><i /><i /><i /><span>vash-sait.ua</span><b className="rk-cur__x">×</b></p>
+                  <i className="rk-cur__prog" style={ip(0, 1.6, 28, 0.14)} />
+                  <div className="rk-cur__page rk-cur__page--a" style={ip(0, 1.6, 28, 44)}>
+                    <p className="rk-cur__nav" style={ip(1.2, 0.7, 26)}>{nav.map((n) => <span key={n}>{n}</span>)}</p>
+                    <div className="rk-cur__hero" style={ip(1.2, 2.4, 25.6, 8.6)}>
+                      <span className="rk-cur__arr" style={ip(0.6, 3.6)}>‹</span>
+                      <span className="rk-cur__arr" style={ip(24.2, 3.6)}>›</span>
+                      <span className="rk-cur__sl" style={ip(11.4, 7.4)}><i /><i /><i /><i /></span>
                     </div>
-                    <p className="ad-cur__vague" style={ip(2.6, 4.2, 15)}>{t("bridge.vague")}</p>
-                    {[12, 13.2, 14.4, 15.6, 17.4, 18.6, 19.8, 21, 22.2].map((y, i) => <i className="ad-cur__txt" style={ip(1.2, y, [25, 23, 24.4, 16, 25, 22, 24, 19, 12][i], 0.36)} key={y} />)}
-                    <i className="ad-cur__img" style={ip(1.2, 24.6, 12, 7)} />
-                    <i className="ad-cur__img" style={ip(14, 24.6, 12.8, 7)} />
-                    {[33, 34.2, 35.4].map((y) => <i className="ad-cur__txt" style={ip(1.2, y, 22, 0.36)} key={y} />)}
-                    <span className="ad-cur__ghost" style={ip(1.2, 38, 7, 1.7)}>{t("bridge.more")}</span>
+                    <p className="rk-cur__vague" style={ip(2.6, 4.2, 15)}>{t("bridge.vague")}</p>
+                    {[12, 13.2, 14.4, 15.6, 17.4, 18.6, 19.8, 21, 22.2].map((y, i) => <i className="rk-cur__txt" style={ip(1.2, y, [25, 23, 24.4, 16, 25, 22, 24, 19, 12][i], 0.36)} key={y} />)}
+                    <i className="rk-cur__img" style={ip(1.2, 24.6, 12, 7)} />
+                    <i className="rk-cur__img" style={ip(14, 24.6, 12.8, 7)} />
+                    {[33, 34.2, 35.4].map((y) => <i className="rk-cur__txt" style={ip(1.2, y, 22, 0.36)} key={y} />)}
+                    <span className="rk-cur__ghost" style={ip(1.2, 38, 7, 1.7)}>{t("bridge.more")}</span>
                   </div>
-                  <span className="ad-cur__spin" style={ip(21.6, 3.4, 2, 2)}><i /></span>
+                  <span className="rk-cur__spin" style={ip(21.6, 3.4, 2, 2)}><i /></span>
                   {tag("what", 1900, 12.4, 8.6)}
                   {tag("price", 2450, 13.4, 3.15)}
                   {tag("button", 3100, 1.2, 17.6)}
                   {tag("wait", 3800, 18.2, 6.1)}
-                  <span className="ad-cur__stamp" data-pop="4700" style={ip(8.6, 10.2)}>{t("bridge.stamp")}</span>
+                  <span className="rk-cur__stamp" data-pop="4700" style={ip(8.6, 10.2)}>{t("bridge.stamp")}</span>
                 </div>
               </div>
 
               {/* window B: the clear page */}
-              <div className="ad-cur__win ad-cur__win--b" data-in="5400" style={at([33, 7, 28, 20], [1, 21.8, 20.5, 14.64])}>
-                <div className="ad-cur__in">
-                  <p className="ad-cur__bar" style={ip(0, 0, 28, 1.6)}><i /><i /><i /><span>vash-sait.ua</span></p>
-                  <div className="ad-cur__page" style={ip(0, 1.6, 28, 18.4)}>
-                    <p className="ad-cur__brand" style={ip(1.5, 1.4)}>{t("bridge.brand")}</p>
-                    <p className="ad-cur__h" style={ip(1.5, 2.6, 17)}>{t("bridge.h")}</p>
-                    <p className="ad-cur__price" style={ip(1.5, 7.3)}>{t("bridge.from")}</p>
-                    <span className="ad-cur__pill" style={ip(1.5, 9.4, 9, 2.2)}>{t("bridge.send")}</span>
-                    <i className="ad-cur__tile" style={ip(19.5, 2.6, 7, 4.6)} />
-                    <span className="ad-cur__quote" style={ip(19.5, 7.8, 7, 3.6)}>“<i /><i /></span>
+              <div className="rk-cur__win rk-cur__win--b" data-in="5400" style={at([33, 7, 28, 20], [1, 21.8, 20.5, 14.64])}>
+                <div className="rk-cur__in">
+                  <p className="rk-cur__bar" style={ip(0, 0, 28, 1.6)}><i /><i /><i /><span>vash-sait.ua</span></p>
+                  <div className="rk-cur__page" style={ip(0, 1.6, 28, 18.4)}>
+                    <p className="rk-cur__brand" style={ip(1.5, 1.4)}>{t("bridge.brand")}</p>
+                    <p className="rk-cur__h" style={ip(1.5, 2.6, 17)}>{t("bridge.h")}</p>
+                    <p className="rk-cur__price" style={ip(1.5, 7.3)}>{t("bridge.from")}</p>
+                    <span className="rk-cur__pill" style={ip(1.5, 9.4, 9, 2.2)}>{t("bridge.send")}</span>
+                    <i className="rk-cur__tile" style={ip(19.5, 2.6, 7, 4.6)} />
+                    <span className="rk-cur__quote" style={ip(19.5, 7.8, 7, 3.6)}>“<i /><i /></span>
                   </div>
-                  <span className="ad-cur__chip ad-cur__chip--b" data-pop="5650" style={ip(1.5, 13.6)}>{t("bridge.chip")}<b className="ad-cur__ok" data-pop="7000">{TICK}</b></span>
+                  <span className="rk-cur__chip rk-cur__chip--b" data-pop="5650" style={ip(1.5, 13.6)}>{t("bridge.chip")}<b className="rk-cur__ok" data-pop="7000">{TICK}</b></span>
                 </div>
               </div>
 
               {/* the paid click of visitor 1: out of the ad, into window A, struck when the tab closes, down onto the ledge */}
-              <i className="ad-cur__ledge" data-draw="4950" style={at([3, 29.25, 28, 0.06], null)} data-m="off" />
-              <span className="ad-cur__chip ad-cur__chip--a" data-click={JSON.stringify([[30.2, 17.4], [4.2, 25]])} data-click-m={JSON.stringify([[9.6, 14], [1.6, 18.5]])} style={at([3, 27.95], [1.6, 18.45])}>
-                <span className="ad-cur__ce">{t("bridge.chip")}</span>
-                <span className="ad-cur__cl">{t("bridge.chip")}</span>
-                <i className="ad-cur__strike" />
+              <i className="rk-cur__ledge" data-draw="4950" style={at([3, 29.25, 28, 0.06], null)} data-m="off" />
+              <span className="rk-cur__chip rk-cur__chip--a" data-click={JSON.stringify([[30.2, 17.4], [4.2, 25]])} data-click-m={JSON.stringify([[9.6, 14], [1.6, 18.5]])} style={at([3, 27.95], [1.6, 18.45])}>
+                <span className="rk-cur__ce">{t("bridge.chip")}</span>
+                <span className="rk-cur__cl">{t("bridge.chip")}</span>
+                <i className="rk-cur__strike" />
               </span>
-              <span className="ad-cur__drain" data-in="5000" style={at([13.6, 28.15], [9.9, 18.75])}>{t("bridge.drain")}</span>
+              <span className="rk-cur__drain" data-in="5000" style={at([13.6, 28.15], [9.9, 18.75])}>{t("bridge.drain")}</span>
 
               {/* the ad: in at the centre, clicked, it opens into window A */}
-              <div className="ad-cur__ad" style={at([23, 13.8, 18, 4.6], [2.25, 10.6, 18, 4.6])}>
+              <div className="rk-cur__ad" style={at([23, 13.8, 18, 4.6], [2.25, 10.6, 18, 4.6])}>
                 <p><b>{t("bridge.ad.k")}</b> · vash-sait.ua</p>
-                <p className="ad-cur__adt">{t("bridge.ad.t")}</p>
+                <p className="rk-cur__adt">{t("bridge.ad.t")}</p>
               </div>
 
-              <Trails a={w.ta} b={w.tb} vb={[64, 32]} cls="ad-cur__trail--d" />
-              <Trails a={w.tam} b={w.tbm} vb={[22.5, 38]} cls="ad-cur__trail--m" />
+              <Trails a={w.ta} b={w.tb} vb={[64, 32]} cls="rk-cur__trail--d" />
+              <Trails a={w.tam} b={w.tbm} vb={[22.5, 38]} cls="rk-cur__trail--m" />
               {ring(32, 16.2, [0, 11.25, 13], 820)}
               {ring(navX, 9.7, mapA([0, navX, 9.7]), 3500)}
               {ring(30.05, 7.85, mapA([0, 30.05, 7.85]), 4620)}
               {ring(39.4, 19.3, mapB([0, 39.4, 19.3]), 6850)}
-              <span className="ad-cur__cur ad-cur__cur--a" data-way={JSON.stringify(w.pa)} data-way-m={JSON.stringify(w.pam)} data-press="820,3500,4620" style={at([endA[1], endA[2]], [endAm[1], endAm[2]])}><i>{CURSOR}</i></span>
-              <span className="ad-cur__cur ad-cur__cur--b" data-way={JSON.stringify(w.pb)} data-way-m={JSON.stringify(w.pbm)} data-press="6850" style={at([endB[1], endB[2]], [endBm[1], endBm[2]])}><i>{CURSOR}</i></span>
-              <p className="ad-film__toast" data-pop="7000" style={at([46.5, 24.6, 15, 3.4], [3, 33.7, 17.5, 3])}>
-                <span className="ad-film__tick">{TICK}</span>
-                <span className="ad-film__tt"><b>{t("bridge.toast.t")}</b><small>{t("bridge.toast.src")}</small></span>
+              <span className="rk-cur__cur rk-cur__cur--a" data-way={JSON.stringify(w.pa)} data-way-m={JSON.stringify(w.pam)} data-press="820,3500,4620" style={at([endA[1], endA[2]], [endAm[1], endAm[2]])}><i>{CURSOR}</i></span>
+              <span className="rk-cur__cur rk-cur__cur--b" data-way={JSON.stringify(w.pb)} data-way-m={JSON.stringify(w.pbm)} data-press="6850" style={at([endB[1], endB[2]], [endBm[1], endBm[2]])}><i>{CURSOR}</i></span>
+              <p className="rk-film__toast" data-pop="7000" style={at([46.5, 24.6, 15, 3.4], [3, 33.7, 17.5, 3])}>
+                <span className="rk-film__tick">{TICK}</span>
+                <span className="rk-film__tt"><b>{t("bridge.toast.t")}</b><small>{t("bridge.toast.src")}</small></span>
               </p>
             </div>
           </div>
-          <p className="ad-film__cap" aria-hidden="true">{t("sample")}</p>
+          <p className="rk-film__cap" aria-hidden="true">{t("sample")}</p>
         </div>
 
         {/* the two ways: a landing with the ads, or the ads alone */}
-        <div className="ad-paths">
-          <div className="ad-paths__cell">
-            <p className="ad-paths__k">{t("bridge.paths.a.k")}</p>
-            <p className="ad-paths__t">{t("bridge.paths.a.t")}</p>
-            <p className="ad-paths__p">{priceLine(t.raw("bridge.paths.a.p"), facts)}</p>
-            <ButtonLink href="#contact" variant="primary" size="sm" className="ad-paths__go" data-plan={pack.plan} data-details={pack.details}>{t("bridge.paths.a.go")}</ButtonLink>
+        <div className="rk-paths">
+          <div className="rk-paths__cell">
+            <p className="rk-paths__k">{t("bridge.paths.a.k")}</p>
+            <p className="rk-paths__t">{t("bridge.paths.a.t")}</p>
+            <p className="rk-paths__p">{priceLine(t.raw("bridge.paths.a.p"), facts)}</p>
+            <ButtonLink href="#contact" variant="primary" size="sm" className="rk-paths__go" data-plan={pack.plan} data-details={pack.details}>{t("bridge.paths.a.go")}</ButtonLink>
           </div>
-          <div className="ad-paths__cell">
-            <p className="ad-paths__k">{t("bridge.paths.b.k")}</p>
-            <p className="ad-paths__t">{t("bridge.paths.b.t")}</p>
-            <p className="ad-paths__p">{priceLine(t.raw("bridge.paths.b.p"), facts)}</p>
-            <ButtonLink href="#contact" variant="ghost" size="sm" className="ad-paths__go" data-plan={ads.plan} data-details={ads.details}>{t("bridge.paths.b.go")}</ButtonLink>
+          <div className="rk-paths__cell">
+            <p className="rk-paths__k">{t("bridge.paths.b.k")}</p>
+            <p className="rk-paths__t">{t("bridge.paths.b.t")}</p>
+            <p className="rk-paths__p">{priceLine(t.raw("bridge.paths.b.p"), facts)}</p>
+            <ButtonLink href="#contact" variant="ghost" size="sm" className="rk-paths__go" data-plan={ads.plan} data-details={ads.details}>{t("bridge.paths.b.go")}</ButtonLink>
           </div>
-          <a className="ad-paths__sites" href={`${aiHref(locale, "/dyzain-i-saity")}#formats`}>
+          <a className="rk-paths__sites" href={`${aiHref(locale, "/dyzain-i-saity")}#formats`}>
             <span>{t("bridge.paths.sites")}</span>
             {ARROW}
           </a>

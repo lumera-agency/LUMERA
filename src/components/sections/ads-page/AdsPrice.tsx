@@ -43,25 +43,25 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
   const SHOWN = 4;
   const items = (c: Card) => (
     <>
-      <ul className="ad-pc__inc">
+      <ul className="rk-pc__inc">
         {Array.from({ length: c.items }, (_, i) => (
-          <li className={i >= SHOWN ? "ad-pc__extra" : undefined} key={i}>{t(`price.${c.key}.${i + 1}`)}</li>
+          <li className={i >= SHOWN ? "rk-pc__extra" : undefined} key={i}>{t(`price.${c.key}.${i + 1}`)}</li>
         ))}
       </ul>
       {c.items > SHOWN && (
-        <button type="button" className="ad-pc__rest" aria-expanded="false" data-more="">
+        <button type="button" className="rk-pc__rest" aria-expanded="false" data-more="">
           {t("price.rest", { n: c.items - SHOWN })}
         </button>
       )}
     </>
   );
   const go = (c: Card, featured = false) => (
-    <ButtonLink href="#contact" variant={featured ? "primary" : "ghost"} size="sm" className="ad-price__go" data-plan={plan(c)} data-details={details(c)}>
+    <ButtonLink href="#contact" variant={featured ? "primary" : "ghost"} size="sm" className="rk-price__go" data-plan={plan(c)} data-details={details(c)}>
       {c.key === "fb" ? t("price.fb.go") : t("price.go")}
     </ButtonLink>
   );
   return (
-    <section className="section ai-sec ad-price" id="price" aria-labelledby="price-title">
+    <section className="section ai-sec rk-price" id="price" aria-labelledby="price-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
@@ -75,64 +75,64 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
         </header>
 
         {/* the setups: one row, shared lines */}
-        <ul className="ad-prices">
+        <ul className="rk-prices">
           {setups.map((c) => (
-            <li className={`ad-pc${c.featured ? " ad-pc--featured" : ""}${c.bundle ? " ad-pc--bundle" : ""}`} data-card={c.id} key={c.id}>
-              <div className="ad-pc__top">
-                <h3 className="ad-pc__t">{t(`price.${c.key}.t`)}</h3>
-                {c.featured && <span className="ad-pc__badge">{t("price.g.badge")}</span>}
-                {c.bundle && <span className="ad-pc__badge ad-pc__badge--q">{t("price.s.badge")}</span>}
+            <li className={`rk-pc${c.featured ? " rk-pc--featured" : ""}${c.bundle ? " rk-pc--bundle" : ""}`} data-card={c.id} key={c.id}>
+              <div className="rk-pc__top">
+                <h3 className="rk-pc__t">{t(`price.${c.key}.t`)}</h3>
+                {c.featured && <span className="rk-pc__badge">{t("price.g.badge")}</span>}
+                {c.bundle && <span className="rk-pc__badge rk-pc__badge--q">{t("price.s.badge")}</span>}
               </div>
-              <p className="ad-pc__sum">
+              <p className="rk-pc__sum">
                 <b>{c.sum}</b>
                 <span>{t("price.once")}</span>
               </p>
-              <p className="ad-pc__d">
+              <p className="rk-pc__d">
                 {t(`price.${c.key}.d`)}
-                {c.key === "ai" && <span className="ad-pc__star" aria-hidden="true">*</span>}
+                {c.key === "ai" && <span className="rk-pc__star" aria-hidden="true">*</span>}
               </p>
-              <details className="ad-pc__more" data-fold={c.featured ? undefined : ""} open>
+              <details className="rk-pc__more" data-fold={c.featured ? undefined : ""} open>
                 <summary>{t("price.more")}</summary>
                 {items(c)}
               </details>
-              <div className="ad-pc__foot">
-                <span className="ad-pc__wk">{c.bundle ? facts.wSiteAds : facts.wAds}</span>
+              <div className="rk-pc__foot">
+                <span className="rk-pc__wk">{c.bundle ? facts.wSiteAds : facts.wAds}</span>
                 {go(c, c.featured)}
               </div>
             </li>
           ))}
         </ul>
         {/* the exact sum is fixed in the contract: said right under the prices, where the doubt comes (the review, 20 Oct) */}
-        <p className="ai-foot ad-price__note">{t("price.note")}</p>
-        <p className="ad-price__star">* {t("price.ai.note")}</p>
+        <p className="ai-foot rk-price__note">{t("price.note")}</p>
+        <p className="rk-price__star">* {t("price.ai.note")}</p>
 
         {/* what can be added: thin strips (the management one without its own button: it is chosen with a setup) */}
-        <div className="ad-addons">
-          <h3 className="ad-addons__h">{t("price.add")}</h3>
-          <div className="ad-addon" data-card={mgmt.id}>
-            <div className="ad-addon__main">
-              <h4 className="ad-addon__t">{t("price.m.t")}</h4>
-              <p className="ad-addon__d">{t("price.m.d")}</p>
-              <details className="ad-addon__more">
+        <div className="rk-addons">
+          <h3 className="rk-addons__h">{t("price.add")}</h3>
+          <div className="rk-addon" data-card={mgmt.id}>
+            <div className="rk-addon__main">
+              <h4 className="rk-addon__t">{t("price.m.t")}</h4>
+              <p className="rk-addon__d">{t("price.m.d")}</p>
+              <details className="rk-addon__more">
                 <summary>{t("price.more")}</summary>
                 {items(mgmt)}
               </details>
             </div>
-            <p className="ad-addon__sum"><b>{facts.mgmt}</b><span>{t("price.month")}</span></p>
+            <p className="rk-addon__sum"><b>{facts.mgmt}</b><span>{t("price.month")}</span></p>
           </div>
-          <div className="ad-addon" data-card={meta.id}>
-            <div className="ad-addon__main">
-              <h4 className="ad-addon__t">{t("price.fb.t")}</h4>
-              <p className="ad-addon__d">{t("price.fb.d")}</p>
+          <div className="rk-addon" data-card={meta.id}>
+            <div className="rk-addon__main">
+              <h4 className="rk-addon__t">{t("price.fb.t")}</h4>
+              <p className="rk-addon__d">{t("price.fb.d")}</p>
             </div>
-            <p className="ad-addon__sum"><b className="ad-addon__talk">{t("price.talk")}</b></p>
+            <p className="rk-addon__sum"><b className="rk-addon__talk">{t("price.talk")}</b></p>
             {go(meta)}
           </div>
         </div>
 
         {/* the whole sum of the first month and what stays outside our price, as plain text after the prices (the art
             director's review, 20 Oct: as a card before them it pushed the prices down) */}
-        <dl className="ad-first">
+        <dl className="rk-first">
           <div>
             <dt>{t("price.first.k")}</dt>
             <dd>{priceLine(t.raw("price.first.v"), facts)}</dd>
