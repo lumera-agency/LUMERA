@@ -1,6 +1,7 @@
 /*
  * «Про нас»'s behaviour, an island as on the sibling pages (React owns the markup, this module the motion): the parts
- * coming in as they reach the screen, the labels' shuffle, the request's way (block 2), and where the visitor lands.
+ * coming in as they reach the screen, the labels' shuffle, the broken-telephone demo (block 3), and where the visitor
+ * lands.
  * The section titles and the [data-sr] blocks are the main page's own reveals (PageShell → ScrollReveals).
  *
  * Ported ideas, rebuilt here on CSS and WAAPI (React Bits, reactbits.dev, MIT + Commons Clause; 21st.dev): Animated
@@ -117,9 +118,9 @@ function initShuffle() {
   $$('main.about .s-head__meta > span:last-child').forEach((label) => io.observe(label));
 }
 
-/* ---------- 2 · the request's way (AboutWhy): plays once as its window comes into view. .is-pre holds the start (no
-   link lit, the line empty, the words down); .is-play runs the CSS animations, each from its own start frame (fill
-   backwards), so the window's CSS default stays its final frame. Already on the screen at load: left as it is ---------- */
+/* ---------- 3 · the broken-telephone demo (AboutDirect): plays once as its window comes into view. .is-pre holds the
+   start (no stop lit, the lines empty, no message yet); .is-play runs the CSS animations, each from its own start frame
+   (fill backwards), so the window's CSS default stays its final frame. Already on the screen at load: left as it is ---------- */
 function initChain() {
   const el = $('[data-chain]');
   if (!el || !motion) return;

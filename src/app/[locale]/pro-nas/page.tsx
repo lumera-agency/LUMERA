@@ -5,10 +5,8 @@ import { aiMetadata } from "@/components/ai/meta";
 import { studioName } from "@/config/site";
 import { AboutShell } from "@/components/about/AboutShell";
 import { AboutTeam } from "@/components/sections/about-page/AboutTeam";
-import { AboutTerms } from "@/components/sections/about-page/AboutTerms";
-import { AboutWhy } from "@/components/sections/about-page/AboutWhy";
-import { AboutFaq } from "@/components/sections/about-page/AboutFaq";
-import { AboutContact } from "@/components/sections/about-page/AboutContact";
+import { AboutWork } from "@/components/sections/about-page/AboutWork";
+import { AboutDirect } from "@/components/sections/about-page/AboutDirect";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/pro-nas">) {
   const { locale } = await params;
@@ -16,40 +14,36 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/pro-nas"
 }
 
 /**
- * «Про нас» — the studio's own page (the owner's brief of 26 Oct: it answers one doubt, «won't they vanish in a month?»,
- * and stays short). Each block one doubt: 1 who they are (the team, the first screen) → 2 why them (one team on the
- * whole way of a request, the one light block, its demo; the owner, 3 Nov, in place of the cases) → 3 what stays with
- * the client (the terms) → 4 what happens after the launch (questions) → 5 what happens when I write (the request, the
- * main page's form).
- * Built from the sibling pages' kit (AdsShell's frame, the main page's sections, card, FAQ and form); the art director's
- * layout of 3 Nov.
+ * «Про нас» — the studio's own page (the owner's brief of 26 Oct: it answers one doubt, «won't they vanish in a month?»).
+ * The owner, 3 Nov: only what the main page does not say, fewer blocks, more creatively. Three: 1 who they are (the
+ * team, the first screen) → 2 how they work (the owner's two rules, a poster on the one light block) → 3 straight to the
+ * one who does the work (a broken-telephone demo, then the request button). The FAQ, the form, the prices and the cases
+ * are the main page's and the service pages'; the footer carries the contacts and the map of the site. Built from the
+ * sibling pages' kit (AdsShell's frame, the main page's sections and card).
  */
 export default async function AboutPage({ params }: PageProps<"/[locale]/pro-nas">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("about");
   const home = aiHref(locale, "/");
+  const form = `${home}#contact`;
   const nav = [
     { href: "#team", text: t("nav.team") },
-    { href: "#why", text: t("nav.why") },
-    { href: "#terms", text: t("nav.terms") },
-    { href: "#faq", text: t("nav.faq") },
-    { href: "#contact", text: t("nav.lead"), bar: false },
+    { href: "#work", text: t("nav.work") },
+    { href: "#direct", text: t("nav.direct") },
     { href: home, text: t("nav.home"), bar: false },
   ];
   return (
     <AboutShell
       nav={nav}
-      footerLinks={[...nav.slice(0, 5), { href: home, text: studioName }]}
-      cta={{ href: "#contact", text: t("cta") }}
-      barCta={{ href: "#contact", text: t("topbar.cta") }}
+      footerLinks={[...nav.slice(0, 3), { href: home, text: studioName }]}
+      cta={{ href: form, text: t("cta") }}
+      barCta={{ href: form, text: t("topbar.cta") }}
     >
       <PageShell>
         <AboutTeam />
-        <AboutWhy index={2} />
-        <AboutTerms index={3} />
-        <AboutFaq index={4} />
-        <AboutContact index={5} />
+        <AboutWork index={2} />
+        <AboutDirect index={3} />
       </PageShell>
     </AboutShell>
   );

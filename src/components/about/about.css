@@ -1,12 +1,12 @@
 /*
- * «Про нас» (/pro-nas): this page's own blocks, the art director's layout of 3 Nov. The kit (tokens, sections and heads,
- * the card, the ivory block, buttons, the FAQ, the form, topbar, footer) is the main page's and the AI pages'
- * (styles/tokens.css, layout/page/page.css, ui/button, sections/faq, sections/contact, ai/ai.css).
+ * «Про нас» (/pro-nas): this page's own blocks (three since the owner's word of 3 Nov: the team, the owner's two rules,
+ * the broken-telephone demo). The kit (tokens, sections and heads, the card, the ivory block, buttons, topbar, footer)
+ * is the main page's and the AI pages' (styles/tokens.css, layout/page/page.css, ui/button, ai/ai.css).
  * Every colour here is a token: the page has no value of its own. Type: five sizes (label, small, lead, h3, display; the
  * buttons and the shared header, menu and footer aside); mono only in the labels.
  * Effects, ported from React Bits and 21st.dev and rebuilt on CSS (transform and opacity only, each once, the CSS default
  * the final frame): Vertical Cut Reveal, Text Generate Effect, Shuffle, Glare Hover, Bounce Cards, Animated Content,
- * Animated List (runtime/about-runtime.js plays what waits for the screen).
+ * Animated List, and the page's own demo (runtime/about-runtime.js plays what waits for the screen).
  */
 
 /* the AI pages' resets cover h2 and ol; the cards' titles are h3 */
@@ -29,9 +29,6 @@ main.about [data-in] {
     transform 0.6s var(--ease-out);
 }
 main.about [data-in].is-pre { opacity: 0; translate: 0 1.5rem; }
-/* (React Bits' Animated List) rows come in from a little lower and a little smaller: the steps, the questions */
-main.about :is(.about-next li, .faq__item) { transform-origin: 0 50%; }
-main.about :is(.about-next li, .faq__item)[data-in].is-pre { translate: 0 1rem; scale: 0.97; }
 
 /* (21st.dev's Vertical Cut Reveal) the first screen's title: each word rises out of its own cut, one after another,
    from the first paint (the cut leaves room for the letters' marks above and below) */
@@ -53,7 +50,7 @@ html.motion .about-cut__w { animation: about-cut-in 1s var(--ease-out) calc(0.1s
 .about-sh__s { display: block; }
 .about-sh__s > span { display: block; height: 1.5em; line-height: 1.5em; }
 
-/* the quiet way down to the form (the ads page's «ai-down»): the words in ink, the arrow in a ring that fills */
+/* the quiet way down to the request (the ads page's «ai-down»): the words in ink, the arrow in a ring that fills */
 .about-down { display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; margin-top: 1.25rem; font-size: var(--fs-lead); color: var(--ink); text-decoration: none; }
 .about-down svg { box-sizing: content-box; flex: none; width: 1rem; height: 1rem; padding: 0.625rem; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px var(--border-strong); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
 .about-down:is(:hover, :focus-visible) svg { color: var(--on-ink); background: var(--ink); box-shadow: none; transform: translateY(0.125rem); }
@@ -114,129 +111,87 @@ html.motion .about-cut__w { animation: about-cut-in 1s var(--ease-out) calc(0.1s
 }
 
 /* ==========================================================================
-   2 · Чому ECLO (the page's one light block): one dark window, the way of a request through its four links; the
-   request runs it once (runtime: scene «chain»), an ember line from link to link, each lighting as it arrives
+   2 · Як ми працюємо (the page's one light block): a poster of the owner's two rules, each large, its key word in ember
    ========================================================================== */
-.about-chain { --step: 0.8s; position: relative; padding: var(--card-pad); border-radius: var(--radius-lg); color: var(--ink); background: var(--ink-dark); box-shadow: 0 2.5rem 4rem -3rem var(--ink-dark); }
-main.about .about-chain__list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--col-gap); margin: 0; padding: 0; list-style: none; }
-.about-chain__st { position: relative; display: grid; align-content: start; row-gap: 1.25rem; }
-/* a link's mark: its ring with the drawing in grey, and over it the lit state, filled in ink */
-.about-chain__node { position: relative; z-index: 1; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--ink-dark); box-shadow: inset 0 0 0 1px var(--border-strong); }
-.about-chain__node svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.about-chain__lit { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; background: var(--ink); }
-.about-chain__lit svg { stroke: var(--on-ink); }
-/* the line to the next link (from this ring's centre to the next one's): a hairline, and over it the request's ember
-   line, its head running ahead (the box clips it, so it grows from the left) */
-.about-chain__seg { position: absolute; left: 1.375rem; top: 1rem; width: calc(100% + var(--col-gap)); height: 0.75rem; overflow: hidden; }
-.about-chain__seg::before,
-.about-chain__run::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line); }
-.about-chain__run { position: absolute; inset: 0; }
-.about-chain__run::before { background: var(--ember); }
-.about-chain__run::after { content: ""; position: absolute; right: 0; top: 50%; width: 0.5rem; height: 0.5rem; margin-top: -0.25rem; border-radius: 50%; background: var(--ember); }
-.about-chain__txt { display: grid; justify-items: start; row-gap: 0.5rem; }
-.about-chain__k { font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.about-chain__v { font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
-/* what the request leaves: the message at «Заявка» (the person's ember), its source at «Звідки заявка» */
-.about-chain__pop { display: inline-flex; align-items: center; min-height: 2rem; margin-top: 0.375rem; padding: 0 0.875rem; border-radius: 62.4375rem; font-size: var(--fs-small); line-height: 1; }
-.about-chain__pop--msg { color: var(--on-accent); background: var(--ember); }
-.about-chain__pop--src { color: var(--ink); box-shadow: inset 0 0 0 1px var(--border-strong); }
-/* the scene: .is-pre its start, .is-play from there to the CSS default (the final frame); link n lights as the line
-   from link n − 1 arrives, its words come up, then what it leaves */
-.about-chain.is-pre :is(.about-chain__lit, .about-chain__pop) { opacity: 0; }
-.about-chain.is-pre .about-chain__run { translate: -100% 0; }
-.about-chain.is-pre :is(.about-chain__k, .about-chain__v) { opacity: 0; translate: 0 0.75rem; }
+.about-work__head { margin-bottom: var(--rhythm-s); }
+main.about .about-vows { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-dark); }
+.about-vow { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: baseline; padding: var(--rhythm-m) 0; border-bottom: 1px solid var(--line-dark); }
+.about-vow__n { grid-column: 1; font: 400 var(--fs-label) / 1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-dark-mute); }
+.about-vow__b { grid-column: 2 / span 10; font-size: var(--fs-display); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.04; letter-spacing: -0.035em; color: var(--ink-dark); text-wrap: balance; }
+.about-vow__b .hl { font-style: normal; color: var(--ember-deep); }
+.about-vow__t { grid-column: 2 / span 7; margin-top: 1.25rem; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-dark-soft); text-wrap: pretty; }
+/* (21st.dev's Text Generate Effect) a rule's words come up one after another as it reaches the screen, then its plain
+   words under it ([data-gen], runtime: initIn) */
+.about-vow .about-gen { display: inline-block; transition: opacity 0.8s var(--ease-out) calc(var(--i) * 70ms), translate 0.8s var(--ease-out) calc(var(--i) * 70ms); }
+.about-vow .about-vow__t { transition: opacity 0.8s var(--ease-out) 0.6s; }
+main.about .about-vow.is-pre .about-gen { opacity: 0; translate: 0 0.35em; transition: none; }
+main.about .about-vow.is-pre .about-vow__t { opacity: 0; transition: none; }
+
+/* ==========================================================================
+   3 · Напряму: the broken-telephone demo, one dark window with two lanes (runtime: scene «chain», .is-pre its start,
+   .is-play from there to the CSS default, the final frame; each part's moment is its --t)
+   ========================================================================== */
+.about-direct { padding-bottom: var(--rhythm-section); }
+.about-tel { position: relative; margin: 0; padding: var(--card-pad); border-radius: var(--radius-lg); background: var(--color-ink-dark); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.about-tel__lane + .about-tel__lane { margin-top: var(--rhythm-s); padding-top: var(--rhythm-s); border-top: 1px solid var(--line); }
+.about-tel__k { margin-bottom: 1.5rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.about-tel__lane--us .about-tel__k { color: var(--ink); }
+main.about .about-tel__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--col-gap); margin: 0; padding: 0; list-style: none; }
+.about-tel__st { position: relative; grid-column: var(--col, auto); display: grid; justify-items: start; align-content: start; row-gap: 0.75rem; }
+/* a stop's person: a ring in grey; lit, a brighter ring on the usual lane, filled in ink on ours */
+.about-tel__node { position: relative; z-index: 1; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--color-ink-dark); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.about-tel__node svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.about-tel__lit { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; background: var(--color-ink-dark); box-shadow: inset 0 0 0 1px var(--ink-soft); }
+.about-tel__lit svg { stroke: var(--ink-soft); }
+.about-tel__lane--us .about-tel__lit { background: var(--ink); box-shadow: none; }
+.about-tel__lane--us .about-tel__lit svg { stroke: var(--on-ink); }
+/* the way to the next stop (from this ring's centre to the next one's, across --span columns): a hairline, and over it
+   the message running, grey on the usual lane, the person's ember on ours (the box clips it, so it grows from the left) */
+.about-tel__seg { position: absolute; left: 1.375rem; top: 1rem; width: calc(var(--span) * 100% + var(--span) * var(--col-gap)); height: 0.75rem; overflow: hidden; }
+.about-tel__seg::before,
+.about-tel__run::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line); }
+.about-tel__run { position: absolute; inset: 0; }
+.about-tel__run::before { background: var(--ink-mute); }
+.about-tel__run::after { content: ""; position: absolute; right: 0; top: 50%; width: 0.5rem; height: 0.5rem; margin-top: -0.25rem; border-radius: 50%; background: var(--ink-mute); }
+.about-tel__lane--us .about-tel__run::before,
+.about-tel__lane--us .about-tel__run::after { background: var(--ember); }
+.about-tel__who { font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.about-tel__at { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.about-tel__msg { display: inline-grid; padding: 0.625rem 0.875rem; border-radius: var(--radius-md); font-size: var(--fs-small); line-height: 1.4; color: var(--ink-soft); box-shadow: inset 0 0 0 1px var(--border-strong); text-wrap: balance; }
+.about-tel__msg--lost { color: var(--ink-mute); border: 1px dashed var(--border-strong); box-shadow: none; }
+.about-tel__msg--kept { color: var(--on-ink); background: var(--ink); box-shadow: none; }
+/* the manager's bubble: the words as heard, then as passed on, in one place (the bubble keeps the longer one's size) */
+.about-tel__msg--morph > span { grid-area: 1 / 1; align-self: center; }
+.about-tel__was { opacity: 0; }
+.about-tel__mark { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font-size: var(--fs-small); font-weight: 500; line-height: 1; }
+.about-tel__mark--q { color: var(--ink-mute); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.about-tel__mark--ok { color: var(--on-accent); background: var(--ember); }
+.about-tel__mark--ok svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.about-tel__cap { margin-top: var(--rhythm-s); font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+/* the scene */
 @keyframes about-run-x { from { translate: -100% 0; } }
 @keyframes about-run-y { from { translate: 0 -100%; } }
 @keyframes about-lit { from { opacity: 0; scale: 0.6; } }
-@keyframes about-up { from { opacity: 0; translate: 0 0.75rem; } }
 @keyframes about-pop { from { opacity: 0; scale: 0.9; translate: 0 0.375rem; } }
-.about-chain.is-play .about-chain__run { animation: about-run-x var(--step) var(--ease-in-out) calc(var(--n) * var(--step) + 0.2s) backwards; }
-.about-chain.is-play .about-chain__lit { animation: about-lit 0.5s var(--ease-out) calc(var(--n) * var(--step) + 0.2s) backwards; }
-.about-chain.is-play :is(.about-chain__k, .about-chain__v) { animation: about-up 0.7s var(--ease-out) calc(var(--n) * var(--step) + 0.3s) backwards; }
-.about-chain.is-play .about-chain__pop { animation: about-pop 0.5s var(--ease-out) calc(var(--n) * var(--step) + 0.6s) backwards; }
-/* under the window: the open prices, in the main page's calculator */
-.about-why__calc { margin-top: var(--rhythm-s); }
-/* (inline, so a link that wraps keeps its arrow after its last word; the padding keeps the tap target) */
-.section--ivory .about-why__calc .link { padding-block: 0.75rem; font-size: var(--fs-lead); color: var(--ink-dark); }
-.about-why__calc svg { display: inline-block; width: 1rem; height: 1rem; margin-left: 0.375rem; vertical-align: -0.125em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
-.about-why__calc .link:hover svg { transform: translateX(0.1875rem); }
+/* (the words as heard leave before the retold ones come: the two never overlap) */
+@keyframes about-was { 0%, 60%, 100% { opacity: 0; } 15%, 45% { opacity: 1; } }
+.about-tel.is-pre :is(.about-tel__lit, .about-tel__at) { opacity: 0; }
+.about-tel.is-pre .about-tel__run { translate: -100% 0; }
+.about-tel.is-play .about-tel__run { animation: about-run-x 0.7s var(--ease-in-out) var(--t) backwards; }
+.about-tel.is-play .about-tel__lit { animation: about-lit 0.5s var(--ease-out) var(--t) backwards; }
+.about-tel.is-play .about-tel__at { animation: about-pop 0.5s var(--ease-out) var(--t) backwards; }
+.about-tel.is-play .about-tel__was { animation: about-was 1s linear var(--t) backwards; }
+.about-tel.is-play .about-tel__now { animation: about-gen-in 0.4s var(--ease-out) calc(var(--t) + 0.65s) backwards; }
+.about-tel.is-play .about-tel__mark { animation: about-pop 0.5s var(--ease-out) calc(var(--t) + 0.3s) backwards; }
 
-/* ==========================================================================
-   3 · Умови: four terms on hairlines (21st.dev's features grids), a «+» where the lines cross; the top line draws itself
-   in ([data-draw]), then the cells rise one after another
-   ========================================================================== */
-.about-terms { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
-.about-terms::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--line); transform-origin: 0 50%; transition: transform 0.9s var(--ease-in-out) var(--d, 0s); }
-main.about .about-terms.is-pre::before { transform: scaleX(0); transition: none; }
-.about-terms__i { position: relative; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 1.25rem; align-items: start; padding: var(--card-pad) var(--card-pad) var(--card-pad) 0; }
-.about-terms__i:nth-child(even) { padding: var(--card-pad) 0 var(--card-pad) var(--card-pad); border-left: 1px solid var(--line); }
-.about-terms__i:nth-child(n + 3) { border-top: 1px solid var(--line); }
-.about-terms__i:nth-child(4)::before,
-.about-terms__i:nth-child(4)::after { content: ""; position: absolute; background: var(--ink-mute); }
-.about-terms__i:nth-child(4)::before { left: calc(-0.375rem - 0.5px); top: -1px; width: 0.75rem; height: 1px; }
-.about-terms__i:nth-child(4)::after { left: -1px; top: calc(-0.375rem - 0.5px); width: 1px; height: 0.75rem; }
-.about-terms__ico { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--border-strong); }
-.about-terms__ico svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.about-terms__b { font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; }
-.about-terms__t { max-width: 38ch; margin-top: 0.625rem; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
-
-/* ==========================================================================
-   4 · Питання: the main page's FAQ, on this page's five sizes; no lime on it (the page's one lime is the form's button)
-   ========================================================================== */
-main.about .faq__q { font-size: var(--fs-h3); line-height: 1.2; letter-spacing: -0.02em; }
-main.about .faq__body p { font-size: var(--fs-lead); }
-main.about .faq__item[open]:not(.is-closing) .faq__num { color: var(--ink); }
-
-/* ==========================================================================
-   5 · Заявка: the main page's form; beside it what happens next and the direct ways to reach us
-   ========================================================================== */
-.about-lead { padding-bottom: var(--rhythm-section); }
-/* (main.ai ol, the AI kit's reset, would take the margin away) */
-main.about .about-next { margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-.about-next li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: baseline; padding: 0.875rem 0; border-bottom: 1px solid var(--line); }
-.about-next__n { font: 400 var(--fs-label) / 1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-mute); }
-.about-next b { display: block; margin-bottom: 0.2rem; font-size: var(--fs-lead); font-weight: 500; color: var(--ink); }
-.about-next div > span { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); }
-.about-direct { margin-top: var(--rhythm-m); }
-.about-direct__k { margin: 0 0 0.875rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.about-direct__tel { display: grid; margin: 0; padding: 0; list-style: none; }
-.about-direct__tel a { display: inline-flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; font-size: var(--fs-lead); font-variant-numeric: tabular-nums; color: var(--ink); text-decoration: none; }
-.about-direct__tel a:hover span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25em; }
-.about-direct__tel svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-/* the footer's messenger pills, ember under the pointer (no lime: the page's one lime is the form's button) */
-.about-direct__chats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; max-width: 22rem; margin: 0.75rem 0 0; }
-.about-direct__chats a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.75rem; border-radius: 62.4375rem; font-size: var(--fs-small); color: var(--ink); text-decoration: none; box-shadow: inset 0 0 0 1px var(--line); transition: background-color var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast); }
-.about-direct__chats svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.about-direct__chats a:is(:hover, :focus-visible) { color: var(--on-ink); background: var(--ember); box-shadow: none; }
-
-/* the form: a dark card on the line of the others; the page's sizes in it (16 or more in the fields, so iOS never zooms) */
-main.about .about-lead .lead-form.card { background: var(--color-ink-dark); border-color: var(--border-strong); }
-main.about .lead-form :is(.field label, .field legend, .field__hint, .field__err, .field__opt, .lead-form__note, .lead-form__fail) { font-size: var(--fs-small); }
-main.about .lead-form :is(input, textarea) { font-size: var(--fs-lead); }
-main.about .lead-form .chip span { font-size: var(--fs-small); }
-main.about .lead-form__done-title { font-size: var(--fs-h3); }
-main.about .lead-form__done p:last-child { font-size: var(--fs-lead); }
-main.about .lead-form__done .check--lg { border-color: var(--ink); background: var(--ink); box-shadow: none; }
-/* the page's one lime button: the form's «Надіслати заявку» (the sibling pages' first-screen lime) */
-main.about #contact .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: var(--ink); --btn-glow: var(--signal-glow); }
-/* the footer's own request button would only repeat the form right above it (as on the ads page) */
-main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
+/* the request: the page's one lime button (the owner's brief: lime on one button), to the main page's form */
+.about-direct__go { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: var(--rhythm-m); }
+.about-direct__note { font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-soft); }
+main.about .about-direct .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: var(--ink); --btn-glow: var(--signal-glow); }
 
 /* ==========================================================================
    Narrower screens (the site's 1100 / 860 / 600)
    ========================================================================== */
-@media (max-width: 1100px) {
-  /* the request's way stands up: the links one under another, the line running down */
-  main.about .about-chain__list { grid-template-columns: minmax(0, 1fr); row-gap: 2rem; }
-  .about-chain__st { grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 1.25rem; row-gap: 0; }
-  .about-chain__txt { padding-top: 0.75rem; }
-  .about-chain__seg { left: 1rem; top: 1.375rem; width: 0.75rem; height: calc(100% + 2rem); }
-  .about-chain__seg::before,
-  .about-chain__run::before { left: 50%; right: auto; top: 0; bottom: 0; width: 1px; height: auto; }
-  .about-chain__run::after { right: auto; left: 50%; top: auto; bottom: 0; margin: 0 0 0 -0.25rem; }
-  .about-chain.is-pre .about-chain__run { translate: 0 -100%; }
-  .about-chain.is-play .about-chain__run { animation-name: about-run-y; }
-}
 @media (max-width: 860px) {
   /* the first screen: no lines, the head on the left, the roles as rows (the number beside the words) */
   .about-hero__bg { display: none; }
@@ -249,34 +204,27 @@ main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
   .about-m__k::after { display: none; }
   .about-m__role { grid-column: 2; grid-row: 1; }
   .about-m__d { grid-column: 2; grid-row: 2; margin-top: 0.5rem; padding-top: 0; border-top: 0; }
+  /* (React Bits' Animated List) the rows come in from a little lower and a little smaller */
   main.about .about-fan [data-in].is-pre { translate: 0 1.25rem; scale: 0.97; }
-  /* the terms: the mark above its words */
-  .about-terms__i { grid-template-columns: minmax(0, 1fr); row-gap: 1rem; }
-  /* the request: the head, the steps (what happens after it), the form, then the direct ways */
-  .about-lead .contact { row-gap: 0; }
-  .about-lead .contact__side { display: contents; }
-  .about-lead .contact__side > .s-head { grid-column: 1 / -1; order: 1; }
-  .about-lead .about-next { grid-column: 1 / -1; order: 2; }
-  .about-lead .lead-form { order: 3; margin-top: var(--rhythm-m); }
-  .about-lead .about-direct { grid-column: 1 / -1; order: 4; margin-top: var(--rhythm-l); }
+  /* the rules: the number beside them */
+  .about-vow { grid-template-columns: 2rem minmax(0, 1fr); }
+  .about-vow__b,
+  .about-vow__t { grid-column: 2; }
+  /* the lanes stand up: the stops one under another, the line running down */
+  main.about .about-tel__list { grid-template-columns: minmax(0, 1fr); row-gap: 1.5rem; }
+  .about-tel__st { grid-column: auto; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 1rem; row-gap: 0.5rem; }
+  .about-tel__node { grid-column: 1; grid-row: 1 / span 2; align-self: start; }
+  .about-tel__who { grid-column: 2; grid-row: 1; padding-top: 0.75rem; }
+  .about-tel__at { grid-column: 2; grid-row: 2; }
+  .about-tel__seg { left: 1rem; top: 1.375rem; width: 0.75rem; height: calc(100% + 1.5rem); }
+  .about-tel__seg::before,
+  .about-tel__run::before { left: 50%; right: auto; top: 0; bottom: 0; width: 1px; height: auto; }
+  .about-tel__run::after { right: auto; left: 50%; top: auto; bottom: 0; margin: 0 0 0 -0.25rem; }
+  .about-tel.is-pre .about-tel__run { translate: 0 -100%; }
+  .about-tel.is-play .about-tel__run { animation-name: about-run-y; }
 }
 @media (max-width: 600px) {
   .about-hero { padding-top: calc(var(--topbar-h) + 1.75rem); }
-  /* the terms: one column, no line between the columns */
-  .about-terms { grid-template-columns: minmax(0, 1fr); }
-  .about-terms__i,
-  .about-terms__i:nth-child(even) { grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: 1rem; padding: var(--row-pad) 0; border-left: 0; }
-  .about-terms__i + .about-terms__i { border-top: 1px solid var(--line); }
-  .about-terms__i:nth-child(4)::before,
-  .about-terms__i:nth-child(4)::after { display: none; }
-  .about-terms__ico { width: 2.5rem; height: 2.5rem; }
-  /* phones read the terms as rows (the main page's list rows: the fact in bold at the reading size, the
-     plain words after it), so the page stays near six screens */
-  .about-terms__b { font-size: var(--fs-lead); font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; }
-  .about-terms__t { margin-top: 0.25rem; }
-  .about-chain { padding: 1.25rem; }
-  /* the form; the direct ways under it go (the footer right below lists the same phones, Telegram and Viber) */
-  main.about .about-lead .lead-form { padding: 1.25rem; }
-  .about-lead .about-direct { display: none; }
-  main.about .lead-form textarea { min-height: 4.75rem; }
+  .about-vow { padding: var(--rhythm-s) 0; }
+  .about-tel { padding: 1.25rem; }
 }
