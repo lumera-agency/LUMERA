@@ -27,12 +27,13 @@ export function startAbout() {
   arrive();
 }
 
-/* ---------- [data-in] (a part) and [data-gen] (a text, word by word): what is still below the screen waits (.is-pre:
-   its start frame, about.css) and comes in once as it reaches the screen; the parts arriving together one after another
-   (--d). What is on the screen or passed stays as it is; a keyboard focus inside a waiting part shows it at once ---------- */
+/* ---------- [data-in] (a part), [data-gen] (a text, word by word) and [data-draw] (a line drawing itself in): what is
+   still below the screen waits (.is-pre: its start frame, about.css) and comes in once as it reaches the screen; the
+   parts arriving together one after another (--d). What is on the screen or passed stays as it is; a keyboard focus
+   inside a waiting part shows it at once ---------- */
 function initIn() {
   if (!motion) return;
-  const waiting = $$('main.about :is([data-in], [data-gen])').filter((el) => el.getBoundingClientRect().top > window.innerHeight * 0.92);
+  const waiting = $$('main.about :is([data-in], [data-gen], [data-draw])').filter((el) => el.getBoundingClientRect().top > window.innerHeight * 0.92);
   waiting.forEach((el) => el.classList.add('is-pre'));
   let batch = [];
   let queued = 0;
@@ -55,7 +56,7 @@ function initIn() {
   }, { rootMargin: '0px 0px -10% 0px' });
   waiting.forEach((el) => io.observe(el));
   document.addEventListener('focusin', (e) => {
-    const el = e.target.closest?.(':is([data-in], [data-gen]).is-pre');
+    const el = e.target.closest?.(':is([data-in], [data-gen], [data-draw]).is-pre');
     if (!el) return;
     io.unobserve(el);
     el.classList.remove('is-pre');

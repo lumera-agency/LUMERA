@@ -1,15 +1,18 @@
 /*
- * «Про нас» (/pro-nas): this page's own blocks. The kit (tokens, sections and heads, the card, the ivory block, buttons,
- * topbar, footer) is the main page's and the AI pages' (styles/tokens.css, layout/page/page.css, ui/button, ai/ai.css).
- * Every colour here is a token: the page has no value of its own. Type: five sizes (label, small, lead, display, and the
- * buttons' own); mono only in the labels (the blocks' labels, the contacts' names, the cases' chips).
+ * «Про нас» (/pro-nas): this page's own blocks, the art director's layout of 3 Nov. The kit (tokens, sections and heads,
+ * the card, the ivory block, buttons, the FAQ, the form, topbar, footer) is the main page's and the AI pages'
+ * (styles/tokens.css, layout/page/page.css, ui/button, sections/faq, sections/contact, ai/ai.css).
+ * Every colour here is a token: the page has no value of its own. Type: five sizes (label, small, lead, h3, display; the
+ * buttons and the shared header, menu and footer aside); mono only in the labels.
  * Effects, ported from React Bits and 21st.dev and rebuilt on CSS (transform and opacity only, each once, the CSS default
  * the final frame): Vertical Cut Reveal, Text Generate Effect, Shuffle, Glare Hover, Bounce Cards, Animated Content,
  * Animated List (runtime/about-runtime.js plays what waits for the screen).
  */
 
-/* the AI pages' resets cover h2 and ol; the cards' role is an h3 */
+/* the AI pages' resets cover h2 and ol; the cards' titles are h3 */
 main.about h3 { margin: 0; }
+/* the page holds still at rest, as the sibling pages do: the grain's endless flicker and the hero's seam go */
+body:has(main[data-ai-page="about"]) :is(.page__grain, .page__bridge) { display: none; }
 
 /* ==========================================================================
    The shared parts
@@ -25,10 +28,10 @@ main.about [data-in] {
     scale 0.9s var(--ease-out) var(--d, 0s),
     transform 0.6s var(--ease-out);
 }
-main.about [data-in].is-pre { opacity: 0; translate: 0 2.5rem; }
-/* (React Bits' Animated List) rows come in from a little lower and a little smaller: the contacts, the people on phones */
-main.about .about-contacts__row[data-in].is-pre { translate: 0 1rem; scale: 0.97; }
-.about-contacts__row { transform-origin: 0 50%; }
+main.about [data-in].is-pre { opacity: 0; translate: 0 1.5rem; }
+/* (React Bits' Animated List) rows come in from a little lower and a little smaller: the steps, the questions */
+main.about :is(.about-next li, .faq__item) { transform-origin: 0 50%; }
+main.about :is(.about-next li, .faq__item)[data-in].is-pre { translate: 0 1rem; scale: 0.97; }
 
 /* (21st.dev's Vertical Cut Reveal) the first screen's title: each word rises out of its own cut, one after another,
    from the first paint (the cut leaves room for the letters' marks above and below) */
@@ -37,10 +40,12 @@ main.about .about-contacts__row[data-in].is-pre { translate: 0 1rem; scale: 0.97
 @keyframes about-cut-in { from { translate: 0 115%; } }
 html.motion .about-cut__w { animation: about-cut-in 1s var(--ease-out) calc(0.1s + var(--i) * 0.07s) backwards; }
 
-/* (21st.dev's Text Generate Effect) a text's words come up one after another as it reaches the screen, once
-   ([data-gen], runtime: initIn) */
-.about-gen { transition: opacity 0.7s var(--ease-out) calc(var(--i) * 26ms); }
-main.about [data-gen].is-pre .about-gen { opacity: 0; transition: none; }
+/* (21st.dev's Text Generate Effect) a text's words come up one after another, once: the first screen's lead on wide
+   screens, from the first paint, once the title is up */
+@keyframes about-gen-in { from { opacity: 0; } }
+@media (min-width: 861px) {
+  html.motion .about-hero__lead .about-gen { animation: about-gen-in 0.7s var(--ease-out) calc(0.5s + var(--i) * 26ms) backwards; }
+}
 
 /* (React Bits' Shuffle) a block's label while its letters settle: each letter on a strip, its own on top (runtime:
    initShuffle; the plain text comes back once they have) */
@@ -48,51 +53,42 @@ main.about [data-gen].is-pre .about-gen { opacity: 0; transition: none; }
 .about-sh__s { display: block; }
 .about-sh__s > span { display: block; height: 1.5em; line-height: 1.5em; }
 
-/* the photo's place (the owner adds the photos): a square on the card's radius, a faint hatch, a thin line person in
-   the captions' grey; no accent in it */
-.about-ph { position: relative; display: grid; place-items: center; aspect-ratio: 1; border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
-.about-ph::before { content: ""; position: absolute; inset: 0; background: var(--hatch); opacity: 0.3; }
-.about-ph__ico { position: relative; width: clamp(2.75rem, 4vw, 3.5rem); height: auto; fill: none; stroke: var(--ink-mute); stroke-width: 1.25; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.about-ph__ico * { vector-effect: non-scaling-stroke; }
-
-/* a person: the photo, then the name small, the role at the reading size, one line of what they do */
-.about-m { display: grid; align-content: start; gap: 1.25rem; padding: 0.5rem 0.5rem 1.5rem; }
-.about-m__body { display: grid; gap: 0.375rem; padding: 0 1rem; }
-.about-m__name { font-size: var(--fs-small); line-height: 1.4; color: var(--ink-mute); }
-.about-m__role { font-size: var(--fs-lead); font-weight: 400; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
-.about-m__d { font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
-/* (React Bits' Glare Hover) a soft streak of the page's light crosses the card once under the pointer; a mouse only */
-.about-glare { position: absolute; inset: 0; z-index: 2; overflow: hidden; border-radius: inherit; pointer-events: none; }
-.about-glare::before { content: ""; position: absolute; top: -50%; bottom: -50%; left: 0; width: 35%; background: linear-gradient(90deg, transparent, var(--ink), transparent); opacity: 0; translate: -150% 0; rotate: 18deg; }
-@media (hover: hover) and (pointer: fine) {
-  .about-m:hover .about-glare::before { opacity: 0.08; translate: 420% 0; transition: translate 1.1s var(--ease-out), opacity 0.3s var(--ease-out); }
-}
-
-/* the quiet way down to the contacts */
-.about-down { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; margin-top: 0.75rem; }
-.about-down svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-
-/* the blocks' text in the right-hand columns, under the head (as the sibling pages set a block's body) */
-.about-cols { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); }
-.about-cols > * { grid-column: 7 / -1; }
+/* the quiet way down to the form (the ads page's «ai-down»): the words in ink, the arrow in a ring that fills */
+.about-down { display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; margin-top: 1.25rem; font-size: var(--fs-lead); color: var(--ink); text-decoration: none; }
+.about-down svg { box-sizing: content-box; flex: none; width: 1rem; height: 1rem; padding: 0.625rem; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px var(--border-strong); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
+.about-down:is(:hover, :focus-visible) svg { color: var(--on-ink); background: var(--ink); box-shadow: none; transform: translateY(0.125rem); }
 
 /* ==========================================================================
    1 · Команда, the first screen (the owner's pick of 26 Oct): wide screens «Віяло», the title in the middle over the
-   lines and the cards fanning out into a row; phones and tablets «Розкол»'s rows, the photo's square beside the words
+   lines and the role cards fanning out into a row; phones and tablets «Розкол»'s rows
    ========================================================================== */
 .about-hero { overflow: hidden; padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); }
 .about-hero__bg { -webkit-mask-image: linear-gradient(var(--bg) 35%, transparent 90%); mask-image: linear-gradient(var(--bg) 35%, transparent 90%); }
 .about-hero > .container { z-index: 1; }
 .about-center { text-align: center; }
 .about-center .s-head__title { grid-column: 1 / -1; justify-self: center; max-width: 14ch; }
-.about-center .s-head__intro { grid-column: 1 / -1; justify-self: center; margin-top: 1.25rem; }
-.about-fan { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--card-gap); max-width: 68rem; margin-inline: auto; text-align: left; }
+.about-center .s-head__intro { grid-column: 1 / -1; justify-self: center; max-width: 44ch; margin-top: 1.25rem; }
+.about-hero__lead { text-wrap: balance; }
+.about-fan { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--card-gap); max-width: 68rem; margin: 0 auto; padding: 0; list-style: none; text-align: left; }
 .about-fan > :nth-child(2) { z-index: 1; }
-/* in the pile the cards lie on each other: the page's black under the card's own light, so one never shows through */
-.about-fan > .about-m { background-color: var(--bg); }
 
-/* (Bounce Cards) wide screens: the side cards arrive as a fanned pile behind the middle one, hold, and spread to their
-   places; CSS from the first paint, only with motion (phones and tablets: [data-in], one card at a time) */
+/* a role's poster (no photos yet, the owner, 3 Nov): its number on a hairline, room, the role large, one line under a
+   rule. The page's black under the card's own light, so in the fan one card never shows through another */
+.about-m { display: grid; grid-template-rows: auto 1fr auto auto; min-height: clamp(16rem, 24vw, 21rem); padding: var(--card-pad); background-color: var(--bg); }
+.about-m__k { display: flex; align-items: center; gap: 0.875rem; font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: var(--track-num); font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+.about-m__k::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.about-m__role { grid-row: 3; font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.08; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
+.about-m__d { grid-row: 4; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+
+/* (React Bits' Glare Hover) a soft streak of the page's light crosses a card once under the pointer; a mouse only */
+.about-glare { position: absolute; inset: 0; z-index: 2; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.about-glare::before { content: ""; position: absolute; top: -50%; bottom: -50%; left: 0; width: 35%; background: linear-gradient(90deg, transparent, var(--ink), transparent); opacity: 0; translate: -150% 0; rotate: 18deg; }
+@media (hover: hover) and (pointer: fine) {
+  .about-m:hover .about-glare::before { opacity: 0.08; translate: 420% 0; transition: translate 1.1s var(--ease-out), opacity 0.3s var(--ease-out); }
+}
+
+/* (React Bits' Bounce Cards) wide screens: the side cards arrive as a fanned pile behind the middle one, hold, and spread
+   to their places, after the title (CSS from the first paint, only with motion) */
 @keyframes about-fan-l {
   0% { opacity: 0; translate: calc(100% + var(--card-gap)) 3rem; rotate: -12deg; }
   30%, 48% { opacity: 1; translate: calc(86% + var(--card-gap)) 0.75rem; rotate: -7deg; }
@@ -104,11 +100,11 @@ main.about [data-gen].is-pre .about-gen { opacity: 0; transition: none; }
 @keyframes about-fan-m { 0% { opacity: 0; translate: 0 3rem; } 30% { opacity: 1; translate: 0 0; } }
 @media (min-width: 861px) {
   .about-hero { padding-bottom: var(--rhythm-m); }
-  html.motion .about-fan > :nth-child(1) { animation: about-fan-l 1.7s var(--ease-out) 0.3s backwards; }
-  html.motion .about-fan > :nth-child(2) { animation: about-fan-m 1.7s var(--ease-out) 0.3s backwards; }
-  html.motion .about-fan > :nth-child(3) { animation: about-fan-r 1.7s var(--ease-out) 0.3s backwards; }
+  html.motion .about-fan > :nth-child(1) { animation: about-fan-l 1.7s var(--ease-out) 0.55s backwards; }
+  html.motion .about-fan > :nth-child(2) { animation: about-fan-m 1.7s var(--ease-out) 0.55s backwards; }
+  html.motion .about-fan > :nth-child(3) { animation: about-fan-r 1.7s var(--ease-out) 0.55s backwards; }
 }
-/* (Bounce Cards) under the pointer: the card lifts, the others step aside; wide screens, a mouse only */
+/* under the pointer: the card lifts, the others step aside; wide screens, a mouse only */
 @media (min-width: 861px) and (hover: hover) and (pointer: fine) {
   .about-fan > .about-m:hover { transform: translateY(-0.5rem); }
   .about-fan:has(> :nth-child(1):hover) > :is(:nth-child(2), :nth-child(3)),
@@ -118,69 +114,146 @@ main.about [data-gen].is-pre .about-gen { opacity: 0; transition: none; }
 }
 
 /* ==========================================================================
-   2 · Як ми працюємо: the text on the page
+   2 · Умови: four terms on hairlines (21st.dev's features grids), a «+» where the lines cross; the top line draws itself
+   in ([data-draw]), then the cells rise one after another
    ========================================================================== */
-/* the light block comes next: as much air under the text as above the head (the sibling pages do the same) */
-.about-work { padding-bottom: var(--rhythm-section); }
-.about-work__text { display: grid; gap: 1.25rem; max-width: 46ch; }
-.about-work__text p { font-size: var(--fs-lead); font-weight: 300; line-height: 1.6; color: var(--ink-soft); text-wrap: pretty; }
+/* the light block comes next: as much air under the grid as above the head (the sibling pages do the same) */
+.about-terms-sec { padding-bottom: var(--rhythm-section); }
+.about-terms { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+.about-terms::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--line); transform-origin: 0 50%; transition: transform 0.9s var(--ease-in-out) var(--d, 0s); }
+main.about .about-terms.is-pre::before { transform: scaleX(0); transition: none; }
+.about-terms__i { position: relative; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 1.25rem; align-items: start; padding: var(--card-pad) var(--card-pad) var(--card-pad) 0; }
+.about-terms__i:nth-child(even) { padding: var(--card-pad) 0 var(--card-pad) var(--card-pad); border-left: 1px solid var(--line); }
+.about-terms__i:nth-child(n + 3) { border-top: 1px solid var(--line); }
+.about-terms__i:nth-child(4)::before,
+.about-terms__i:nth-child(4)::after { content: ""; position: absolute; background: var(--ink-mute); }
+.about-terms__i:nth-child(4)::before { left: calc(-0.375rem - 0.5px); top: -1px; width: 0.75rem; height: 1px; }
+.about-terms__i:nth-child(4)::after { left: -1px; top: calc(-0.375rem - 0.5px); width: 1px; height: 0.75rem; }
+.about-terms__ico { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--border-strong); }
+.about-terms__ico svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.about-terms__b { font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; }
+.about-terms__t { max-width: 38ch; margin-top: 0.625rem; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
 
 /* ==========================================================================
-   3 · Кейси (the page's one light block): the clients' cases, in the site's own words, without their numbers
+   3 · Кейси (the page's one light block): three in a row for the ads, two for automation; each card one link to its case
    ========================================================================== */
-.about-cases__list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--card-gap); }
-.about-case { display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 0.5rem; padding: clamp(1.25rem, 2vw, 1.75rem); }
-.about-case__chip { justify-self: start; margin-bottom: 0.75rem; padding: 0.4375rem 0.625rem; border-radius: 62.4375rem; font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ivory); background: var(--ink-dark); }
-.about-case__name { font-size: var(--fs-lead); font-weight: 500; line-height: 1.25; color: var(--ink-dark); text-wrap: balance; }
-.about-case__who { font-size: var(--fs-small); line-height: 1.45; color: var(--ink-dark-mute); }
-.about-case__d { font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
-.about-case__go { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--line-dark); }
-.about-case__go a { display: inline-flex; align-items: center; gap: 0.375rem; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink-dark); }
-.about-case__go svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
-.about-case__go a:hover svg { transform: translateX(0.1875rem); }
-/* under the pointer the card lifts a little (a mouse only) */
+.about-cases__list { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--card-gap); margin: 0; padding: 0; list-style: none; }
+.about-case { grid-column: span 2; display: grid; grid-template-rows: auto auto 1fr auto; padding: var(--card-pad); }
+.about-case:nth-child(n + 4) { grid-column: span 3; }
+.about-case__who { margin-bottom: var(--rhythm-xs); font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+.about-case__name { font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.12; letter-spacing: -0.025em; color: var(--ink-dark); text-wrap: balance; }
+.about-case__d { max-width: 40ch; margin-top: 0.875rem; font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+.about-case__go { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem; margin-top: var(--rhythm-s); padding-top: 1rem; border-top: 1px solid var(--line-dark); }
+.about-case__open { display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; font-size: var(--fs-small); font-weight: 500; color: var(--ink-dark); text-decoration: none; }
+/* the whole card opens the case (the client's site stands above it) */
+.about-case__open::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: var(--radius-lg); }
+.about-case__open svg { box-sizing: content-box; flex: none; width: 0.875rem; height: 0.875rem; padding: 0.5rem; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px var(--ink-dark-mute); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
+.about-case:is(:hover, :focus-within) .about-case__open svg { color: var(--ivory); background: var(--ink-dark); box-shadow: none; transform: translateX(0.125rem); }
+.section--ivory .about-case__site { position: relative; z-index: 2; display: inline-flex; align-items: center; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink-dark-soft); }
 @media (hover: hover) and (pointer: fine) {
   .about-case:hover { transform: translateY(-0.375rem); }
 }
 
 /* ==========================================================================
-   4 · Контакти: the list, when we answer, the page's one lime button
+   4 · Питання: the main page's FAQ, on this page's five sizes; no lime on it (the page's one lime is the form's button)
    ========================================================================== */
-.about-contacts { padding-bottom: var(--rhythm-section); }
-.about-contacts__in { display: grid; justify-items: start; gap: var(--rhythm-s); }
-.about-contacts__list { width: 100%; margin: 0; border-top: 1px solid var(--line); }
-.about-contacts__row { display: grid; grid-template-columns: minmax(8rem, 2fr) minmax(0, 3fr); align-items: baseline; gap: 0.375rem var(--col-gap); padding: 1.125rem 0; border-bottom: 1px solid var(--line); }
-.about-contacts__row dt { font: 400 var(--fs-label) / 1.3 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.about-contacts__row dd { margin: 0; font-size: var(--fs-lead); line-height: 1.4; color: var(--ink); }
-.about-contacts__row dd.is-empty { color: var(--ink-mute); }
-.about-contacts__note { font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); }
-/* the page's one lime button (the owner, 26 Oct): the first screen's lime of the sibling pages, here at the contacts */
-main.about .about-contacts .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: var(--ink); --btn-glow: var(--signal-glow); }
+main.about .faq__q { font-size: var(--fs-h3); line-height: 1.2; letter-spacing: -0.02em; }
+main.about .faq__body p { font-size: var(--fs-lead); }
+main.about .faq__item[open]:not(.is-closing) .faq__num { color: var(--ink); }
 
 /* ==========================================================================
-   Narrower screens
+   5 · Заявка: the main page's form; beside it what happens next and the direct ways to reach us
+   ========================================================================== */
+.about-lead { padding-bottom: var(--rhythm-section); }
+/* (main.ai ol, the AI kit's reset, would take the margin away) */
+main.about .about-next { margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.about-next li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: baseline; padding: 0.875rem 0; border-bottom: 1px solid var(--line); }
+.about-next__n { font: 400 var(--fs-label) / 1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+.about-next b { display: block; margin-bottom: 0.2rem; font-size: var(--fs-lead); font-weight: 500; color: var(--ink); }
+.about-next div > span { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); }
+.about-direct { margin-top: var(--rhythm-m); }
+.about-direct__k { margin: 0 0 0.875rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.about-direct__tel { display: grid; margin: 0; padding: 0; list-style: none; }
+.about-direct__tel a { display: inline-flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; font-size: var(--fs-lead); font-variant-numeric: tabular-nums; color: var(--ink); text-decoration: none; }
+.about-direct__tel a:hover span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25em; }
+.about-direct__tel svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+/* the footer's messenger pills, ember under the pointer (no lime: the page's one lime is the form's button) */
+.about-direct__chats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; max-width: 22rem; margin: 0.75rem 0 0; }
+.about-direct__chats a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.75rem; border-radius: 62.4375rem; font-size: var(--fs-small); color: var(--ink); text-decoration: none; box-shadow: inset 0 0 0 1px var(--line); transition: background-color var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast); }
+.about-direct__chats svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.about-direct__chats a:is(:hover, :focus-visible) { color: var(--on-ink); background: var(--ember); box-shadow: none; }
+
+/* the form: a dark card on the line of the others; the page's sizes in it (16 or more in the fields, so iOS never zooms) */
+main.about .about-lead .lead-form.card { background: var(--color-ink-dark); border-color: var(--border-strong); }
+main.about .lead-form :is(.field label, .field legend, .field__hint, .field__err, .field__opt, .lead-form__note, .lead-form__fail) { font-size: var(--fs-small); }
+main.about .lead-form :is(input, textarea) { font-size: var(--fs-lead); }
+main.about .lead-form .chip span { font-size: var(--fs-small); }
+main.about .lead-form__done-title { font-size: var(--fs-h3); }
+main.about .lead-form__done p:last-child { font-size: var(--fs-lead); }
+main.about .lead-form__done .check--lg { border-color: var(--ink); background: var(--ink); box-shadow: none; }
+/* the page's one lime button: the form's «Надіслати заявку» (the sibling pages' first-screen lime) */
+main.about #contact .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: var(--ink); --btn-glow: var(--signal-glow); }
+/* the footer's own request button would only repeat the form right above it (as on the ads page) */
+main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
+
+/* ==========================================================================
+   Narrower screens (the site's 1100 / 860 / 600)
    ========================================================================== */
 @media (max-width: 1100px) {
-  .about-cols > * { grid-column: 4 / -1; }
   .about-cases__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .about-case,
+  .about-case:nth-child(n + 4) { grid-column: auto; }
+  .about-case:nth-child(5) { grid-column: 1 / -1; }
 }
 @media (max-width: 860px) {
-  .about-cols > * { grid-column: 1 / -1; }
-  /* the first screen: no lines, the head on the left, the people as rows (one under another, the photo's square on the
-     left, the words beside it) */
+  /* the first screen: no lines, the head on the left, the roles as rows (the number beside the words) */
   .about-hero__bg { display: none; }
   .about-center { text-align: left; }
-  .about-center .s-head__title, .about-center .s-head__intro { justify-self: start; }
-  .about-fan { grid-template-columns: minmax(0, 1fr); max-width: 36rem; margin-inline: 0; }
-  .about-fan .about-m { grid-template-columns: 8rem minmax(0, 1fr); align-items: center; gap: 0 1.25rem; padding: 0.5rem 1.25rem 0.5rem 0.5rem; }
-  .about-fan .about-ph__ico { width: 2.5rem; }
-  .about-fan .about-m__body { padding: 0.25rem 0; }
+  .about-center .s-head__title,
+  .about-center .s-head__intro { justify-self: start; }
+  .about-fan { grid-template-columns: minmax(0, 1fr); gap: 0.625rem; max-width: 36rem; margin-inline: 0; }
+  .about-fan .about-m { grid-template-columns: 2.5rem minmax(0, 1fr); grid-template-rows: none; column-gap: 0.75rem; align-items: baseline; min-height: 0; padding: 1.25rem 1.25rem 1.375rem; }
+  .about-m__k { grid-column: 1; grid-row: 1; }
+  .about-m__k::after { display: none; }
+  .about-m__role { grid-column: 2; grid-row: 1; }
+  .about-m__d { grid-column: 2; grid-row: 2; margin-top: 0.5rem; padding-top: 0; border-top: 0; }
   main.about .about-fan [data-in].is-pre { translate: 0 1.25rem; scale: 0.97; }
+  /* the terms: the mark above its words */
+  .about-terms__i { grid-template-columns: minmax(0, 1fr); row-gap: 1rem; }
+  /* the request: the head, the steps (what happens after it), the form, then the direct ways */
+  .about-lead .contact { row-gap: 0; }
+  .about-lead .contact__side { display: contents; }
+  .about-lead .contact__side > .s-head { grid-column: 1 / -1; order: 1; }
+  .about-lead .about-next { grid-column: 1 / -1; order: 2; }
+  .about-lead .lead-form { order: 3; margin-top: var(--rhythm-m); }
+  .about-lead .about-direct { grid-column: 1 / -1; order: 4; margin-top: var(--rhythm-l); }
 }
 @media (max-width: 600px) {
   .about-hero { padding-top: calc(var(--topbar-h) + 1.75rem); }
-  .about-fan .about-m { grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0 1rem; padding: 0.5rem 1rem 0.5rem 0.5rem; }
-  .about-fan .about-ph__ico { width: 2.25rem; }
-  .about-cases__list { grid-template-columns: minmax(0, 1fr); }
-  .about-contacts__row { grid-template-columns: minmax(0, 1fr); }
+  /* the terms: one column, no line between the columns */
+  .about-terms { grid-template-columns: minmax(0, 1fr); }
+  .about-terms__i,
+  .about-terms__i:nth-child(even) { grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: 1rem; padding: var(--row-pad) 0; border-left: 0; }
+  .about-terms__i + .about-terms__i { border-top: 1px solid var(--line); }
+  .about-terms__i:nth-child(4)::before,
+  .about-terms__i:nth-child(4)::after { display: none; }
+  .about-terms__ico { width: 2.5rem; height: 2.5rem; }
+  /* phones read the terms and the cases as rows (the main page's list rows: the fact in bold at the reading size, the
+     plain words after it), so the page stays near six screens */
+  .about-terms__b,
+  .about-case__name { font-size: var(--fs-lead); font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; }
+  .about-terms__t { margin-top: 0.25rem; }
+  /* the cases: plain rows on hairlines (the main page's «start» panels on phones), without the line of what was done */
+  .about-cases__list { grid-template-columns: minmax(0, 1fr); gap: 0; border-top: 1px solid var(--line-dark); }
+  .about-case:nth-child(5) { grid-column: auto; }
+  .section--ivory .about-case.card { padding: var(--row-pad) 0; border: 0; border-bottom: 1px solid var(--line-dark); border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+  .section--ivory .about-case.card::before,
+  .section--ivory .about-case.card::after { display: none; }
+  .about-case__who { margin-bottom: 0.5rem; }
+  .about-case__d { display: none; }
+  .about-case__go { flex-wrap: nowrap; margin-top: 0.5rem; padding-top: 0; border-top: 0; }
+  /* the form; the direct ways under it go (the footer right below lists the same phones, Telegram and Viber) */
+  main.about .about-lead .lead-form { padding: 1.25rem; }
+  .about-lead .about-direct { display: none; }
+  main.about .lead-form textarea { min-height: 4.75rem; }
 }
