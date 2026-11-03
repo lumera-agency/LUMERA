@@ -94,7 +94,7 @@ export const ROCK_GLSL = /* glsl */ `
  * a light silver dust (`dust` = share of fleck cells), so the small background
  * shards keep a faint shimmer without the strong ripple.
  */
-export function createObsidianMaterial({ grain = 1, vertexColors = false, smooth = false, dust = 0 } = {}) {
+export function createObsidianMaterial({ grain = 1, vertexColors = false, smooth = false, dust = 0, firstSite = false } = {}) {
   const uniforms = {
     uGrain: { value: grain },
     uBump: { value: 4.5 },
@@ -108,6 +108,8 @@ export function createObsidianMaterial({ grain = 1, vertexColors = false, smooth
     vertexColors,
   });
   if (smooth) material.defines = { ...material.defines, SMOOTH: "" };
+  // the first site's coal: more glints, a dense silver spatter around the seam (the main page's stone)
+  if (firstSite) material.defines = { ...material.defines, FIRST_SITE: "" };
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = shader.vertexShader
@@ -142,8 +144,13 @@ export function createObsidianMaterial({ grain = 1, vertexColors = false, smooth
           float dustShare = uDust;                    // the shards: a light dust only
         #else
           // sparse, soft-edged polished specks (no hard cells → no square artefacts)
+          #ifdef FIRST_SITE
+          float glint = smoothstep(0.78, 0.9, vnoise(rockP * 70.0 + 3.0)) * smoothstep(0.3, 0.6, tone);
+          float dustShare = mix(0.02, 0.55, vDust);
+          #else
           float glint = smoothstep(0.86, 0.95, vnoise(rockP * 70.0 + 3.0)) * smoothstep(0.3, 0.6, tone);
           float dustShare = mix(0.005, 0.14, vDust);  // a light dust: rare on bare rock, denser by the seam
+          #endif
         #endif
 
         // silver dust: round flecks (anti-aliased), one per occupied 3D cell
@@ -166,7 +173,11 @@ export function createObsidianMaterial({ grain = 1, vertexColors = false, smooth
         float flakeD = length(fract(flakeP) - (0.3 + 0.4 * flakeRnd));
         float flakeAA = fwidth(flakeD);
         float flake = (1.0 - smoothstep(0.15 - flakeAA, 0.15 + flakeAA, flakeD))
+                    #ifdef FIRST_SITE
+                    * step(1.0 - vDust * 0.45, flakeRnd.z);
+                    #else
                     * step(1.0 - vDust * 0.12, flakeRnd.z);
+                    #endif
         #endif
         float silverDust = max(fleck, flake);
         diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.85, 0.82), silverDust);`,
@@ -198,6 +209,33 @@ export function createObsidianMaterial({ grain = 1, vertexColors = false, smooth
       );
   };
   return { material, uniforms };
+}
+
+/** The first site's studio for the chrome (its first look, the main page's stone again since 3 Nov): big flat boxes in
+    plain white light, so the polished seam (createSilverMaterial mirror) reads as white silver. */
+export function createMirrorEnvironment(renderer: THREE.WebGLRenderer) {
+  const env = new THREE.Scene();
+  env.background = new THREE.Color(0x0b0b0b);
+  const geo = new THREE.PlaneGeometry(1, 1);
+  const panel = (w: number, h: number, position: THREE.Vector3, intensity: number, tint: THREE.ColorRepresentation = 0xffffff) => {
+    const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: new THREE.Color(tint).multiplyScalar(intensity), side: THREE.DoubleSide }));
+    mesh.scale.set(w, h, 1);
+    mesh.position.copy(position);
+    mesh.lookAt(0, 0, 0);
+    env.add(mesh);
+  };
+  panel(12, 6, new THREE.Vector3(0, 7, 1), 2.4, 0xfff8ef);  // big overhead
+  panel(4, 10, new THREE.Vector3(-7, 0, 2), 1.6, 0xfff3e6); // warm left wall
+  panel(1.2, 9, new THREE.Vector3(7, 0, 0), 4.0, 0xe8eeff); // hard cool strip
+  panel(10, 3, new THREE.Vector3(0, -1, -7), 0.5);          // back fill
+  panel(6, 2, new THREE.Vector3(1, -6, 4), 0.18);           // dim floor bounce
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const texture = pmrem.fromScene(env, 0.02).texture;
+  pmrem.dispose();
+  geo.dispose();
+  env.traverse((o) => ((o as THREE.Mesh).material as THREE.Material | undefined)?.dispose());
+  return texture;
 }
 
 /** Studio for the chrome: softboxes that fall off toward their edges, on near-black — so the
@@ -250,17 +288,16 @@ export function createChromeEnvironment(renderer: THREE.WebGLRenderer, tints: Ch
   return texture;
 }
 
-export function createSilverMaterial() {
+export function createSilverMaterial({ mirror = false } = {}) {
   const uniforms = { uTime: { value: 0 } };
   // Black liquid metal: a dark, slightly soft metal under a clear wet coat — the coat carries
-  // the crisp highlights, the metal below gives them a soft dark body (no flat white patches)
-  const material = new THREE.MeshPhysicalMaterial({
-    color: 0x6f6d6a,
-    metalness: 1,
-    roughness: 0.24,
-    clearcoat: 1,
-    clearcoatRoughness: 0.04,
-  });
+  // the crisp highlights, the metal below gives them a soft dark body (no flat white patches).
+  // `mirror`: the first site's seam instead, bright polished silver that throws the studio back white
+  const material = new THREE.MeshPhysicalMaterial(
+    mirror
+      ? { color: 0xe9e5dd, metalness: 1, roughness: 0.06 }
+      : { color: 0x6f6d6a, metalness: 1, roughness: 0.24, clearcoat: 1, clearcoatRoughness: 0.04 },
+  );
   // The seam slowly breathes, so reflections flow like liquid metal.
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = uniforms.uTime;

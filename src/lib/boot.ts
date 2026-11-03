@@ -40,8 +40,8 @@ export const sceneRun = {
 };
 export const useSceneRunning = () => useSyncExternalStore(sceneRun.subscribe, sceneRun.get, () => false);
 
-/** The preloader's clock (its inline script in fx/preloader/Preloader.tsx). */
-export type PreloaderClock = { step(progress: number, stage?: number): void; finish(): Promise<void> };
+/** The preloader's clock (its inline script in fx/preloader/Preloader.tsx); `rolled`: its roll has played. */
+export type PreloaderClock = { step(progress: number, stage?: number): void; finish(): Promise<void>; rolled: Promise<void> };
 declare global {
   interface Window {
     ecloLoader?: PreloaderClock;

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { boot, sceneRun, useSceneRunning } from "@/lib/boot";
+import { boot, loader, sceneRun, useSceneRunning } from "@/lib/boot";
 import { useReducedMotion } from "@/lib/hooks";
 import { lockViewport } from "@/lib/viewport";
 import { WebGLGate } from "@/components/three/lib/WebGLGate";
@@ -39,8 +39,20 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
   const reducedMotion = useReducedMotion();
   const started = useSceneRunning();
   const [visible, setVisible] = useState(true);
+  // the scenes are built (a few hundred ms of the main thread, in long blocks) only once the preloader's roll has
+  // played, so they can't stall it; their code is fetched at once («сначала появление, потом ждать, пока догрузится»)
+  const [build, setBuild] = useState(false);
 
   useBoot(hero, reducedMotion);
+  useEffect(() => {
+    let alive = true;
+    void import("@/components/three/hero/HeroScene");
+    void import("@/components/three/hero/ShardsScene");
+    (loader()?.rolled ?? Promise.resolve()).then(() => alive && setBuild(true));
+    return () => {
+      alive = false;
+    };
+  }, []);
   useEffect(() => lockViewport(), []);
 
   // pause the canvases off-screen, under the page (touch: the hero is sticky, never off-screen, only
@@ -116,10 +128,12 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       <div className="hero__bg" aria-hidden="true">
         <div className="hero__glow" data-glow ref={glow} />
       </div>
-      <WebGLGate onSkip={skipScene}>
-        <ShardsScene running={running} reducedMotion={reducedMotion} />
-        <HeroScene heroRef={hero} glowRef={glow} orbitLabel={orbitLabel} running={running} reducedMotion={reducedMotion} />
-      </WebGLGate>
+      {build && (
+        <WebGLGate onSkip={skipScene}>
+          <ShardsScene running={running} reducedMotion={reducedMotion} />
+          <HeroScene heroRef={hero} glowRef={glow} orbitLabel={orbitLabel} running={running} reducedMotion={reducedMotion} />
+        </WebGLGate>
+      )}
       <div className="hero__grain" aria-hidden="true" />
       {children}
     </div>

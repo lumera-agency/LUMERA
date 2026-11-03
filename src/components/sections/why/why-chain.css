@@ -1,0 +1,148 @@
+/* 4 · Почему ECLO as a chain (WhyChain.tsx, WhyChainClient.tsx): the four links top to bottom on the page's spine,
+   which turns lime down to the link in view. Without the script every link is shown lit. */
+
+.wc {
+  --wc-node: 0.8125rem;
+  --wc-pad: clamp(1.75rem, 6vh, 3.5rem);
+  --wc-dim: 0.28;  /* a link still ahead */
+  --wc-past: 0.6;  /* a link passed */
+  position: relative;
+}
+.wc__steps { margin: 0; padding: 0; list-style: none; }
+
+/* the lime run: from the first node's middle to the last one's (the script places it), down to the reach; over the
+   spine, which blends by difference and would wash the lime out */
+.wc__rail {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 0;
+  margin-left: -0.5px;
+  pointer-events: none;
+}
+.wc__fill {
+  position: absolute;
+  left: -0.5px;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--signal);
+  box-shadow: 0 0 0.75rem var(--signal-glow);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+html:not(.js) .wc__fill { transform: none; }
+
+/* a link's node: a ring, lime when its turn comes, a lime ring once passed */
+.wc__node {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: var(--wc-node);
+  height: var(--wc-node);
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.4);
+  font: 400 0.6875rem / 1 var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--ink-mute);
+  transition: background-color 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out), color 0.5s var(--ease-out);
+}
+.wc__node b { font-weight: 400; }
+.wc__step.is-past .wc__node { box-shadow: inset 0 0 0 1px var(--signal); color: var(--signal); }
+.wc__step.is-active .wc__node,
+html:not(.js) .wc__node { background: var(--signal); color: #0d0d0d; box-shadow: 0 0 0 0.3125rem rgb(218 255 2 / 0.14), 0 0 1rem 0.125rem var(--signal-glow); }
+
+/* a link: its number, glyph and name on the left, its two lines on the right, a hairline between the links */
+.wc__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  column-gap: var(--col-gap);
+  align-items: start;
+  padding-block: var(--wc-pad);
+}
+.wc__step + .wc__step { border-top: 1px solid var(--line); }
+.wc__title { display: flex; align-items: center; gap: var(--w5-glyph-gap); }
+.wc__title .w5-glyph { flex: none; }
+.wc__index {
+  flex: none;
+  width: 1.75rem;
+  font: 400 var(--fs-label) / 1 var(--font-mono);
+  letter-spacing: var(--track-num);
+  color: var(--ink-mute);
+  transition: color 0.5s var(--ease-out);
+}
+.wc__step:is(.is-active, .is-past) .wc__index { color: var(--signal); }
+.wc__name {
+  margin: 0;
+  font-size: var(--fs-h3);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variation-settings: "SHRP" 50;
+  color: var(--ink);
+}
+.wc__cmp { display: grid; row-gap: 1rem; }
+.wc__page,
+.wc__sys { margin: 0; text-wrap: pretty; }
+.wc__k {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.375rem;
+  font: 400 var(--fs-label) / 1.4 var(--font-mono);
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+}
+.wc__k .w5-mark { position: relative; display: inline-block; flex: none; }
+.wc .wc__mark-page::before { border-color: rgb(246 246 243 / 0.28); }
+.wc .wc__mark-page b { background: rgb(246 246 243 / 0.42); box-shadow: none; }
+.wc__text { display: block; }
+.wc__page { font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-mute); }
+.wc__page .wc__k { color: var(--ink-mute); }
+.wc__sys { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink); }
+.wc__sys .wc__k { color: var(--signal); }
+.wc__sys .wc__text { max-width: 36em; }
+
+/* a link ahead is dim, the one in view full, the ones passed in between */
+html.js :is(.wc__title, .wc__page, .wc__sys) { opacity: var(--wc-dim); transition: opacity 0.6s var(--ease-out); }
+html.js .wc__step.is-past :is(.wc__title, .wc__page, .wc__sys) { opacity: var(--wc-past); }
+html.js .wc__step.is-active :is(.wc__title, .wc__page, .wc__sys) { opacity: 1; }
+.wc__step.is-active .w5-glyph :is(.g-on, .g-hl) { opacity: 1; }
+
+/* on wider screens the nodes sit on the page's spine (PageShell; it lights its own nodes at 60 % of the screen, as
+   here), level with the names */
+@media (min-width: 861px) {
+  .wc__node {
+    position: absolute;
+    left: calc(var(--gutter) * -0.5 - var(--wc-node) / 2);
+    top: calc(var(--wc-pad) + (var(--w5-glyph-h) - var(--wc-node)) / 2);
+  }
+  .wc__node b { display: none; }
+}
+/* phones have no spine: the chain draws its own line, its nodes larger, with their numbers in them */
+@media (max-width: 860px) {
+  .wc { --wc-node: 2rem; --wc-pad: 1.75rem; }
+  .wc__rail { background: rgb(246 246 243 / 0.14); }
+  .wc__node { grid-area: node; margin-top: calc((var(--w5-glyph-h) - var(--wc-node)) / 2); box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.22); }
+  .wc__step.is-active .wc__node { box-shadow: 0 0 0 0.375rem rgb(218 255 2 / 0.12), 0 0 1.5rem var(--signal-glow); }
+  .wc__step {
+    grid-template-columns: var(--wc-node) minmax(0, 1fr);
+    grid-template-areas: "node title" ". cmp";
+    column-gap: 1rem;
+    row-gap: 0.875rem;
+  }
+  .wc__title { grid-area: title; }
+  .wc__cmp { grid-area: cmp; row-gap: 0.875rem; }
+  .wc__index { display: none; }
+  .wc__name { font-size: var(--fs-h4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wc *,
+  .wc *::before { transition: none !important; }
+}

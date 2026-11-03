@@ -21,15 +21,37 @@
   cursor: pointer;
   transition: background var(--dur-fast), color var(--dur-fast);
 }
-.contacts svg {
-  width: 1.125rem;
-  height: 1.125rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.contacts svg { width: 1.125rem; height: 1.125rem; }
+
+/* the icons (Contacts.tsx; the menu and the footer use them too): solid, the phone's waves drawn as lines */
+.ico { fill: currentColor; stroke: none; }
+.ico__wave { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+/* in the pill they move on a hover: the plane flies off and comes back from the other side (the round button clips
+   it), the bubble squashes from its tail, the handset rings and its waves come on one after the other */
+.contacts__btn { overflow: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .contacts__btn:is(:hover, :focus-visible) .ico--tg { animation: ico-fly 0.62s var(--ease-out); }
+  .contacts__btn:is(:hover, :focus-visible) .ico--viber { transform-origin: 30% 92%; animation: ico-pop 0.56s var(--ease-out); }
+  .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico--phone { animation: ico-ring 0.72s ease-in-out; }
+  .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico__wave { animation: ico-wave 0.42s var(--ease-out) both; }
+  .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico__wave + .ico__wave { animation-delay: 0.14s; }
 }
+@keyframes ico-fly {
+  40% { transform: translate(160%, -160%); }
+  40.1% { transform: translate(-160%, 160%); }
+}
+@keyframes ico-pop {
+  30% { transform: scale(1.14, 0.88); }
+  62% { transform: scale(0.94, 1.07); }
+}
+@keyframes ico-ring {
+  14% { transform: rotate(-14deg); }
+  28% { transform: rotate(12deg); }
+  42% { transform: rotate(-9deg); }
+  56% { transform: rotate(6deg); }
+  70% { transform: rotate(-3deg); }
+}
+@keyframes ico-wave { from { opacity: 0; } }
 .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) { background: var(--lime); color: var(--on-ink); }
 .contacts__btn:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.125rem; }
 

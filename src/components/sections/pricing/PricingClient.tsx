@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { useLocale } from "next-intl";
+import { ScrollTrigger } from "@/lib/gsap";
 
 /** The configurator's stills (the live 3D cube's, transparent), fetched only after an intent toward 3D. */
 const ASSETS = {
@@ -14,14 +15,30 @@ const ASSETS = {
 
 /**
  * Mounts the configurator into its host (browser only), wires the page's preset links to it, and
- * hands «Обговорити» to the form in 8 · Заявка with the chosen plan and its items.
+ * hands «Обговорити» to the form in 8 · Заявка with the chosen plan and its items. Whenever its height changes (mounted,
+ * «Налаштувати» folded or unfolded) the scroll scenes below it are measured again: the blocks under it reveal where they
+ * are now (22 Oct: after «−» the questions stayed hidden for 1300 px).
  */
 export function PricingClient() {
   const host = useRef<HTMLDivElement>(null);
   const lang = useLocale();
   useEffect(() => {
     const el = host.current;
-    if (!el || el.dataset.mounted) return;
+    if (!el) return;
+    let height = el.offsetHeight;
+    let timer = 0;
+    const ro = new ResizeObserver(() => {
+      if (el.offsetHeight === height) return;
+      height = el.offsetHeight;
+      clearTimeout(timer);
+      timer = window.setTimeout(() => ScrollTrigger.refresh(), 150);
+    });
+    ro.observe(el);
+    const stop = () => {
+      ro.disconnect();
+      clearTimeout(timer);
+    };
+    if (el.dataset.mounted) return stop;
     el.dataset.mounted = "1";
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const abs = (p: string) => new URL(p, document.baseURI).href;
@@ -50,6 +67,7 @@ export function PricingClient() {
       });
       (presetReady as (api: unknown) => void)(api);
     })();
+    return stop;
   }, [lang]);
   return <div data-cfg="" ref={host} />;
 }

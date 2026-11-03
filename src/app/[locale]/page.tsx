@@ -34,7 +34,6 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         note={t("preloader.note")}
         words={t("preloader.words")}
         stages={t("preloader.stages")}
-        images={[1, 2, 3, 4].map((n) => `/img/what/what-${n}-${locale === "ru" ? "ru" : "uk"}.webp`)}
       />
       <SmoothScroll />
       <main>

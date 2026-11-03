@@ -1,7 +1,8 @@
 "use client";
 /*
- * The intro, ~2.8 s: the header rule draws → the stone is lit out of darkness → the orbit draws →
- * the headline's lines unmask → CTA → the rail (site → ads → leads). Then a sheen crosses the
+ * The intro, ~2.8 s: the header rule draws → the stone, lit from its first frame (the owner, 3 Nov: no black stone
+ * coming up out of the dark), settles into its pose → the orbit draws → the headline's lines unmask one after
+ * another, early, while the page comes into focus out of the preloader → CTA → the rail (site → ads → leads). Then a sheen crosses the
  * headline and a light pulse starts along the rail, so the process reads as one system.
  * Nothing blocks input; every tween runs on transform/opacity or the scene's state.
  */
@@ -17,7 +18,6 @@ export function playIntro(hero: HTMLElement) {
 
   tl.from(q("[data-rule]"), { scaleX: 0, duration: 1.6, ease: "expo.inOut" }, 0)
     .from(q('[data-reveal="nav"]'), { autoAlpha: 0, y: -12, duration: 1.1, stagger: 0.06 }, 0.2)
-    .to(heroState, { stoneReveal: 1, duration: 2.8, ease: "power2.inOut" }, 0.5)
     .to(heroState, { stoneIntro: 1, duration: 3.0, ease: "expo.out" }, 0.45)
     .to(heroState, { ringProgress: 1, duration: 2.0, ease: "expo.inOut" }, 1.0)
     .to(heroState, { shards: 1, duration: 2.4, ease: "power2.out" }, 1.0)
@@ -42,7 +42,7 @@ export function playIntro(hero: HTMLElement) {
       if (slide && slide.progress() === 1) return;
       slide?.kill();
       slide = gsap.from(self.lines, { yPercent: 115, duration: 1.3, stagger: 0.1, ease: "expo.out" });
-      tl.add(slide, 0.95);
+      tl.add(slide, 0.6);
     },
   };
   const split = SplitText.create(title, config);

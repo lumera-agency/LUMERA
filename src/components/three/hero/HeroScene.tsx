@@ -1,7 +1,7 @@
 "use client";
 /*
- * The hero's stone, in React Three Fiber: a black coal stone with a liquid-chrome seam, lit out of
- * darkness by the intro (heroState), turning slowly, leaning toward the pointer, with the orbit of
+ * The hero's stone, in React Three Fiber: a black coal stone with a polished silver seam, settling into
+ * its pose in the intro (heroState), turning slowly, leaning toward the pointer, with the orbit of
  * services and silver dust around it. The blurred shards behind are a second canvas (ShardsScene).
  * Loaded on the client only (next/dynamic), after the first paint.
  */
@@ -10,7 +10,7 @@ import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Resume } from "../lib/Resume";
 import { createStoneGeometries } from "../lib/geometry";
-import { CHROME_LIGHTS, createChromeEnvironment, createObsidianMaterial, createSilverMaterial, createStudioEnvironment } from "../lib/materials";
+import { createMirrorEnvironment, createObsidianMaterial, createSilverMaterial, createStudioEnvironment } from "../lib/materials";
 import { createOrbit, loadOrbitFont } from "./orbit";
 import { createDust } from "./dust";
 import { createStoneMask } from "./stoneMask";
@@ -55,11 +55,13 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
   const { gl, scene, camera, size, invalidate } = useThree();
 
   const studio = useMemo(() => createStudioEnvironment(gl), [gl]);
-  const chrome = useMemo(() => createChromeEnvironment(gl, CHROME_LIGHTS.signal), [gl]);
+  // the seam as on the first site: polished silver in plain white light, where the other stones have black liquid
+  // metal edged in lime (the owner, 3 Nov: «вместо лаймового перелива был белый, и структура была другая»)
+  const chrome = useMemo(() => createMirrorEnvironment(gl), [gl]);
   const geometry = useMemo(() => createStoneGeometries({ detail: coarse ? 26 : 36, coreDetail: coarse ? 20 : 28 }), [coarse]);
-  const obsidian = useMemo(() => createObsidianMaterial({ vertexColors: true }), []);
+  const obsidian = useMemo(() => createObsidianMaterial({ vertexColors: true, firstSite: true }), []);
   const silver = useMemo(() => {
-    const s = createSilverMaterial();
+    const s = createSilverMaterial({ mirror: true });
     s.material.envMap = chrome; // the chrome gets its own, brighter studio: it reads as liquid metal
     return s;
   }, [chrome]);
@@ -188,14 +190,14 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
     p.y = damp(p.y, p.ty, 2.6, dt);
     if (!stage.current || !tilt.current || !spin.current || !rock.current || !key.current || !rim.current || !top.current) return;
 
-    // the stone: lit out of darkness, settling into its pose
+    // the stone: there from its first frame, settling a little into its pose
     const intro = s.stoneIntro;
-    spin.current.rotation.y = SEAM_FACING + Math.sin(time * 0.19) * SWAY - (1 - intro) * 1.6;
+    spin.current.rotation.y = SEAM_FACING + Math.sin(time * 0.19) * SWAY - (1 - intro) * 0.6;
     spin.current.rotation.x = Math.sin(time * 0.23) * 0.08;
     tilt.current.rotation.set(p.y * 0.16, p.x * 0.26, REST_TILT - p.x * 0.04);
     const { base, baseScale } = heroLayout;
-    stage.current.position.set(base.x + p.x * 0.12, base.y - p.y * 0.08 + Math.sin(time * 0.7) * 0.05 - (1 - intro) * 0.45, 0);
-    stage.current.scale.setScalar(baseScale * (0.9 + 0.1 * intro));
+    stage.current.position.set(base.x + p.x * 0.12, base.y - p.y * 0.08 + Math.sin(time * 0.7) * 0.05 - (1 - intro) * 0.18, 0);
+    stage.current.scale.setScalar(baseScale * (0.96 + 0.04 * intro));
 
     scene.environmentIntensity = s.stoneReveal;
     scene.environmentRotation.y = time * 0.05 + p.x * 0.35;
