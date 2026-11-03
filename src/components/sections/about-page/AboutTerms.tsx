@@ -14,7 +14,7 @@ const ICONS = [
 ];
 
 /**
- * 2 · Умови: «what if they vanish?» answered with what stays with the client (the product director, 3 Nov): the site and
+ * 3 · Умови: «what if they vanish?» answered with what stays with the client (the product director, 3 Nov): the site and
  * the accounts are in your name, you pay Google directly, the price is in the contract, you check the site before the
  * launch, and a task that does not suit us is said at the first talk. Every line is the site's own copy (the main page's
  * FAQ, stages and «Що ви отримуєте», the owner's brief). A grid of four on hairlines with a «+» where they cross

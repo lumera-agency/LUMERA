@@ -1,6 +1,6 @@
 /*
  * «Про нас»'s behaviour, an island as on the sibling pages (React owns the markup, this module the motion): the parts
- * coming in as they reach the screen, the labels' shuffle, and where the visitor lands.
+ * coming in as they reach the screen, the labels' shuffle, the request's way (block 2), and where the visitor lands.
  * The section titles and the [data-sr] blocks are the main page's own reveals (PageShell → ScrollReveals).
  *
  * Ported ideas, rebuilt here on CSS and WAAPI (React Bits, reactbits.dev, MIT + Commons Clause; 21st.dev): Animated
@@ -14,6 +14,7 @@
  */
 import { restorePlace, restoreScroll } from '@/lib/boot';
 
+const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -24,6 +25,7 @@ export function startAbout() {
   started = true;
   initIn();
   initShuffle();
+  initChain();
   arrive();
 }
 
@@ -113,6 +115,23 @@ function initShuffle() {
     }
   }, { rootMargin: '0px 0px -10% 0px' });
   $$('main.about .s-head__meta > span:last-child').forEach((label) => io.observe(label));
+}
+
+/* ---------- 2 · the request's way (AboutWhy): plays once as its window comes into view. .is-pre holds the start (no
+   link lit, the line empty, the words down); .is-play runs the CSS animations, each from its own start frame (fill
+   backwards), so the window's CSS default stays its final frame. Already on the screen at load: left as it is ---------- */
+function initChain() {
+  const el = $('[data-chain]');
+  if (!el || !motion) return;
+  if (el.getBoundingClientRect().top < window.innerHeight * 0.75) return;
+  el.classList.add('is-pre');
+  const io = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    io.disconnect();
+    el.classList.remove('is-pre');
+    el.classList.add('is-play');
+  }, { threshold: 0.35 });
+  io.observe(el);
 }
 
 /* ---------- where the visitor lands: back where they were after a language switch or a reload, else at the #block ---------- */

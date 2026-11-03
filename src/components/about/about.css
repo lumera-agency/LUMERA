@@ -62,7 +62,8 @@ html.motion .about-cut__w { animation: about-cut-in 1s var(--ease-out) calc(0.1s
    1 · Команда, the first screen (the owner's pick of 26 Oct): wide screens «Віяло», the title in the middle over the
    lines and the role cards fanning out into a row; phones and tablets «Розкол»'s rows
    ========================================================================== */
-.about-hero { overflow: hidden; padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); }
+/* (the light block comes next: air under the cards, as the sibling pages leave above an ivory block) */
+.about-hero { overflow: hidden; padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); padding-bottom: var(--rhythm-l); }
 .about-hero__bg { -webkit-mask-image: linear-gradient(var(--bg) 35%, transparent 90%); mask-image: linear-gradient(var(--bg) 35%, transparent 90%); }
 .about-hero > .container { z-index: 1; }
 .about-center { text-align: center; }
@@ -99,7 +100,6 @@ html.motion .about-cut__w { animation: about-cut-in 1s var(--ease-out) calc(0.1s
 }
 @keyframes about-fan-m { 0% { opacity: 0; translate: 0 3rem; } 30% { opacity: 1; translate: 0 0; } }
 @media (min-width: 861px) {
-  .about-hero { padding-bottom: var(--rhythm-m); }
   html.motion .about-fan > :nth-child(1) { animation: about-fan-l 1.7s var(--ease-out) 0.55s backwards; }
   html.motion .about-fan > :nth-child(2) { animation: about-fan-m 1.7s var(--ease-out) 0.55s backwards; }
   html.motion .about-fan > :nth-child(3) { animation: about-fan-r 1.7s var(--ease-out) 0.55s backwards; }
@@ -114,11 +114,57 @@ html.motion .about-cut__w { animation: about-cut-in 1s var(--ease-out) calc(0.1s
 }
 
 /* ==========================================================================
-   2 · Умови: four terms on hairlines (21st.dev's features grids), a «+» where the lines cross; the top line draws itself
+   2 · Чому ECLO (the page's one light block): one dark window, the way of a request through its four links; the
+   request runs it once (runtime: scene «chain»), an ember line from link to link, each lighting as it arrives
+   ========================================================================== */
+.about-chain { --step: 0.8s; position: relative; padding: var(--card-pad); border-radius: var(--radius-lg); color: var(--ink); background: var(--ink-dark); box-shadow: 0 2.5rem 4rem -3rem var(--ink-dark); }
+main.about .about-chain__list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--col-gap); margin: 0; padding: 0; list-style: none; }
+.about-chain__st { position: relative; display: grid; align-content: start; row-gap: 1.25rem; }
+/* a link's mark: its ring with the drawing in grey, and over it the lit state, filled in ink */
+.about-chain__node { position: relative; z-index: 1; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--ink-dark); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.about-chain__node svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.about-chain__lit { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; background: var(--ink); }
+.about-chain__lit svg { stroke: var(--on-ink); }
+/* the line to the next link (from this ring's centre to the next one's): a hairline, and over it the request's ember
+   line, its head running ahead (the box clips it, so it grows from the left) */
+.about-chain__seg { position: absolute; left: 1.375rem; top: 1rem; width: calc(100% + var(--col-gap)); height: 0.75rem; overflow: hidden; }
+.about-chain__seg::before,
+.about-chain__run::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line); }
+.about-chain__run { position: absolute; inset: 0; }
+.about-chain__run::before { background: var(--ember); }
+.about-chain__run::after { content: ""; position: absolute; right: 0; top: 50%; width: 0.5rem; height: 0.5rem; margin-top: -0.25rem; border-radius: 50%; background: var(--ember); }
+.about-chain__txt { display: grid; justify-items: start; row-gap: 0.5rem; }
+.about-chain__k { font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.about-chain__v { font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+/* what the request leaves: the message at «Заявка» (the person's ember), its source at «Звідки заявка» */
+.about-chain__pop { display: inline-flex; align-items: center; min-height: 2rem; margin-top: 0.375rem; padding: 0 0.875rem; border-radius: 62.4375rem; font-size: var(--fs-small); line-height: 1; }
+.about-chain__pop--msg { color: var(--on-accent); background: var(--ember); }
+.about-chain__pop--src { color: var(--ink); box-shadow: inset 0 0 0 1px var(--border-strong); }
+/* the scene: .is-pre its start, .is-play from there to the CSS default (the final frame); link n lights as the line
+   from link n − 1 arrives, its words come up, then what it leaves */
+.about-chain.is-pre :is(.about-chain__lit, .about-chain__pop) { opacity: 0; }
+.about-chain.is-pre .about-chain__run { translate: -100% 0; }
+.about-chain.is-pre :is(.about-chain__k, .about-chain__v) { opacity: 0; translate: 0 0.75rem; }
+@keyframes about-run-x { from { translate: -100% 0; } }
+@keyframes about-run-y { from { translate: 0 -100%; } }
+@keyframes about-lit { from { opacity: 0; scale: 0.6; } }
+@keyframes about-up { from { opacity: 0; translate: 0 0.75rem; } }
+@keyframes about-pop { from { opacity: 0; scale: 0.9; translate: 0 0.375rem; } }
+.about-chain.is-play .about-chain__run { animation: about-run-x var(--step) var(--ease-in-out) calc(var(--n) * var(--step) + 0.2s) backwards; }
+.about-chain.is-play .about-chain__lit { animation: about-lit 0.5s var(--ease-out) calc(var(--n) * var(--step) + 0.2s) backwards; }
+.about-chain.is-play :is(.about-chain__k, .about-chain__v) { animation: about-up 0.7s var(--ease-out) calc(var(--n) * var(--step) + 0.3s) backwards; }
+.about-chain.is-play .about-chain__pop { animation: about-pop 0.5s var(--ease-out) calc(var(--n) * var(--step) + 0.6s) backwards; }
+/* under the window: the open prices, in the main page's calculator */
+.about-why__calc { margin-top: var(--rhythm-s); }
+/* (inline, so a link that wraps keeps its arrow after its last word; the padding keeps the tap target) */
+.section--ivory .about-why__calc .link { padding-block: 0.75rem; font-size: var(--fs-lead); color: var(--ink-dark); }
+.about-why__calc svg { display: inline-block; width: 1rem; height: 1rem; margin-left: 0.375rem; vertical-align: -0.125em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
+.about-why__calc .link:hover svg { transform: translateX(0.1875rem); }
+
+/* ==========================================================================
+   3 · Умови: four terms on hairlines (21st.dev's features grids), a «+» where the lines cross; the top line draws itself
    in ([data-draw]), then the cells rise one after another
    ========================================================================== */
-/* the light block comes next: as much air under the grid as above the head (the sibling pages do the same) */
-.about-terms-sec { padding-bottom: var(--rhythm-section); }
 .about-terms { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
 .about-terms::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--line); transform-origin: 0 50%; transition: transform 0.9s var(--ease-in-out) var(--d, 0s); }
 main.about .about-terms.is-pre::before { transform: scaleX(0); transition: none; }
@@ -133,26 +179,6 @@ main.about .about-terms.is-pre::before { transform: scaleX(0); transition: none;
 .about-terms__ico svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .about-terms__b { font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; }
 .about-terms__t { max-width: 38ch; margin-top: 0.625rem; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
-
-/* ==========================================================================
-   3 · Кейси (the page's one light block): three in a row for the ads, two for automation; each card one link to its case
-   ========================================================================== */
-.about-cases__list { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--card-gap); margin: 0; padding: 0; list-style: none; }
-.about-case { grid-column: span 2; display: grid; grid-template-rows: auto auto 1fr auto; padding: var(--card-pad); }
-.about-case:nth-child(n + 4) { grid-column: span 3; }
-.about-case__who { margin-bottom: var(--rhythm-xs); font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
-.about-case__name { font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.12; letter-spacing: -0.025em; color: var(--ink-dark); text-wrap: balance; }
-.about-case__d { max-width: 40ch; margin-top: 0.875rem; font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
-.about-case__go { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem; margin-top: var(--rhythm-s); padding-top: 1rem; border-top: 1px solid var(--line-dark); }
-.about-case__open { display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; font-size: var(--fs-small); font-weight: 500; color: var(--ink-dark); text-decoration: none; }
-/* the whole card opens the case (the client's site stands above it) */
-.about-case__open::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: var(--radius-lg); }
-.about-case__open svg { box-sizing: content-box; flex: none; width: 0.875rem; height: 0.875rem; padding: 0.5rem; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px var(--ink-dark-mute); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
-.about-case:is(:hover, :focus-within) .about-case__open svg { color: var(--ivory); background: var(--ink-dark); box-shadow: none; transform: translateX(0.125rem); }
-.section--ivory .about-case__site { position: relative; z-index: 2; display: inline-flex; align-items: center; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink-dark-soft); }
-@media (hover: hover) and (pointer: fine) {
-  .about-case:hover { transform: translateY(-0.375rem); }
-}
 
 /* ==========================================================================
    4 · Питання: the main page's FAQ, on this page's five sizes; no lime on it (the page's one lime is the form's button)
@@ -200,10 +226,16 @@ main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
    Narrower screens (the site's 1100 / 860 / 600)
    ========================================================================== */
 @media (max-width: 1100px) {
-  .about-cases__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .about-case,
-  .about-case:nth-child(n + 4) { grid-column: auto; }
-  .about-case:nth-child(5) { grid-column: 1 / -1; }
+  /* the request's way stands up: the links one under another, the line running down */
+  main.about .about-chain__list { grid-template-columns: minmax(0, 1fr); row-gap: 2rem; }
+  .about-chain__st { grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 1.25rem; row-gap: 0; }
+  .about-chain__txt { padding-top: 0.75rem; }
+  .about-chain__seg { left: 1rem; top: 1.375rem; width: 0.75rem; height: calc(100% + 2rem); }
+  .about-chain__seg::before,
+  .about-chain__run::before { left: 50%; right: auto; top: 0; bottom: 0; width: 1px; height: auto; }
+  .about-chain__run::after { right: auto; left: 50%; top: auto; bottom: 0; margin: 0 0 0 -0.25rem; }
+  .about-chain.is-pre .about-chain__run { translate: 0 -100%; }
+  .about-chain.is-play .about-chain__run { animation-name: about-run-y; }
 }
 @media (max-width: 860px) {
   /* the first screen: no lines, the head on the left, the roles as rows (the number beside the words) */
@@ -238,20 +270,11 @@ main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
   .about-terms__i:nth-child(4)::before,
   .about-terms__i:nth-child(4)::after { display: none; }
   .about-terms__ico { width: 2.5rem; height: 2.5rem; }
-  /* phones read the terms and the cases as rows (the main page's list rows: the fact in bold at the reading size, the
+  /* phones read the terms as rows (the main page's list rows: the fact in bold at the reading size, the
      plain words after it), so the page stays near six screens */
-  .about-terms__b,
-  .about-case__name { font-size: var(--fs-lead); font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; }
+  .about-terms__b { font-size: var(--fs-lead); font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; }
   .about-terms__t { margin-top: 0.25rem; }
-  /* the cases: plain rows on hairlines (the main page's «start» panels on phones), without the line of what was done */
-  .about-cases__list { grid-template-columns: minmax(0, 1fr); gap: 0; border-top: 1px solid var(--line-dark); }
-  .about-case:nth-child(5) { grid-column: auto; }
-  .section--ivory .about-case.card { padding: var(--row-pad) 0; border: 0; border-bottom: 1px solid var(--line-dark); border-radius: 0; background: none; box-shadow: none; overflow: visible; }
-  .section--ivory .about-case.card::before,
-  .section--ivory .about-case.card::after { display: none; }
-  .about-case__who { margin-bottom: 0.5rem; }
-  .about-case__d { display: none; }
-  .about-case__go { flex-wrap: nowrap; margin-top: 0.5rem; padding-top: 0; border-top: 0; }
+  .about-chain { padding: 1.25rem; }
   /* the form; the direct ways under it go (the footer right below lists the same phones, Telegram and Viber) */
   main.about .about-lead .lead-form { padding: 1.25rem; }
   .about-lead .about-direct { display: none; }

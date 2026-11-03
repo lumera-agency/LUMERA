@@ -6,7 +6,7 @@ import { studioName } from "@/config/site";
 import { AboutShell } from "@/components/about/AboutShell";
 import { AboutTeam } from "@/components/sections/about-page/AboutTeam";
 import { AboutTerms } from "@/components/sections/about-page/AboutTerms";
-import { AboutCases } from "@/components/sections/about-page/AboutCases";
+import { AboutWhy } from "@/components/sections/about-page/AboutWhy";
 import { AboutFaq } from "@/components/sections/about-page/AboutFaq";
 import { AboutContact } from "@/components/sections/about-page/AboutContact";
 
@@ -17,9 +17,10 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/pro-nas"
 
 /**
  * «Про нас» — the studio's own page (the owner's brief of 26 Oct: it answers one doubt, «won't they vanish in a month?»,
- * and stays short). The product director's order of 3 Nov, each block one doubt: 1 who they are (the team, the first
- * screen) → 2 what stays with the client (the terms) → 3 whether real people work with them (the cases, the one light
- * block) → 4 what happens after the launch (questions) → 5 what happens when I write (the request, the main page's form).
+ * and stays short). Each block one doubt: 1 who they are (the team, the first screen) → 2 why them (one team on the
+ * whole way of a request, the one light block, its demo; the owner, 3 Nov, in place of the cases) → 3 what stays with
+ * the client (the terms) → 4 what happens after the launch (questions) → 5 what happens when I write (the request, the
+ * main page's form).
  * Built from the sibling pages' kit (AdsShell's frame, the main page's sections, card, FAQ and form); the art director's
  * layout of 3 Nov.
  */
@@ -30,8 +31,8 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/pro-nas
   const home = aiHref(locale, "/");
   const nav = [
     { href: "#team", text: t("nav.team") },
+    { href: "#why", text: t("nav.why") },
     { href: "#terms", text: t("nav.terms") },
-    { href: "#cases", text: t("nav.cases") },
     { href: "#faq", text: t("nav.faq") },
     { href: "#contact", text: t("nav.lead"), bar: false },
     { href: home, text: t("nav.home"), bar: false },
@@ -45,8 +46,8 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/pro-nas
     >
       <PageShell>
         <AboutTeam />
-        <AboutTerms index={2} />
-        <AboutCases index={3} />
+        <AboutWhy index={2} />
+        <AboutTerms index={3} />
         <AboutFaq index={4} />
         <AboutContact index={5} />
       </PageShell>

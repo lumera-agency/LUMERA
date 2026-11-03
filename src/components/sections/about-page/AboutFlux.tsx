@@ -7,5 +7,5 @@ import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
  *  compact rows there, no lines), and no WebGL is started for them. */
 export function AboutFlux() {
   const wide = useMediaQuery("(min-width: 861px)");
-  return wide ? <HeroFlux under="#work" tone="mono" still /> : null;
+  return wide ? <HeroFlux under="#why" tone="mono" still /> : null;
 }
