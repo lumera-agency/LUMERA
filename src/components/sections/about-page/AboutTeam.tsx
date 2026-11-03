@@ -42,8 +42,8 @@ export async function AboutTeam() {
             <p className="about-hero__lead">
               {splitWords(t.raw("team.lead") as string, (w, i) => <span className="about-gen" style={{ "--i": i } as React.CSSProperties}>{w}</span>)}
             </p>
-            {/* the quiet way down to the request (a link, not a button: the page's one lime button is block 3's) */}
-            <a className="about-down" href="#direct">
+            {/* the quiet way down to the form (a link, not a button: the page's one lime button is the form's) */}
+            <a className="about-down" href="#contact">
               <span>{t("team.down")}</span>
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v15M6 13.5l6 6 6-6" /></svg>
             </a>

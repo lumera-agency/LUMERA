@@ -131,7 +131,6 @@ main.about .about-vow.is-pre .about-vow__t { opacity: 0; transition: none; }
    3 · Напряму: the broken-telephone demo, one dark window with two lanes (runtime: scene «chain», .is-pre its start,
    .is-play from there to the CSS default, the final frame; each part's moment is its --t)
    ========================================================================== */
-.about-direct { padding-bottom: var(--rhythm-section); }
 .about-tel { position: relative; margin: 0; padding: var(--card-pad); border-radius: var(--radius-lg); background: var(--color-ink-dark); box-shadow: inset 0 0 0 1px var(--border-strong); }
 .about-tel__lane + .about-tel__lane { margin-top: var(--rhythm-s); padding-top: var(--rhythm-s); border-top: 1px solid var(--line); }
 .about-tel__k { margin-bottom: 1.5rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
@@ -184,10 +183,43 @@ main.about .about-tel__list { display: grid; grid-template-columns: repeat(3, mi
 .about-tel.is-play .about-tel__now { animation: about-gen-in 0.4s var(--ease-out) calc(var(--t) + 0.65s) backwards; }
 .about-tel.is-play .about-tel__mark { animation: about-pop 0.5s var(--ease-out) calc(var(--t) + 0.3s) backwards; }
 
-/* the request: the page's one lime button (the owner's brief: lime on one button), to the main page's form */
-.about-direct__go { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: var(--rhythm-m); }
-.about-direct__note { font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-soft); }
-main.about .about-direct .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: var(--ink); --btn-glow: var(--signal-glow); }
+/* the way down to the form, under the window */
+.about-direct__go { margin-top: var(--rhythm-s); }
+
+/* ==========================================================================
+   4 · Заявка: the main page's form; beside it what happens next and the direct ways to reach us
+   ========================================================================== */
+.about-lead { padding-bottom: var(--rhythm-section); }
+/* (main.ai ol, the AI kit's reset, would take the margin away) */
+main.about .about-next { margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.about-next li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: baseline; padding: 0.875rem 0; border-bottom: 1px solid var(--line); }
+.about-next__n { font: 400 var(--fs-label) / 1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+.about-next b { display: block; margin-bottom: 0.2rem; font-size: var(--fs-lead); font-weight: 500; color: var(--ink); }
+.about-next div > span { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); }
+.about-reach { margin-top: var(--rhythm-m); }
+.about-reach__k { margin: 0 0 0.875rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.about-reach__tel { display: grid; margin: 0; padding: 0; list-style: none; }
+.about-reach__tel a { display: inline-flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; font-size: var(--fs-lead); font-variant-numeric: tabular-nums; color: var(--ink); text-decoration: none; }
+.about-reach__tel a:hover span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25em; }
+.about-reach__tel svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+/* the footer's messenger pills, ember under the pointer (no lime: the page's one lime is the form's button) */
+.about-reach__chats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; max-width: 22rem; margin: 0.75rem 0 0; }
+.about-reach__chats a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.75rem; border-radius: 62.4375rem; font-size: var(--fs-small); color: var(--ink); text-decoration: none; box-shadow: inset 0 0 0 1px var(--line); transition: background-color var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast); }
+.about-reach__chats svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.about-reach__chats a:is(:hover, :focus-visible) { color: var(--on-ink); background: var(--ember); box-shadow: none; }
+
+/* the form: a dark card on the line of the others; the page's sizes in it (16 or more in the fields, so iOS never zooms) */
+main.about .about-lead .lead-form.card { background: var(--color-ink-dark); border-color: var(--border-strong); }
+main.about .lead-form :is(.field label, .field legend, .field__hint, .field__err, .field__opt, .lead-form__note, .lead-form__fail) { font-size: var(--fs-small); }
+main.about .lead-form :is(input, textarea) { font-size: var(--fs-lead); }
+main.about .lead-form .chip span { font-size: var(--fs-small); }
+main.about .lead-form__done-title { font-size: var(--fs-h3); }
+main.about .lead-form__done p:last-child { font-size: var(--fs-lead); }
+main.about .lead-form__done .check--lg { border-color: var(--ink); background: var(--ink); box-shadow: none; }
+/* the page's one lime button: the form's «Надіслати заявку» (the sibling pages' first-screen lime) */
+main.about #contact .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: var(--ink); --btn-glow: var(--signal-glow); }
+/* the footer's own request button would only repeat the form right above it (as on the ads page) */
+main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
 
 /* ==========================================================================
    Narrower screens (the site's 1100 / 860 / 600)
@@ -222,9 +254,20 @@ main.about .about-direct .btn--primary { --btn-bg: var(--signal); --btn-ink: var
   .about-tel__run::after { right: auto; left: 50%; top: auto; bottom: 0; margin: 0 0 0 -0.25rem; }
   .about-tel.is-pre .about-tel__run { translate: 0 -100%; }
   .about-tel.is-play .about-tel__run { animation-name: about-run-y; }
+  /* the request: the head, the steps (what happens after it), the form, then the direct ways */
+  .about-lead .contact { row-gap: 0; }
+  .about-lead .contact__side { display: contents; }
+  .about-lead .contact__side > .s-head { grid-column: 1 / -1; order: 1; }
+  .about-lead .about-next { grid-column: 1 / -1; order: 2; }
+  .about-lead .lead-form { order: 3; margin-top: var(--rhythm-m); }
+  .about-lead .about-reach { grid-column: 1 / -1; order: 4; margin-top: var(--rhythm-l); }
 }
 @media (max-width: 600px) {
   .about-hero { padding-top: calc(var(--topbar-h) + 1.75rem); }
   .about-vow { padding: var(--rhythm-s) 0; }
   .about-tel { padding: 1.25rem; }
+  /* the form; the direct ways under it go (the footer right below lists the same phones, Telegram and Viber) */
+  main.about .about-lead .lead-form { padding: 1.25rem; }
+  .about-lead .about-reach { display: none; }
+  main.about .lead-form textarea { min-height: 4.75rem; }
 }

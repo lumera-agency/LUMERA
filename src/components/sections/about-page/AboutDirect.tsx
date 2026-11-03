@@ -1,7 +1,5 @@
-import { getLocale, getTranslations } from "next-intl/server";
-import { ButtonLink } from "@/components/ui/button/Button";
+import { getTranslations } from "next-intl/server";
 import { aiRich as R } from "@/components/ai/rich";
-import { aiHref } from "@/components/ai/links";
 
 type T = Awaited<ReturnType<typeof getTranslations<"about">>>;
 type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
@@ -37,12 +35,11 @@ function Stop({ t, who, seg, lit, at, children, col }: { t: T; who: string; seg?
  * comes into view (runtime: scene «chain»): «Зазвичай», you → a manager → the one who does it, and the request comes out
  * changed on the way (the manager's bubble turns into a vaguer one, a «?» at the end); «В ECLO», you → the one who does
  * it, straight across the empty middle, the words as they were (a tick). Ember is the person's words that arrive; the
- * usual lane stays grey. «Приклад» under it: the words are an illustration. Then the page's one lime button, to the main
- * page's form. Phones and tablets: the lanes stand up, the line running down.
+ * usual lane stays grey. «Приклад» under it: the words are an illustration. Then the way down to the form (block 4).
+ * Phones and tablets: the lanes stand up, the line running down.
  */
 export async function AboutDirect({ index }: { index: number }) {
   const t = await getTranslations("about");
-  const form = `${aiHref(await getLocale(), "/")}#contact`;
   return (
     <section className="section about-direct" id="direct" aria-labelledby="direct-title">
       <div className="container">
@@ -94,10 +91,11 @@ export async function AboutDirect({ index }: { index: number }) {
           <figcaption className="about-tel__cap">{t("direct.sample")}</figcaption>
         </figure>
 
-        <div className="about-direct__go">
-          <ButtonLink href={form} variant="primary">{t("direct.go")}</ButtonLink>
-          <p className="about-direct__note">{t("direct.note")}</p>
-        </div>
+        {/* the quiet way down to the form (a link: the page's one lime button is the form's) */}
+        <a className="about-down about-direct__go" href="#contact">
+          <span>{t("direct.go")}</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v15M6 13.5l6 6 6-6" /></svg>
+        </a>
       </div>
     </section>
   );
