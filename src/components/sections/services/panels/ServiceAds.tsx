@@ -2,14 +2,14 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { aiHref } from "@/components/ai/links";
 import { PRICES } from "../copy";
 
-/** 3 · Реклама в Google: the search plan, the ad on the results page, the report. Markup ported 1:1 from website-v2; the clip is demos/timelines.js.
+/** 2 · Реклама в Google: the search plan, the ad on the results page, the report. Markup ported 1:1 from website-v2; the clip is demos/timelines.js.
  *  «Детальніше» opens the ads page (/reklama-i-analityka) instead of a card. */
 export async function ServiceAds() {
   const t = await getTranslations();
   const prices = PRICES;
   const locale = await getLocale();
   return (
-    <article className="service" id="svc-3" data-sr="">
+    <article className="service" id="svc-2" data-sr="">
       <div className="service__demo">
         <button className="demo-replay" type="button" data-replay="" aria-label={t("services.replay.label")}>
           <span className="demo-replay__icon" aria-hidden="true">↻</span>
@@ -175,7 +175,7 @@ export async function ServiceAds() {
                           {" "}
                           <span>{t("services.ads.kw.2")}</span>
                         </span>
-                        <span>3</span>
+                        <span>2</span>
                         <span>351 ₴</span>
                       </p>
                     </div>
@@ -263,13 +263,13 @@ export async function ServiceAds() {
       </div>
       <div className="service__body">
         <p className="service__meta">
-          <span>3</span>
-          <span>{t("services.service.meta.span.3")}</span>
+          <span>2</span>
+          <span>{t("services.service.meta.span.2")}</span>
         </p>
-        <h3 className="service__title">{t("services.service.title.3")}</h3>
-        <p className="service__text">{t("services.service.text.3")}</p>
+        <h3 className="service__title">{t("services.service.title.2")}</h3>
+        <p className="service__text">{t("services.service.text.2")}</p>
         <div className="service__foot">
-          <p className="service__price">{t("services.price.3.text", prices)}</p>
+          <p className="service__price">{t("services.price.2.text", prices)}</p>
           {/* the ads page has it all (where the ads run, the analytics, the price, the steps): «Детальніше» opens it */}
           <a className="service__more-btn service__more-link" href={aiHref(locale, "/reklama-i-analityka")}>
             <span>{t("services.more.label")}</span>

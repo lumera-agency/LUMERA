@@ -60,7 +60,7 @@ export async function AdsFaq({ index, facts }: { index: number; facts: AdsFacts 
           ))}
         </FaqList>
         {/* phones: five questions first, the rest a tap away (runtime: initFaqMore) */}
-        <button type="button" className="ad-faq-more" aria-expanded="false" data-faq-more="">
+        <button type="button" className="rk-faq-more" aria-expanded="false" data-faq-more="">
           {t("faq.more", { n: COUNT - SHOWN })}
         </button>
       </div>

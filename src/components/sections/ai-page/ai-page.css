@@ -7,35 +7,36 @@
 
 /* ---------- 1 · the first screen «Пульт» (the owner's pick, 26 Oct 2026): its layout and console are hero-console.css;
    here the words' small parts shared with the earlier first screens ---------- */
-main[data-ai-page="ai"] .ai-hero__lead2 { display: block; color: var(--ink-soft); }
 main[data-ai-page="ai"] .ai-hero__audit { margin: 1.125rem 0 0; font-size: var(--fs-small); color: var(--ink-soft); text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 0 0.5rem rgba(0, 0, 0, 0.85); }
 main[data-ai-page="ai"] .ai-hero__loss { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; color: var(--ink); text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.85); }
 main[data-ai-page="ai"] .ai-hero__loss svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---------- 2 · Кейс (ivory, the sheet over the first screen): who and what, the morning before and after, the screenshots ---------- */
-main[data-ai-page="ai"] .ai-proof__lead { display: grid; gap: 0.875rem; max-width: 46rem; margin-top: var(--rhythm-s); }
+main[data-ai-page="ai"] .ai-proof__lead { display: grid; gap: 0.875rem; max-width: 46rem; }
 main[data-ai-page="ai"] .ai-proof__k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
 main[data-ai-page="ai"] .ai-proof__tag { padding: 0.35em 0.75em; border-radius: 62.4375rem; color: #fcfcfa; background: var(--ink-dark); }
-main[data-ai-page="ai"] .ai-proof__text { margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
 /* before (muted, a hairline frame) and after (a white card, the accent) */
-main[data-ai-page="ai"] .ai-split__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: stretch; margin-top: var(--rhythm-m); }
-main[data-ai-page="ai"] .ai-split__col { display: grid; grid-template-rows: auto 1fr auto; gap: 1.5rem; padding: clamp(1.5rem, 3vw, 2.5rem); border-radius: var(--radius-lg); }
+main[data-ai-page="ai"] .ai-split__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: stretch; margin-top: var(--rhythm-s); }
+main[data-ai-page="ai"] .ai-split__col { display: grid; grid-template-rows: auto auto 1fr; gap: clamp(1.5rem, 3vw, 2.25rem); padding: clamp(1.75rem, 3.4vw, 3rem); border-radius: var(--radius-lg); }
 main[data-ai-page="ai"] .ai-split__col--now { color: var(--ink-dark-mute); box-shadow: inset 0 0 0 1px var(--line-dark); }
 main[data-ai-page="ai"] .ai-split__col--next { color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.08), 0 2rem 3.5rem -2.5rem rgba(60, 45, 30, 0.5); }
 main[data-ai-page="ai"] .ai-split__k { margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; }
 main[data-ai-page="ai"] .ai-split__col--next .ai-split__k { color: var(--ember-deep); }
-main[data-ai-page="ai"] .ai-split__rows { display: grid; align-content: start; gap: 0.875rem; margin: 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .ai-split__rows { display: grid; align-content: start; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
 main[data-ai-page="ai"] .ai-split__row { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); column-gap: 1rem; align-items: baseline; font-size: var(--fs-body); line-height: 1.45; }
 main[data-ai-page="ai"] .ai-split__t { font: 400 var(--fs-label)/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
-/* the case's numbers, once: the block's largest type (phase 3 sets the final scale against the titles) */
-main[data-ai-page="ai"] .ai-split__total { display: grid; gap: 0.375rem; margin: 0; padding-top: 1.25rem; border-top: 1px solid var(--line-dark); }
-main[data-ai-page="ai"] .ai-split__total b { font-size: clamp(3rem, 7vw, 6.5rem); font-weight: 400; line-height: 0.95; letter-spacing: -0.045em; white-space: nowrap; }
-main[data-ai-page="ai"] .ai-split__total span { font-size: var(--fs-body); }
-main[data-ai-page="ai"] .ai-split__col--next .ai-split__total b { color: var(--ember-deep); }
+/* the case's numbers, once: the block's largest type, first in its column; the bar is the morning's length (fx/ShrinkTotal) */
+main[data-ai-page="ai"] .ai-split__total { display: grid; gap: 0.5rem; margin: 0; }
+main[data-ai-page="ai"] .ai-split__v { font-size: clamp(3rem, 7vw, 6.5rem); font-weight: 400; line-height: 0.95; letter-spacing: -0.045em; white-space: nowrap; }
+main[data-ai-page="ai"] .ai-split__n { font-variant-numeric: tabular-nums; }
+main[data-ai-page="ai"] .ai-split__when { font-size: var(--fs-body); }
+main[data-ai-page="ai"] .ai-split__bar { display: block; height: 0.25rem; margin-top: 0.75rem; border-radius: 62.4375rem; overflow: hidden; background: var(--line-dark); }
+main[data-ai-page="ai"] .ai-split__fill { display: block; height: 100%; border-radius: inherit; background: currentColor; transform-origin: 0 50%; }
+main[data-ai-page="ai"] .ai-split__col--next :is(.ai-split__v, .ai-split__fill) { color: var(--ember-deep); }
 /* the audit's line and the button on the left, the two demos on the right at their own width (22rem each: the scheme's
    type stays 11–13 px); below 1200 px the demos go under the text, side by side, and on phones one under the other */
 main[data-ai-page="ai"] .ai-proof__grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--rhythm-s) var(--col-gap); align-items: start; margin-top: var(--rhythm-m); }
-main[data-ai-page="ai"] .ai-proof__audit { max-width: 40ch; margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-dark); }
+main[data-ai-page="ai"] .ai-proof__audit { max-width: 32ch; margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-dark); text-wrap: pretty; }
 /* «Читати кейс»: a filled button (the owner, 21 Oct 2026: «виділити»), ember on the ivory, white type 4.6:1 */
 main[data-ai-page="ai"] .ai-proof__go { --btn-bg: var(--ember-btn); --btn-ink: #fff; --btn-wave: #0f0e0d; --btn-glow: rgb(194 77 24 / 0.45); margin-top: 1.5rem; }
 main[data-ai-page="ai"] .ai-proof__ex-go svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -136,67 +137,144 @@ main[data-ai-page="ai"] .ai-feed__f u { color: #8cc4ff; text-decoration-color: r
 @keyframes ai-feed-2 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(0.98); } 28%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
 @keyframes ai-feed-3 { 0%, 40% { opacity: 0; transform: translateY(14px) scale(0.98); } 46%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
 
-/* the salon: an example, quieter than the case, between two thin lines */
-main[data-ai-page="ai"] .ai-proof__ex { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.75rem 1.5rem; margin-top: var(--rhythm-m); padding: 1.125rem 0; border-block: 1px solid var(--line-dark); color: var(--ink-dark-soft); text-decoration: none; }
-main[data-ai-page="ai"] .ai-proof__ex-k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.625rem; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
-main[data-ai-page="ai"] .ai-proof__ex-tag { padding: 0.35em 0.75em; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); }
-main[data-ai-page="ai"] .ai-proof__ex-t { font-size: var(--fs-body); line-height: 1.4; }
-main[data-ai-page="ai"] .ai-proof__ex-go { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: var(--fs-small); }
-@media (hover: hover) { main[data-ai-page="ai"] .ai-proof__ex:hover { color: var(--ink-dark); } }
+/* the salon: an example with its own weight (the owner, 30 Oct 2026: «подчеркнуть»): a dark card with its chat, on the ivory */
+main[data-ai-page="ai"] .ai-proof__ex { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 1.5rem var(--col-gap); margin-top: var(--rhythm-m); padding: clamp(1.5rem, 3.4vw, 3rem); border-radius: var(--radius-lg); color: var(--ink); background: #0d0d0d; text-decoration: none; box-shadow: 0 1.875rem 3.75rem -2.25rem rgba(60, 45, 30, 0.55); transition: transform var(--dur) var(--ease-out); }
+main[data-ai-page="ai"] .ai-proof__ex-body { display: grid; justify-items: start; gap: 1rem; }
+main[data-ai-page="ai"] .ai-proof__ex-k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.625rem; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-proof__ex-tag { padding: 0.35em 0.75em; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.4); }
+main[data-ai-page="ai"] .ai-proof__ex-t { max-width: 18ch; font-size: clamp(1.625rem, 3vw, 2.5rem); font-weight: 400; line-height: 1.12; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; }
+main[data-ai-page="ai"] .ai-proof__ex-go { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0 1.125rem; border-radius: 62.4375rem; font-size: var(--fs-small); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.4); transition: background-color var(--dur-fast), color var(--dur-fast); }
+main[data-ai-page="ai"] .ai-proof__ex-go svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+main[data-ai-page="ai"] .ai-proof__ex .ai-svc__art { height: 11rem; margin: 0; }
+@media (hover: hover) {
+  main[data-ai-page="ai"] .ai-proof__ex:hover { transform: translateY(-0.25rem); }
+  main[data-ai-page="ai"] .ai-proof__ex:hover .ai-proof__ex-go { color: var(--ink-dark); background: var(--ink); }
+}
+main[data-ai-page="ai"] .ai-proof__ex:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 0.25rem; }
 @media (max-width: 1199px) {
   main[data-ai-page="ai"] .ai-proof__grid { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 860px) {
-  main[data-ai-page="ai"] .ai-proof__ex { grid-template-columns: minmax(0, 1fr) auto; }
-  main[data-ai-page="ai"] .ai-proof__ex-k { grid-column: 1 / -1; }
+@media (max-width: 760px) {
+  main[data-ai-page="ai"] .ai-proof__ex { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 760px) {
   main[data-ai-page="ai"] .ai-split__grid { grid-template-columns: minmax(0, 1fr); }
 }
+/* the smallest phones: the big number stays on one line inside its card */
+@media (max-width: 374px) {
+  main[data-ai-page="ai"] .ai-split__col { padding: 1.5rem 1.25rem; }
+  main[data-ai-page="ai"] .ai-split__v { font-size: 2.625rem; }
+}
 @media (max-width: 600px) {
   main[data-ai-page="ai"] .ai-proof__shots { grid-template-columns: minmax(0, 22rem); gap: 1.5rem; }
+  main[data-ai-page="ai"] .ai-shot--scheme { display: none; }
 }
 
 /* a dark block right before an ivory one gets the same air below its last line as above its title (the audit and the
    niches' last line had touched the ivory edge: the owner, 21 Oct 2026) */
 main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: 4.5rem; }
+}
 
 /* ---------- the pause: one phrase, a lot of air ---------- */
 main[data-ai-page="ai"] .ai-pause { display: grid; align-items: center; min-height: 80svh; padding-block: clamp(6rem, 18vh, 12rem); }
+/* (a phone: the pause stays a pause, without a whole empty screen around one phrase) */
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-pause { min-height: 62svh; padding-block: 5rem; }
+}
 main[data-ai-page="ai"] .ai-pause__text { max-width: 22ch; margin: 0 auto; font-size: var(--fs-display); font-weight: 300; line-height: 1.12; letter-spacing: -0.03em; text-align: center; color: var(--ink-mute); text-wrap: balance; }
 main[data-ai-page="ai"] .ai-pause__b { font-weight: 400; color: var(--ink); }
 /* BlurText's words move on their own (fx/BlurText) */
 main[data-ai-page="ai"] .blur-text__w { display: inline-block; }
 
 /* ---------- 3 · Ніші: three businesses to recognise yourself in ---------- */
-main[data-ai-page="ai"] .ai-niches__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; }
-main[data-ai-page="ai"] .ai-niche { display: grid; align-content: start; gap: 0.75rem; padding: clamp(1.25rem, 2.4vw, 2rem); border-radius: var(--radius-lg); background: #000; box-shadow: inset 0 0 0 1px var(--border-strong); }
-main[data-ai-page="ai"] .ai-niche__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
-main[data-ai-page="ai"] .ai-niche__p { margin: 0; font-size: var(--fs-body); color: var(--ink); }
-main[data-ai-page="ai"] .ai-niche__list { display: grid; gap: 0.5rem; margin: 0.25rem 0 0; padding: 1rem 0 0; border-top: 1px solid var(--line); list-style: none; }
-main[data-ai-page="ai"] .ai-niche__list li { position: relative; padding-left: 1.125rem; font-size: var(--fs-body); font-weight: 300; line-height: 1.5; color: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-niche__list li::before { content: ""; position: absolute; left: 0; top: 0.75em; width: 0.375rem; height: 1px; background: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-niches__more { margin: var(--rhythm-s) 0 0; font-size: var(--fs-body); color: var(--ink-soft); }
+/* a computer gets one design, a phone another (the owner's picks, 30 Oct 2026); both are in the page */
+@media (min-width: 861px) { main[data-ai-page="ai"] .ai-narrow { display: none !important; } }
+@media (max-width: 860px) { main[data-ai-page="ai"] .ai-wide { display: none !important; } }
+/* computers: a sliding switch and one panel with its scene (after 21st.dev Slide Tabs) */
+main[data-ai-page="ai"] .ai-nt { margin-top: var(--rhythm-m); }
+main[data-ai-page="ai"] .ai-nt__tabs { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 40rem; padding: 0.25rem; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px var(--ai-frame); }
+main[data-ai-page="ai"] .ai-nt__thumb { position: absolute; top: 0.25rem; bottom: 0.25rem; left: 0.25rem; width: calc((100% - 0.5rem) / 3); border-radius: inherit; background: var(--ink); transform: translateX(calc(var(--i) * 100%)); transition: transform 0.45s var(--ease-out); }
+main[data-ai-page="ai"] .ai-nt__tab { position: relative; min-height: 2.875rem; padding: 0.25rem 0.5rem; border: 0; border-radius: inherit; font: 400 var(--fs-small)/1.15 var(--font-sans); color: var(--ink-soft); background: none; cursor: pointer; transition: color 0.3s; -webkit-tap-highlight-color: transparent; }
+main[data-ai-page="ai"] .ai-nt__tab.is-on { color: var(--on-ink); }
+main[data-ai-page="ai"] .ai-nt__tab:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.125rem; }
+main[data-ai-page="ai"] .ai-nt__panel { margin-top: 1rem; border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--ai-frame); }
+main[data-ai-page="ai"] .ai-nt__in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 1.5rem var(--col-gap); padding: clamp(1.5rem, 3.4vw, 3rem); }
+main[data-ai-page="ai"] .ai-nt__price { margin: 0; font-size: clamp(2.25rem, 4.6vw, 4rem); font-weight: 400; line-height: 1; letter-spacing: -0.03em; color: var(--ember-ink, var(--ember)); }
+main[data-ai-page="ai"] .ai-nt__list { display: grid; gap: 0.625rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .ai-nt__list li { font-size: var(--fs-lead); font-weight: 300; line-height: 1.35; color: var(--ink); }
+main[data-ai-page="ai"] .ai-nt__in .ai-svc__art { height: 11rem; margin: 0; }
+/* phones: three ivory cards on the black, seen at once, nothing to learn */
+main[data-ai-page="ai"] .ai-nc { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .ai-nc__card { --ink-dark: #0f0e0d; --ink-dark-soft: rgba(15, 14, 13, 0.74); display: grid; align-content: start; gap: 0.5rem; padding: clamp(1.5rem, 2.8vw, 2.5rem); border-radius: var(--radius-lg); color: var(--ink-dark); background: #fcfcfa; }
+main[data-ai-page="ai"] .ai-nc__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink-dark); }
+main[data-ai-page="ai"] .ai-nc__p { margin: 0; font-size: clamp(2.25rem, 3.6vw, 3.25rem); font-weight: 400; line-height: 1.05; letter-spacing: -0.03em; color: var(--ember-deep); }
+main[data-ai-page="ai"] .ai-nc__list { display: grid; gap: 0.5rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .ai-nc__list li { font-size: var(--fs-body); font-weight: 300; line-height: 1.45; color: var(--ink-dark-soft); }
+@media (prefers-reduced-motion: reduce) {
+  main[data-ai-page="ai"] :is(.ai-nt__thumb, .ai-proof__ex) { transition: none; }
+}
+main[data-ai-page="ai"] .ai-niches__more { margin: var(--rhythm-m) 0 0; font-size: var(--fs-body); color: var(--ink-soft); }
 @media (max-width: 860px) {
-  main[data-ai-page="ai"] .ai-niches__list { grid-template-columns: minmax(0, 1fr); }
+  main[data-ai-page="ai"] .ai-niches__list { grid-template-columns: minmax(0, 1fr); row-gap: 2.25rem; }
 }
 
 /* ---------- 5 · the lineup: the free part, four products, the audit ---------- */
-main[data-ai-page="ai"] .ai-offer__inc { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 1.25rem var(--col-gap); margin-top: var(--rhythm-m); padding: clamp(1.25rem, 2.4vw, 2rem); border-radius: 1.375rem; box-shadow: inset 0 0 0 1px var(--border-strong); }
+/* frames that can be seen (the owner, 30 Oct 2026: «никак не видно рамок») */
+main[data-ai-page="ai"] { --ai-frame: rgb(246 246 243 / 0.26); }
+main[data-ai-page="ai"] .ai-offer__card { box-shadow: inset 0 0 0 1px var(--ai-frame); }
+main[data-ai-page="ai"] .ai-offer__audit { box-shadow: inset 0 0 0 1px var(--ai-frame) !important; }
+main[data-ai-page="ai"] .ai-offer__card .ai-svc__art { border-bottom-color: var(--ai-frame) !important; }
+main[data-ai-page="ai"] .ai-offer__inc { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 1.5rem var(--col-gap); }
 main[data-ai-page="ai"] .ai-offer__inc-k { margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
 main[data-ai-page="ai"] .ai-offer__inc-t { margin: 0.625rem 0 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
 main[data-ai-page="ai"] .ai-offer__inc-p { max-width: 52ch; margin: 0.5rem 0 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); }
 main[data-ai-page="ai"] .ai-offer__inc-art { height: 9rem; margin: 0; }
-main[data-ai-page="ai"] .ai-offer__list { margin: 1rem 0 0; padding: 0; list-style: none; }
-main[data-ai-page="ai"] .ai-offer__n { margin: 0; font: 400 var(--fs-label)/1 var(--font-mono); color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-offer__list { margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; }
+/* a card holds one picture and its words: no frame inside the frame */
+main[data-ai-page="ai"] .ai-offer :is(.ai-offer__card .ai-svc__art, .ai-offer__inc-art) { border-radius: 0; box-shadow: none; background: none; }
+main[data-ai-page="ai"] .ai-offer__card .ai-svc__art { margin: 0; border-bottom: 1px solid var(--line); }
+main[data-ai-page="ai"] .ai-offer__card .ai-svc__body { gap: 0.75rem; padding: 1.5rem; }
+main[data-ai-page="ai"] .ai-offer__card .ai-svc__acts { padding-top: 0.5rem; }
+main[data-ai-page="ai"] .ai-offer__art-plus { display: grid; place-items: center; }
+main[data-ai-page="ai"] .ai-offer__art-plus span { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; border: 1px dashed var(--border-strong); font-size: 1.5rem; font-weight: 300; line-height: 1; color: var(--ink-soft); }
+/* «Обговорити»: a quiet link, the price is what the card is for */
+main[data-ai-page="ai"] .ai-offer__talk { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink); text-decoration: none; }
+main[data-ai-page="ai"] .ai-offer__talk svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
+main[data-ai-page="ai"] .ai-offer__talk:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.1875rem; }
+@media (hover: hover) { main[data-ai-page="ai"] .ai-offer__talk:hover svg { transform: translate(0.1875rem, -0.1875rem); } }
+/* computers: a price list, all names and prices on the left, the chosen one's panel beside them (OfferPicker) */
+main[data-ai-page="ai"] .ai-oa { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); grid-auto-rows: min-content; gap: 0.625rem 1rem; margin-top: var(--rhythm-m); }
+main[data-ai-page="ai"] .ai-oa__item { display: contents; }
+main[data-ai-page="ai"] .ai-oa__h { grid-column: 1; margin: 0; font: inherit; border-radius: 1.125rem; overflow: hidden; box-shadow: inset 0 0 0 1px var(--ai-frame); transition: background-color 0.25s; }
+main[data-ai-page="ai"] .ai-oa__head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; width: 100%; min-height: 5rem; padding: 0.75rem 1.25rem; border: 0; text-align: left; color: var(--ink); background: none; cursor: pointer; transition: color 0.25s; }
+main[data-ai-page="ai"] .ai-oa__head:focus-visible { outline: 2px solid var(--ink); outline-offset: -0.25rem; border-radius: 1.125rem; }
+main[data-ai-page="ai"] .ai-oa__name { font-size: var(--fs-h4); line-height: 1.2; }
+main[data-ai-page="ai"] .ai-oa__price .ai-offer__price { flex-direction: column; align-items: flex-end; gap: 0.125rem; }
+main[data-ai-page="ai"] .is-open > .ai-oa__h { background: var(--ink); }
+main[data-ai-page="ai"] .is-open > .ai-oa__h .ai-oa__head, main[data-ai-page="ai"] .is-open > .ai-oa__h :is(.ai-offer__sum, .ai-offer__wk) { color: var(--on-ink); }
+main[data-ai-page="ai"] .ai-oa__panel { grid-column: 2; grid-row: 1 / span 4; border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--ai-frame); }
+main[data-ai-page="ai"] .ai-oa__panel[hidden] { display: none; }
+main[data-ai-page="ai"] .ai-oa__panel .ai-svc__art { height: 13rem; margin: 0; border-radius: 0; background: none; box-shadow: none; }
+main[data-ai-page="ai"] .ai-oa__panel .ai-svc__body { display: flex; flex-direction: column; gap: 0.75rem; padding: 1.75rem; }
+@media (hover: hover) { main[data-ai-page="ai"] .ai-oa__item:not(.is-open) > .ai-oa__h:hover { box-shadow: inset 0 0 0 1px var(--ink); } }
+/* phones: cards that pin and stack as you scroll, no sideways gesture (after React Bits Scroll Stack; CSS sticky only).
+   A screen too short to hold a whole card gets a plain list, so nothing is covered before it is read. */
+@media (max-width: 860px) {
+  main[data-ai-page="ai"] .ai-offer__list { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  main[data-ai-page="ai"] .ai-offer__card .ai-svc__art { height: 7rem; }
+}
+@media (max-width: 860px) and (min-height: 600px) {
+  main[data-ai-page="ai"] .ai-offer__card { position: sticky; top: calc(var(--topbar-h) + 0.5rem + var(--i) * 0.5rem); background: #000; box-shadow: inset 0 0 0 1px var(--ai-frame), 0 -1.25rem 2.5rem -1rem #000; }
+}
 main[data-ai-page="ai"] .ai-offer__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin: 0; }
 main[data-ai-page="ai"] .ai-offer__sum { font-size: var(--fs-h4); font-weight: 400; color: var(--ink); }
 main[data-ai-page="ai"] .ai-offer__sum--talk { font-size: var(--fs-body); color: var(--ink-soft); }
 main[data-ai-page="ai"] .ai-offer__wk { font: 400 var(--fs-label)/1.2 var(--font-mono); white-space: nowrap; color: var(--ink-mute); }
 main[data-ai-page="ai"] .ai-offer__monthly { margin: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
 main[data-ai-page="ai"] .ai-offer__infra { color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-offer__card--bare .ai-svc__body { padding-top: 1.5rem; }
-main[data-ai-page="ai"] .ai-offer__audit { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto; align-items: center; gap: 1rem var(--col-gap); margin-top: var(--rhythm-s); padding: clamp(1.25rem, 2.4vw, 2rem); border-radius: 1.375rem; box-shadow: inset 0 0 0 1px var(--border-strong); scroll-margin-top: calc(var(--topbar-h) + 1rem); }
+main[data-ai-page="ai"] .ai-offer__audit { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto; align-items: center; gap: 1rem var(--col-gap); margin-top: var(--rhythm-m); padding: clamp(1.5rem, 3vw, 2.5rem); border-radius: 1.375rem; box-shadow: inset 0 0 0 1px var(--border-strong); scroll-margin-top: calc(var(--topbar-h) + 1rem); }
 main[data-ai-page="ai"] .ai-offer__audit-t { margin: 0 0 0.375rem; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
 main[data-ai-page="ai"] .ai-offer__audit-p { margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
 @media (max-width: 1100px) {
@@ -207,31 +285,18 @@ main[data-ai-page="ai"] .ai-offer__audit-p { margin: 0; font-size: var(--fs-body
 }
 
 /* ---------- 6 · Наші умови: plain text on the ivory, no cards ---------- */
-main[data-ai-page="ai"] .ai-terms__text { display: block; max-width: 44ch; margin: var(--rhythm-m) 0 0; font-size: var(--fs-h4); font-weight: 300; line-height: 1.5; color: var(--ink-dark); text-wrap: pretty; }
+main[data-ai-page="ai"] .ai-terms__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; gap: 3rem var(--col-gap); margin-top: var(--rhythm-m); }
+main[data-ai-page="ai"] .ai-terms__text { display: block; max-width: 40ch; margin: 0; font-size: var(--fs-h4); font-weight: 300; line-height: 1.5; color: var(--ink-dark); text-wrap: pretty; }
+/* what we don't do: the honest limits, beside the terms, on thin lines */
+main[data-ai-page="ai"] .ai-out__t { margin: 0 0 1rem; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink-dark); }
+main[data-ai-page="ai"] .ai-out__list { display: grid; margin: 0; padding: 0; border-top: 1px solid var(--line-dark); list-style: none; }
+main[data-ai-page="ai"] .ai-out__item { padding: 0.875rem 0; border-bottom: 1px solid var(--line-dark); font-size: var(--fs-body); font-weight: 300; line-height: 1.45; color: var(--ink-dark-soft); text-wrap: pretty; }
+@media (max-width: 860px) {
+  main[data-ai-page="ai"] .ai-terms__grid { grid-template-columns: minmax(0, 1fr); }
+}
 
 /* ---------- 7 · the price calculator: two groups now (the lineup, the site) ---------- */
 main[data-ai-page="ai"] .ai-pcalc .ai-calc__note + .ai-calc__note { margin-top: 0.375rem; }
-
-/* ---------- 8 · Що не входить: a plain list on thin lines ---------- */
-main[data-ai-page="ai"] .ai-out__list { display: grid; max-width: 56rem; margin: var(--rhythm-m) 0 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
-main[data-ai-page="ai"] .ai-out__item { padding: 1.125rem 0; border-bottom: 1px solid var(--line); font-size: var(--fs-lead); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
-
-/* ---------- phones: the request bar at the bottom (components/ai: .ai-sticky). Safari on iOS 26 paints its bottom
-   toolbar in the colour of a fixed bar docked to the bottom edge across the whole width: it showed ember there even
-   while the bar was hidden (the owner's screenshot, 21 Oct 2026). Here the bar floats clear of the edges (1rem from
-   the sides, above the safe area) and, when hidden, is gone for the browser too (visibility, once it has slid away) ---------- */
-@media (max-width: 600px) {
-  body:has(main[data-ai-page="ai"]) .ai-sticky {
-    left: 1rem;
-    right: 1rem;
-    bottom: calc(0.75rem + env(safe-area-inset-bottom));
-    padding: 0;
-    visibility: hidden;
-    transform: translateY(calc(100% + 0.75rem + env(safe-area-inset-bottom)));
-    transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s linear 0.45s;
-  }
-  body:has(main[data-ai-page="ai"]) .ai-sticky.is-on { visibility: visible; transform: none; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s; }
-}
 
 /* ---------- 1 → 2 on a phone (the owner, 26 Oct 2026: «убери наезд экрана на мобильном телефоне, он не нужен»): the
    first screen no longer pins and block 2 no longer slides over it as a sheet; the page simply scrolls. Computers keep

@@ -1,5 +1,5 @@
 /*
- * 5 · Чому Lumera — the request's chain, link by link: «Тільки сторінка» against «Система Lumera».
+ * 5 · Чому ECLO — the request's chain, link by link: «Тільки сторінка» against «Система ECLO».
  * The table and its four glyphs are in the markup (index.html; the glyphs are inline SVG,
  * aria-hidden). This module gives each glyph its short story:
  *   Пошук          the query types itself, our ad comes up first and is highlighted

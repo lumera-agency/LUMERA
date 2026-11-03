@@ -1,5 +1,5 @@
 /**
- * Lumera · Project Configurator — the block's UI (pd6's structure, art direction of 9 Oct 2026).
+ * ECLO · Project Configurator — the block's UI (pd6's structure, art direction of 9 Oct 2026).
  *
  *   mountConfigurator(el, { lang, reducedMotion, assets, onDiscuss, tuneOpen })
  *     → { getConfig, setConfig, bundle, tune, editor, face, sheet, project, fx, destroy }
@@ -15,7 +15,7 @@
  * Both calls to action are the site's own button (.btn.btn--primary: ember, dark text, the arrow).
  * Nothing here changes the height of anything above or beside what was tapped: rows show a reason
  * tag instead of swapping their sub-line; the two bundle notes share one cell (the taller one sets it).
- * Event: 'lumera:configurator-change' as before.
+ * Event: 'eclo:configurator-change' as before.
  */
 import { BUNDLES, PRICING, DEFAULT_CONFIG, normalize, isAvailable, applyBundle, optionPrice, calculateProject, money, addonTag, hasAds } from './engine.js';
 import { STRINGS } from './strings.js';
@@ -370,7 +370,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     clearTimeout(liveTimer);
     liveTimer = setTimeout(() => { ref('live').textContent = t.live(name, once, p.monthly ? money(p.monthly) : ''); }, 600);
 
-    el.dispatchEvent(new CustomEvent('lumera:configurator-change', { bubbles: true, detail: { config: { ...cfg }, estimate: p } }));
+    el.dispatchEvent(new CustomEvent('eclo:configurator-change', { bubbles: true, detail: { config: { ...cfg }, estimate: p } }));
   }
 
   setTune(state.tune);

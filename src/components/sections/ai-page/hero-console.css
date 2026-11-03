@@ -2,8 +2,8 @@
    The AI page · 1 · the first screen «Пульт» (the owner's pick, 26 Oct 2026, of four art-directed designs of the live
    flow; built in the hero lab as 2b). The words on the left; on the right a dark console of the robot at work: the
    queue, a straight track with three stations, a fan of curves to four places, a log and the day's counters. The
-   console sets its own layout by its width (container queries): wide (≥ 36 rem), compact (the 1024 screens: short
-   words) and stacked (under 28.5 rem: phones, narrow windows). The default CSS is the still (reduced motion, no
+   console sets its own layout by its width (container queries): wide (≥ 37.5 rem), compact (short words) and stacked
+   (under 30 rem: phones, the 1024 screens). The default CSS is the still (reduced motion, no
    script): P1 on its way to Telegram. With html.motion the stations and the places' dots rest dark for the conductor
    (HeroConsoleFx): one lime packet at a time, ember for results. Everything is scoped under .ai-console.
    ========================================================================== */
@@ -44,7 +44,7 @@ html.motion main[data-ai-page="ai"] .ai-console .ai-hero__copy > :nth-child(n + 
 /* the console's small words are capitals (mono labels, as the page's other labels) */
 .ai-console :is(.ai-console__lbl, .ai-console__head, .ai-console__card > i, .ai-console__stl) { text-transform: uppercase; }
 /* «Приклад · дані умовні» under the console */
-.ai-console .ai-console__note { margin: 0; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.02em; color: var(--ink-mute); }
+.ai-console .ai-console__note { margin: 0; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.02em; color: var(--ink-mute); }
 
 /* the one light: soft, warm, at the top right over the console (an .ai-hero__bg, so it dims on cover with the rest) */
 main[data-ai-page="ai"] .ai-console .ai-hero__bg.ai-console__bg { background: radial-gradient(44rem 30rem at 76% 18%, rgb(var(--warm) / 0.065), rgb(var(--warm) / 0) 70%), #000; }
@@ -70,11 +70,11 @@ main[data-ai-page="ai"] .ai-console .ai-hero__bg.ai-console__bg { background: ra
   --h-log: 7rem;
   --h-met: 6rem;
   --lines: 3;
-  --f-head: 11px;
-  --f-lbl: 10.5px;
-  --f-tag: 11px;
+  --f-head: 12px;
+  --f-lbl: 12px;
+  --f-tag: 12px;
   --f-msg: 15px;
-  --f-st: 10px;
+  --f-st: 12px;
   --f-name: 14px;
   --f-count: 13px;
   --f-log: 12px;
@@ -115,7 +115,9 @@ main[data-ai-page="ai"] .ai-console .ai-hero__bg.ai-console__bg { background: ra
 .ai-console .ai-console__lbl--out { grid-area: lout; }
 
 /* the queue: four cards in one place, their slot set by the conductor (CSS transitions do the moves) */
-.ai-console .ai-console__queue { grid-area: queue; position: relative; }
+/* the queue's top edge is its frame: the card that leaves slides up and out through it, solid (its opaque ground covers
+   what rises under it, so no two texts ever show through each other); the shadows stay free on the other sides */
+.ai-console .ai-console__queue { --out-y: calc(var(--row) * 2 + var(--card-h) / 2 + 2px); grid-area: queue; position: relative; clip-path: inset(0 -2rem -2rem -2rem); }
 .ai-console .ai-console__card { position: absolute; left: 0; right: 0; top: calc(50% - var(--card-h) / 2); display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; gap: 0.3125rem; height: var(--card-h); padding: 0 0.75rem; border: 1px solid var(--hair); border-radius: 0.75rem; background: var(--glass-top), var(--glass); box-shadow: var(--hi), var(--drop); transform-origin: 50% 100%; transition: transform 0.42s var(--ease-out), opacity 0.42s var(--ease-out); }
 .ai-console .ai-console__card > i { overflow: hidden; font: 400 var(--f-tag)/1.15 var(--font-mono); font-style: normal; letter-spacing: 0.12em; color: var(--ink-mute); white-space: nowrap; text-overflow: ellipsis; }
 .ai-console .ai-console__msg { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; font-size: var(--f-msg); font-weight: 400; line-height: 1.3; color: var(--ink); white-space: nowrap; }
@@ -124,8 +126,9 @@ main[data-ai-page="ai"] .ai-console .ai-hero__bg.ai-console__bg { background: ra
 .ai-console .ai-console__card[data-slot="0"] { z-index: 3; }
 .ai-console .ai-console__card[data-slot="1"] { z-index: 2; opacity: var(--g1o); transform: translateY(var(--g1y)) scale(var(--g1s)); }
 .ai-console .ai-console__card[data-slot="2"] { z-index: 1; opacity: var(--g2o); transform: translateY(var(--g2y)) scale(var(--g2s)); }
-.ai-console .ai-console__card[data-slot="3"] { z-index: 0; opacity: 0; transform: translateY(var(--g3y)) scale(var(--g3s)); }
-.ai-console .ai-console__card[data-slot="out"] { z-index: 4; opacity: 0; transform: translateX(1.5rem); transition-duration: 0.3s; }
+/* (the card that left comes back behind the deck at once, unseen: no transition into this slot) */
+.ai-console .ai-console__card[data-slot="3"] { z-index: 0; opacity: 0; transform: translateY(var(--g3y)) scale(var(--g3s)); transition: none; }
+.ai-console .ai-console__card[data-slot="out"] { z-index: 4; transform: translateY(calc(-1 * var(--out-y))); transition-duration: 0.3s; }
 
 /* the track: a hairline at the card's middle, stations at 0 / 50 / 100 % */
 .ai-console .ai-console__mid { grid-area: mid; position: relative; }
@@ -139,7 +142,7 @@ main[data-ai-page="ai"] .ai-console .ai-hero__bg.ai-console__bg { background: ra
 .ai-console .ai-console__stf { background: var(--ink); opacity: 0; }
 /* labels under the line: the first starts at its station, the last ends at its; the middle one sits above the line
    (under it the three words would touch on a short track, RU most of all) */
-.ai-console .ai-console__stl { position: absolute; top: 0.75rem; left: 0; display: grid; font: 400 var(--f-st)/1 var(--font-mono); letter-spacing: 0.1em; white-space: nowrap; translate: -50% 0; }
+.ai-console .ai-console__stl { position: absolute; top: 0.75rem; left: 0; display: grid; font: 400 var(--f-st)/1.2 var(--font-mono); letter-spacing: 0.1em; white-space: nowrap; translate: -50% 0; }
 .ai-console .ai-console__stl > span { grid-area: 1 / 1; color: var(--ink-mute); }
 .ai-console .ai-console__stl > .is-ink { color: var(--ink); opacity: 0; }
 .ai-console .ai-console__st[data-s="1"] .ai-console__stl { left: -4.5px; translate: none; }
@@ -216,8 +219,9 @@ html.motion .ai-console .ai-console__fig { animation: ai-console-in 0.7s var(--e
 html.motion .ai-console .ai-console__sec { animation: ai-console-sec 0.5s var(--ease-out) calc(0.66s + var(--i, 0) * 60ms) backwards; }
 html.motion .ai-console .ai-console__note { animation: ai-console-sec 0.5s var(--ease-out) 1s backwards; }
 
-/* ---------- compact (a console under 36 rem: the 1024 screens): short words, a narrower flow ---------- */
-@container ai-console (max-width: 35.99rem) {
+/* ---------- compact (a console under 37.5 rem, so only its full 38 rem width keeps the wide flow: at 12 px the stations
+   under the line need a track of 7 rem, RU most of all): short words, a narrower flow ---------- */
+@container ai-console (max-width: 37.49rem) {
   .ai-console .ai-console__sec {
     --px: 1.25rem;
     --c1: 8.5rem;
@@ -231,7 +235,7 @@ html.motion .ai-console .ai-console__note { animation: ai-console-sec 0.5s var(-
     --h-log: 6.75rem;
     --h-met: 5.25rem;
     --f-msg: 14px;
-    --f-st: 9px;
+    --f-st: 12px;
     --f-val: 1.75rem;
   }
   .ai-console .ai-console__mf { display: none; }
@@ -246,8 +250,8 @@ html.motion .ai-console .ai-console__note { animation: ai-console-sec 0.5s var(-
   .ai-console .ai-console__ls { display: flex; }
 }
 
-/* ---------- stacked (under 28.5 rem: phones): incoming · the track · the places 2 × 2 · two log lines · counters ---------- */
-@container ai-console (max-width: 28.49rem) {
+/* ---------- stacked (under 30 rem: phones, the 1024 screens): incoming · the track · the places 2 × 2 · two log lines · counters ---------- */
+@container ai-console (max-width: 29.99rem) {
   .ai-console .ai-console__sec {
     --px: 1rem;
     --row: 2.25rem;
@@ -256,10 +260,10 @@ html.motion .ai-console .ai-console__note { animation: ai-console-sec 0.5s var(-
     --h-log: 4.5rem;
     --h-met: 3.75rem;
     --lines: 2;
-    --f-lbl: 10px;
-    --f-tag: 10.5px;
+    --f-lbl: 12px;
+    --f-tag: 12px;
     --f-msg: 14px;
-    --f-st: 10px;
+    --f-st: 12px;
     --f-name: 13px;
     --f-count: 12px;
     --f-val: 1.375rem;
@@ -278,6 +282,7 @@ html.motion .ai-console .ai-console__note { animation: ai-console-sec 0.5s var(-
   .ai-console .ai-console__flow { grid-template-columns: minmax(0, 1fr); grid-template-rows: 1rem calc(var(--card-h) + 6px) 2.75rem 4.75rem; grid-template-areas: "lin" "queue" "mid" "dests"; align-content: start; height: auto; padding-top: 0.75rem; }
   .ai-console .ai-console__lbl--out,
   .ai-console .ai-console__fan { display: none; }
+  .ai-console .ai-console__queue { --out-y: calc(var(--card-h) + 2px); }
   .ai-console .ai-console__card { top: 0; gap: 0.1875rem; }
   .ai-console .ai-console__track { left: 0; right: 0; top: 0.875rem; margin-top: 0; }
   .ai-console .ai-console__stl { letter-spacing: 0.08em; }
@@ -286,7 +291,7 @@ html.motion .ai-console .ai-console__note { animation: ai-console-sec 0.5s var(-
   .ai-console .ai-console__lbl { letter-spacing: 0.1em; }
   .ai-console .ai-console__cell { gap: 0.375rem; padding: 0 0.75rem; }
   .ai-console .ai-console__cell:first-child { padding-left: var(--px); }
-  .ai-console .ai-console__cell .ai-console__lbl { font-size: 9px; letter-spacing: 0.06em; }
+  .ai-console .ai-console__cell .ai-console__lbl { letter-spacing: 0.04em; }
 }
 
 /* ---------- 1920: a wider console, type +1 px ---------- */
@@ -302,15 +307,24 @@ html.motion .ai-console .ai-console__note { animation: ai-console-sec 0.5s var(-
     --h-log: 7.5rem;
     --h-met: 6.5rem;
     --f-head: 12px;
-    --f-lbl: 11.5px;
-    --f-tag: 12px;
+    --f-lbl: 12.5px;
+    --f-tag: 12.5px;
     --f-msg: 16px;
-    --f-st: 11px;
+    --f-st: 12.5px;
     --f-name: 15px;
     --f-count: 14px;
     --f-log: 13px;
     --f-val: 2.5rem;
   }
+}
+
+/* the counters' labels: their full words, their short ones in a console under 26 rem (at 12 px a third of a phone is too narrow) */
+.ai-console .ai-console__mts { display: none; }
+@container ai-console (max-width: 25.99rem) {
+  .ai-console .ai-console__mtf { display: none; }
+  .ai-console .ai-console__mts { display: inline; }
+  .ai-console .ai-console__cell { padding: 0 0.625rem; }
+  .ai-console .ai-console__cell .ai-console__lbl { letter-spacing: 0.02em; }
 }
 
 /* ---------- phones and narrow screens: the console under the words, full width ---------- */

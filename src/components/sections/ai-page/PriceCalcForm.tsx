@@ -19,10 +19,8 @@ export type PriceCopy = {
   site: { has: string; hasD: string; hasP: string; need: string; needD: string; name: string };
   k: string;
   once: string;
-  noteExisting: string;
   audit: string;
   send: string;
-  fine: string;
   tol: string;
 };
 
@@ -54,8 +52,8 @@ export function PriceCalcForm({ copy }: { copy: PriceCopy }) {
       ? `≈\u00a0${weeksText(landing ? [p.weeks[0] + LANDING.weeks[0], p.weeks[1] + LANDING.weeks[1]] : p.weeks, copy.lang)}`
       : "";
     const lines = [
-      `${name} — ${p.price === null ? copy.after : p.from ? fill(copy.from, { sum: usd(p.price) }) : usd(p.price)}`,
-      landing ? `${copy.site.name} — ${usd(LANDING.price)}` : copy.site.has,
+      `${name}: ${p.price === null ? copy.after : p.from ? fill(copy.from, { sum: usd(p.price) }) : usd(p.price)}`,
+      landing ? `${copy.site.name}: ${usd(LANDING.price)}` : copy.site.has,
       ...(p.monthly ? [copy.monthly] : []),
     ];
     return {
@@ -65,7 +63,6 @@ export function PriceCalcForm({ copy }: { copy: PriceCopy }) {
       weeks,
       extra: p.price === null && landing ? fill(copy.extra, { what: lower }) : "",
       monthly: p.monthly ? copy.monthly : "",
-      note: !landing && p.price !== null ? copy.noteExisting : "",
       lines,
     };
   }, [product, site, copy]);
@@ -123,7 +120,6 @@ export function PriceCalcForm({ copy }: { copy: PriceCopy }) {
           </p>
           {r.extra && <p className="ai-calc__x">{r.extra}</p>}
           {r.monthly && <p className="ai-calc__x">{r.monthly}</p>}
-          {r.note && <p className="ai-calc__note">{r.note}</p>}
           <p className="ai-calc__note">{copy.audit}</p>
           <button
             className="btn btn--primary ai-calc__send"
@@ -141,7 +137,6 @@ export function PriceCalcForm({ copy }: { copy: PriceCopy }) {
             <span className="btn__label">{copy.send}</span>
             <ArrowIcon />
           </button>
-          <p className="ai-calc__fine">{copy.fine}</p>
           <p className="ai-calc__tol">{copy.tol}</p>
           <p className="visually-hidden" aria-live="polite">{said}</p>
         </div>

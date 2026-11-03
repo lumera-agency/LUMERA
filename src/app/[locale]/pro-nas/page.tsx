@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageShell } from "@/components/layout/page/PageShell";
 import { aiHref } from "@/components/ai/links";
 import { aiMetadata } from "@/components/ai/meta";
+import { studioName } from "@/config/site";
 import { AboutShell } from "@/components/about/AboutShell";
 import { AboutTeam } from "@/components/sections/about-page/AboutTeam";
 import { AboutWork } from "@/components/sections/about-page/AboutWork";
@@ -10,7 +11,7 @@ import { AboutContacts } from "@/components/sections/about-page/AboutContacts";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/pro-nas">) {
   const { locale } = await params;
-  return aiMetadata({ locale, namespace: "about.meta", path: "/pro-nas", image: "/img/about/og-about.jpg" });
+  return aiMetadata({ locale, namespace: "about.meta", path: "/pro-nas" });
 }
 
 /**
@@ -36,7 +37,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/pro-nas
   return (
     <AboutShell
       nav={nav}
-      footerLinks={[...nav.slice(0, 4), { href: home, text: "Lumera Studio" }]}
+      footerLinks={[...nav.slice(0, 4), { href: home, text: studioName }]}
       cta={{ href: form, text: t("cta") }}
       barCta={{ href: form, text: t("topbar.cta") }}
     >

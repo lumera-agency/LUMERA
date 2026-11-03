@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { studioName } from "@/config/site";
 import { Preloader } from "@/components/fx/preloader/Preloader";
 import { SmoothScroll } from "@/components/fx/smooth-scroll/SmoothScroll";
 import { Topbar } from "@/components/layout/topbar/Topbar";
@@ -18,7 +19,7 @@ import { Contact } from "@/components/sections/contact/Contact";
 
 /**
  * The page: the blocks in reading order (v2): 1 the first screen → 2 what we do → 3 the services →
- * the manifesto → 4 why Lumera → 5 the approach → 6 prices → 7 questions → 8 the request.
+ * the manifesto → 4 why ECLO → 5 the approach → 6 prices → 7 questions → 8 the request.
  * Each block is one component in components/sections/.
  */
 export default async function Home({ params }: PageProps<"/[locale]">) {
@@ -29,7 +30,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
     <>
       {/* the main page's own: the AI pages (ads land there) open without it */}
       <Preloader
-        brand="Lumera Studio"
+        brand={studioName}
         note={t("preloader.note")}
         words={t("preloader.words")}
         stages={t("preloader.stages")}

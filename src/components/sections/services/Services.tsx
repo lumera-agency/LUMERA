@@ -5,17 +5,16 @@ import { TextFill } from "@/components/fx/text-fill/TextFill";
 import { PRICES } from "./copy";
 import { ServicesClient } from "./ServicesClient";
 import { ServiceDesign } from "./panels/ServiceDesign";
-import { ServiceSite } from "./panels/ServiceSite";
 import { ServiceAds } from "./panels/ServiceAds";
 import { ServiceAutomation } from "./panels/ServiceAutomation";
 import { ServiceSaas } from "./panels/ServiceSaas";
 import "./services.css";
 import "./demos/demos.css";
 
-const TABS = [1, 2, 3, 4, 5] as const;
+const TABS = [1, 2, 3, 4] as const;
 
 /**
- * 3 · Послуги: the services, each with a live demo of the work. Wide screens: a horizontal ride
+ * 3 · Послуги: the four services, one per page, each with a live demo of the work. Wide screens: a horizontal ride
  * (fx/horizontal-ride). 861–1023 px: rows that stack. Phones: a switcher of chips over one window.
  */
 export async function Services() {
@@ -51,7 +50,6 @@ export async function Services() {
         <div className="ride" data-ride="">
           <div className="services">
             <ServiceDesign />
-            <ServiceSite />
             <ServiceAds />
             <ServiceAutomation />
             <ServiceSaas />
@@ -65,7 +63,7 @@ export async function Services() {
           </button>
           <div className="ride__hud">
             <p className="ride__count" aria-hidden="true">
-              <b data-ride-now="">1</b> / <span data-ride-of="">5</span>
+              <b data-ride-now="">1</b> / <span data-ride-of="">4</span>
             </p>
             <span className="ride__bar" aria-hidden="true"><i data-ride-bar="" /></span>
             <ul className="ride__names" data-ride-names="" aria-label={t("nav.services")} />

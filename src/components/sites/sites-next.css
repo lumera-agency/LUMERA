@@ -9,7 +9,7 @@
 }
 
 /* the main page's page shell lays a grain over the screen (.page__grain, sticky, one screen tall). At the bottom of the
-   page it reached into the footer and stopped half-way down the chrome LUMERA, a visible band (the owner, 15 Oct). Here
+   page it reached into the footer and stopped half-way down the chrome wordmark, a visible band (the owner, 15 Oct). Here
    the footer sits above it: one even black from its top to the very bottom */
 body:has(main[data-ai-page="sites"]) .footer { position: relative; z-index: 2; }
 

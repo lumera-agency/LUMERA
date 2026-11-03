@@ -2,7 +2,7 @@
  * «Дизайн і сайти» (/dyzain-i-saity), Next: the page's behaviour, ported from the static page's js/sites-page.js as an
  * island, as the AI pages' runtime was (React owns the markup and its life, this module the choreography). The main
  * page's own parts do the rest: the topbar, the phone menu, UA · RU, the FAQ, the form (sections/contact/lead-form.js),
- * the footer with its chrome LUMERA and the live stone behind the first screen (AiStoneSlot). Started by SitesRuntime.
+ * the footer with its chrome wordmark and the live stone behind the first screen (AiStoneSlot). Started by SitesRuntime.
  *
  * Prices and weeks: the main page's configurator engine (bundled), Лендінг+ as LANDING_PLUS below (approved by the owner
  * on 14 Oct 2026: $700) until the engine has it. The weeks follow engine.js's own formula (calculateTimeline).
@@ -162,7 +162,14 @@ function arrive() {
   if (restoreScroll() || restorePlace()) return;
   const id = decodeURIComponent(location.hash.slice(1));
   const target = id && document.getElementById(id);
-  if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' });
+  if (!target) return;
+  // a link to one format (the site menu: …#fmt-tab-landingPlus): that format is chosen, the page opens at block 2
+  if (target.matches('.st-rail__t')) {
+    setFormat(target.dataset.tab);
+    $('#formats')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    return;
+  }
+  target.scrollIntoView({ block: 'start', behavior: 'instant' });
 }
 
 /* ---------- the cards' touches (js/sites-fx-page.js): the light under the mouse on the rail and the extras, the first

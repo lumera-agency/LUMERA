@@ -3,7 +3,7 @@
  * pages' js/ai-page.js as an island (README: React owns the markup and its life, this module the choreography). Each
  * part starts only where its markup is (the first screen's live stone is a React component, three/ai-stone). The main
  * page's own parts do the rest: the topbar, the menu, UA · RU, the FAQ,
- * the form (sections/contact/lead-form.js) and the footer's chrome LUMERA.
+ * the form (sections/contact/lead-form.js) and the footer's chrome wordmark.
  *
  * Motion rules (the owner's): every scene plays once as it comes into view, with WAAPI on transform and
  * opacity only, on phones as on the desktop (owner, 2026-10-15: no queue for weaker phones; a scene that leaves the

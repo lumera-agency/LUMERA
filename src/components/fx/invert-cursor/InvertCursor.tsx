@@ -1,7 +1,7 @@
 "use client";
 /*
  * InvertCursor — inside `scope` the mouse pointer becomes a liquid lens that inverts whatever is under
- * it (white, mix-blend-mode: difference), like the lens on the footer's LUMERA: it trails the pointer
+ * it (white, mix-blend-mode: difference), like the lens on the footer's wordmark: it trails the pointer
  * with a little lag, its rim ripples (the wordmark shader's own ripple, two sines round the edge), it
  * stretches along the way it moves and settles round when it stops, and it grows in and out softly.
  * Bigger over anything clickable and over large type ([data-cursor-lens]); [data-cursor-size] on an

@@ -1,8 +1,8 @@
 /*
- * 4 · Чому Lumera on phones (≤ 600 px): the four links as an accordion, the owner's pick of 15 Oct 2026
+ * 4 · Чому ECLO on phones (≤ 600 px): the four links as an accordion, the owner's pick of 15 Oct 2026
  * (instead of the strip the page's scroll moved sideways). Desktop and tablets keep the table and its
  * relay (why-orbit.js) exactly as they are.
- * A row: the link's glyph and name; open, «Тільки сторінка» against «Система Lumera». The first is open to
+ * A row: the link's glyph and name; open, «Тільки сторінка» against «Система ECLO». The first is open to
  * begin with; each row opens and shuts on its own (opening one doesn't shut another, so nothing above the
  * tapped row moves under the finger). An opened row's glyph tells its story (why-orbit.js STORIES); the
  * first one's, once the list comes into view. The height eases in CSS; a shut row's text is inert. The

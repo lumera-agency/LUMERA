@@ -4,7 +4,7 @@
   "title": "HoverReveal",
   "description": "Over a list row, its picture follows the cursor: lerped follow, lean from the pointer's speed, unmask from the side it came from. After Codrops' Rapid Image Hover Menu (MIT).",
   "registryDependencies": [
-    "@lumera/gsap-setup"
+    "@eclo/gsap-setup"
   ],
   "files": [
     {

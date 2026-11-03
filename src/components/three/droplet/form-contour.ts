@@ -1,5 +1,5 @@
 /**
- * Silhouette of the reference object, traced from `form-reference.svg` (the droplet's own project, Agentur/Lumera/First).
+ * Silhouette of the reference object, traced from `form-reference.svg` (the droplet's own project, «First»).
  *
  * The SVG contains no vector paths: it is a 557×448 RGBA raster (background removed)
  * placed in a 704×715 viewBox via `<rect transform="rotate(-130.801 363.963 714.378)">`.

@@ -24,6 +24,7 @@ export const PRICES: Record<string, string> = Object.fromEntries(
     designL: PRICING.design.custom.price.landing,
     designC: PRICING.design.custom.price.corporate,
     designE: PRICING.design.custom.price.ecommerce,
+    three: PRICING.threeDHero.price,
   }).map(([k, v]) => [k, money(v as number) as string]),
 );
 

@@ -8,7 +8,7 @@ const LANGS = [
   { code: "ru", label: "RU", name: "Русский" },
 ] as const;
 
-export const SCROLL_KEY = "lumera:lang-scroll";
+export const SCROLL_KEY = "eclo:lang-scroll";
 
 /**
  * UA · RU: real links to the same page in the other language (/ ↔ /ru, /ai-avtomatyzatsiia ↔ /ru/ai-avtomatyzatsiia). The switch is a full load (the 3D scene and

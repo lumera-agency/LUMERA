@@ -11,7 +11,7 @@ import { ROCK_GLSL } from "../lib/materials";
 export const ORBIT_RADIUS = 2.15;
 export const BAND_SPEED = 0.2; // how fast the text runs, world units per second
 const BAND = {
-  font: '"Lumera Orbit", Geologica, system-ui, sans-serif',
+  font: '"ECLO Orbit", Geologica, system-ui, sans-serif',
   weight: 500,
   height: 0.3, // ribbon height, world units at scale 1
   texH: 128, // texture height, px
@@ -86,10 +86,10 @@ function createBandTexture(label: string, maxWidth: number, ringLen: number) {
 }
 
 /** Geologica with the headline's sharp corners: canvas text can't take font-variation-settings,
- *  so the axis goes into a face of its own («Lumera Orbit»). */
+ *  so the axis goes into a face of its own («ECLO Orbit»). */
 export function loadOrbitFont(text: string) {
   if (!document.fonts) return Promise.resolve();
-  if (typeof FontFace === "function" && !document.fonts.check(`500 48px "Lumera Orbit"`, "Л")) {
+  if (typeof FontFace === "function" && !document.fonts.check(`500 48px "ECLO Orbit"`, "Л")) {
     const ranges: Record<string, string> = {
       "cyrillic-ext": "U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F",
       cyrillic: "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
@@ -98,7 +98,7 @@ export function loadOrbitFont(text: string) {
     };
     for (const [subset, unicodeRange] of Object.entries(ranges)) {
       document.fonts.add(
-        new FontFace("Lumera Orbit", `url("/fonts/geologica-${subset}.woff2") format("woff2")`, {
+        new FontFace("ECLO Orbit", `url("/fonts/geologica-${subset}.woff2") format("woff2")`, {
           weight: "300 600",
           unicodeRange,
           // not in the TS lib yet; supported by Chromium and Safari

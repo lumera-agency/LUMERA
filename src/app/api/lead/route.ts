@@ -7,6 +7,8 @@
  * With neither set it answers 503, and the form tells the visitor the failure is on our side.
  * `fax` is a field people never see: a bot that fills it is thanked and ignored.
  */
+import { brandName, siteUrl } from "@/config/site";
+
 const MAX_BODY = 16000; // bytes
 
 const str = (v: unknown, n: number) => (typeof v === "string" ? v.trim().slice(0, n) : "");
@@ -31,7 +33,7 @@ function clean(body: Record<string, unknown>) {
 function pageLine(page: string) {
   let path = "";
   try {
-    path = new URL(page, "https://lumera.local").pathname;
+    path = new URL(page, siteUrl).pathname;
   } catch {
     return "";
   }
@@ -40,7 +42,7 @@ function pageLine(page: string) {
 
 function telegramText(lead: Lead) {
   return [
-    "Новая заявка с сайта Lumera",
+    `Новая заявка с сайта ${brandName}`,
     `Имя: ${lead.name}`,
     `Контакт: ${lead.contact}`,
     lead.task && `Задача: ${lead.task}`,

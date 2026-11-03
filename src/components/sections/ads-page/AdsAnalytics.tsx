@@ -12,11 +12,11 @@ function Count({ value }: { value: number }) {
   const s = String(value);
   return (
     <>
-      <span className="ad-count" aria-hidden="true">
+      <span className="rk-count" aria-hidden="true">
         {Array.from(s).map((ch, i) => (
-          <span className="ad-count__d" style={{ "--d": ch } as React.CSSProperties} data-last={i === s.length - 1 ? "" : undefined} key={i}>
-            <span className="ad-count__sizer">0</span>
-            <span className="ad-count__strip">
+          <span className="rk-count__d" style={{ "--d": ch } as React.CSSProperties} data-last={i === s.length - 1 ? "" : undefined} key={i}>
+            <span className="rk-count__sizer">0</span>
+            <span className="rk-count__strip">
               {"0123456789".split("").map((n) => (
                 <span key={n}>{n}</span>
               ))}
@@ -61,16 +61,16 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
   /** analytics on its own: the same choice as its price card */
   const alone = { plan: `${t("price.a.t")} · ${facts.analytics}`, details: [1, 2, 3].map((n) => t(`price.a.${n}`)).join("\n") };
   const go = (
-    <ButtonLink href="#contact" variant="primary" className="ad-fact__go" data-plan={alone.plan} data-details={alone.details}>
+    <ButtonLink href="#contact" variant="primary" className="rk-fact__go" data-plan={alone.plan} data-details={alone.details}>
       {t("an.f.go")}
     </ButtonLink>
   );
-  const arrow = <svg className="ad-live__arr" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4" /></svg>;
+  const arrow = <svg className="rk-live__arr" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4" /></svg>;
   const tag = (slot?: string) => (
-    <span className="ad-path__tag" data-slot={slot}><i />{t("an.tag")}</span>
+    <span className="rk-path__tag" data-slot={slot}><i />{t("an.tag")}</span>
   );
   return (
-    <section className="section ai-sec ad-an" id="analytics" aria-labelledby="an-title">
+    <section className="section ai-sec rk-an" id="analytics" aria-labelledby="an-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
@@ -84,53 +84,53 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
         </header>
 
         {/* C · wide screens: the live report */}
-        <div className="ad-an__desk">
-          <div className="ad-live" data-scene="live">
-            <p className="ad-live__bar">
-              <svg className="ad-live__logo" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><rect x="2" y="11" width="4" height="7" rx="2" /><rect x="8" y="6.5" width="4" height="11.5" rx="2" /><rect x="14" y="2" width="4" height="16" rx="2" /></svg>
+        <div className="rk-an__desk">
+          <div className="rk-live" data-scene="live">
+            <p className="rk-live__bar">
+              <svg className="rk-live__logo" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><rect x="2" y="11" width="4" height="7" rx="2" /><rect x="8" y="6.5" width="4" height="11.5" rx="2" /><rect x="14" y="2" width="4" height="16" rx="2" /></svg>
               <b>Google Analytics</b>
-              <span className="ad-live__crumb">/ {t("an.live.crumb")}</span>
+              <span className="rk-live__crumb">/ {t("an.live.crumb")}</span>
             </p>
-            <div className="ad-live__body">
-              <div className="ad-live__feed">
-                <p className="ad-live__k" id="live-feed">{t("an.live.feed")}</p>
-                <ul className="ad-live__list" aria-labelledby="live-feed">
+            <div className="rk-live__body">
+              <div className="rk-live__feed">
+                <p className="rk-live__k" id="live-feed">{t("an.live.feed")}</p>
+                <ul className="rk-live__list" aria-labelledby="live-feed">
                   {LIVE.map((r, i) => (
-                    <li className="ad-live__row" key={i}>
-                      <span className="ad-live__time">{r.time ?? t("an.live.yday")}</span>
-                      <span className="ad-live__what">{t(`hero.req.${r.req}`)}</span>
-                      <span className="ad-live__src" data-src={r.src}><i aria-hidden="true" /><span><b>{t("an.live.ad")}&nbsp;</b>{NAME[r.src]}</span></span>
+                    <li className="rk-live__row" key={i}>
+                      <span className="rk-live__time">{r.time ?? t("an.live.yday")}</span>
+                      <span className="rk-live__what">{t(`hero.req.${r.req}`)}</span>
+                      <span className="rk-live__src" data-src={r.src}><i aria-hidden="true" /><span><b>{t("an.live.ad")}&nbsp;</b>{NAME[r.src]}</span></span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="ad-live__sum">
-                <p className="ad-live__k">{t("an.live.sum")}</p>
-                <div className="ad-live__tot">
+              <div className="rk-live__sum">
+                <p className="rk-live__k">{t("an.live.sum")}</p>
+                <div className="rk-live__tot">
                   {TOTALS.map((x) => (
-                    <p className="ad-live__t" data-src={x.src} data-from={x.from} key={x.src}>
-                      <span className="ad-live__tk"><i aria-hidden="true" />{NAME[x.src]}</span>
-                      <b className="ad-live__tv"><em className="ad-live__plus" aria-hidden="true">{t("an.live.plus")}</em><Count value={x.n} /></b>
-                      <span className="ad-live__tb" aria-hidden="true"><i style={{ width: `${Math.round((x.n / TOTALS[0].n) * 10000) / 100}%` }} /></span>
+                    <p className="rk-live__t" data-src={x.src} data-from={x.from} key={x.src}>
+                      <span className="rk-live__tk"><i aria-hidden="true" />{NAME[x.src]}</span>
+                      <b className="rk-live__tv"><em className="rk-live__plus" aria-hidden="true">{t("an.live.plus")}</em><Count value={x.n} /></b>
+                      <span className="rk-live__tb" aria-hidden="true"><i style={{ width: `${Math.round((x.n / TOTALS[0].n) * 10000) / 100}%` }} /></span>
                     </p>
                   ))}
                 </div>
-                <p className="ad-live__cpl"><b>{t("an.cpl.t")}</b><span>{t("an.cpl.f")}</span><small>{t("an.cpl.s")}</small></p>
+                <p className="rk-live__cpl"><b>{t("an.cpl.t")}</b><span>{t("an.cpl.f")}</span><small>{t("an.cpl.s")}</small></p>
               </div>
             </div>
-            <p className="ad-live__note">{t("an.note")}</p>
+            <p className="rk-live__note">{t("an.note")}</p>
           </div>
-          <p className="ad-note">{t("sample")}</p>
-          <p className="ad-live__how">
-            <span className="ad-live__how-k">{t("an.how.k")}</span>
-            <span className="ad-live__chip ad-live__chip--sys"><i aria-hidden="true" />{t("an.how.1")}</span>
+          <p className="rk-note">{t("sample")}</p>
+          <p className="rk-live__how">
+            <span className="rk-live__how-k">{t("an.how.k")}</span>
+            <span className="rk-live__chip rk-live__chip--sys"><i aria-hidden="true" />{t("an.how.1")}</span>
             {arrow}
-            <span className="ad-live__chip">{t("an.how.2")}</span>
+            <span className="rk-live__chip">{t("an.how.2")}</span>
             {arrow}
-            <span className="ad-live__chip">{t("an.how.3")}</span>
+            <span className="rk-live__chip">{t("an.how.3")}</span>
           </p>
-          <div className="ad-live__foot">
-            <ul className="ad-live__facts">
+          <div className="rk-live__foot">
+            <ul className="rk-live__facts">
               <li>{priceLine(t.raw("an.chip.1"), facts)}</li>
               <li>{t("an.chip.2")}</li>
               <li>{t("an.chip.3")}</li>
@@ -140,63 +140,63 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
         </div>
 
         {/* A · phones and narrow tablets: one request's way on a rail */}
-        <div className="ad-an__mob">
-          <div className="ad-path" data-scene="path">
-            <div className="ad-path__top"><p className="ad-path__k">{t("an.label")}</p></div>
-            <div className="ad-path__flow" aria-hidden="true">
-              <figure className="ad-path__frame" data-f="1">
-                <figcaption className="ad-path__cap"><span className="ad-path__n">1</span><p><b>{t("an.s.1.t")}</b><span>{t("an.s.1.p")}</span></p></figcaption>
-                <div className="ad-path__shot">
-                  <p className="ad-path__sk">{t("an.shot.g")}</p>
-                  <div className="ad-path__ad">
-                    <p className="ad-path__sp"><b>{m("ad")}</b> · {m("site")}</p>
-                    <p className="ad-path__h">{m("head")}</p>
-                    <p className="ad-path__d">{m("desc")}</p>
+        <div className="rk-an__mob">
+          <div className="rk-path" data-scene="path">
+            <div className="rk-path__top"><p className="rk-path__k">{t("an.label")}</p></div>
+            <div className="rk-path__flow" aria-hidden="true">
+              <figure className="rk-path__frame" data-f="1">
+                <figcaption className="rk-path__cap"><span className="rk-path__n">1</span><p><b>{t("an.s.1.t")}</b><span>{t("an.s.1.p")}</span></p></figcaption>
+                <div className="rk-path__shot">
+                  <p className="rk-path__sk">{t("an.shot.g")}</p>
+                  <div className="rk-path__ad">
+                    <p className="rk-path__sp"><b>{m("ad")}</b> · {m("site")}</p>
+                    <p className="rk-path__h">{m("head")}</p>
+                    <p className="rk-path__d">{m("desc")}</p>
                   </div>
                   {tag("1")}
                 </div>
-                <span className="ad-path__seg"><i /></span>
+                <span className="rk-path__seg"><i /></span>
               </figure>
-              <figure className="ad-path__frame" data-f="2">
-                <figcaption className="ad-path__cap"><span className="ad-path__n">2</span><p><b>{t("an.s.2.t")}</b><span>{t("an.s.2.p")}</span></p></figcaption>
-                <div className="ad-path__shot">
-                  <p className="ad-path__url">{m("site")}{tag("2")}</p>
-                  <p className="ad-path__fh">{t("an.form")}</p>
-                  <p className="ad-path__form"><span className="ad-path__field"><span className="ad-path__fv">+380 67 ••• •• 12</span></span><span className="ad-path__send">{t("an.send")}<i className="ad-path__tap" /></span></p>
-                  <p className="ad-path__rec"><span className="ad-path__tick" />{t("an.rec")}</p>
+              <figure className="rk-path__frame" data-f="2">
+                <figcaption className="rk-path__cap"><span className="rk-path__n">2</span><p><b>{t("an.s.2.t")}</b><span>{t("an.s.2.p")}</span></p></figcaption>
+                <div className="rk-path__shot">
+                  <p className="rk-path__url">{m("site")}{tag("2")}</p>
+                  <p className="rk-path__fh">{t("an.form")}</p>
+                  <p className="rk-path__form"><span className="rk-path__field"><span className="rk-path__fv">+380 67 ••• •• 12</span></span><span className="rk-path__send">{t("an.send")}<i className="rk-path__tap" /></span></p>
+                  <p className="rk-path__rec"><span className="rk-path__tick" />{t("an.rec")}</p>
                 </div>
-                <span className="ad-path__seg"><i /></span>
+                <span className="rk-path__seg"><i /></span>
               </figure>
-              <figure className="ad-path__frame" data-f="3">
-                <figcaption className="ad-path__cap"><span className="ad-path__n">3</span><p><b>{t("an.s.3.t")}</b><span>{t("an.s.3.p")}</span></p></figcaption>
-                <div className="ad-path__shot">
-                  <p className="ad-path__sk">{t("an.shot.ga")}</p>
-                  <ul className="ad-path__rows">
+              <figure className="rk-path__frame" data-f="3">
+                <figcaption className="rk-path__cap"><span className="rk-path__n">3</span><p><b>{t("an.s.3.t")}</b><span>{t("an.s.3.p")}</span></p></figcaption>
+                <div className="rk-path__shot">
+                  <p className="rk-path__sk">{t("an.shot.ga")}</p>
+                  <ul className="rk-path__rows">
                     {TOTALS.map((x) => (
-                      <li className="ad-path__row" data-src={x.src} key={x.src}>
-                        {x.src === "google" && <span className="ad-path__flash" />}
-                        <span className="ad-path__name">{NAME[x.src]}</span>
-                        <span className="ad-path__bar"><i style={{ width: `${Math.round((x.n / TOTALS[0].n) * 10000) / 100}%` }} /></span>
-                        <b className="ad-path__v">{x.src === "google" ? <Count value={x.n} /> : x.n}</b>
+                      <li className="rk-path__row" data-src={x.src} key={x.src}>
+                        {x.src === "google" && <span className="rk-path__flash" />}
+                        <span className="rk-path__name">{NAME[x.src]}</span>
+                        <span className="rk-path__bar"><i style={{ width: `${Math.round((x.n / TOTALS[0].n) * 10000) / 100}%` }} /></span>
+                        <b className="rk-path__v">{x.src === "google" ? <Count value={x.n} /> : x.n}</b>
                       </li>
                     ))}
                   </ul>
-                  <p className="ad-path__cpl"><b>{t("an.cpl.t")} {t("an.cpl.f")}</b><br />{t("an.cpl.s")}</p>
+                  <p className="rk-path__cpl"><b>{t("an.cpl.t")} {t("an.cpl.f")}</b><br />{t("an.cpl.s")}</p>
                 </div>
               </figure>
               {/* the riders: the label from the ad to the site, «+1 заявка» from the record to the report (only while it plays) */}
-              <span className="ad-path__run ad-path__run--tag"><span className="ad-path__tag"><i />{t("an.tag")}</span></span>
-              <span className="ad-path__run ad-path__run--hit">{t("an.hit")}</span>
+              <span className="rk-path__run rk-path__run--tag"><span className="rk-path__tag"><i />{t("an.tag")}</span></span>
+              <span className="rk-path__run rk-path__run--hit">{t("an.hit")}</span>
             </div>
             <p className="visually-hidden">{t("an.path")}</p>
           </div>
-          <p className="ad-note">{t("sample")}</p>
-          <div className="ad-path__foot">
-            <ul className="ad-path__facts">
+          <p className="rk-note">{t("sample")}</p>
+          <div className="rk-path__foot">
+            <ul className="rk-path__facts">
               {[1, 2, 3].map((n) => (
                 <li key={n}>
-                  <p className="ad-path__ft">{priceLine(t.raw(`an.f.${n}.t`), facts)}</p>
-                  <p className="ad-path__fp">{t(`an.f.${n}.p`)}</p>
+                  <p className="rk-path__ft">{priceLine(t.raw(`an.f.${n}.t`), facts)}</p>
+                  <p className="rk-path__fp">{t(`an.f.${n}.p`)}</p>
                 </li>
               ))}
             </ul>

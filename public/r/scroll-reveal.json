@@ -4,7 +4,7 @@
   "title": "ScrollReveals",
   "description": "[data-sr] blocks rise and fade in by batches; [data-split] headings unmask line by line. Touch only fades; a jump shows what it passed at once; focus shows its block.",
   "registryDependencies": [
-    "@lumera/gsap-setup"
+    "@eclo/gsap-setup"
   ],
   "files": [
     {

@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { allowIndexing } from "./src/config/site";
 
 const nextConfig: NextConfig = {
   // The AI-automation page and its cases are app pages (app/[locale]/ai-avtomatyzatsiia, …/keisy/*): Russian under
@@ -11,6 +12,10 @@ const nextConfig: NextConfig = {
       destination: `/ru${source}`,
       permanent: false,
     }));
+  },
+  async headers() {
+    if (allowIndexing) return [];
+    return [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }];
   },
   turbopack: {
     rules: {

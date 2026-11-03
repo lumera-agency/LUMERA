@@ -3,14 +3,16 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { allowIndexing, siteUrl, studioName } from "@/config/site";
 import { LogoSprite } from "@/components/ui/logo/LogoSprite";
 import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
+import { SiteNavProvider } from "@/components/layout/site-nav/SiteNavProvider";
+import { getSiteNav } from "@/content/site-nav";
 import "../globals.css";
 import "@/components/layout/page/page.css";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads", "about"];
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumera-seven-eta.vercel.app";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -21,19 +23,20 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const t = await getTranslations({ locale, namespace: "meta" });
   const path = locale === routing.defaultLocale ? "/" : `/${locale}`;
   return {
-    metadataBase: new URL(SITE),
+    // every page's canonical, hreflang and og:url are paths: they resolve against the site's address (config/site)
+    metadataBase: new URL(siteUrl),
+    robots: allowIndexing ? undefined : { index: false, follow: false },
     title: t("title"),
     description: t("description"),
     alternates: { canonical: path, languages: { uk: "/", ru: "/ru", "x-default": "/" } },
     openGraph: {
       type: "website",
-      siteName: "Lumera Studio",
+      siteName: studioName,
       title: t("title"),
       description: t("description"),
       url: path,
       locale: locale === "ru" ? "ru_RU" : "uk_UA",
       alternateLocale: locale === "ru" ? ["uk_UA"] : ["ru_RU"],
-      images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
     },
     twitter: { card: "summary_large_image" },
     icons: {
@@ -61,6 +64,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const t = await getTranslations({ locale });
   // the browser gets the main page's messages only: the AI pages render theirs on the server (messages/ai/)
   const clientMessages = Object.fromEntries(Object.entries(await getMessages()).filter(([ns]) => !AI_NAMESPACES.includes(ns)));
+  // the header's panels and the phone menu: built here, so the cases' words come along without their namespaces
+  const siteNav = await getSiteNav(locale);
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -71,7 +76,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>
         <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" size={110} grow={1.15} lensGrow={1.35} />
-        <NextIntlClientProvider messages={clientMessages}>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={clientMessages}>
+          <SiteNavProvider value={siteNav}>{children}</SiteNavProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

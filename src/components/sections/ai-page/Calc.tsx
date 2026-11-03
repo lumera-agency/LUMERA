@@ -30,10 +30,8 @@ export async function Calc({ index }: { index: number }) {
     },
     k: t("calc.k"),
     once: t("svc.once"),
-    noteExisting: t("calc.note.existing"),
     audit: t("pcalc.audit", { sum: usd(AUDIT.price) }),
     send: t("calc.send"),
-    fine: t("calc.fine"),
     tol: t("calc.tol"),
   };
   return (

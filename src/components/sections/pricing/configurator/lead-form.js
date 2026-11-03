@@ -66,7 +66,7 @@ export function mountLeadForm(host, { lang = 'uk', getConfig, getLabel = () => '
     button.querySelector('.btn__label').textContent = f.sending;
     try {
       await (onLead ? onLead(payload) : submitLead(payload));
-      host.dispatchEvent(new CustomEvent('lumera:configurator-lead', { bubbles: true, detail: payload }));
+      host.dispatchEvent(new CustomEvent('eclo:configurator-lead', { bubbles: true, detail: payload }));
       const c = payload.contact;
       $('sent-title').textContent = s.title(data.name.trim());
       const rows = [

@@ -1,6 +1,6 @@
-# Lumera — Next.js
+# ECLO — Next.js
 
-Сайт Lumera Studio на стеке **Next.js 16 · Tailwind v4 · React Three Fiber · GSAP · Lenis · next-intl**.
+Сайт ECLO Studio на стеке **Next.js 16 · Tailwind v4 · React Three Fiber · GSAP · Lenis · next-intl**.
 Это перенос `website-v2` один в один (те же блоки, тексты, эффекты, порядок) и одновременно основа
 своей библиотеки эффектов, из которой собираются следующие сайты.
 
@@ -14,13 +14,14 @@ npm run registry     # собрать реестр эффектов → public/r
 
 ```
 src/
+  config/site.ts           ← адрес сайта (из NEXT_PUBLIC_SITE_URL), имя бренда, языки: единственный источник
   app/
     [locale]/layout.tsx    <html>, метаданные (canonical, hreflang, OG), прелоадер, переводы
     [locale]/page.tsx      страница = список блоков по порядку
     [locale]/lab/          витрина библиотеки (noindex)
     api/lead/route.ts      заявка с формы → webhook или Telegram (переменные окружения)
   i18n/                    маршруты: / — украинский, /ru — русский (next-intl)
-  messages/uk.json, ru.json  все тексты; цены — ICU-аргументы из движка конфигуратора
+  messages/uk.json, ru.json  все тексты; цены — ICU-аргументы из движка конфигуратора; имя — {brand} / {studio}
   styles/
     tokens.css             ← единственный источник токенов: Tailwind @theme + CSS-имена
     base.css, fonts.css
@@ -60,7 +61,7 @@ registry.json              реестр эффектов (shadcn)
 жизненным циклом, модуль — хореографией. Так они переносимы в любой проект.
 
 «Острова» (перенесены как есть, работают, ждут переписывания в компоненты при необходимости):
-`pricing/configurator/*` (конфигуратор с живым превью), `services/demos/timelines.js` (5 демо),
+`pricing/configurator/*` (конфигуратор с живым превью), `services/demos/timelines.js` (4 демо),
 `why/why-orbit.js`, `why/why-phone.js`, `approach/stages.js`, `approach/approach-phone.js`,
 `contact/lead-form.js`, `fx/splash-cursor/fluid.js`, `fx/chrome-wordmark/wordmark.js`.
 
@@ -84,11 +85,11 @@ Tailwind v4 подключён **без preflight**: сброс сайта — `
 `/ai-avtomatyzatsiia` (страница раздела, на неё ведёт реклама), `/keisy/poshuk-zamovlen` (кейс клиента),
 `/keisy/ai-asystent` (пример для салона); русский — под `/ru`, как у главной (старые ссылки с `?lang=ru`
 перенаправляются, `next.config.ts`). Собраны из деталей главной: шапка, меню, переключатель языка, подвал с хромовым
-LUMERA, FAQ, форма заявки (`lead-form.js`, задача зафиксирована — «Автоматизація»), плавный скролл и появления
+вордмарком, FAQ, форма заявки (`lead-form.js`, задача зафиксирована — «Автоматизація»), плавный скролл и появления
 (`PageShell`). Шапка, меню и подвал принимают пункты страницы готовым текстом (`links`, `cta`), без них — пункты главной.
 Тексты — `messages/ai/*.json` (пространства `ai`, `case`, `asst`, `aiCommon`): рендерятся на сервере и в браузер
 главной не уходят (`[locale]/layout.tsx`). Цены и сроки — из движка конфигуратора (`components/ai/facts.ts`).
-Прелоадер — только на главной. Правила текстов и движения — в рабочей папке AI-страниц (`lumera-ai/CLAUDE.md`).
+Прелоадер — только на главной. Правила текстов и движения — в рабочей папке AI-страниц (её `CLAUDE.md`).
 
 ## Библиотека эффектов
 
@@ -97,11 +98,11 @@ LUMERA, FAQ, форма заявки (`lead-form.js`, задача зафикс�
 
 ```jsonc
 // components.json
-{ "registries": { "@lumera": "https://<домен lumera>/r/{name}.json" } }
+{ "registries": { "@eclo": "https://<адрес сайта>/r/{name}.json" } }
 ```
 
 ```bash
-npx shadcn add @lumera/hover-reveal @lumera/horizontal-ride @lumera/preloader
+npx shadcn add @eclo/hover-reveal @eclo/horizontal-ride @eclo/preloader
 ```
 
 Код копируется в проект и правится под клиента — без версионной зависимости от пакета.
@@ -131,6 +132,11 @@ npx shadcn add @lumera/hover-reveal @lumera/horizontal-ride @lumera/preloader
 
 ## Переменные окружения
 
-`NEXT_PUBLIC_SITE_URL` — адрес сайта для canonical/OG (по умолчанию текущий Vercel).
+`NEXT_PUBLIC_SITE_URL` — адрес сайта: из него собираются canonical, hreflang, Open Graph, robots и sitemap
+(`src/config/site.ts`). Без неё берётся `https://eclo.com.ua`. Образец — `.env.example`; на Vercel — Settings →
+Environment Variables. Переезд на другой домен — смена этой переменной.
+`NEXT_PUBLIC_ALLOW_INDEXING` — пока не `true`, сайт закрыт от поисковиков: заголовок `X-Robots-Tag` (`next.config.ts`)
+и `<meta name="robots">` (`app/[locale]/layout.tsx`). Читается при сборке: чтобы открыть, поставьте `true` в Vercel
+для Production и сделайте redeploy.
 Заявки: `LEAD_WEBHOOK_URL` **или** `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID`. Без них форма
 честно говорит, что заявка не ушла (локально — имитирует отправку).

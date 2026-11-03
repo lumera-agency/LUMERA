@@ -1,10 +1,12 @@
 "use client";
 import { useEffect } from "react";
+import { brandName } from "@/config/site";
 
 /**
- * LUMERA at the very end of the page, in liquid chrome (fx/chrome-wordmark, plain WebGL): set up
+ * The brand's name at the very end of the page, in liquid chrome (fx/chrome-wordmark, plain WebGL): set up
  * ahead in a pause of the scrolling, rendered only while the footer is on screen; an ivory lens
- * follows the cursor. Without WebGL the CSS text with a static chrome gradient stays.
+ * follows the cursor. Without WebGL the CSS text with a static chrome gradient stays. The effect reads the word off
+ * this text and measures everything from it, so the name in config/site is the only place it is set.
  */
 export function Wordmark() {
   useEffect(() => {
@@ -18,7 +20,7 @@ export function Wordmark() {
   }, []);
   return (
     <div className="container footer__mark" data-wordmark="" aria-hidden="true">
-      <span className="footer__mark-text">LUMERA</span>
+      <span className="footer__mark-text">{brandName}</span>
       <canvas className="footer__mark-canvas" />
       <span className="footer__drop" data-slot="drop" />
     </div>

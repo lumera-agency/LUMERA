@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { studioName } from "@/config/site";
 import { PageShell } from "@/components/layout/page/PageShell";
 import { AiShell } from "@/components/ai/AiShell";
 import { AiFaq } from "@/components/ai/AiFaq";
@@ -15,7 +16,7 @@ import { Fit } from "@/components/sections/ai-asst/Fit";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/keisy/ai-asystent">) {
   const { locale } = await params;
-  return aiMetadata({ locale, namespace: "asst.meta", path: "/keisy/ai-asystent", image: "/img/ai/og-assistant.jpg" });
+  return aiMetadata({ locale, namespace: "asst.meta", path: "/keisy/ai-asystent" });
 }
 
 /**
@@ -50,7 +51,7 @@ export default async function AssistantPage({ params }: PageProps<"/[locale]/kei
     <AiShell
       page="asst"
       nav={nav}
-      footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: "Lumera Studio" }]}
+      footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: studioName }]}
       cta={{ href: "#contact", text: t("asst.cta") }}
       // the topbar's own short word (as on the AI page and the main page): the long one pushed the menu button off
       // phones up to 375 px wide

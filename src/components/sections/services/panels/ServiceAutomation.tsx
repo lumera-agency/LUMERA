@@ -3,14 +3,14 @@ import { rich } from "@/lib/rich";
 import { aiHref } from "@/components/ai/links";
 import { PRICES } from "../copy";
 
-/** 4 · Автоматизація: requests to the CRM and Telegram, data from emails, the assistant. Markup ported 1:1 from website-v2; the clip is demos/timelines.js.
+/** 3 · Автоматизація: requests to the CRM and Telegram, data from emails, the assistant. Markup ported 1:1 from website-v2; the clip is demos/timelines.js.
  *  «Детальніше» opens the AI page (/ai-avtomatyzatsiia) instead of a card. */
 export async function ServiceAutomation() {
   const t = await getTranslations();
   const prices = PRICES;
   const locale = await getLocale();
   return (
-    <article className="service" id="svc-4" data-sr="">
+    <article className="service" id="svc-3" data-sr="">
       <div className="service__demo">
         <button className="demo-replay" type="button" data-replay="" aria-label={t("services.replay.label")}>
           <span className="demo-replay__icon" aria-hidden="true">↻</span>
@@ -226,13 +226,13 @@ export async function ServiceAutomation() {
       </div>
       <div className="service__body">
         <p className="service__meta">
-          <span>4</span>
-          <span>{t("services.service.meta.span.4")}</span>
+          <span>3</span>
+          <span>{t("services.service.meta.span.3")}</span>
         </p>
-        <h3 className="service__title">{t("services.service.title.4")}</h3>
-        <p className="service__text">{t("services.service.text.4")}</p>
+        <h3 className="service__title">{t("services.service.title.3")}</h3>
+        <p className="service__text">{t("services.service.text.3")}</p>
         <div className="service__foot">
-          <p className="service__price">{t("services.price.4.text", prices)}</p>
+          <p className="service__price">{t("services.price.3.text", prices)}</p>
           {/* the AI page has it all (the services, examples, the case, the calculator): «Детальніше» opens it */}
           <a className="service__more-btn service__more-link" href={aiHref(locale, "/ai-avtomatyzatsiia")}>
             <span>{t("services.more.label")}</span>

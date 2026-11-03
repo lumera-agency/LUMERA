@@ -561,7 +561,7 @@ html.motion:not(.ai-go) .st-show__desk .ms [data-b],
 /* reduced motion: the bands never show; the sample stands assembled */
 html:not(.motion) .st-build { display: none; }
 
-/* ?og: the share picture (img/sites/og-sites.jpg, 1200 × 630) is this first screen without the bar */
+/* ?og: this first screen without the bar (the share picture is dyzain-i-saity/opengraph-image now) */
 
 /* ==========================================================================
    3 · the sample sites (the main page's configurator samples, css/sites-pv.css): the frame here, and Лендінг+'s four

@@ -1,5 +1,5 @@
 /**
- * Lumera · Project Configurator — pricing / timeline / naming engine (pd6 + the owner's 9 Oct decisions).
+ * ECLO · Project Configurator — pricing / timeline / naming engine (pd6 + the owner's 9 Oct decisions).
  *
  * Drop-in replacement for js/configurator/engine.js. Plain ES module, no DOM, no copy.
  * EVERY price and duration lives in PRICING, every bundle in BUNDLES. The UI never holds
@@ -309,7 +309,7 @@ export function buildLeadPayload(cfg, form, lang = 'uk', label = '') {
   const p = calculateProject(c);
   const contact = parseContact(form.contact) || { email: '', telegram: '', phone: '' };
   return {
-    source: 'lumera_project_configurator',
+    source: 'eclo_project_configurator',
     lang,
     project: {
       bundle: p.bundle, // NEW · 'site' | 'siteAds' | 'full' | 'existing' | 'analytics' | null
