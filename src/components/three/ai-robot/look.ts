@@ -1,8 +1,8 @@
 /*
- * The robot's look (the owner, 4 Nov 2026, of five: «пескоструй», sandblasted dark metal, ?mat=5; of five antennas:
- * the feelers, ?ant=2): the shell (the head) a dark metal with a fine grain in its roughness and its relief (the hands:
- * makeHandLook: the palm the same, the fingers the trim); the trim (bezel, ears, antenna rods) a satin silver; two thin feelers curving outward, a small glossy lime ball at each
- * end (the balls flash as a card is recorded).
+ * The robot's look (the owner, 4 Nov 2026: «пескоструй», sandblasted dark metal; the antennas as feelers): the shell
+ * (the head) a dark metal with a fine grain in its roughness and its relief (the hands: makeHandLook, the palm the same,
+ * the fingers the trim); the trim (bezel, ears, antenna rods) a satin silver; two thin feelers curving outward, a small
+ * glossy lime ball at each end (the balls flash as a card is recorded).
  */
 import * as THREE from "three";
 import { brandName } from "@/config/site";

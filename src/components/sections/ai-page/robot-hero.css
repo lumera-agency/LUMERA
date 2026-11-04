@@ -12,249 +12,72 @@ main[data-ai-page="ai"] .ai-hero.ai-bot {
   --pad-bottom: clamp(3rem, 7vh, 5rem);
   display: grid;
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100lvh;
   padding: calc(var(--topbar-h) + var(--pad-top)) var(--gutter) var(--pad-bottom);
   background: #000;
 }
 main[data-ai-page="ai"] .ai-bot .ai-hero__bg.ai-bot__bg { background: radial-gradient(42rem 34rem at 66% 42%, rgb(255 246 232 / 0.07), rgb(255 246 232 / 0) 70%), #000; }
-/* the page's title, for readers and search, out of sight while the first screen shows the robot alone */
-/* the question top left, over the table; then the scene */
-/* (one column the full width: an implicit one would shrink to the scene's content, robot and table with it). On a
-   computer the question and the scene share one area: the question top left over the table, the robot beside it from
-   the top, so both stand higher (a falling card may pass over the question: the owner, 4 Nov 2026) */
+/* the question top left, over the table; then the scene (one column the full width: an implicit one would shrink to
+   the scene's content, robot and table with it). On a computer the question and the scene share one area: the question
+   top left over the table, the robot beside it from the top, so both stand higher (a falling card may pass over the
+   question: the owner, 4 Nov 2026) */
 .ai-bot__in { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(0.5rem, 2vh, 1.5rem); width: 100%; max-width: 84rem; margin: 0 auto; }
-/* the question set as a magazine's cover (the owner, 4 Nov 2026: «журнальная типографика», a grid for the words), five
-   settings to choose from (TitlePick sets data-tt; without it the first). 1, steps: on a six-column grid «Что в вашем»
-   light, «бизнесе» bold stepped two columns in; then a narrow column with a small «до сих пор» in mono capitals, its
-   top on the giant word's cap height, and «вручную?» as the cover's one giant word in ember, set tight and sharp
-   (Geologica's SHRP) */
+
+/* the question set as a magazine's cover (the owner, 4 Nov 2026): tall condensed capitals set solid, «Что в вашем
+   бизнесе» on one line; on the next a lime sticker «до сих пор», tilted, before the giant «вручную?». Its lines are set,
+   not left to wrapping (which put the sticker after «бизнесе» on some screens and alone on others); a phone breaks the
+   first line (below) */
 main[data-ai-page="ai"] .ai-bot .ai-bot__title {
   --cover: clamp(2.6rem, min(4.6vw, calc(var(--vh, 1vh) * 8)), 5.4rem);
   position: relative;
   z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  align-items: end;
   width: min(100%, 50rem);
   margin: 0;
-  font-weight: 400;
+  font: 800 calc(var(--cover) * 1.35) / 0.86 "Bot Condensed", var(--font-sans);
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  white-space: nowrap;
   color: var(--ink);
   text-wrap: initial;
 }
-.bot-cover__a,
-.bot-cover__b { font-size: var(--cover); line-height: 0.92; letter-spacing: -0.055em; white-space: nowrap; }
-.bot-cover__a { grid-column: 1 / -1; font-weight: 300; }
-.bot-cover__b { grid-column: 3 / -1; font-weight: 600; font-variation-settings: "SHRP" 60; }
-.bot-cover__c {
-  grid-column: 1 / 2;
-  align-self: start;
-  margin-top: calc(var(--cover) * 0.62);
-  font: 500 var(--fs-label) / 1.25 var(--font-mono);
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
-  color: var(--ink-soft);
+.ai-bot__title > .bot-cover__b::after { content: "\A"; white-space: pre; }
+.ai-bot__title > .bot-cover__c {
+  display: inline-block;
+  vertical-align: 0.95em;
+  margin-right: 0.3em;
+  padding: 0.16em 0.4em 0.1em;
+  border-radius: 0.18em;
+  font-size: 0.42em;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: #0f0e0d;
+  background: var(--signal);
+  rotate: -6deg;
+  box-shadow: 0 0.4em 1.2em -0.4em rgb(218 255 2 / 0.6);
 }
-.bot-cover__c::after { content: " ↘"; color: var(--ember); }
-.bot-cover__d {
-  grid-column: 2 / -1;
-  margin-top: calc(var(--cover) * 0.08);
-  font-size: calc(var(--cover) * 2.05);
-  font-weight: 600;
-  font-variation-settings: "SHRP" 100;
-  line-height: 0.8;
-  letter-spacing: -0.075em;
-  white-space: nowrap;
-  color: var(--ember);
-}
+.ai-bot__title > .bot-cover__d { display: inline-block; margin-top: 0.04em; font-size: 1.7em; letter-spacing: -0.01em; line-height: 0.84; }
 html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > span { animation: ai-rise-in 0.7s var(--ease-out) backwards; }
 html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(2) { animation-delay: 0.06s; }
 html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(3) { animation-delay: 0.12s; }
 html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) { animation-delay: 0.2s; }
 
-/* the kicker, «AI-автоматизация для бизнеса», four places to choose from (TitlePick sets data-kk; the screen's own 1):
-   1 over the title in small mono capitals with a lime dot; 2 over it as an outlined lime tag; 3 at the screen's top
-   right, small, right-aligned under a short lime rule; 4 to the right of the giant word, small, beside a lime hairline */
+/* the kicker over the question, «AI-автоматизация для бизнеса» in one line (the owner's pick): a condensed lime «AI»,
+   a lime hairline, the rest in mono capitals */
 .ai-bot__title .bot-kicker {
   display: flex;
   align-items: center;
-  gap: 0.6em;
-  margin: 0 0 1.1rem;
+  gap: 0.7rem;
+  margin: 0 0 1.25rem;
   font: 400 var(--fs-label) / 1.35 var(--font-mono);
   letter-spacing: var(--track-caps);
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
-.ai-bot__title .bot-kicker i { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0.625rem var(--signal-glow); }
-.ai-bot[data-kk="2"] .ai-bot__title .bot-kicker { width: fit-content; padding: 0.5em 0.95em 0.45em; border: 1px solid rgb(218 255 2 / 0.55); border-radius: 62rem; color: var(--signal); background: rgb(218 255 2 / 0.06); }
-.ai-bot__title .bot-kicker--aside { display: none; }
-.ai-bot[data-kk^="3"] .ai-bot__title .bot-kicker { position: absolute; margin: 0; color: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-bot[data-kk^="3"] .ai-bot__title { position: static; }
-.ai-bot[data-kk^="3"] .ai-bot__title .bot-kicker {
-  top: calc(var(--topbar-h) + clamp(1.5rem, 5vh, 3.5rem) + 0.4rem);
-  right: max(var(--gutter), calc((100% - 84rem) / 2));
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.75rem;
-  width: 13em;
-  text-align: right;
-}
-.ai-bot[data-kk^="3"] .ai-bot__title .bot-kicker i { width: 3.5rem; height: 2px; border-radius: 1px; box-shadow: none; }
-.ai-bot[data-kk="4"] .ai-bot__title .bot-kicker:not(.bot-kicker--aside) { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); }
-.ai-bot[data-kk="4"] .ai-bot__title .bot-kicker--aside {
-  display: block;
-  position: absolute;
-  left: calc(100% + 1.5rem);
-  top: 0.9rem;
-  width: 12.5em;
-  white-space: normal;
-  margin: 0;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  padding: 0.2em 0 0.2em 1em;
-  border-left: 2px solid var(--signal);
-  line-height: 1.5;
-}
-.ai-bot[data-kk="4"] .ai-bot__title .bot-kicker i { display: none; }
-
-.ai-bot__title .bot-kicker__text b { font-weight: inherit; }
-/* over the title, made to be seen (the owner: «не сильно видно»): 1.1 larger mono capitals in white, «AI» lime, the dot
-   pulsing; 1.2 in the text face, larger, «AI» lime and bold; 1.3 «AI» as a lime chip, the rest white mono capitals */
-.ai-bot:is([data-kk="11"], [data-kk="12"], [data-kk="13"]) .ai-bot__title .bot-kicker { margin-bottom: 1.25rem; color: var(--ink); }
-.ai-bot:is([data-kk="11"], [data-kk="12"], [data-kk="13"], [data-kk="31"], [data-kk="32"], [data-kk="33"], [data-kk="41"], [data-kk="42"], [data-kk="43"], [data-kk="44"]) .ai-bot__title .bot-kicker__text b { color: var(--signal); }
-.ai-bot[data-kk="11"] .ai-bot__title .bot-kicker { font-size: 0.9375rem; letter-spacing: 0.14em; }
-.ai-bot[data-kk="11"] .ai-bot__title .bot-kicker i { width: 0.625rem; height: 0.625rem; animation: bot-live 1.6s ease-in-out infinite; }
-.ai-bot[data-kk="12"] .ai-bot__title .bot-kicker { font: 400 clamp(1.05rem, 1.35vw, 1.4rem) / 1.2 var(--font-sans); letter-spacing: -0.01em; text-transform: none; }
-.ai-bot[data-kk="12"] .ai-bot__title .bot-kicker__text b { font-weight: 600; }
-.ai-bot[data-kk="12"] .ai-bot__title .bot-kicker i { width: 0.55rem; height: 0.55rem; }
-.ai-bot[data-kk="13"] .ai-bot__title .bot-kicker { gap: 0; font-size: 0.875rem; letter-spacing: 0.12em; }
-.ai-bot[data-kk="13"] .ai-bot__title .bot-kicker i,
-.ai-bot[data-kk="13"] .ai-bot__title .bot-kicker__dash { display: none; }
-main[data-ai-page="ai"] .ai-bot[data-kk="13"] .ai-bot__title .bot-kicker__text b { display: inline-block; margin-right: 0.6em; padding: 0.28em 0.5em 0.22em; border-radius: 0.3em; font-weight: 500; letter-spacing: 0.06em; color: #0f0e0d; background: var(--signal); }
-
-/* at the top right, without the rule over it (the owner): 3.1 in the text face, two lines, «AI» lime; 3.2 white mono
-   capitals by a lime upright at their right; 3.3 a large condensed lime «AI» with the rest in two small lines beside */
-.ai-bot:is([data-kk="31"], [data-kk="32"], [data-kk="33"], [data-kk="41"], [data-kk="42"], [data-kk="43"], [data-kk="44"]) .ai-bot__title .bot-kicker i { display: none; }
-.ai-bot[data-kk="31"] .ai-bot__title .bot-kicker { width: 11em; font: 400 clamp(1rem, 1.25vw, 1.3rem) / 1.3 var(--font-sans); letter-spacing: -0.01em; text-transform: none; color: var(--ink); }
-.ai-bot[data-kk="31"] .ai-bot__title .bot-kicker__text b { font-weight: 600; }
-.ai-bot[data-kk="32"] .ai-bot__title .bot-kicker { width: 12.5em; padding: 0.15em 0.9em 0.15em 0; border-right: 2px solid var(--signal); font-size: 0.875rem; line-height: 1.5; letter-spacing: 0.12em; color: var(--ink); }
-.ai-bot:is([data-kk="33"], [data-kk="41"], [data-kk="43"]) .ai-bot__title .bot-kicker { flex-direction: row; align-items: center; gap: 0.75rem; width: auto; text-align: left; color: var(--ink); }
-.ai-bot:is([data-kk="33"], [data-kk="41"], [data-kk="43"]) .ai-bot__title .bot-kicker__text { display: flex; align-items: center; gap: 0.6rem; }
-.ai-bot:is([data-kk="33"], [data-kk="41"], [data-kk="43"]) .ai-bot__title .bot-kicker__dash { display: none; }
-/* «AI» as tall as the two lines beside it, from their capitals' top to their baseline (its box trimmed to its own
-   capitals, line-height 0.72) */
-.ai-bot:is([data-kk="33"], [data-kk="41"], [data-kk="43"]) .ai-bot__title .bot-kicker__text b { font: 800 2.5rem / 0.72 "Bot Condensed", var(--font-sans); letter-spacing: 0; translate: 0 -0.03rem; }
-.ai-bot:is([data-kk="33"], [data-kk="41"], [data-kk="43"]) .ai-bot__title .bot-kicker__text > span:last-child { width: 9.5em; font-size: 0.75rem; line-height: 1.4; letter-spacing: 0.12em; }
-
-/* on the left (the owner: the right felt crowded): 4.1 the «AI» corner mark over the title; 4.2 the same in one line,
-   «AI» then a lime hairline and the words; 4.3 the corner mark under the title, in the room above the table; 4.4 up the
-   title's left edge, set on its side like a magazine's spine */
-.ai-bot[data-kk="41"] .ai-bot__title .bot-kicker { margin-bottom: 1.25rem; }
-.ai-bot[data-kk="42"] .ai-bot__title .bot-kicker { margin-bottom: 1.25rem; color: var(--ink); }
-.ai-bot[data-kk="42"] .ai-bot__title .bot-kicker__text { display: flex; align-items: center; gap: 0.7rem; }
-.ai-bot[data-kk="42"] .ai-bot__title .bot-kicker__dash { display: none; }
-.ai-bot[data-kk="42"] .ai-bot__title .bot-kicker__text b { font: 800 1.6rem / 0.72 "Bot Condensed", var(--font-sans); letter-spacing: 0; }
-.ai-bot[data-kk="42"] .ai-bot__title .bot-kicker__text > span:last-child { padding-left: 0.7rem; border-left: 1px solid rgb(218 255 2 / 0.6); font-size: 0.8125rem; letter-spacing: 0.12em; }
-.ai-bot[data-kk="43"] .ai-bot__title .bot-kicker { position: absolute; left: 0; top: calc(100% + clamp(1.25rem, 3vh, 2rem)); margin: 0; }
-.ai-bot[data-kk="44"] .ai-bot__title .bot-kicker {
-  position: absolute;
-  right: calc(100% + 1.1rem);
-  top: 0.15rem;
-  margin: 0;
-  writing-mode: vertical-rl;
-  rotate: 180deg;
-  white-space: nowrap;
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
   color: var(--ink);
 }
-@media (max-width: 899px) {
-  .ai-bot[data-kk="44"] .ai-bot__title .bot-kicker { position: static; margin: 0 0 1rem; writing-mode: horizontal-tb; rotate: none; }
-}
+.ai-bot__title .bot-kicker b { font: 800 1.6rem / 0.72 "Bot Condensed", var(--font-sans); letter-spacing: 0; color: var(--signal); }
+.ai-bot__title .bot-kicker span { padding-left: 0.7rem; border-left: 1px solid rgb(218 255 2 / 0.6); font-size: 0.8125rem; letter-spacing: 0.12em; }
 
-/* the drawn marks: hidden unless a setting shows one; lime running into green, round ends; drawn in once on arrival */
-.bot-deco { position: absolute; display: none; overflow: visible; pointer-events: none; fill: none; stroke: url(#bot-deco-lime); stroke-linecap: round; stroke-linejoin: round; }
-.bot-deco path { stroke-dasharray: 1; }
-html.motion .bot-deco path { animation: bot-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.55s backwards; }
-html.motion .bot-deco path + path { animation-duration: 0.25s; animation-delay: 1.4s; }
-@keyframes bot-draw { from { stroke-dashoffset: 1; } }
-.bot-deco-defs { position: absolute; width: 0; height: 0; }
-/* (marks stretched to their box keep their line's width on screen, non-scaling-stroke; their dash would no longer match
-   their length, so they fade in instead of being drawn) */
-.bot-deco:is(.bot-deco--under, .bot-deco--ring) path { stroke-dasharray: none; }
-html.motion .bot-deco:is(.bot-deco--under, .bot-deco--ring, .bot-deco--rule) path { animation: bot-deco-in 0.6s ease 0.6s backwards; stroke-dasharray: none; }
-@keyframes bot-deco-in { from { opacity: 0; } }
-.ai-bot__title :is(.bot-cover__c, .bot-cover__d) { position: relative; }
-
-/* 1.1–1.3, the steps with a drawn mark: «до сих пор» larger (the owner: «слишком маленький»), lime, two lines in its
-   column, its top near the giant word's */
-.ai-bot:is([data-tt="11"], [data-tt="12"], [data-tt="13"]) .bot-cover__c { margin-top: calc(var(--cover) * 0.14); font: 500 calc(var(--cover) * 0.42) / 1 var(--font-sans); letter-spacing: -0.03em; text-transform: none; color: var(--signal); }
-.ai-bot:is([data-tt="11"], [data-tt="12"], [data-tt="13"]) .bot-cover__c::after { content: none; }
-/* 1.1 a loop under it, curling once and turning up into the giant word (after the owner's reference) */
-.ai-bot[data-tt="11"] .bot-deco--loop { display: block; left: 0; top: 100%; width: calc(var(--cover) * 2.3); height: calc(var(--cover) * 1.1); stroke-width: 4.5; }
-/* 1.2 a hooked arrow from it into the giant word, in mono capitals */
-.ai-bot[data-tt="12"] .bot-cover__c { font: 500 calc(var(--cover) * 0.27) / 1.15 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
-.ai-bot[data-tt="12"] .bot-deco--hook { display: block; left: 0.4em; top: calc(100% + 0.25em); width: calc(var(--cover) * 2.1); height: calc(var(--cover) * 0.9); stroke-width: 4; }
-/* 1.3 a scribbled underline under it, the giant word ringed by hand */
-.ai-bot[data-tt="13"] .bot-cover__c { color: var(--ink); }
-.ai-bot[data-tt="13"] .bot-deco--under { display: block; left: -0.05em; right: 0; top: 100%; width: 100%; height: 0.32em; stroke-width: 3; vector-effect: non-scaling-stroke; }
-.ai-bot[data-tt="13"] .bot-deco--under path { vector-effect: non-scaling-stroke; }
-.ai-bot[data-tt="13"] .bot-cover__d { display: inline-block; justify-self: start; }
-.ai-bot[data-tt="13"] .bot-deco--ring { display: block; inset: -0.04em -0.14em -0.2em -0.16em; width: auto; height: auto; }
-.ai-bot[data-tt="13"] .bot-deco--ring path { stroke-width: 3; vector-effect: non-scaling-stroke; }
-
-/* 2.1–2.3, the condensed capitals with a mark: «до сих пор» taken out of the column */
-/* 2.1 a lime sticker, tilted, before the giant word on its line (the owner's pick; no arrow from it) */
-main[data-ai-page="ai"] .ai-bot[data-tt="21"] .ai-bot__title > .bot-cover__c { display: inline-block; vertical-align: 0.95em; margin: 0 0.3em 0 0; padding: 0.16em 0.4em 0.1em; border-radius: 0.18em; font-size: 0.42em; line-height: 1; letter-spacing: 0.01em; color: #0f0e0d; background: var(--signal); rotate: -6deg; box-shadow: 0 0.4em 1.2em -0.4em rgb(218 255 2 / 0.6); }
-/* the giant word in the question's white, the sticker the one colour beside it (the owner, 4 Nov 2026) */
-main[data-ai-page="ai"] .ai-bot[data-tt="21"] .ai-bot__title > .bot-cover__d { display: inline-block; color: var(--ink); }
-/* its lines set, not left to wrapping (which put the sticker after «бизнесе» on some screens and alone on others): the
-   question's words, then the sticker with the giant word; a phone breaks the first line (below) */
-main[data-ai-page="ai"] .ai-bot[data-tt="21"] .ai-bot__title { white-space: nowrap; }
-main[data-ai-page="ai"] .ai-bot[data-tt="21"] .ai-bot__title > .bot-cover__b::after { content: "\A"; white-space: pre; }
-/* 2.2 small lime capitals and a long rule running to the edge with an arrowhead, over the giant word */
-main[data-ai-page="ai"] .ai-bot[data-tt="22"] .ai-bot__title > .bot-cover__c { display: flex; align-items: center; gap: 0.35em; margin: 0.12em 0 0.06em; font-size: 0.42em; line-height: 1; letter-spacing: 0.02em; color: var(--signal); }
-main[data-ai-page="ai"] .ai-bot[data-tt="22"] .bot-deco--rule { display: block; position: static; flex: 1; height: 0.5em; stroke: var(--signal); stroke-width: 2.5; }
-main[data-ai-page="ai"] .ai-bot[data-tt="22"] .bot-deco--tip { display: block; position: static; flex: none; width: 0.55em; height: 0.55em; margin-left: -0.3em; stroke: var(--signal); stroke-width: 2.5; }
-/* 2.3 small lime capitals, and a thick loop swooping under the giant word (the owner's reference) */
-main[data-ai-page="ai"] .ai-bot[data-tt="23"] .ai-bot__title > .bot-cover__c { margin: 0.1em 0 0.04em; font-size: 0.45em; line-height: 1; color: var(--signal); }
-main[data-ai-page="ai"] .ai-bot[data-tt="23"] .ai-bot__title > .bot-cover__d { display: inline-block; }
-main[data-ai-page="ai"] .ai-bot[data-tt="23"] .bot-deco--swoosh { display: block; left: -0.08em; top: 88%; width: calc(100% + 0.16em); height: auto; stroke-width: 9; }
-
-/* the title's other settings: the serif and the condensed are the site's own files (as the sites page declares them),
-   under names of their own here, fetched only when a setting uses them */
-@font-face { font-family: "Bot Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/playfair-italic-400-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Bot Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/playfair-italic-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
-@font-face { font-family: "Bot Serif"; font-style: normal; font-weight: 900; font-display: swap; src: url("/fonts/playfair-900-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Bot Serif"; font-style: normal; font-weight: 900; font-display: swap; src: url("/fonts/playfair-900-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+/* the condensed face is the site's own file (as the sites page declares it), under a name of its own here */
 @font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: swap; src: url("/fonts/sofia-sans-xc-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
 @font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: swap; src: url("/fonts/sofia-sans-xc-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
-
-/* 2, a condensed column: tall condensed capitals, two lines of the question and one giant ember word, set solid */
-main[data-ai-page="ai"] .ai-bot[data-tt^="2"] .ai-bot__title { display: block; font-family: "Bot Condensed", var(--font-sans); font-size: calc(var(--cover) * 1.35); font-weight: 800; line-height: 0.86; text-transform: uppercase; }
-.ai-bot[data-tt^="2"] .ai-bot__title > :is(.bot-cover__a, .bot-cover__b, .bot-cover__c) { font-size: 1em; font-weight: 800; letter-spacing: -0.005em; line-height: 0.86; font-variation-settings: normal; }
-.ai-bot[data-tt^="2"] .ai-bot__title > .bot-cover__c { display: block; margin: 0; font-family: inherit; color: var(--ink-soft); }
-.ai-bot[data-tt^="2"] .ai-bot__title > .bot-cover__c::after { content: none; }
-.ai-bot[data-tt^="2"] .ai-bot__title > .bot-cover__d { display: block; margin: 0.04em 0 0; font-size: 1.7em; font-weight: 800; font-variation-settings: normal; letter-spacing: -0.01em; line-height: 0.84; }
-
-/* 3, a serif's contrast: the question's first words in the light sans, «бизнесе» and «до сих пор» in a serif italic,
-   the giant word in the serif's black */
-.ai-bot[data-tt="3"] .bot-cover__b { font-family: "Bot Serif", Georgia, serif; font-style: italic; font-weight: 400; font-size: calc(var(--cover) * 1.08); letter-spacing: -0.02em; font-variation-settings: normal; }
-.ai-bot[data-tt="3"] .bot-cover__c { font-family: "Bot Serif", Georgia, serif; font-style: italic; font-size: calc(var(--cover) * 0.5); font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--ink-soft); margin-top: calc(var(--cover) * 0.5); }
-.ai-bot[data-tt="3"] .bot-cover__c::after { content: none; }
-.ai-bot[data-tt="3"] .bot-cover__d { font-family: "Bot Serif", Georgia, serif; font-weight: 900; font-size: calc(var(--cover) * 1.85); letter-spacing: -0.02em; line-height: 0.86; font-variation-settings: normal; }
-
-/* 4, outline: the question's first words drawn as outlines, «до сих пор» filled, the giant word in ember */
-.ai-bot[data-tt="4"] :is(.bot-cover__a, .bot-cover__b) { grid-column: 1 / -1; font-weight: 600; color: transparent; -webkit-text-stroke: 1.5px var(--ink); }
-.ai-bot[data-tt="4"] .bot-cover__c { grid-column: 1 / -1; margin-top: 0.2em; font: 600 calc(var(--cover) * 0.75) / 1 var(--font-sans); letter-spacing: -0.05em; text-transform: none; color: var(--ink); }
-.ai-bot[data-tt="4"] .bot-cover__c::after { content: none; }
-.ai-bot[data-tt="4"] .bot-cover__d { grid-column: 1 / -1; margin-top: 0.05em; font-size: calc(var(--cover) * 1.75); }
-
-/* 5, a spread with rules: hairlines between the lines, «бизнесе» at the right edge, a small «до сих пор» left of the
-   giant word set at the right */
-.ai-bot[data-tt="5"] :is(.bot-cover__a, .bot-cover__b) { grid-column: 1 / -1; padding: 0.06em 0 0.1em; border-bottom: 1px solid rgb(246 246 243 / 0.22); }
-.ai-bot[data-tt="5"] .bot-cover__b { justify-self: stretch; text-align: right; }
-.ai-bot[data-tt="5"] .bot-cover__c { grid-column: 1 / 3; align-self: center; margin-top: 0; }
-.ai-bot[data-tt="5"] .bot-cover__d { grid-column: 3 / -1; justify-self: end; margin-top: 0.06em; font-size: calc(var(--cover) * 1.6); }
 
 /* a slow shifting light behind everything: three soft colour fields (lime, mint and teal, violet) drifting, and a second
    set in other places fading in and out over them, so the colours seem to flow; still with reduced motion */
@@ -428,14 +251,14 @@ main[data-ai-page="ai"] .ai-bot[data-tt^="2"] .ai-bot__title { display: block; f
     --lift: clamp(5rem, 18vh, 11rem);
     grid-template-rows: minmax(0, 1fr);
     height: 100vh;
-    height: 100svh;
+    height: 100lvh;
     min-height: 34rem;
   }
   .ai-bot__in { grid-template-areas: "stage"; grid-template-rows: minmax(0, 1fr); }
   /* on a low screen the question smaller with the height, so the table stays clear under it */
   main[data-ai-page="ai"] .ai-bot .ai-bot__title { --cover: clamp(2.6rem, min(4.6vw, 8vh, 18.5vh - 5.2rem), 5.4rem); grid-area: stage; align-self: start; }
   .ai-bot__scene { grid-area: stage; grid-template-rows: minmax(0, 1fr); margin-top: var(--lift); }
-  .ai-bot__head { width: min(82%, (100vh - var(--topbar-h) - var(--pad-top) - var(--lift) - var(--pad-bottom)) * 0.92); width: min(82%, (100svh - var(--topbar-h) - var(--pad-top) - var(--lift) - var(--pad-bottom)) * 0.92); }
+  .ai-bot__head { width: min(82%, (100vh - var(--topbar-h) - var(--pad-top) - var(--lift) - var(--pad-bottom)) * 0.92); width: min(82%, (100lvh - var(--topbar-h) - var(--pad-top) - var(--lift) - var(--pad-bottom)) * 0.92); }
   .bot-crm td { height: clamp(2.75rem, 6.6vh, 3.7rem); }
 }
 
@@ -444,12 +267,9 @@ main[data-ai-page="ai"] .ai-bot[data-tt^="2"] .ai-bot__title { display: block; f
 @media not all and (min-width: 900px) and (min-aspect-ratio: 1/1) and (min-height: 540px) {
   .ai-bot__in { grid-template-rows: auto 1fr; }
   .ai-bot__scene { grid-template-columns: minmax(0, 1fr); align-content: center; row-gap: 0.25rem; }
-  /* the cover on a phone: «до сих пор» over the giant word, which spans the width and stays inside it */
-  .bot-cover__c { grid-column: 1 / -1; margin-top: 0.75rem; }
-  .bot-cover__d { grid-column: 1 / -1; margin-top: 0.25rem; font-size: min(calc(var(--cover) * 2.05), 19vw); }
   /* the condensed question as large as the width allows: its longer line (the sticker and the giant word) is about 8.3
      of its em; on a phone on its side no more than a share of the height */
-  main[data-ai-page="ai"] .ai-bot[data-tt^="2"] .ai-bot__title { font-size: min((100vw - 2 * var(--gutter)) / 9.5, 15vh); }
+  main[data-ai-page="ai"] .ai-bot .ai-bot__title { font-size: min((100vw - 2 * var(--gutter)) / 9.5, 15vh); }
   /* the robot on the right, the card it reads held on its left */
   .ai-bot__head { order: -1; aspect-ratio: 1.12; width: min(52vw, 30rem, 78vh); justify-self: end; }
   .bot-stage { width: min(100%, 46rem); margin-bottom: 0; }
@@ -460,20 +280,20 @@ main[data-ai-page="ai"] .ai-bot[data-tt^="2"] .ai-bot__title { display: block; f
    question's em); the robot in the middle with room for a hand on either side, the card it reads held under its head
    (BotScene); a compact table */
 @media (max-width: 599px) {
-  /* one screen high, the browser's bars shown: what does not fit of the table is cut off at the screen's foot (the
-     owner, 4 Nov 2026: the robot stays this large, the table cut) */
-  main[data-ai-page="ai"] .ai-hero.ai-bot { --pad-top: 0.75rem; --robot: min(68vw, 20rem); height: 100vh; height: 100svh; min-height: 34rem; }
-  main[data-ai-page="ai"] .ai-bot[data-tt^="2"] .ai-bot__title { font-size: min(var(--cover) * 1.35, (100vw - 2 * var(--gutter)) / 6.1); }
-  main[data-ai-page="ai"] .ai-bot[data-tt="21"] .ai-bot__title > .bot-cover__a::after { content: "\A"; white-space: pre; }
-  main[data-ai-page="ai"] .ai-bot[data-tt="21"] .ai-bot__title > .bot-cover__b::after { content: none; }
-  main[data-ai-page="ai"] .ai-bot[data-tt="21"] .ai-bot__title > .bot-cover__d { display: block; }
-  .ai-bot[data-kk="42"] .ai-bot__title .bot-kicker { margin-bottom: 0.875rem; }
+  /* one screen high, the whole screen, under the browser's bars too (black to the foot: the owner, 4 Nov 2026); what
+     does not fit of the table is cut off at the foot (the robot stays this large, the table cut) */
+  main[data-ai-page="ai"] .ai-hero.ai-bot { --pad-top: 0.75rem; --robot: min(68vw, 20rem); height: 100vh; height: 100lvh; min-height: 34rem; }
+  main[data-ai-page="ai"] .ai-bot .ai-bot__title { font-size: min(var(--cover) * 1.35, (100vw - 2 * var(--gutter)) / 6.1); }
+  .ai-bot__title > .bot-cover__a::after { content: "\A"; white-space: pre; }
+  .ai-bot__title > .bot-cover__b::after { content: none; }
+  .ai-bot__title > .bot-cover__d { display: block; }
+  .ai-bot__title .bot-kicker { margin-bottom: 0.875rem; }
   .ai-bot__in { row-gap: 0.75rem; }
   /* the robot up over the question's last line (the owner, 4 Nov 2026), right under it the table; the answer under the
      head, right of the card (over the table's top while it shows) */
   .ai-bot__scene { align-content: start; row-gap: 0.5rem; margin-top: calc(var(--robot) * -0.26); }
   .ai-bot__head { width: var(--robot); justify-self: center; margin-right: 0; }
-  .bot-say { max-width: 13rem; }
+  .bot-say { max-width: 12rem; }
   /* a compact table: its status and its name on one line */
   .bot-stage { display: grid; grid-template-columns: auto 1fr; align-items: baseline; padding: 0.875rem 0.875rem 0.375rem; }
   .bot-table__status { margin-bottom: 0.625rem; }

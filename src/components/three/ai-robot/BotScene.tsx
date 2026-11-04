@@ -1,6 +1,6 @@
 "use client";
 /*
- * The robot at work (the owner, 4 Nov 2026): a wide rounded head (its look and antennas to choose from: variants.ts),
+ * The robot at work (the owner, 4 Nov 2026): a wide rounded head (its look and antennas: look.ts),
  * a bezel round a black glass screen with its face drawn on it (face.ts), round ears with lime rings; two hands floating
  * beside it, three fingers and a thumb each (hand.ts). The page's table is on its left.
  *
@@ -284,18 +284,20 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
     // in the middle) the card is held lower, under the head's left
     const besideHead = headAt.x - HEAD_SIDE - 0.25 - (-edge + 0.12);
     const narrow = besideHead < (CARD.width + 0.15) * 0.6;
-    const cardScale = narrow ? 0.78 : THREE.MathUtils.clamp(besideHead / (CARD.width + 0.15), 0.6, 1);
+    const cardScale = narrow ? 0.9 : THREE.MathUtils.clamp(besideHead / (CARD.width + 0.15), 0.6, 1);
     const cardWidth = CARD.width * cardScale;
     // where the hand holds it: by its left edge (the grip), the card to the hand's right, between it and the head and
     // clear of the head, all on the screen; high beside the head on a computer (the table below), under it on a phone
     const reach = (cardWidth / 2 - 0.06) * Math.cos(FACING);
     const cardX = THREE.MathUtils.clamp(headAt.x - HEAD_SIDE - 0.12 - (cardWidth / 2) * Math.cos(FACING), -edge + 0.85 + reach, headAt.x);
-    const cardY = narrow ? headAt.y - 1 : headAt.y + 0.4;
-    scratch.catchAt.set(cardX - reach, cardY + 0.18, HAND_Z);
-    scratch.read.set(cardX - reach, cardY, HAND_Z);
+    // (under the head the card is held a little nearer: turned toward the robot, its far edge would go into the head)
+    const cardY = narrow ? headAt.y - 1.15 : headAt.y + 0.4;
+    const holdZ = narrow ? HAND_Z + 0.4 : HAND_Z;
+    scratch.catchAt.set(cardX - reach, cardY + 0.18, holdZ);
+    scratch.read.set(cardX - reach, cardY, holdZ);
     const row = botStage.rowFor(turn)?.getBoundingClientRect();
-    if (row && row.width > 0) toWorld(row.left + row.width * 0.55, row.top + row.height / 2, HAND_Z, scratch.rowAt);
-    else scratch.rowAt.set(headAt.x - HEAD_SIDE - 2.2, headAt.y - 0.6, HAND_Z);
+    if (row && row.width > 0) toWorld(row.left + row.width * 0.55, row.top + row.height / 2, holdZ, scratch.rowAt);
+    else scratch.rowAt.set(headAt.x - HEAD_SIDE - 2.2, headAt.y - 0.6, holdZ);
 
     let mood: FaceMood = "idle";
     let leftPose: HandPose = "rest";
@@ -321,7 +323,7 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
         leftPose = "hold";
         gripping = true;
       } else if (at >= AT.carry && at < AT.land) {
-        scratch.to.set(scratch.rowAt.x - (cardWidth / 2 - 0.06), scratch.rowAt.y, HAND_Z);
+        scratch.to.set(scratch.rowAt.x - (cardWidth / 2 - 0.06), scratch.rowAt.y, holdZ);
         scratch.goal.lerpVectors(scratch.read, scratch.to, easeInOut(phase(at, AT.carry, AT.fade)));
         leftPose = "place";
         gripping = true;

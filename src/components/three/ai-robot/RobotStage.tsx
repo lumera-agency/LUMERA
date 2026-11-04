@@ -5,7 +5,7 @@
  * tab the loop stops), faded in once the robot stands in its first pose. With reduced motion it draws its pose once
  * and stops.
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Resume } from "../lib/Resume";
@@ -33,10 +33,13 @@ export default function RobotStage({ host, slot, words, still }: { host: HTMLEle
   }, [still]);
 
   const running = visible && (!still || warm);
+  // the canvas covers the screen: as sharp as the screen's own pixels while that stays near three million drawn ones
+  // (a phone at its full density, the card's words crisp; a large screen at 1.5, as before)
+  const sharpest = useMemo(() => Math.min(3, Math.max(1.5, Math.sqrt(3e6 / (innerWidth * innerHeight)))), []);
   return (
     <div className="ai-bot__canvas" aria-hidden="true">
       <Canvas
-        dpr={[1, 1.5]}
+        dpr={[1, sharpest]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         camera={{ fov: 14, near: 0.1, far: 100, position: [0, 0, 18] }}
         frameloop={running ? "always" : "never"}
