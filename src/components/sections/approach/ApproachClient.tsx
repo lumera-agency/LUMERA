@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { WebGLGate } from "@/components/three/lib/WebGLGate";
 
@@ -10,7 +10,8 @@ let setSlot: ((on: boolean) => void) | null = null;
 
 /**
  * The section box. Marks the deck before the page's reveals start (they skip its cards), then
- * starts the stages (stages.js), the checks, and the phone picture (approach-phone.js).
+ * starts the stages (stages.js), the checks, and the phone picture (approach-phone.js); the
+ * cleanup stops them all, so the block starts again on the tree a language switch brings.
  */
 export function ApproachClient({ children }: { children: React.ReactNode }) {
   const root = useRef<HTMLElement>(null);
@@ -21,30 +22,44 @@ export function ApproachClient({ children }: { children: React.ReactNode }) {
     stages?.classList.toggle("is-deck", on);
   }, []);
 
-  useEffect(() => {
+  // a layout effect: after a language switch (a transition, its passive effects run after paint) the
+  // modules are cached, their imports resolve before paint, and the deck is never seen unbuilt
+  useLayoutEffect(() => {
     const el = root.current;
     if (!el) return;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const deck = matchMedia(DECK);
     const phone = matchMedia("(max-width: 600px)");
     let alive = true;
+    let stop: (() => void) | null = null;
     (async () => {
       const [{ initApproach, deckOn }, { mountApproach }, { ScrollTrigger }] = await Promise.all([import("./stages.js"), import("./approach-phone.js"), import("@/lib/gsap")]);
       if (!alive) return;
-      initApproach({ motion: !reducedMotion, reducedMotion });
-      setSlot?.(deckOn());
-      matchMedia(DECK).addEventListener("change", () => setSlot?.(deckOn()));
+      const stopApproach = initApproach(el, { motion: !reducedMotion, reducedMotion });
+      const slot = () => setSlot?.(deckOn());
+      slot();
+      deck.addEventListener("change", slot);
+      let picture: { destroy(): void } | null = null;
       let mounted = false;
       const mountPhone = () => {
         if (mounted || !phone.matches) return;
         mounted = true;
-        mountApproach(el, { reducedMotion });
+        picture = mountApproach(el, { reducedMotion });
       };
       mountPhone();
       phone.addEventListener("change", mountPhone);
-      requestAnimationFrame(() => ScrollTrigger.refresh());
+      const frame = requestAnimationFrame(() => ScrollTrigger.refresh());
+      stop = () => {
+        cancelAnimationFrame(frame);
+        phone.removeEventListener("change", mountPhone);
+        deck.removeEventListener("change", slot);
+        picture?.destroy();
+        stopApproach();
+      };
     })();
     return () => {
       alive = false;
+      stop?.();
     };
   }, []);
 
@@ -58,10 +73,11 @@ export function ApproachClient({ children }: { children: React.ReactNode }) {
 /** Where the stone sits in the deck's lane; it mounts once the deck is on (wide screens, motion). */
 export function StageStoneSlot() {
   const [on, setOn] = useState(false);
-  useEffect(() => {
+  // a layout effect, so it is there when the block's layout effect (it runs after its children's) calls it
+  useLayoutEffect(() => {
     setSlot = setOn;
     return () => {
-      setSlot = null;
+      if (setSlot === setOn) setSlot = null;
     };
   }, []);
   const empty = <span className="process__stone" aria-hidden="true" />;

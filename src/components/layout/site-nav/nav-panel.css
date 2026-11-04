@@ -1,4 +1,4 @@
-/* The panels under «Послуги» and «Кейси» (NavPanel.tsx): four dark columns with a hairline between them, a card per
+/* The panels under «Послуги» and «Кейси» (NavPanel.tsx): a dark column per card with a hairline between them, a card per
    column, the strip under a line. Over the page, never in its flow: CLS stays 0. */
 .navp {
   position: absolute;
@@ -18,10 +18,10 @@
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   box-shadow: 0 2.5rem 5rem -2rem rgb(0 0 0 / 0.8);
 }
-.navp__cols { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); }
+.navp__cols { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--navp-n, 4), 1fr); }
 .navp__cols i { background: #0d0d0d; box-shadow: inset -1px 0 0 var(--border); will-change: transform; }
 .navp__cols i:last-child { box-shadow: none; }
-.navp__grid { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.navp__grid { position: relative; display: grid; grid-template-columns: repeat(var(--navp-n, 4), minmax(0, 1fr)); }
 .navp__grid > li { display: flex; }
 
 .navp__card {

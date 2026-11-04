@@ -31,10 +31,14 @@ async function sendLead(form, reducedMotion) {
   }
 }
 
-function initForm(reducedMotion) {
-  const form = $('[data-lead-form]');
-  const noop = { setPlan() {}, setTask() {} };
+const noop = { setPlan() {}, setTask() {}, destroy() {} };
+let focusTimer = 0; // goToForm's tries to focus the name field
+
+function initForm(form, reducedMotion) {
   if (!form) return noop;
+  // every listener below comes off with destroy() (the form may be started again on the same element)
+  const off = new AbortController();
+  const signal = off.signal;
 
   // which language the visitor wrote in, for whoever answers the lead
   const langInput = $('[data-form-lang]', form);
@@ -104,25 +108,25 @@ function initForm(reducedMotion) {
   $('[data-form-plan-clear]', form).addEventListener('click', () => {
     setPlan(null);
     form.elements.name.focus();
-  });
+  }, { signal });
 
   for (const key of ['name', 'contact']) {
     const el = rules[key].field();
     el.addEventListener('blur', () => {
       if (el.value.trim()) touched.add(key);
       if (touched.has(key)) showError(key, !rules[key].ok());
-    });
+    }, { signal });
     let valid = rules[key].ok();
     el.addEventListener('input', () => {
       if (touched.has(key) && rules[key].ok()) showError(key, false);
       const now = rules[key].ok();
       if (now && !valid) document.dispatchEvent(new CustomEvent('stone:turn', { detail: { turn: 0.12 } }));
       valid = now;
-    });
+    }, { signal });
   }
   form.addEventListener('change', (e) => {
     if (e.target.name === 'task') showError('task', false);
-  });
+  }, { signal });
 
   const setTask = (value) => {
     const radio = $$('input[name="task"]', form).find((r) => r.value === value);
@@ -151,7 +155,7 @@ function initForm(reducedMotion) {
           a.addEventListener('click', (ev) => {
             ev.preventDefault();
             field.focus();
-          });
+          }, { signal });
           li.append(a);
           return li;
         }),
@@ -169,12 +173,14 @@ function initForm(reducedMotion) {
     submit.setAttribute('aria-busy', 'true');
     try {
       await sendLead(form, reducedMotion);
+      if (signal.aborted) return; // sent, but the page has moved on (a language switch): its form is a new one
       form.classList.add('is-sent');
       document.dispatchEvent(new CustomEvent('stone:flash', { detail: { env: 0.5 } }));
       done.hidden = false;
       done.focus();
     } catch (error) {
       console.warn('[form] the lead was not sent.', error);
+      if (signal.aborted) return;
       // the site's failure is not the visitor's connection
       const message = error?.server && failServer ? failServer : fail;
       message.hidden = false;
@@ -183,9 +189,16 @@ function initForm(reducedMotion) {
       submit.disabled = false;
       submit.removeAttribute('aria-busy');
     }
-  });
+  }, { signal });
 
-  return { setPlan, setTask };
+  return {
+    setPlan,
+    setTask,
+    destroy() {
+      off.abort();
+      clearTimeout(focusTimer);
+    },
+  };
 }
 
 /* ---------- 04 · stacking cards ----------
@@ -207,19 +220,35 @@ export function goToForm(reducedMotion) {
   let tries = 0;
   const focus = () => {
     field?.focus({ preventScroll: true });
-    if (field && document.activeElement !== field && ++tries < 16) setTimeout(focus, 150);
+    if (field && document.activeElement !== field && ++tries < 16) focusTimer = setTimeout(focus, 150);
   };
-  setTimeout(focus, reducedMotion ? 0 : 400);
+  clearTimeout(focusTimer);
+  focusTimer = setTimeout(focus, reducedMotion ? 0 : 400);
 }
 
-let api = { setPlan() {}, setTask() {} };
-let started = false;
-/** Once per page; the configurator hands its plan to the form through leadForm(). */
+let api = noop;
+let startedOn = null; // the form element the running api belongs to
+/**
+ * Starts the page's form (once per form element: a second call returns the same api). The configurator hands its plan
+ * to it through leadForm(). destroy() takes it down again: a language switch renders the page anew, a new form with it.
+ */
 export function startForm(reducedMotion) {
-  if (!started) {
-    started = true;
-    api = initForm(reducedMotion);
-  }
-  return api;
+  const form = $('[data-lead-form]');
+  if (form && form === startedOn) return api;
+  api.destroy();
+  const started = initForm(form, reducedMotion);
+  const instance = {
+    setPlan: started.setPlan,
+    setTask: started.setTask,
+    destroy() {
+      started.destroy();
+      if (api !== instance) return;
+      api = noop;
+      startedOn = null;
+    },
+  };
+  api = instance;
+  startedOn = form;
+  return instance;
 }
 export const leadForm = () => api;

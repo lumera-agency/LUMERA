@@ -6,10 +6,13 @@
  *   initChecks  the «before launch» checks tick one by one as the stage comes up
  *   deckProgress() where the deck is, in stages (0 … 5, scrubbed): the stone beside it takes its pose from it
  * The deck turns one stage per wheel gesture (fx/scroll-paging).
+ * initApproach(section) works on that section's DOM and returns a stop() that undoes it all: the
+ * page's language switch swaps the whole tree, and the new block starts again on its own.
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
 import { dpx, topbarHeight } from '@/lib/css';
 import { initPaging } from '@/components/fx/scroll-paging/paging.js';
+import { switching } from '@/lib/place';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -19,28 +22,41 @@ export const deckProgress = () => progressOf();
 export const DECK_IN = [0.1, 0.55]; // where in its step a card slides in (fractions of the step)
 export const DECK_REST = 0.85;      // where in its step the deck rests: the card down, the stone turned
 const DECK_RUN = 2.2;        // how long the block holds while the cards flip, in screen heights
+const AFTER_RISE = 24;       // px, after launch comes up from this far below its place
 const deckWide = window.matchMedia('(min-width: 1101px)');
 const deckOn = () => deckWide.matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function markDeck() {
-  $('[data-stages]')?.classList.toggle('is-deck', deckOn());
+/** A change made at once, the transitions of `held` off for that moment: after a language switch what the visitor
+ *  saw before it (ticked points, lit nodes, a picture at rest) is simply there again (lib/place). */
+export function atOnce(change, held) {
+  held.forEach((el) => el.style.setProperty('transition', 'none'));
+  change();
+  void document.documentElement.offsetWidth; // the new state is computed while the transitions are off
+  held.forEach((el) => el.style.removeProperty('transition'));
 }
 
-function initStages(gsap = GSAP, ScrollTrigger = ST) {
-  const root = $('[data-stages]');
-  if (!root) return;
+function markDeck(root) {
+  root?.classList.toggle('is-deck', deckOn());
+}
+
+function initStages(root, gsap = GSAP, ScrollTrigger = ST) {
+  if (!root) return null;
+  const triggers = [];
   // the list's guide line and nodes appear when the stone steps onto it (journey:lane);
   // without the journey (it attaches a moment after this runs, or never), when the block arrives
   const draw = (on) => root.classList.toggle('is-drawn', on);
   const staged = () => document.documentElement.classList.contains('has-stage');
-  document.addEventListener('journey:ready', (e) => draw(e.detail.passed.includes('lane')));
-  document.addEventListener('journey:lane', () => draw(true));
-  document.addEventListener('journey:lane:back', () => draw(false));
-  ScrollTrigger.create({
+  const journey = {
+    'journey:ready': (e) => draw(e.detail.passed.includes('lane')),
+    'journey:lane': () => draw(true),
+    'journey:lane:back': () => draw(false),
+  };
+  for (const [type, fn] of Object.entries(journey)) document.addEventListener(type, fn);
+  triggers.push(ScrollTrigger.create({
     trigger: root,
     start: 'top 75%',
     onEnter: () => { if (!staged()) draw(true); },
     onLeaveBack: () => { if (!staged()) draw(false); },
-  });
+  }));
 
   const lane = $('.process__lane', root);
   const track = $('.process__track', root);
@@ -57,7 +73,8 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
     const t = $('.stage__title', cards[0]);
     return t ? t.offsetTop + t.offsetHeight / 2 : 40;
   };
-  const build = () => {
+  // the pin's kill takes its spacer out and puts the section back in its place
+  const unbuild = () => {
     paging?.destroy();
     paging = null;
     deck?.scrollTrigger?.kill();
@@ -66,7 +83,10 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
     gsap.set(cards, { clearProps: 'transform,opacity,visibility,top' });
     if (after) gsap.set(after, { clearProps: 'transform,opacity,visibility' });
     gsap.set(cards.flatMap(content), { clearProps: 'opacity,visibility' });
-    markDeck();
+  };
+  const build = () => {
+    unbuild();
+    markDeck(root);
     if (!root.classList.contains('is-deck') || !track || !pin) return;
     measure();
     // the whole block (heading, cards, stone) holds still under the topbar while the cards
@@ -110,8 +130,8 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
     }
     // after launch comes up only once the last card has slid in
     if (after) {
-      gsap.set(after, { autoAlpha: 0, y: 24 });
-      deck.set(after, { autoAlpha: 0, y: 24 }, 0);
+      gsap.set(after, { autoAlpha: 0, y: AFTER_RISE });
+      deck.set(after, { autoAlpha: 0, y: AFTER_RISE }, 0);
       deck.to(after, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.4 }, cards.length - 0.45);
     }
     deck.set({}, {}, cards.length); // five steps, the whole run
@@ -122,17 +142,34 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
         const st = deck?.scrollTrigger;
         if (!st) return [];
         const at = (t) => st.start + ((st.end - st.start) * t) / cards.length;
-        return [0, ...cards.slice(1, -1).map((_, k) => k + 1 + DECK_REST), cards.length].map(at);
+        const list = [0, ...cards.slice(1, -1).map((_, k) => k + 1 + DECK_REST), cards.length].map(at);
+        // and one more past the run: the next block's title («Зберіть свій проєкт») a little under the topbar,
+        // so the scroll out of the deck stops right at it instead of flying past (the owner, 4 Nov). The same
+        // 24 px in PricingClient, which sizes that block's sample to fit under the title
+        const next = (section.closest('.pin-spacer') || section).nextElementSibling;
+        const head = next?.matches('section') ? next.querySelector('.s-head') : null;
+        const title = head?.querySelector('.s-head__title');
+        if (title && head.parentElement) {
+          // where the title stands unstuck (that block keeps its head pinned as its options scroll): the head is its
+          // container's first child
+          const titleIn = title.getBoundingClientRect().top - head.getBoundingClientRect().top;
+          const at = head.parentElement.getBoundingClientRect().top + (parseFloat(getComputedStyle(head).marginTop) || 0) + titleIn;
+          const y = at + window.scrollY - bar() - dpx(24);
+          if (y > list[list.length - 1] + 2) list.push(Math.round(y));
+        }
+        return list;
       },
       duration: 0.75,
     });
   };
   // the stone beside the deck (three/stage-stone, mounted by Approach) takes its pose from here
-  progressOf = () => (deck ? deck.time() : 0);
-  deckWide.addEventListener('change', () => {
+  const progress = () => (deck ? deck.time() : 0);
+  progressOf = progress;
+  const onWide = () => {
     build();
     ScrollTrigger.refresh();
-  });
+  };
+  deckWide.addEventListener('change', onWide);
 
   /* the list (and the deck's measures) */
   let marks = [];
@@ -157,7 +194,10 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
       const section = root.closest('section') || root;
       const sectionCss = getComputedStyle(section);
       const pinnedTop = topbarHeight() - (parseFloat(sectionCss.paddingTop) || 0) + dpx(36);
-      const bottom = (after || root).getBoundingClientRect().bottom - section.getBoundingClientRect().top;
+      // counted from where after launch waits to come up, whatever the deck shows now (a measure with the page
+      // scrolled past the deck would see it risen and give the cards 24 px more)
+      const low = after ? AFTER_RISE - (Number(gsap.getProperty(after, 'y')) || 0) : 0;
+      const bottom = (after || root).getBoundingClientRect().bottom + low - section.getBoundingClientRect().top;
       const room = window.innerHeight - pinnedTop - bottom - Math.max(dpx(124), window.innerHeight * 0.12);
       const cardCss = getComputedStyle(cards[0]);
       const body = natural - (parseFloat(cardCss.paddingTop) || 0) - (parseFloat(cardCss.paddingBottom) || 0);
@@ -173,12 +213,17 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
       root.style.setProperty('--pin-top', `${Math.round(top)}px`);
     }
     const top = root.getBoundingClientRect().top;
-    marks = cards.map((s) => ($('.stage__node', s)?.getBoundingClientRect().top ?? s.getBoundingClientRect().top) - top + 6);
+    // a node the layout hides (the phone stack) has no box, its rect would follow the scroll: it lights nothing
+    marks = cards.map((s) => {
+      const node = $('.stage__node', s);
+      if (node && !node.offsetParent) return Infinity;
+      return (node?.getBoundingClientRect().top ?? s.getBoundingClientRect().top) - top + 6;
+    });
   };
   measure();
   build();
   ScrollTrigger.addEventListener('refreshInit', measure);
-  ScrollTrigger.create({
+  triggers.push(ScrollTrigger.create({
     trigger: root,
     start: 'top 45%',
     end: 'bottom 45%',
@@ -186,35 +231,56 @@ function initStages(gsap = GSAP, ScrollTrigger = ST) {
       if (root.classList.contains('is-deck')) return;
       const y = progress * (root.clientHeight || 1);
       root.style.setProperty('--p', progress.toFixed(4));
-      cards.forEach((s, i) => s.classList.toggle('is-on', y >= marks[i]));
+      const light = () => cards.forEach((s, i) => s.classList.toggle('is-on', y >= marks[i]));
+      const changes = cards.some((s, i) => s.classList.contains('is-on') !== y >= marks[i]);
+      if (changes && switching()) atOnce(light, cards.map((s) => $('.stage__node', s)).filter(Boolean));
+      else light();
     },
-  });
+  }));
   // after launch: its node lights as the row arrives
   if (after) {
-    ScrollTrigger.create({
+    const lightAfter = (on) => {
+      const change = () => after.classList.toggle('is-on', on);
+      if (switching()) atOnce(change, $$('.stage__node', after));
+      else change();
+    };
+    triggers.push(ScrollTrigger.create({
       trigger: after,
       start: 'top 60%',
-      onEnter: () => after.classList.add('is-on'),
-      onLeaveBack: () => after.classList.remove('is-on'),
-    });
+      onEnter: () => lightAfter(true),
+      onLeaveBack: () => lightAfter(false),
+    }));
   }
+
+  return () => {
+    for (const [type, fn] of Object.entries(journey)) document.removeEventListener(type, fn);
+    deckWide.removeEventListener('change', onWide);
+    ScrollTrigger.removeEventListener('refreshInit', measure);
+    unbuild();
+    triggers.forEach((t) => t.kill());
+    if (progressOf === progress) progressOf = () => 0;
+  };
 }
 
-function initChecks(reducedMotion) {
-  const lists = $$('[data-checks]');
-  if (!lists.length) return;
+function initChecks(section, stages, reducedMotion) {
+  const lists = $$('[data-checks]', section);
+  if (!lists.length) return null;
   const done = new Set();
+  const timers = [];
   const tick = (list) => {
     if (done.has(list)) return;
     done.add(list);
-    $$('li', list).forEach((li, i) => setTimeout(() => li.classList.add('is-done'), 150 + i * 260));
+    const items = $$('li', list);
+    // a language switch: the points the visitor saw ticked are done at once, not ticked again
+    if (switching()) atOnce(() => items.forEach((li) => li.classList.add('is-done')), $$('.check, .check svg', list));
+    else items.forEach((li, i) => timers.push(setTimeout(() => li.classList.add('is-done'), 150 + i * 260)));
   };
   if (reducedMotion) {
     lists.forEach((list) => $$('li', list).forEach((li) => li.classList.add('is-done')));
-    return;
+    return null;
   }
   const ScrollTrigger = ST;
-  const stages = $('[data-stages]');
+  const stop = () => timers.forEach(clearTimeout);
   // the deck: a card's points tick as it slides on top (half-way in, by the deck's progress)
   if (stages?.classList.contains('is-deck')) {
     const cards = $$('.stage', stages);
@@ -226,28 +292,37 @@ function initChecks(reducedMotion) {
     };
     // while the block is on screen (it is pinned for the deck's whole run), each frame asks the deck
     let on = false;
-    new IntersectionObserver(([entry]) => {
+    const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting === on) return;
       on = entry.isIntersecting;
       if (on) GSAP.ticker.add(sync);
       else GSAP.ticker.remove(sync);
-    }, { rootMargin: '-45% 0px 0px 0px' }).observe(stages.closest('section') || stages);
-    return;
+    }, { rootMargin: '-45% 0px 0px 0px' });
+    io.observe(stages.closest('section') || stages);
+    return () => {
+      io.disconnect();
+      GSAP.ticker.remove(sync);
+      stop();
+    };
   }
   // the list: each card's points tick as the card comes up
-  for (const list of lists) {
-    ScrollTrigger.create({ trigger: list.closest('.stage') || list, start: 'top 45%', once: true, onEnter: () => tick(list) });
-  }
+  const triggers = lists.map((list) =>
+    ScrollTrigger.create({ trigger: list.closest('.stage') || list, start: 'top 45%', once: true, onEnter: () => tick(list) }));
+  return () => {
+    triggers.forEach((t) => t.kill());
+    stop();
+  };
 }
 
-let started = false;
-export function initApproach({ motion, reducedMotion }) {
-  if (started) return;
-  started = true;
+/** Starts the block on `section` (#approach); returns stop(), which undoes everything it attached. */
+export function initApproach(section, { motion, reducedMotion }) {
+  const stages = $('[data-stages]', section);
+  const stops = [];
   if (motion) {
-    markDeck();
-    initStages(); // first: the deck's turns tell the checks when a card is on top
+    markDeck(stages);
+    stops.push(initStages(stages)); // first: the deck's turns tell the checks when a card is on top
   }
-  initChecks(reducedMotion);
+  stops.push(initChecks(section, stages, reducedMotion));
+  return () => stops.forEach((stop) => stop?.());
 }
 export { deckOn };

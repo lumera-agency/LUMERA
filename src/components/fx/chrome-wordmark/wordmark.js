@@ -11,6 +11,11 @@
  * metal from there.
  * Renders only while the footer is on screen; without WebGL the CSS text with a
  * static chrome gradient stays.
+ *
+ *   initWordmark({ reducedMotion, root }) → { prepare(), destroy() }
+ * destroy() stops it all (frames, listeners, observers) and lets its WebGL context go;
+ * started again on a new mark (a language switch renders the page anew) it is live
+ * before that page is painted when the mark is on screen or near it.
  */
 const font = (size) => `800 ${size}px Archivo, "Arial Black", sans-serif`;
 const MAX_DPR = 1.75;
@@ -118,21 +123,28 @@ void main() {
   gl_FragColor = vec4(mix(col * m, lensCol, lens), mix(m, 1.0, lens));
 }`;
 
-export function initWordmark({ reducedMotion }) {
-  const root = document.querySelector('[data-wordmark]');
+export function initWordmark({ reducedMotion, root = document.querySelector('[data-wordmark]') }) {
   const text = root?.textContent.trim();
-  if (!text) return;
-  fitText(root, text);
-  if (!window.WebGLRenderingContext) return;
+  if (!text) return { prepare: () => null, destroy() {} };
+  // what has to be undone (added to as it starts); stopped: no more starting
+  const run = { stopped: false, stops: [] };
+  const destroy = () => {
+    if (run.stopped) return;
+    run.stopped = true;
+    run.stops.splice(0).forEach((stop) => stop());
+  };
+  fitText(root, text, run);
+  if (!window.WebGLRenderingContext) return { prepare: () => null, destroy };
   // set up ahead, while the visitor is still far up the page and not scrolling: a moment after the
   // hero's intro has played (after the «Чому ECLO» clip, so the two don't share a frame), in a
   // pause in the scrolling; reaching the footer sooner than that starts it there. The shader
   // compiles in the background where the browser can (see start())
   let started = null;
-  const go = () => {
-    if (started) return started;
+  const go = (atOnce = false) => {
+    if (started || run.stopped) return started;
     io.disconnect();
-    started = start(root, text, reducedMotion).catch((error) => {
+    window.removeEventListener('scroll', onScroll);
+    started = start(root, text, reducedMotion, run, atOnce).catch((error) => {
       root.classList.remove('is-live');
       console.warn('[wordmark] static fallback.', error);
     });
@@ -143,36 +155,68 @@ export function initWordmark({ reducedMotion }) {
   let lastScroll = 0;
   const onScroll = () => { lastScroll = performance.now(); };
   window.addEventListener('scroll', onScroll, { passive: true });
+  let timer = 0;
+  let cancelIdle = () => {};
   const still = () => {
-    if (started) return window.removeEventListener('scroll', onScroll);
     const quiet = performance.now() - lastScroll;
-    if (quiet < 250) return setTimeout(still, 270 - quiet);
+    if (!started && quiet < 250) {
+      timer = setTimeout(still, 270 - quiet);
+      return;
+    }
     window.removeEventListener('scroll', onScroll);
-    return whenIdle(go, 0);
+    if (!started) cancelIdle = whenIdle(() => go(), 0);
   };
-  const afterIntro = () => setTimeout(still, 900);
+  const afterIntro = () => {
+    timer = setTimeout(still, 900);
+  };
   if (document.documentElement.classList.contains('intro-done')) afterIntro();
   else window.addEventListener('eclo:intro-done', afterIntro, { once: true });
+  run.stops.push(() => {
+    io.disconnect();
+    window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('eclo:intro-done', afterIntro);
+    clearTimeout(timer);
+    cancelIdle();
+  });
+  // on screen already, or about to be (a language switch from the footer's own UA · RU): built now, so the page
+  // in the other language is never painted with the plain text in its place
+  const box = root.getBoundingClientRect();
+  if (box.bottom > -innerHeight * 1.5 && box.top < innerHeight * 2.5) go(true);
   // main.js may have it built sooner: before the intro, while nothing on the first screen moves
-  return { prepare: go };
+  return { prepare: () => go(), destroy };
 }
+
+const fontReady = () => !document.fonts || document.fonts.check(font(100));
 
 /* The live text's size off its own width (--mark-fit in footer.css: font size per width of the mark), once the
    web font is in: before the canvas, and without WebGL, the text spans the mark whatever the word */
-function fitText(root, text) {
-  (document.fonts ? document.fonts.load(font(100)) : Promise.resolve())
-    .then(() => {
-      const g = document.createElement('canvas').getContext('2d');
-      g.font = font(200);
-      root.style.setProperty('--mark-fit', String(200 / g.measureText(text).width));
-    })
-    .catch(() => {});
+function fitText(root, text, run) {
+  const fit = () => {
+    if (run.stopped) return;
+    const g = document.createElement('canvas').getContext('2d');
+    g.font = font(200);
+    root.style.setProperty('--mark-fit', String(200 / g.measureText(text).width));
+  };
+  run.stops.push(() => root.style.removeProperty('--mark-fit'));
+  if (fontReady()) fit(); // (in already: measured at once, before the next paint)
+  else document.fonts.load(font(100)).then(fit).catch(() => {});
 }
 
-/** Runs `fn` once the page has been quiet for a while after `delay` ms. */
+/** Runs `fn` once the page has been quiet for a while after `delay` ms; returns what cancels it. */
 function whenIdle(fn, delay) {
-  setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 2500 }) : fn()), delay);
+  let idle = 0;
+  const timer = setTimeout(() => {
+    if (window.requestIdleCallback) idle = requestIdleCallback(fn, { timeout: 2500 });
+    else fn();
+  }, delay);
+  return () => {
+    clearTimeout(timer);
+    if (idle) cancelIdleCallback(idle);
+  };
 }
+
+// canvases whose context a stopped run let go of: lost for good, so a new run draws on a fresh one
+const released = new WeakSet();
 
 /* Compiled without asking for the result: the status is read once the program has linked,
    so a driver that compiles in parallel (KHR_parallel_shader_compile) isn't made to block */
@@ -223,13 +267,28 @@ function stemOf(letter) {
   return stem ? (stem[0] + stem[1]) / 2 - 20 : null;
 }
 
-async function start(root, text, reducedMotion) {
-  const canvas = root.querySelector('canvas');
+/* atOnce: wanted on screen now, so no step waits for a later frame (the shader is compiled where it stands) */
+async function start(root, text, reducedMotion, run, atOnce) {
+  let canvas = root.querySelector('canvas');
+  if (released.has(canvas)) {
+    const fresh = canvas.cloneNode(false);
+    canvas.replaceWith(fresh);
+    canvas = fresh;
+  }
   // the letters are drawn from the web font, so it has to be there first
-  await Promise.race([document.fonts?.load(font(100)), new Promise((resolve) => setTimeout(resolve, 3000))]).catch(() => {});
+  if (!fontReady()) {
+    await Promise.race([document.fonts.load(font(100)), new Promise((resolve) => setTimeout(resolve, 3000))]).catch(() => {});
+    if (run.stopped) return;
+  }
 
   const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
   if (!gl) return;
+  // stopped, the context goes at once (a page that switches languages back and forth would pile them up)
+  const lose = gl.getExtension('WEBGL_lose_context');
+  run.stops.push(() => {
+    released.add(canvas);
+    lose?.loseContext();
+  });
   const program = gl.createProgram();
   const vs = compile(gl, gl.VERTEX_SHADER, VERT);
   const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
@@ -237,12 +296,13 @@ async function start(root, text, reducedMotion) {
   gl.attachShader(program, fs);
   gl.linkProgram(program);
   // where the driver compiles in the background, wait for it a frame at a time instead of stalling the page
-  const parallel = gl.getExtension('KHR_parallel_shader_compile');
+  const parallel = atOnce ? null : gl.getExtension('KHR_parallel_shader_compile');
   if (parallel) {
     await new Promise((resolve) => {
-      const poll = () => (gl.getProgramParameter(program, parallel.COMPLETION_STATUS_KHR) ? resolve() : requestAnimationFrame(poll));
+      const poll = () => (run.stopped || gl.getProgramParameter(program, parallel.COMPLETION_STATUS_KHR) ? resolve() : requestAnimationFrame(poll));
       poll();
     });
+    if (run.stopped) return;
   }
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     throw new Error(gl.getShaderInfoLog(vs) || gl.getShaderInfoLog(fs) || gl.getProgramInfoLog(program));
@@ -358,11 +418,13 @@ async function start(root, text, reducedMotion) {
     inside = false;
     wake();
   };
-  root.addEventListener('pointermove', aim);
-  root.addEventListener('pointerdown', aim);
-  root.addEventListener('pointerleave', away);
-  root.addEventListener('pointercancel', away);
-  root.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') away(); });
+  const off = new AbortController();
+  const signal = off.signal;
+  root.addEventListener('pointermove', aim, { signal });
+  root.addEventListener('pointerdown', aim, { signal });
+  root.addEventListener('pointerleave', away, { signal });
+  root.addEventListener('pointercancel', away, { signal });
+  root.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') away(); }, { signal });
 
   let time = 0;
   let last = 0;
@@ -382,7 +444,7 @@ async function start(root, text, reducedMotion) {
     drop.age = 0;
     drop.power = 0.8;
     wake();
-  });
+  }, { signal });
   const frame = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
     last = now;
@@ -407,15 +469,16 @@ async function start(root, text, reducedMotion) {
 
   layout();
   draw();
-  new IntersectionObserver((entries) => {
+  const io = new IntersectionObserver((entries) => {
     visible = entries[entries.length - 1].isIntersecting; // the newest entry (one target)
     if (visible) wake();
-  }, { rootMargin: '80px 0px' }).observe(root);
-  document.addEventListener('visibilitychange', wake);
+  }, { rootMargin: '80px 0px' });
+  io.observe(root);
+  document.addEventListener('visibilitychange', wake, { signal });
 
   let width = root.clientWidth;
   let timer = 0;
-  new ResizeObserver(() => {
+  const ro = new ResizeObserver(() => {
     if (root.clientWidth === width) return;
     width = root.clientWidth;
     clearTimeout(timer);
@@ -423,7 +486,8 @@ async function start(root, text, reducedMotion) {
       layout();
       draw();
     }, 150);
-  }).observe(root);
+  });
+  ro.observe(root);
 
   canvas.addEventListener('webglcontextlost', (e) => {
     e.preventDefault();
@@ -432,5 +496,18 @@ async function start(root, text, reducedMotion) {
     visible = false;
     root.classList.remove('is-live');
     root.style.height = '';
+  }, { signal });
+
+  run.stops.push(() => {
+    off.abort();
+    io.disconnect();
+    ro.disconnect();
+    clearTimeout(timer);
+    cancelAnimationFrame(raf);
+    raf = 0;
+    visible = false;
+    root.classList.remove('is-live');
+    root.style.height = '';
+    if (dropSlot) dropSlot.style.left = dropSlot.style.top = dropSlot.style.width = dropSlot.style.height = '';
   });
 }

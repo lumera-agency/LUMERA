@@ -3,7 +3,8 @@
  *   initServiceMore  «Детальніше» opens the service's dialog (backdrop, × and the preset link close it)
  *   initStack        861–1023 px wide: the rows stick under the topbar and the next one slides over
  *   initServiceTabs  ≤ 600 px: the services as a switcher (chips over one window), auto-advancing once
- * Services.tsx's client part calls initServices() once the block is in the page.
+ * Services.tsx's client part calls initServices() once the block is in the page, and its destroy() when
+ * the block goes (a language switch renders it anew).
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
 import { holdDemos, openDemos, demoTimeline } from './demos/timelines.js';
@@ -13,17 +14,17 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const START_EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
-function initServiceMore() {
+function initServiceMore(signal) {
   for (const btn of $$('[data-more]')) {
     const dialog = document.getElementById(btn.dataset.more);
     if (!dialog?.showModal) continue;
-    btn.addEventListener('click', () => dialog.showModal());
+    btn.addEventListener('click', () => dialog.showModal(), { signal });
     // the backdrop, the × and the link to the configurator close it (the link then goes on to #pricing)
-    dialog.addEventListener('click', (e) => { if (e.target === dialog || e.target.closest('[data-more-close]')) dialog.close(); });
+    dialog.addEventListener('click', (e) => { if (e.target === dialog || e.target.closest('[data-more-close]')) dialog.close(); }, { signal });
   }
 }
 
-function initStack(motion) {
+function initStack(motion, signal) {
   const list = $('.services');
   if (!list) return;
   const cards = $$('.service', list);
@@ -42,9 +43,12 @@ function initStack(motion) {
   const stickyTop = (card) => parseFloat(getComputedStyle(card).top) || 0;
 
   let tweens = [];
-  const setup = () => {
+  const clear = () => {
     tweens.forEach((t) => t.scrollTrigger?.kill() || t.kill());
     tweens = [];
+  };
+  const setup = () => {
+    clear();
     if (gsap) gsap.set(cards, { scale: 1 });
     $$('.service__shade', list).forEach((s) => { s.style.opacity = '0'; });
 
@@ -94,7 +98,7 @@ function initStack(motion) {
       ScrollTrigger?.refresh();
     }, 200);
   };
-  wide.addEventListener('change', reset);
+  wide.addEventListener('change', reset, { signal });
   // a phone fires `resize` whenever its address bar slides in or out while scrolling:
   // only a new width rebuilds the stack (a rebuild mid-scroll would jolt the page)
   let lastWidth = window.innerWidth;
@@ -102,15 +106,23 @@ function initStack(motion) {
     if (window.innerWidth === lastWidth) return;
     lastWidth = window.innerWidth;
     reset();
-  });
+  }, { signal });
+
+  return () => {
+    clearTimeout(timer);
+    clear();
+    list.classList.remove('is-stacked');
+    cards.forEach((card) => card.style.removeProperty('--i'));
+    $$('.service__shade', list).forEach((s) => s.remove());
+  };
 }
 
 const svcPhone = window.matchMedia('(max-width: 600px)');
 
 /** Phones: if the open service's window and title end under the screen's edge, the page comes up just
- *  enough to show them, never past `top` (the chips) under the bar. */
+ *  enough to show them, never past `top` (the chips) under the bar. Returns the frame's id. */
 function showOpened(panel, top, reducedMotion) {
-  requestAnimationFrame(() => {
+  return requestAnimationFrame(() => {
     const end = $('.service__title', panel) || $('.service__demo', panel);
     if (!end) return;
     const under = end.getBoundingClientRect().bottom + 16 - window.innerHeight;
@@ -127,7 +139,7 @@ function showOpened(panel, top, reducedMotion) {
    service comes up by itself 2.4 s after a clip rests (before its «↻»), once through, while the window is
    in view; the chosen chip fills as its clip plays. Any click in the block hands it to the visitor. */
 const SVC_HOLD = 2400;
-function initServiceTabs(reducedMotion) {
+function initServiceTabs(reducedMotion, signal) {
   const tablist = $('.service-tabs');
   const list = $('.services');
   if (!tablist || !list) return;
@@ -215,11 +227,12 @@ function initServiceTabs(reducedMotion) {
   };
 
   const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 };
+  let opened = 0;
   tabs.forEach((tab, k) => {
     tab.addEventListener('click', () => {
       select(k);
-      showOpened(panels[k], tablist, reducedMotion);
-    });
+      opened = showOpened(panels[k], tablist, reducedMotion);
+    }, { signal });
     tab.addEventListener('keydown', (e) => {
       let to = null;
       if (e.key in step) to = (k + step[e.key] + n) % n;
@@ -229,11 +242,12 @@ function initServiceTabs(reducedMotion) {
       e.preventDefault();
       select(to);
       tabs[to].focus();
-    });
+    }, { signal });
   });
 
+  let timer = 0;
+  let io = null;
   if (auto) {
-    let timer = 0;
     let waiting = false;
     let inView = false;
     const stop = () => {
@@ -250,30 +264,52 @@ function initServiceTabs(reducedMotion) {
       if (!auto || !svcPhone.matches || !panels[current].contains(e.target)) return;
       if (current === n - 1) stop(); // once through: the last one stays
       else timer = setTimeout(next, SVC_HOLD);
-    });
-    new IntersectionObserver((entries) => {
+    }, { signal });
+    io = new IntersectionObserver((entries) => {
       inView = entries[entries.length - 1].isIntersecting;
       if (inView && waiting) {
         waiting = false;
         timer = setTimeout(next, 600);
       }
-    }, { threshold: 0.5 }).observe(list);
-    tablist.addEventListener('click', stop);
-    list.addEventListener('click', stop);
-    tablist.addEventListener('keydown', stop);
+    }, { threshold: 0.5 });
+    io.observe(list);
+    tablist.addEventListener('click', stop, { signal });
+    list.addEventListener('click', stop, { signal });
+    tablist.addEventListener('keydown', stop, { signal });
   } else {
     tablist.classList.add('is-manual');
   }
   set();
-  svcPhone.addEventListener('change', set);
+  svcPhone.addEventListener('change', set, { signal });
+
+  return () => {
+    clearTimeout(timer);
+    cancelAnimationFrame(opened);
+    io?.disconnect();
+    leaving?.anims.forEach((a) => a.cancel());
+    leaving = null;
+    tablist.classList.remove('is-on', 'is-manual');
+    list.classList.remove('is-tabs');
+    panels.forEach((p) => {
+      p.classList.remove('is-open');
+      p.removeAttribute('role');
+      p.removeAttribute('aria-labelledby');
+    });
+  };
 }
 
-let started = false;
-/** Once per page: dialogs, the stack (it stands down where the ride is on), the phone switcher. */
+/** Dialogs, the stack (it stands down where the ride is on), the phone switcher, on the block in the
+ *  page now; destroy() takes them off again. */
 export function initServices({ motion, reducedMotion }) {
-  if (started) return;
-  started = true;
-  initServiceMore();
-  initServiceTabs(reducedMotion);
-  initStack(motion);
+  const off = new AbortController();
+  initServiceMore(off.signal);
+  const stopTabs = initServiceTabs(reducedMotion, off.signal);
+  const stopStack = initStack(motion, off.signal);
+  return {
+    destroy() {
+      off.abort();
+      stopStack?.();
+      stopTabs?.();
+    },
+  };
 }

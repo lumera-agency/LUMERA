@@ -7,6 +7,7 @@
 import { useSyncExternalStore } from "react";
 import { ScrollTrigger } from "@/lib/gsap";
 import { scrollToY } from "@/lib/scroll";
+import { placeY } from "@/lib/place";
 
 function deferred<T = void>() {
   let resolve!: (value: T) => void;
@@ -40,8 +41,8 @@ export const sceneRun = {
 };
 export const useSceneRunning = () => useSyncExternalStore(sceneRun.subscribe, sceneRun.get, () => false);
 
-/** The preloader's clock (its inline script in fx/preloader/Preloader.tsx). */
-export type PreloaderClock = { step(progress: number, stage?: number): void; finish(): Promise<void> };
+/** The preloader's clock (its inline script in fx/preloader/Preloader.tsx); `rolled`: its roll has played. */
+export type PreloaderClock = { step(progress: number, stage?: number): void; finish(): Promise<void>; rolled: Promise<void> };
 declare global {
   interface Window {
     ecloLoader?: PreloaderClock;
@@ -52,10 +53,12 @@ export const loader = () => (typeof window === "undefined" ? undefined : window.
 /** Back where the visitor was after a language switch (layout/lang-switch). */
 export function restoreScroll() {
   try {
-    const y = sessionStorage.getItem("eclo:lang-scroll");
-    if (y == null) return false;
+    const kept = sessionStorage.getItem("eclo:lang-scroll");
+    if (kept == null) return false;
     sessionStorage.removeItem("eclo:lang-scroll");
-    window.scrollTo({ top: Number(y), behavior: "instant" });
+    // the pins' room in place first, and through Lenis, which would otherwise glide back to where it thinks it is
+    ScrollTrigger.refresh();
+    scrollToY(placeY(JSON.parse(kept)), { immediate: true });
     return true;
   } catch {
     return false;

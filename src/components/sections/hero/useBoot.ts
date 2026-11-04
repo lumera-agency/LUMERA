@@ -53,8 +53,9 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
         introDone();
         return;
       }
-      // the columns start to lift first; the intro starts under them (a stalled loader: after 4 s)
-      await Promise.race([clock?.finish() ?? Promise.resolve(), wait(4000)]);
+      // the preloader's roll (about 2 s, started as the page began to load) done, it lets go; the intro starts under
+      // it (a stalled loader: after 9 s)
+      await Promise.race([clock?.finish() ?? Promise.resolve(), wait(9000)]);
       arrive();
       sceneRun.set(true);
       const intro = playIntro(hero);

@@ -181,3 +181,29 @@ html:not(.js) .check svg { stroke-dashoffset: 0; }
 .is-done .check,
 .check--lg,
 html:not(.js) .check { border-color: var(--signal); background: var(--signal); box-shadow: 0 0 0.875rem rgba(218, 255, 2, 0.22); }
+
+/* (22 Oct, the owner: the block's main thing fits the screen at first glance) a computer's low screen: the form packs
+   tighter, so «Надіслати заявку» is on the screen as a link from the topbar lands on the block (1100 px and below);
+   where even that is not enough (about 860 px and below) the button rides at the screen's foot while the form scrolls
+   under it, until the form ends (the card clips without being a scroller of its own: overflow: clip, or sticky would
+   stick inside it) */
+@media (min-width: 861px) and (max-height: 1100px) {
+  .lead-form { --lf-pad: clamp(1.25rem, 2.8vh, 2rem); gap: 1rem; padding: var(--lf-pad); }
+  .field input,
+  .field textarea { min-height: 2.875rem; padding-block: 0.6875rem; }
+  .field textarea { min-height: 4.25rem; }
+  .field legend { margin-bottom: 0.5rem; }
+  .lead-form__foot { padding-top: 0; }
+}
+@media (min-width: 861px) and (max-height: 860px) {
+  .lead-form.card { overflow: clip; }
+  /* (a bar at the card's foot: the fields pass under its black, which fades in over them) */
+  .lead-form__foot {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 0 calc(-1 * var(--lf-pad)) calc(-1 * var(--lf-pad));
+    padding: 1.5rem var(--lf-pad) var(--lf-pad);
+    background: linear-gradient(rgb(13 13 13 / 0), #0d0d0d 1.5rem);
+  }
+}

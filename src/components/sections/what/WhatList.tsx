@@ -4,7 +4,7 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { useHoverReveal } from "@/components/fx/hover-reveal/useHoverReveal";
 import { focusBlock } from "@/lib/scroll";
 
-type Row = { n: number; service: string; name: string; desc: string; image: string; href?: string };
+type Row = { n: number; place: number; service: string; name: string; desc: string; image: string; href?: string };
 
 /**
  * The list: names rise out of their masks as it comes in; over a row the others step back (CSS) and
@@ -45,7 +45,7 @@ export function WhatList({ rows, more }: { rows: Row[]; more: string }) {
       {rows.map((r) => (
         <li className="what__item" key={r.n}>
           <a className="what__row" href={r.href ?? `#${r.service}`} data-what-row="" data-n={r.n} onClick={r.href ? undefined : (e) => go(e, r.service)}>
-            <span className="what__num">{r.n}</span>
+            <span className="what__num">{r.place}</span>
             <span className="what__name">
               <span className="what__name-in">{r.name}</span>
             </span>

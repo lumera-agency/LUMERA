@@ -241,7 +241,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 .menu-sheet__phones svg,
-.menu-sheet__chats svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.menu-sheet__chats svg { flex: none; width: 1rem; height: 1rem; }
 .menu-sheet__phones svg { color: var(--ink-mute); }
 .menu-sheet__phones a:is(:active, :focus-visible) { color: var(--lime); }
 .menu-sheet__chats a:is(:active, :focus-visible) { background: var(--lime); color: var(--on-ink); box-shadow: none; }

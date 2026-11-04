@@ -34,7 +34,6 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         note={t("preloader.note")}
         words={t("preloader.words")}
         stages={t("preloader.stages")}
-        images={[1, 2, 3, 4].map((n) => `/img/what/what-${n}-${locale === "ru" ? "ru" : "uk"}.webp`)}
       />
       <SmoothScroll />
       <main>
@@ -53,8 +52,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       </main>
       <Footer />
       <MenuSheet />
-      {/* steps aside over the ride's HUD and arrows, the configurator's preview and bars, and the footer (it has its own link up) */}
-      <BackToTop label={t("footer.up.span")} quiet=".ride.is-on .ride__hud, .ride.is-on .ride__arrow, .cfg-bar, .cfg-sheet, .pvw, .footer" />
+      {/* steps aside over the ride's HUD and arrows, the configurator's preview, price card and bars, and the footer (it has its own link up) */}
+      <BackToTop label={t("footer.up.span")} quiet=".ride.is-on .ride__hud, .ride.is-on .ride__arrow, .cfg-bar, .cfg-sheet, .pvw, .cfg-sum, .footer" />
     </>
   );
 }

@@ -4,25 +4,26 @@ import { aiHref } from "@/components/ai/links";
 import { WhatList } from "./WhatList";
 import "./what.css";
 
-/** The four directions; each row leads to its panel in 3 · Послуги, except the ones with a page of their own. */
+/** The directions; each row leads to its panel in 3 · Послуги, except the ones with a page of their own. No SaaS for
+ *  now (the owner, 4 Nov: it was n 3, svc-4); `n` is the message's and the picture's key, the row shows its place. */
 export const DIRECTIONS = [
   { n: 1, service: "svc-1" },
   { n: 2, service: "svc-3" },
-  { n: 3, service: "svc-4" },
   { n: 4, service: "svc-2" },
 ] as const;
 
 /** Directions with a page of their own: the row opens it instead of scrolling to the panel. */
 const PAGES: Partial<Record<string, string>> = { "svc-1": "/dyzain-i-saity", "svc-3": "/ai-avtomatyzatsiia", "svc-2": "/reklama-i-analityka" };
 
-/** 2 · Що ми робимо: four directions as one big list; over a row its picture follows the cursor. */
+/** 2 · Що ми робимо: the directions as one big list; over a row its picture follows the cursor. */
 export async function What() {
   const t = await getTranslations("what");
   const locale = await getLocale();
-  const rows = DIRECTIONS.map((d) => {
+  const rows = DIRECTIONS.map((d, i) => {
     const page = PAGES[d.service];
     return {
       ...d,
+      place: i + 1,
       name: t(`${d.n}.name`),
       desc: t(`${d.n}.desc`),
       image: `/img/what/what-${d.n}-${locale === "ru" ? "ru" : "uk"}.webp`,

@@ -490,8 +490,9 @@ export function enhance(site, ctx = {}) {
     site.classList.add('fx-armed');
     cnt.forEach((el) => { if (!el.closest('.fx-hall')) rollNumber(el, zero(el.dataset.cnt)); });
   }
-  // a rebuild of this same sample (3D or the second language switched): its first screen stays as it was, no entrance
-  const rebuilt = !!site.parentElement?.querySelector(':scope > .pv-site--old.pv-n-landing');
+  // a rebuild of this same sample (3D or the second language switched), or the page itself switching its language
+  // (LangSwitch: html.lang-switch): its first screen stays as it was, no entrance
+  const rebuilt = !!site.parentElement?.querySelector(':scope > .pv-site--old.pv-n-landing') || document.documentElement.classList.contains('lang-switch');
   const enter = (b) => {
     const k = b.dataset.blk;
     if (done.has(k)) return;
@@ -501,6 +502,8 @@ export function enhance(site, ctx = {}) {
     if (k === '0' && rebuilt) b.classList.add('is-in');
     else if (k === '0') faces.then(go); else go();
   };
+  // (rebuilt: the first screen is there before the observer's first word, not a frame later)
+  if (rebuilt) { const first = site.querySelector('[data-blk="0"]'); if (first) enter(first); }
   let ioIn = null, ioSpy = null, ioWord = null;
   if (arm) {
     ioIn = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { enter(x.target); ioIn.unobserve(x.target); } }), { root: vp, rootMargin: '0px 0px -12% 0px', threshold: 0 });

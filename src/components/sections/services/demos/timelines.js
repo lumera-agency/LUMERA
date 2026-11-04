@@ -57,6 +57,8 @@ for (const name of Object.keys(gates)) {
 function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActive = false } = {}) {
   const gsap = GSAP;
   const row = el.closest('.service');
+  const off = new AbortController();
+  const { signal } = off;
   const state = { tl, visible: false, held: false, active: !rowActive, chosen: false, done: false, played: false };
   // back to the start frame, paused (`fresh`: its measures are taken again, from the layout it has now)
   state.reset = (fresh = false) => {
@@ -104,8 +106,8 @@ function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActi
     tl.restart();
     state.sync();
   };
-  pill?.addEventListener('click', state.replay);
-  el.addEventListener('click', () => { if (state.done) state.replay(); });
+  pill?.addEventListener('click', state.replay, { signal });
+  el.addEventListener('click', () => { if (state.done) state.replay(); }, { signal });
   if (once && tl.labels.rest !== undefined) {
     tl.addPause('rest', () => {
       state.done = true;
@@ -117,8 +119,8 @@ function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActi
   demoState.set(el, state);
   el._demo = state; // look-dev from the console: document.querySelector('[data-demo]')._demo.tl
   if (gate) gated.add(state);
+  let queued = 0;
   if (rowActive && row) {
-    let queued = 0;
     const check = () => {
       queued = 0;
       const on = state.chosen || row.getBoundingClientRect().top <= window.innerHeight * 0.45;
@@ -127,7 +129,7 @@ function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActi
         state.sync();
       }
     };
-    window.addEventListener('scroll', () => { if (!queued) queued = requestAnimationFrame(check); }, { passive: true });
+    window.addEventListener('scroll', () => { if (!queued) queued = requestAnimationFrame(check); }, { passive: true, signal });
     state.check = check;
     check();
   }
@@ -138,9 +140,24 @@ function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActi
   }, { threshold });
   io.observe(el);
   // fully out of the view: rewind (it plays again when it comes back)
-  new IntersectionObserver((entries) => {
+  const gone = new IntersectionObserver((entries) => {
     if (!entries[entries.length - 1].isIntersecting) state.rewind();
-  }, { threshold: 0 }).observe(el);
+  }, { threshold: 0 });
+  gone.observe(el);
+
+  // everything it hung on the page (the timeline itself is initDemos')
+  return () => {
+    off.abort();
+    cancelAnimationFrame(queued);
+    io.disconnect();
+    gone.disconnect();
+    gated.delete(state);
+    if (pill) gsap.killTweensOf([pill, icon]);
+    demoState.delete(el);
+    delete el._demo;
+    el.classList.remove('is-rest');
+    row?.classList.remove('is-live');
+  };
 }
 
 /** Hold (or release) the demos inside `container` — e.g. while a stacked row is covered. */
@@ -180,12 +197,17 @@ export const demoTimeline = (root) => demoState.get(root)?.tl ?? null;
 function invalidateOnResize(timelines) {
   let timer = 0;
   let lastWidth = window.innerWidth;
-  window.addEventListener('resize', () => {
+  const onResize = () => {
     if (window.innerWidth === lastWidth) return;
     lastWidth = window.innerWidth;
     clearTimeout(timer);
     timer = setTimeout(() => timelines.forEach((tl) => tl.invalidate()), 200);
-  });
+  };
+  window.addEventListener('resize', onResize);
+  return () => {
+    window.removeEventListener('resize', onResize);
+    clearTimeout(timer);
+  };
 }
 
 /* ---------- the shared kit (the motion designer's language) ---------- */
@@ -297,7 +319,7 @@ function bracketsD({ x, y, w, h }) {
    finished first screen, the details a template hasn't got: the cursor takes the 3D object and it turns with it,
    the page scrolls on and the next block's cards rise in as they come into view, a card rises to the cursor —
    three tags name them. The rest frame is a three-line poster, as in «Автоматизація». ---------- */
-function design(gsap, root) {
+function design(gsap, root, onDestroy) {
   const q = gsap.utils.selector(root);
   const hosts = q('.d-host > b'); // vash-sait.ua · PageSpeed Insights
   const cap = q('.d-cap')[0];
@@ -407,7 +429,9 @@ function design(gsap, root) {
 
   const tl = gsap.timeline({ paused: true, defaults: { ease: E.arrive } });
   layout();
-  new ResizeObserver(() => layout()).observe(hero);
+  const resize = new ResizeObserver(() => layout());
+  resize.observe(hero);
+  onDestroy(() => resize.disconnect());
   // the start frame (a row arrives paused here): the first screen as a wireframe — the nav is there, grey blocks
   // stand where the headline, the text, the button and the object will be
   tl.call(layout, null, 0)
@@ -883,30 +907,42 @@ function saas(gsap, root) {
 
 const BUILDERS = { design, ads, leads, saas };
 
+/** The clips in the page now; destroy() stops them and takes off what they hung on the page
+ *  (a language switch renders the block anew, and init runs again on the new one). */
 export function initDemos({ motion, reducedMotion = false }) {
   const roots = $$('[data-demo]');
   const gsap = GSAP;
+  const timelines = [];
+  const undo = [];
+  const onDestroy = (fn) => undo.push(fn);
+  const destroy = () => {
+    undo.splice(0).reverse().forEach((fn) => fn());
+    timelines.splice(0).forEach((tl) => tl.kill());
+  };
   if (!motion) {
     if (!gsap || !reducedMotion) {
-      return; // no motion: the CSS defaults are each clip's rest frame
+      return { destroy }; // no motion: the CSS defaults are each clip's rest frame
     }
     // reduced motion: each demo shows exactly its rest frame
     for (const root of roots) {
       const build = BUILDERS[root.dataset.demo];
       if (!build) continue;
       root.dataset.still = '1';
-      build(gsap, root).seek('rest', false).pause();
+      onDestroy(() => { delete root.dataset.still; });
+      const tl = build(gsap, root, onDestroy);
+      timelines.push(tl);
+      tl.seek('rest', false).pause();
     }
-    return;
+    return { destroy };
   }
-  const timelines = [];
   for (const root of roots) {
     const build = BUILDERS[root.dataset.demo];
     if (!build) continue;
-    const tl = build(gsap, root);
+    const tl = build(gsap, root, onDestroy);
     timelines.push(tl);
     tl.pause(0.01); // the row arrives on its start frame, not on a spoiler of the result
-    autoplay(root, tl, 0.35, { once: true, gate: 'split', rowActive: true });
+    onDestroy(autoplay(root, tl, 0.35, { once: true, gate: 'split', rowActive: true }));
   }
-  invalidateOnResize(timelines);
+  onDestroy(invalidateOnResize(timelines));
+  return { destroy };
 }

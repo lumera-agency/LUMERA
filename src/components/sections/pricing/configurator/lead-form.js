@@ -37,16 +37,19 @@ export function mountLeadForm(host, { lang = 'uk', getConfig, getLabel = () => '
   const form = host.querySelector('form');
   const sent = host.querySelector('.cfg-sent');
   let sending = false;
+  let gone = false;
 
   const p = calculateProject(getConfig());
   $('name').textContent = getLabel();
   $('price').textContent = money(p.once) + ' ' + t.once + (p.monthly ? ' · +' + money(p.monthly) + t.perMonth : '');
 
-  host.addEventListener('click', (e) => {
+  // (on the host: it outlives the form, so it comes off in destroy())
+  const onClick = (e) => {
     const k = e.target.closest('[data-lf]')?.dataset.lf;
     if (k === 'back') onBack?.();
     if (k === 'again') { sent.hidden = true; form.hidden = false; onAgain?.(); }
-  });
+  };
+  host.addEventListener('click', onClick);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -66,6 +69,7 @@ export function mountLeadForm(host, { lang = 'uk', getConfig, getLabel = () => '
     button.querySelector('.btn__label').textContent = f.sending;
     try {
       await (onLead ? onLead(payload) : submitLead(payload));
+      if (gone) return; // sent; the form itself is gone
       host.dispatchEvent(new CustomEvent('eclo:configurator-lead', { bubbles: true, detail: payload }));
       const c = payload.contact;
       $('sent-title').textContent = s.title(data.name.trim());
@@ -81,6 +85,7 @@ export function mountLeadForm(host, { lang = 'uk', getConfig, getLabel = () => '
       sent.hidden = false;
     } catch (error) {
       console.error('[configurator] lead not sent', error);
+      if (gone) return;
       err.textContent = f.errSend;
     } finally {
       sending = false;
@@ -89,5 +94,11 @@ export function mountLeadForm(host, { lang = 'uk', getConfig, getLabel = () => '
     }
   });
 
-  return { destroy() { host.innerHTML = ''; } };
+  return {
+    destroy() {
+      gone = true;
+      host.removeEventListener('click', onClick);
+      host.innerHTML = '';
+    },
+  };
 }

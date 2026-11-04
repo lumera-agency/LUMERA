@@ -5,7 +5,7 @@
 import * as THREE from "three";
 
 export const heroState = {
-  stoneReveal: 0, // the stone lit out of darkness
+  stoneReveal: 1, // the stone's light (lit from the first frame; kept for a dimmed start, should one come back)
   stoneIntro: 0, // it settles into its pose
   ringProgress: 0, // the orbit draws itself in
   dots: 0, // the silver dust

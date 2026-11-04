@@ -8,13 +8,16 @@
  */
 import { useEffect } from "react";
 import { gsap, ScrollTrigger, SplitText } from "@/lib/gsap";
+import { switching } from "@/lib/place";
 
 export function ScrollReveals({ root = "[data-page]", exclude = ".is-deck .stages" }: { root?: string; exclude?: string }) {
   useEffect(() => {
     const scope = document.querySelector<HTMLElement>(root);
     if (!scope || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // a language switch: what is on screen or above it was seen already and simply stays (only what is below comes in)
+    const seen = (el: HTMLElement) => switching() && el.getBoundingClientRect().top < window.innerHeight;
     const ctx = gsap.context(() => {
-      const items = [...scope.querySelectorAll<HTMLElement>("[data-sr]")].filter((el) => !el.closest(exclude));
+      const items = [...scope.querySelectorAll<HTMLElement>("[data-sr]")].filter((el) => !el.closest(exclude) && !seen(el));
       const touch = !matchMedia("(hover: hover) and (pointer: fine)").matches;
       const rise = touch ? 0 : 24;
       // (a page with no [data-sr] blocks, e.g. the AI page: GSAP would warn «target not found» on an empty set)
@@ -38,6 +41,7 @@ export function ScrollReveals({ root = "[data-page]", exclude = ".is-deck .stage
       scope.addEventListener("focusin", onFocus);
 
       for (const title of scope.querySelectorAll<HTMLElement>("[data-split]")) {
+        if (seen(title)) continue;
         SplitText.create(title, {
           type: "lines",
           mask: "lines",

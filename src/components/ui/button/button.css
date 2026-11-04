@@ -1,7 +1,8 @@
 /*
  * Buttons. Each variant and each context sets only colour variables; the shape and the effects are
- * shared. Primary: liquid rises from the bottom with a running wave on its surface, the button lifts
- * with a glow of its colour. Ghost / line: the fill sweeps up from the bottom.
+ * shared. Every button's fill sweeps up from the bottom, as the header's «Обговорити проєкт» does
+ * (the owner, 4 Nov). Ghost / line fill flat with their colour; primary's liquid comes up domed and
+ * settles flat, the button lifting with a glow of its colour.
  * The arrow leaves up-right as its copy comes in. (Library options: fx/invert-fill, fx/run-label.)
  */
 .btn {
@@ -65,7 +66,7 @@
 .btn:hover .arrow--b,
 .btn:focus-visible .arrow--b { transform: translate(0, 0); }
 
-/* ghost and line: the fill sweeps up from the bottom (the header's «Обговорити проєкт») */
+/* ghost and line: the fill sweeps up from the bottom (the header's «Обговорити проєкт»); the primary shapes it its own way */
 .btn--ghost { --btn-line: rgb(246 246 243 / 0.6); }
 .btn--line {
   --h: 3.125rem;
@@ -74,7 +75,7 @@
   padding: 0 1.2rem 0 1.5rem;
   --btn-line: rgb(246 246 243 / 0.32);
 }
-:is(.btn--ghost, .btn--line)::before {
+.btn::before {
   content: "";
   position: absolute;
   inset: -1px;
@@ -85,10 +86,9 @@
   transition: transform var(--dur-slow) var(--ease-out);
 }
 :is(.btn--ghost, .btn--line):is(:hover, :focus-visible) { color: var(--btn-fill-ink); box-shadow: inset 0 0 0 1px var(--btn-fill); }
-:is(.btn--ghost, .btn--line):is(:hover, :focus-visible)::before { transform: translateY(0); }
+.btn:is(:hover, :focus-visible)::before { transform: translateY(0); }
 
-/* primary: liquid rises from the bottom, its surface a running wave; the button lifts a little
-   with a glow of its own colour */
+/* primary: the liquid comes up domed and settles flat (the owner, 4 Nov: a «fluid rise»); the button lifts a little with a glow of its own colour */
 .btn--primary {
   --h: clamp(3.5rem, calc(var(--vh, 1vh) * 6.2), 4rem);
   --btn-bg: var(--ink);
@@ -99,35 +99,21 @@
   padding: 0 1.6rem 0 clamp(1.75rem, 2.8vw, 2.6rem);
   font-size: clamp(1rem, 0.35vw + 0.9rem, 1.125rem);
 }
+/* wider than the button and half as tall again, so its dome is gone above the top by the time it lies flat */
 .btn--primary::before {
-  --wave: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 16' preserveAspectRatio='none'><path d='M0 9C8 3 24 3 32 9S56 15 64 9V16H0Z'/></svg>");
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-  height: calc(100% + 1rem);
+  inset: auto -15% 0;
+  height: 150%;
+  border-radius: 50% 50% 0 0 / 70% 70% 0 0;
   background: var(--btn-wave);
-  -webkit-mask: var(--wave) 0 0 / 4rem 1rem repeat-x, linear-gradient(#000 0 0) 0 0.9375rem / 100% 100% no-repeat;
-  mask: var(--wave) 0 0 / 4rem 1rem repeat-x, linear-gradient(#000 0 0) 0 0.9375rem / 100% 100% no-repeat;
   transform: translateY(100%);
-  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  /* between the header's (expo.out, gone at once) and the old wave's (in-out, slow to start): the owner, «что то среднее» */
+  transition: transform 0.8s cubic-bezier(0.33, 1, 0.68, 1), border-radius 0.8s cubic-bezier(0.33, 1, 0.68, 1);
 }
 .btn--primary:is(:hover, :focus-visible) { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--btn-line), 0 1rem 2.75rem -1rem var(--btn-glow); }
-.btn--primary:is(:hover, :focus-visible)::before { transform: translateY(0); animation: btn-wave 0.9s linear infinite; }
+.btn--primary:is(:hover, :focus-visible)::before { transform: none; border-radius: 0; }
 .btn--primary:active { transform: translateY(0) scale(0.97); }
-@keyframes btn-wave {
-  to {
-    -webkit-mask-position: 4rem 0, 0 0.9375rem;
-    mask-position: 4rem 0, 0 0.9375rem;
-  }
-}
 @media (max-width: 420px) {
   .btn--primary { width: 100%; justify-content: space-between; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .btn--primary:is(:hover, :focus-visible)::before { animation: none; }
 }
 
 .btn--xs { --h: 2.5rem; height: 2.5rem; gap: 1rem; padding: 0 0.9rem 0 1.1rem; font-size: var(--fs-small); }

@@ -132,7 +132,6 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       { text: t("asst.crumb"), href: href("/keisy/ai-asystent"), tag: t("ai.nav.case") },
       { text: t("aiCommon.nav.faq"), href: at(AI, "#faq") },
     ],
-    [],
     [
       { text: t("nav.casesMore"), href: at(ADS, "#case"), tag: t("ads.nav.case") },
       { text: t("services.service.meta.span.2"), href: at(ADS, "#kanaly") },
@@ -142,13 +141,14 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       { text: t("ads.nav.faq"), href: at(ADS, "#faq") },
     ],
   ];
+  // the owner, 4 Nov: no SaaS on the site for now (it was service(3, null, null), a block on the main page); the rest
+  // numbered 1, 2, 3 as they stand
   const services = [
     service(1, SITES, minPaid(PRICING.formats)),
     // the owner, 28 Oct: automation from the AI page's cheapest product (the assistant), ads from the Google Ads setup
     service(2, AI, Math.min(...Object.values(PRODUCTS).flatMap((p) => (p.price ? [p.price] : [])))),
-    service(3, null, null),
     service(4, ADS, minPaid(Object.fromEntries(Object.entries(PRICING.growth).filter(([, o]) => "ads" in o && o.ads)))),
-  ].map((sv, i) => ({ ...sv, subs: subs[i] }));
+  ].map((sv, i) => ({ ...sv, n: String(i + 1), subs: subs[i] }));
 
   return {
     home,

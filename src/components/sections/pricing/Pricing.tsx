@@ -13,7 +13,7 @@ export async function Pricing() {
   return (
     <section className="section" id="pricing" aria-labelledby="pricing-title">
       <div className="container">
-        <header className="s-head">
+        <header className="s-head cfg-head">
           <p className="s-head__meta" data-sr="">
             <span className="s-head__index">6</span>
             <span>{t("nav.pricing")}</span>

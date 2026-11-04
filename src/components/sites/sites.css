@@ -626,20 +626,7 @@ html:not(.motion) .st-build { display: none; }
    gives the tour back
    ========================================================================== */
 .st-pvw { position: relative; }
-.pvw__you { position: absolute; z-index: 30; left: 50%; bottom: 12px; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; font: 400 13px/1 var(--font-sans); color: #efebe3; background: rgba(15, 14, 13, 0.82); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.16), 0 10px 26px -12px rgba(0, 0, 0, 0.6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transform: translateX(-50%); cursor: pointer; transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
-.pvw__you::after { content: ""; position: absolute; inset: -4px 0; }
-.pvw__you { white-space: nowrap; }
-@media (max-width: 600px) { .pvw__you { bottom: 10px; min-height: 32px; padding: 0 13px; gap: 7px; font-size: 12px; } .pvw__you::after { inset: -6px 0; } }
-.pvw__you::before { content: ""; width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; background: radial-gradient(circle, currentColor 0 2.5px, transparent 3px); }
-.pvw__you.is-user::before { width: 9px; height: 10px; border-radius: 0; box-shadow: none; background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); }
-.pvw__you:focus-visible { outline: 2px solid #efebe3; outline-offset: 3px; }
-@media (hover: hover) and (pointer: fine) {
-  .pvw__you:not(.is-user) { opacity: 0; transform: translate(-50%, 6px); }
-  .pvw:hover .pvw__you, .pvw__you:focus-visible { opacity: 1; transform: translateX(-50%); }
-  .pvw__you:hover { background: rgba(15, 14, 13, 0.92); }
-}
-.pvw[data-user] .pv-vp { cursor: default; }
-@media (prefers-reduced-motion: reduce) { .pvw__you { transition: none; } }
+/* (the pill's own rules: sites-pv.css, which the main page's configurator loads too) */
 
 /* ==========================================================================
    the whole screen (owner, 18 Oct: on a phone the sample is small to scroll in its frame; js/sites-pv.js). The frame's
@@ -1179,7 +1166,7 @@ main[data-ai-page="sites"] .faq__item[id] { scroll-margin-top: calc(var(--topbar
 .st-dlg .ai-dlg__head { position: sticky; top: calc(-1 * var(--dlg-pt)); z-index: 3; margin: calc(-1 * var(--dlg-hd)) calc(-1 * var(--dlg-px)) 0.5rem; padding: var(--dlg-hd) var(--dlg-px) 0.5rem; background: #000; }
 @media (max-width: 600px) {
   /* (the sheet: its grab bar moves into the head, in the same place, so it stays at the top with the «×») */
-  .st-dlg { --dlg-px: 1.125rem; --dlg-pt: 0.75rem; --dlg-hd: 0.75rem; }
+  .st-dlg { --dlg-px: 1.5rem; --dlg-pt: 0.75rem; --dlg-hd: 0.75rem; }
   .st-dlg .ai-dlg__panel::before { content: none; }
   .st-dlg .ai-dlg__head { margin-bottom: 0.125rem; padding-top: 1.625rem; }
   .st-dlg .ai-dlg__head::before { content: ""; position: absolute; left: 50%; top: 0.75rem; width: 2.5rem; height: 0.25rem; margin-left: -1.25rem; border-radius: 2px; background: rgba(246, 246, 243, 0.2); }

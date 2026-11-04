@@ -9,28 +9,34 @@ import { useEffect, useRef, useState } from "react";
 import { useSiteNav } from "./SiteNavProvider";
 import "./contacts.css";
 
+/* The icons, solid (the owner, 3 Nov: the outlined ones read as drawn by hand): Telegram's plane with its fold cut
+   through, Viber's bubble with the handset cut out of it, the handset with two waves. A hover in the pill sets them
+   moving (contacts.css). Used in the menu and the footer too. */
 export function TelegramIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M20.5 4.2 3.4 10.8c-.8.3-.8 1.5.1 1.7l4.3 1.3 1.6 5c.2.7 1.1.9 1.6.4l2.4-2.3 4.5 3.3c.6.4 1.4.1 1.6-.6l2.6-13.1c.2-.9-.7-1.6-1.6-1.3Z" />
-      <path d="m7.8 13.8 9.3-6.1-6.9 7.2-.6 3.9" />
+    <svg className="ico ico--tg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path fillRule="evenodd" d="M21.4 3.3 2.5 10.6c-.8.3-.7 1.4.1 1.6l5 1.6 1.8 5.4c.2.6 1 .8 1.5.3l2.6-2.4 4.8 3.5c.6.4 1.4.1 1.6-.6L22.6 4.6c.2-.9-.5-1.6-1.2-1.3ZM8.9 13.5l8.6-6.3-7.1 7.4-.6 3.2-.9-4.3Z" />
     </svg>
   );
 }
 
 export function ViberIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M12 2.8c5.3 0 8.6 2.4 8.6 7.7s-3.3 7.8-8.6 7.8c-.8 0-1.6 0-2.3-.2L6.6 21v-3.5c-2.1-1.1-3.2-3.3-3.2-7 0-5.3 3.3-7.7 8.6-7.7Z" />
-      <path d="M9.4 7.4c.4-.3 1-.2 1.2.2l.6 1.2c.2.4.1.8-.2 1.1l-.4.3c.4 1 1.2 1.8 2.2 2.2l.3-.4c.3-.3.7-.4 1.1-.2l1.2.6c.4.2.5.8.2 1.2-.6.8-1.4 1.1-2.3.8a7 7 0 0 1-4.7-4.7c-.3-.9 0-1.7.8-2.3Z" />
+    <svg className="ico ico--viber" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        fillRule="evenodd"
+        d="M12 2.4c5.7 0 9 2.5 9 8.1s-3.3 8.1-9 8.1c-.7 0-1.4 0-2-.1l-3 2.9c-.4.4-1 .1-1-.4v-3.2c-2.2-1.2-3-3.5-3-7.3 0-5.6 3.3-8.1 9-8.1ZM15.58 12.05c-.57 0-1.11-.09-1.62-.26-.16-.06-.34-.01-.46.11l-.72.91c-1.3-.62-2.52-1.79-3.17-3.14l.9-.76c.12-.13.16-.31.11-.47-.17-.51-.26-1.06-.26-1.62 0-.25-.21-.46-.46-.46H8.31C8.06 6.36 7.76 6.47 7.76 6.82c0 4.27 3.56 7.82 7.82 7.82.33 0 .46-.29.46-.54v-1.59c0-.25-.21-.46-.46-.46Z"
+      />
     </svg>
   );
 }
 
 export function PhoneIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M6.6 3.5h2.6l1.4 3.8-1.9 1.3a11 11 0 0 0 6.7 6.7l1.3-1.9 3.8 1.4v2.6a2 2 0 0 1-2.1 2A16.6 16.6 0 0 1 4.6 5.6a2 2 0 0 1 2-2.1Z" />
+    <svg className="ico ico--phone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M18.61 15.64c-1.11 0-2.18-.18-3.18-.5-.32-.11-.67-.03-.91.22l-1.41 1.77c-2.55-1.22-4.93-3.51-6.2-6.15l1.75-1.49c.24-.25.32-.6.22-.92-.33-1-.5-2.07-.5-3.18 0-.49-.41-.89-.89-.89H4.37c-.48 0-1.07.22-1.07.89 0 8.36 6.96 15.31 15.31 15.31.64 0 .89-.57.89-1.06v-3.11c0-.49-.41-.89-.89-.89Z" />
+      <path className="ico__wave" d="M14.4 7a2.7 2.7 0 0 1 2.6 2.6" />
+      <path className="ico__wave" d="M14.6 3.6a6 6 0 0 1 5.8 5.8" />
     </svg>
   );
 }

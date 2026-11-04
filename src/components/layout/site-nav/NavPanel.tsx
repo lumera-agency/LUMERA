@@ -169,12 +169,12 @@ export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
 
   return (
     <div className="navp" id={id} data-navp={kind} hidden>
-      <div className="navp__frame">
+      {/* a dark column per card (three services for now, four cases) */}
+      <div className="navp__frame" style={{ "--navp-n": cards.length } as React.CSSProperties}>
         <div className="navp__cols" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-          <i />
+          {cards.map((_card, index) => (
+            <i key={index} />
+          ))}
         </div>
         <ul className="navp__grid">{cards}</ul>
         {kind === "services" ? (

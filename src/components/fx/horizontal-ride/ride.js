@@ -13,6 +13,8 @@
  * Library use: initRide({ motion, root, track, panel, name, media, body, tabs }) — the selectors
  * default to the site's markup; the HUD and the buttons are optional, inside root:
  * [data-ride-now|of|bar|names], [data-ride-prev], [data-ride-next], [data-ride-skip].
+ * Returns { isOn, destroy }: destroy() takes the ride down (the pin and its spacer, the listeners,
+ * what it added to the markup), so it can start again on markup rendered anew.
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
 import { scrollToY } from '@/lib/scroll';
@@ -39,8 +41,10 @@ export function initRide({
 } = {}) {
   const ride = $(root);
   const list = ride && $(track, ride);
-  if (!ride || !list) return { isOn: () => false };
+  if (!ride || !list) return { isOn: () => false, destroy() {} };
   const panels = $$(panel, list);
+  const off = new AbortController();
+  const { signal } = off;
   const gsap = GSAP;
   const ScrollTrigger = ST;
   const now = $('[data-ride-now]', ride);
@@ -85,40 +89,43 @@ export function initRide({
     prev?.toggleAttribute('disabled', current <= 0);
     next?.toggleAttribute('disabled', current >= panels.length - 1);
   };
-  prev?.addEventListener('click', () => goTo(current - 1));
-  next?.addEventListener('click', () => goTo(current + 1));
+  prev?.addEventListener('click', () => goTo(current - 1), { signal });
+  next?.addEventListener('click', () => goTo(current + 1), { signal });
   // skip: out of the ride without running through the panels, and without losing the place: a soft
   // dip to black onto the last slide, then the page glides on until the next block comes up under it
   // (the slides stay in sight above, so it is clear where we are)
   let skipping = false;
-  skip?.addEventListener('click', () => {
+  let veil = null; // on the page only while a skip runs
+  skip?.addEventListener('click', async () => {
     if (!trigger || skipping) return;
     skipping = true;
-    const veil = document.createElement('div');
-    veil.className = 'ride__veil';
+    const dip = document.createElement('div');
+    veil = dip;
+    dip.className = 'ride__veil';
     // self-contained (the effect may live without the site's CSS): the page's black, under a topbar (z 60)
-    veil.style.cssText = 'position:fixed;inset:0;z-index:45;background:var(--bg,#0a0a0a);opacity:0;pointer-events:none';
-    document.body.append(veil);
+    dip.style.cssText = 'position:fixed;inset:0;z-index:45;background:var(--bg,#0a0a0a);opacity:0;pointer-events:none';
+    document.body.append(dip);
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const fade = (from, to, duration, easing) => veil.animate([{ opacity: from }, { opacity: to }], { duration: reduced ? 1 : duration, easing, fill: 'forwards' }).finished;
+    const fade = (from, to, duration, easing) => dip.animate([{ opacity: from }, { opacity: to }], { duration: reduced ? 1 : duration, easing, fill: 'forwards' }).finished;
     const frames = (n) => new Promise((r) => { const step = () => (n-- ? requestAnimationFrame(step) : r()); step(); });
-    fade(0, 1, 300, 'cubic-bezier(0.65, 0, 0.35, 1)')
-      .then(() => {
-        scrollToY(trigger.end, { immediate: true }); // the last slide, the ride about to let go
-        return frames(2);
-      })
-      .then(() => fade(1, 0, 450, 'cubic-bezier(0.16, 1, 0.3, 1)'))
-      .then(() => {
-        veil.remove();
-        // on, so the next block shows while the slides are still in sight above
-        scrollToY(trigger.end + Math.round(window.innerHeight * 0.45), { duration: 1.2 });
-        return new Promise((r) => setTimeout(r, reduced ? 0 : 1250));
-      })
-      .finally(() => {
-        veil.remove();
-        skipping = false;
-      });
-  });
+    // a step finds no trigger once the ride has let go meanwhile (a narrower window, destroy()): it stops there
+    try {
+      await fade(0, 1, 300, 'cubic-bezier(0.65, 0, 0.35, 1)');
+      if (!trigger) return;
+      scrollToY(trigger.end, { immediate: true }); // the last slide, the ride about to let go
+      await frames(2);
+      await fade(1, 0, 450, 'cubic-bezier(0.16, 1, 0.3, 1)');
+      dip.remove();
+      if (!trigger) return;
+      // on, so the next block shows while the slides are still in sight above
+      scrollToY(trigger.end + Math.round(window.innerHeight * 0.45), { duration: 1.2 });
+      await new Promise((r) => setTimeout(r, reduced ? 0 : 1250));
+    } finally {
+      dip.remove();
+      if (veil === dip) veil = null;
+      skipping = false;
+    }
+  }, { signal });
 
   document.addEventListener(goEvent, (e) => {
     if (!on) {
@@ -131,9 +138,9 @@ export function initRide({
     if (i < 0) return;
     e.preventDefault();
     goTo(i);
-  });
+  }, { signal });
 
-  if (!motion || !gsap || !ScrollTrigger || !gsap.matchMedia) return { isOn: () => false };
+  if (!motion || !gsap || !ScrollTrigger || !gsap.matchMedia) return { isOn: () => false, destroy: () => off.abort() };
 
   // the names in the HUD (the services' own short names, translated with them)
   if (names) {
@@ -144,7 +151,7 @@ export function initRide({
       b.type = 'button';
       b.textContent = $(name, p)?.textContent.trim() || String(i + 1);
       b.setAttribute('aria-current', 'false');
-      b.addEventListener('click', () => goTo(i));
+      b.addEventListener('click', () => goTo(i), { signal });
       li.append(b);
       names.append(li);
       return b;
@@ -167,7 +174,7 @@ export function initRide({
     if (!on) return;
     const i = panels.findIndex((p) => p.contains(e.target));
     if (i >= 0 && i !== current) goTo(i);
-  });
+  }, { signal });
 
   const mm = gsap.matchMedia();
   mm.add(mq, () => {
@@ -238,8 +245,9 @@ export function initRide({
       busy: () => skipping,
     });
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    const refresh = requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => {
+      cancelAnimationFrame(refresh);
       paging.destroy();
       ScrollTrigger.removeEventListener('refreshInit', sizePanels);
       ride.style.removeProperty('--panel-w');
@@ -254,5 +262,15 @@ export function initRide({
     };
   });
 
-  return { isOn: () => on };
+  return {
+    isOn: () => on,
+    destroy() {
+      mm.revert(); // kills the pin (its spacer goes) and the scrubs, then runs the cleanup above
+      off.abort();
+      veil?.remove();
+      bigs.forEach((b) => b.remove());
+      buttons.forEach((b) => b.parentElement?.remove());
+      buttons = [];
+    },
+  };
 }

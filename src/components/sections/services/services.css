@@ -364,9 +364,10 @@ p.service__dialog-go--alt .link { color: inherit; }
 .ride.is-on .service__text { grid-row: 3; font-size: var(--fs-body); }
 .ride.is-on .service__foot { grid-row: 4; align-self: end; }
 .ride__big {
+  /* (the owner, 23 Oct: as it was, a little in from the right edge, so it shows whole beside the text, not cut) */
   position: absolute;
-  right: -2%;
-  bottom: -18%;
+  right: 6%;
+  bottom: -12%;
   z-index: -1;
   font-family: var(--font-sans);
   font-size: clamp(10rem, 24vw, 26rem);
@@ -408,7 +409,8 @@ p.service__dialog-go--alt .link { color: inherit; }
 .ride__names button[aria-current="true"] { color: var(--on-accent); background: var(--lime); border-color: var(--lime); }
 @media (max-width: 1240px) { .ride__names { display: none; } }
 .ride.is-on .service { isolation: isolate; }
-.service-tabs.is-on .service-tab:nth-child(5) { grid-column: 1 / -1; }
+/* an odd one out at the end takes the whole row (three services for now) */
+.service-tabs.is-on .service-tab:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 /* v2 · the ride's buttons: arrows on the sides (one panel back / on) and «skip» after the names.
    Only while the ride is on; elsewhere the block is a list or the phone switcher. */

@@ -10,6 +10,7 @@ import { SiteNavProvider } from "@/components/layout/site-nav/SiteNavProvider";
 import { getSiteNav } from "@/content/site-nav";
 import "../globals.css";
 import "@/components/layout/page/page.css";
+import { RootKeep } from "@/components/layout/RootKeep";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads", "about"];
@@ -54,8 +55,10 @@ export const viewport: Viewport = {
 };
 
 /* Runs before first paint: the intro's start states are hidden only when JS and motion are on
-   (styles/base.css), and come back by themselves after 3.5 s should a script fail. */
-const EARLY = `(function(r){try{history.scrollRestoration='manual'}catch(e){}r.classList.add('js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');setTimeout(function(){r.classList.add('is-ready')},3500)})(document.documentElement)`;
+   (styles/base.css), and come back by themselves after 3.5 s should a script fail; while the preloader is still up
+   they wait for it (up to 10 s): shown under it, the headline would be seen whole as the sheet fades, then hidden and
+   played in by the intro (23 Oct) */
+const EARLY = `(function(r){try{history.scrollRestoration='manual'}catch(e){}r.classList.add('js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');var t=Date.now();setTimeout(function f(){if(document.querySelector('[data-preloader]')&&Date.now()-t<10000)return setTimeout(f,250);r.classList.add('is-ready')},3500)})(document.documentElement)`;
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
@@ -69,13 +72,16 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: EARLY }} />
-      </head>
+      <head />
       <body>
+        {/* EARLY as the body's first markup, not a React <script>: it runs as the page is parsed, before anything is
+            drawn, and a render in the browser (a language switch) neither runs it again nor warns about a script tag */}
+        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY}</script>` }} />
+        <RootKeep />
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>
-        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" size={110} grow={1.15} lensGrow={1.35} />
+        {/* (over the footer's index the lens steps aside for the plain pointer: footer.css; the owner, 3 Nov) */}
+        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" quiet="[data-wordmark], .footer__index" size={110} grow={1.15} lensGrow={1.35} />
         <NextIntlClientProvider messages={clientMessages}>
           <SiteNavProvider value={siteNav}>{children}</SiteNavProvider>
         </NextIntlClientProvider>
