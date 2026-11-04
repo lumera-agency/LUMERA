@@ -8,7 +8,7 @@ import { aiFacts } from "@/components/ai/facts";
 import { aiHref } from "@/components/ai/links";
 import { aiMetadata } from "@/components/ai/meta";
 import { aiRich } from "@/components/ai/rich";
-import { Hero } from "@/components/sections/ai-page/Hero";
+import { RobotHero } from "@/components/sections/ai-page/RobotHero";
 import { Proof } from "@/components/sections/ai-page/Proof";
 import { Pause } from "@/components/sections/ai-page/Pause";
 import { Niches } from "@/components/sections/ai-page/Niches";
@@ -70,7 +70,7 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
       barCta={{ href: "#contact", text: t("topbar.cta") }}
       claim={t("foot.claim")}
     >
-      <Hero />
+      <RobotHero />
       <PageShell>
         <Proof index={next()} />
         <Pause />

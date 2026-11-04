@@ -49,7 +49,7 @@
 .topbar__menu[aria-expanded="true"] i:first-of-type { transform: translateY(0.25rem) rotate(45deg); }
 .topbar__menu[aria-expanded="true"] i:last-of-type { transform: translateY(-0.25rem) rotate(-45deg); }
 .topbar__menu:focus-visible { outline: 2px solid var(--ink); outline-offset: -0.25rem; border-radius: 0.5rem; }
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .topbar .btn--xs .btn__icon { display: none; }
   .topbar .btn--xs { padding-inline: 0.75rem; font-size: 0.8125rem; }
   .topbar__end { gap: 0.625rem; }
@@ -75,7 +75,21 @@
   .topbar .lang--start { display: flex; justify-self: start; }
   .topbar__end .lang { display: none; }
 }
-/* narrow phones: the button and «Меню» take the room; the languages stay in the menu's foot */
-@media (max-width: 420px) {
+/* phones up to 480: UA · RU stays in sight (the owner, 15 Oct; again 4 Nov). The room for it: the burger gives up its
+   word «Меню» (the lines alone read as the menu), the gaps and the language boxes get tighter (on touch a link's hit
+   area reaches past its box anyway) */
+@media (max-width: 480px) {
+  .topbar { column-gap: 0.75rem; }
+  .topbar .lang--start { gap: 0.25rem; }
+  .topbar .lang--start .lang__link { min-width: 1.5rem; }
+  .topbar__menu { padding: 0; }
+  .topbar__menu-label { display: none; }
+}
+/* the narrowest: «Обговорити проєкт» a size smaller */
+@media (max-width: 380px) {
+  .topbar .btn--xs { padding-inline: 0.625rem; font-size: 0.75rem; }
+}
+/* under 350 px nothing more gives way: the languages wait in the menu's foot */
+@media (max-width: 349px) {
   .topbar .lang--start { display: none; }
 }
