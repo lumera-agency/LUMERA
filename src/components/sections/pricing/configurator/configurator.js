@@ -54,7 +54,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   const root = document.documentElement;
 
   /* ---------- input ---------- */
-  el.addEventListener('click', (e) => {
+  const onClick = (e) => {
     const b = e.target.closest('[data-bundle]');
     if (b) {
       state.lastBundle = b.dataset.bundle;
@@ -80,9 +80,9 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     if (act === 'break') sheetMQ.matches ? openSheet(e.target.closest('[data-act]')) : setFace(state.face === 'break' ? 'preview' : 'break');
     if (act === 'sheet-close') closeSheet();
     if (act === 'open-form') discuss();
-  });
+  };
   // arrow keys inside a radio group move the choice, like native radios (skips disabled ones)
-  el.addEventListener('keydown', (e) => {
+  const onKey = (e) => {
     if (e.key === 'Escape' && state.face === 'break') { setFace('preview'); ref('break-btn').focus(); return; }
     const opt = e.target.closest('[role="radio"]');
     if (!opt || !['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(e.key)) return;
@@ -92,7 +92,10 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     e.preventDefault();
     next.focus();
     next.click();
-  });
+  };
+  // (on the host: it stays when the configurator is mounted into it again, so they come off in destroy())
+  el.addEventListener('click', onClick);
+  el.addEventListener('keydown', onKey);
   sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); }); // the backdrop
   sheet.addEventListener('cancel', (e) => { e.preventDefault(); closeSheet(); }); // Esc
   editor.addEventListener('cancel', (e) => { e.preventDefault(); closeEditor(); });
@@ -144,6 +147,8 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     if (on) ref('break').querySelector('h3').focus({ preventScroll: true });
   }
 
+  let sheetTimer = 0;
+  let editorTimer = 0;
   function openSheet(opener) {
     state.opener = opener;
     const p = calculateProject(state.cfg);
@@ -159,7 +164,8 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     if (!sheet.open) return;
     sheet.classList.remove('is-open');
     const done = () => { sheet.close(); syncPause(); syncBar(); state.opener?.focus({ preventScroll: true }); };
-    reducedMotion ? done() : setTimeout(done, 280);
+    if (reducedMotion) done();
+    else sheetTimer = setTimeout(done, 280);
   }
 
   /** the cube and the silk rest while nothing shows them: the face over them, the sheet over all, or (≤700) the editor shut */
@@ -193,7 +199,8 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
       syncBar();
       state.editorOpener?.focus?.({ preventScroll: true });
     };
-    reducedMotion || instant ? done() : setTimeout(done, 320);
+    if (reducedMotion || instant) done();
+    else editorTimer = setTimeout(done, 320);
     // shut by its own buttons: its history entry goes too, so «back» then leaves nothing behind
     if (!fromHistory && history.state?.cfgEditor) history.back();
   }
@@ -388,15 +395,30 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     project: () => calculateProject(state.cfg),
     fx: () => preview.fx, // checks and filmstrips (?debug)
     destroy() {
+      el.removeEventListener('click', onClick);
+      el.removeEventListener('keydown', onKey);
       ioMain.disconnect();
       ioSum.disconnect();
       sheetMQ.removeEventListener('change', syncSheetMQ);
       phoneMQ.removeEventListener('change', placeControls);
       window.removeEventListener('popstate', onHistory);
+      clearTimeout(liveTimer);
+      clearTimeout(sheetTimer);
+      clearTimeout(editorTimer);
+      cancelAnimationFrame(chipFrame);
       root.classList.remove('cfg-editing');
       preview.fx?.destroy();
+      // sites-pv.js has no destroy of its own: the samples' resources (3D, observers, React roots) and the live cube
+      // go here. The samples' just after this task: a React root can't be unmounted while React renders the page
+      // that drops the configurator
+      const disposers = [...el.querySelectorAll('.pv-site')].flatMap((site) => site._dispose?.splice(0) ?? []);
+      queueMicrotask(() => disposers.forEach((stop) => {
+        try { stop(); } catch (error) { console.warn('[configurator] dispose', error); }
+      }));
+      el.querySelector('.pv-obj')?.cube?.destroy();
       el.innerHTML = '';
-      el.classList.remove('cfg');
+      el.classList.remove('cfg', 'is-tuned');
+      delete el.dataset.format;
     },
   };
 }

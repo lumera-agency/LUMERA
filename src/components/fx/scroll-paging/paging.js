@@ -35,6 +35,7 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
   let lastWheel = 0;
   let lastDir = 0;
   const pushes = [];
+  let glideTimer = 0;
 
   const swallow = (e) => {
     if (e.cancelable) e.preventDefault();
@@ -49,7 +50,7 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
     if (lenis) lenis.scrollTo(y, { duration, easing: inOut, lock: true, force: true, onComplete: done });
     else {
       window.scrollTo({ top: y, behavior: reducedMotion ? 'auto' : 'smooth' });
-      setTimeout(done, reducedMotion ? 0 : duration * 900);
+      glideTimer = window.setTimeout(done, reducedMotion ? 0 : duration * 900);
     }
   };
 
@@ -136,6 +137,7 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
       window.removeEventListener('wheel', onWheel, { capture: true });
       window.removeEventListener('scroll', onScroll);
       clearTimeout(restTimer);
+      clearTimeout(glideTimer);
     },
   };
 }

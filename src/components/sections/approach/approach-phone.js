@@ -9,7 +9,8 @@
  * Reduced motion: no stories, every picture at rest with its accent lit.
  */
 import { playStory } from '../why/why-orbit.js';
-import { ScrollTrigger as ST } from '@/lib/gsap';
+import { switching } from '@/lib/place';
+import { atOnce } from './stages.js';
 
 const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const SETTLE = 'cubic-bezier(0.34, 1.36, 0.64, 1)';
@@ -83,6 +84,11 @@ function story(stage) {
   if (!pic?.offsetParent) return; // above 600 px the pictures are not shown
   playStory(pic.querySelector('svg'), STAGE_STORIES[pic.dataset.pic], { onAccent: () => pic.classList.add('is-accent') });
 }
+/* a language switch: a picture on screen stays at rest, its accent lit, its story not played again */
+function rest(stage) {
+  const pic = picOf(stage);
+  atOnce(() => pic.classList.add('is-accent'), [...pic.querySelectorAll('.g-on')]);
+}
 
 /** The stack's pictures: a card that has come fully up plays its story (again after it has left the
  *  screen). sections.js mounts it on a phone only (≤ 600 px, now or after a turn). Returns { destroy() }. */
@@ -96,10 +102,15 @@ export function mountApproach(approach, { reducedMotion = false } = {}) {
   const seen = new Set();
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
-      if (e.intersectionRatio >= 0.9 && !seen.has(e.target)) { seen.add(e.target); story(e.target); }
+      if (e.intersectionRatio >= 0.9 && !seen.has(e.target)) { seen.add(e.target); (switching() ? rest : story)(e.target); }
       else if (!e.isIntersecting) seen.delete(e.target);
     }
   }, { threshold: [0, 0.9] });
   stages.forEach((s) => io.observe(s));
-  return { destroy() { io.disconnect(); } };
+  return {
+    destroy() {
+      io.disconnect();
+      stages.forEach((s) => picOf(s).querySelector('svg')?.__story?.cancel());
+    },
+  };
 }

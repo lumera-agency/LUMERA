@@ -30,6 +30,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* a language switch in the page (LangSwitch, lib/place): for its moment every state snaps into place, nothing
+   on screen fades over to it */
+html.lang-switch *,
+html.lang-switch *::before,
+html.lang-switch *::after { transition: none !important; }
+
 /* the page holds still under the preloader, the open menu and the prices' editor (phones): the root as
    well as the body (on iOS the root is what scrolls) */
 html.is-loading,

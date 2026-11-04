@@ -18,10 +18,26 @@ const STEPS: { link: WhyLink; page: string; sys: string }[] = [
  */
 export async function WhyChain() {
   const t = await getTranslations();
-  const index = (i: number) => String(i + 1).padStart(2, "0");
+  const index = (i: number) => String(i + 1); // 1, 2, 3: never zero-padded (the owner, 3 Nov)
+  const dot = (page: boolean) => (
+    <span className={page ? "w5-mark w5-mark--sys wc__mark-page" : "w5-mark w5-mark--sys"} aria-hidden="true">
+      <b></b>
+    </span>
+  );
 
   return (
     <div className="wc" data-chain="">
+      {/* phones: the two heads once, as a key */}
+      <p className="wc__heads" aria-hidden="true">
+        <span className="wc__head wc__head--page">
+          {dot(true)}
+          {t("why.col.page")}
+        </span>
+        <span className="wc__head wc__head--sys">
+          {dot(false)}
+          {t("why.col.system")}
+        </span>
+      </p>
       <span className="wc__rail" aria-hidden="true">
         <i className="wc__fill"></i>
       </span>

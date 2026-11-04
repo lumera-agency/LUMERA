@@ -44,7 +44,17 @@
 .cfg__main { grid-column: 1 / span 6; grid-row: 1; display: flex; flex-direction: column; gap: var(--rhythm-s); min-width: 0; }
 .cfg__side { grid-column: 7 / -1; grid-row: 1; position: sticky; top: calc(var(--topbar-h) + 1rem); display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
 .cfg__note { margin: 0; font-size: var(--fs-caption); font-weight: 300; line-height: 1.45; color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cfg { --sum-h: 17.125rem; --side-rest: calc(var(--topbar-h) + 1rem + var(--sum-h) + 0.75rem + 2.25rem + 0.75rem + 1.375rem + 1rem); }
+/* the sample site on top with its note, the price under it (the owner, 4 Nov); phones order the block themselves.
+   The sample's height (--side-rest) counts from where the column stands when the scroll stops at the block's title
+   (--cfg-top) and from the price card's real height (--sum-h), both measured by PricingClient: title, sample and
+   price on the screen at once */
+@media (min-width: 701px) {
+  .cfg__side { container: side / inline-size; }
+  .cfg-view { order: 1; }
+  .cfg__note { order: 2; }
+  .cfg-sum { order: 3; }
+}
+.cfg { --sum-h: 17.125rem; --side-rest: calc(var(--cfg-top, var(--topbar-h) + 1rem) + var(--sum-h) + 0.75rem + 2.25rem + 0.75rem + 1.375rem + 1rem); }
 .cfg-view { width: 100%; max-width: max(18.75rem, (100vh - var(--side-rest)) * 1.5); max-width: max(18.75rem, (100svh - var(--side-rest)) * 1.5); margin-inline: auto; }
 .cfg-bundles__list { display: flex; flex-direction: column; gap: 0.625rem; }
 .cfg-bundle {
@@ -438,7 +448,7 @@
 .cfg__note { text-wrap: balance; }
 @media (min-width: 701px) and (max-width: 1260px) {
   .cfg__note { white-space: normal; min-height: calc(2em * 1.45); }
-  .cfg { --side-rest: calc(var(--topbar-h) + 1rem + var(--sum-h) + 0.75rem + 2.25rem + 0.75rem + 2.375rem + 1rem); }
+  .cfg { --side-rest: calc(var(--cfg-top, var(--topbar-h) + 1rem) + var(--sum-h) + 0.75rem + 2.25rem + 0.75rem + 2.375rem + 1rem); }
 }
 @media (min-width: 1001px) and (max-width: 1100px) { .cfg { --sum-h: 20.625rem; }
 }
@@ -493,14 +503,14 @@
   .cfg__side { top: calc(var(--topbar-h) + 0.625rem); gap: 0.5rem; }
   .cfg-sum { padding-block: 1rem; gap: 0.5rem; }
   .cfg-sum__cta { margin-top: 2px; }
-  .cfg { --sum-h: 15.625rem; --side-rest: calc(var(--topbar-h) + 0.625rem + var(--sum-h) + 0.5rem + 2.25rem + 0.5rem + 1.375rem + 0.5rem); }
+  .cfg { --sum-h: 15.625rem; --side-rest: calc(var(--cfg-top, var(--topbar-h) + 0.625rem) + var(--sum-h) + 0.5rem + 2.25rem + 0.5rem + 1.375rem + 0.5rem); }
   @container sum (min-width: 612px) {
     .cfg-sum__cta { flex-wrap: nowrap; }
     .cfg-sum__cta + .cfg-small { margin-top: -2.375rem; margin-left: auto; padding-bottom: 0.75rem; text-align: right; }
 }
 }
 @media (min-width: 701px) and (max-width: 1260px) and (max-height: 800px) {
-  .cfg { --side-rest: calc(var(--topbar-h) + 0.625rem + var(--sum-h) + 0.5rem + 2.25rem + 0.5rem + 2.375rem + 0.5rem); }
+  .cfg { --side-rest: calc(var(--cfg-top, var(--topbar-h) + 0.625rem) + var(--sum-h) + 0.5rem + 2.25rem + 0.5rem + 2.375rem + 0.5rem); }
 }
 @media (min-width: 1001px) and (max-width: 1100px) and (max-height: 800px) { .cfg { --sum-h: 19.125rem; }
 }
@@ -650,4 +660,49 @@
 }
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) {
   .cfg-editor { transition: none; }
+}
+
+/* «Ваш проект», smaller where the column is wide enough (the owner, 4 Nov): the name beside the month, the price
+   beside the button, the breakdown's link beside the note */
+@container side (min-width: 440px) {
+  .cfg-sum {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "top top" "name month" "once cta" "link note";
+    align-items: center;
+    column-gap: 1.25rem;
+    row-gap: 0.5rem;
+    padding: 1.125rem 1.375rem;
+  }
+  .cfg-sum__top { grid-area: top; }
+  .cfg-sum__name { grid-area: name; margin: 0; font-size: var(--fs-lead); }
+  .cfg-sum__price,
+  .cfg-sum__cta { display: contents; }
+  .cfg-sum__once { grid-area: once; }
+  .cfg-sum__num { font-size: clamp(2.25rem, 1.6vw + 1.2rem, 2.75rem); }
+  .cfg-sum__month { grid-area: month; justify-self: end; grid-template-columns: auto auto; align-items: center; column-gap: 0.75rem; row-gap: 0; width: auto; padding: 0; border: 0; }
+  .cfg-sum__mnum { grid-row: 1; grid-column: 1; font-size: var(--fs-lead); }
+  .cfg-sum__mlabel,
+  .cfg-sum__mgmt { grid-row: 1; grid-column: 2; }
+  .cfg-sum__month[data-state='offer'] .cfg-sum__mnum { min-height: 0; }
+  .cfg .cfg-cta { grid-area: cta; }
+  .cfg-sum .cfg-link { grid-area: link; justify-self: start; min-height: 1.75rem; }
+  .cfg-sum > .cfg-small { grid-area: note; margin: 0; padding: 0; text-align: right; }
+  .cfg-sum > .cfg-sum__pnote { display: none; }
+}
+
+/* the block's title stays as the presets and the options scroll on under it (the owner, 4 Nov): 24 px under the
+   topbar, its label tucked under the bar (--cfg-head-top). Its gap to the presets is its own padding on the page's
+   black, so they go out of sight right where they began, the space under the title kept clear (no fade); the column
+   with the sample and the price stays right under it (--cfg-top), both measured by PricingClient */
+@media (min-width: 701px) {
+  .cfg-head {
+    position: sticky;
+    top: var(--cfg-head-top, calc(var(--topbar-h) + 1.5rem));
+    z-index: 4;
+    margin-bottom: 0;
+    padding-bottom: var(--rhythm-m);
+    background: var(--bg);
+  }
+  .cfg__side { top: var(--cfg-top, calc(var(--topbar-h) + 1rem)); }
 }

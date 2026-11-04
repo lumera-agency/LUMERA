@@ -53,8 +53,10 @@
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--col-gap);
-  margin: var(--rhythm-m) 0 0;
-  padding: var(--row-pad) 0 0;
+  /* its line right under the chain's last link, as the hairlines between the links (the owner, 4 Nov: the space there
+     read as double), the notes well below it */
+  margin: 0;
+  padding: clamp(2.5rem, 6vh, 4rem) 0 0;
   list-style: none;
   border-top: 1px solid var(--line);
 }
@@ -94,7 +96,7 @@
   .w5-sum__item { grid-column: 1 / -1; }
 }
 @media (max-width: 700px) {
-  .w5-sum { margin-top: var(--rhythm-s); padding-top: var(--row-pad-s); row-gap: 0.75rem; }
+  .w5-sum { padding-top: 2.25rem; row-gap: 0.75rem; }
   .w5-sum__head { display: inline; margin: 0; font-size: var(--fs-body); font-weight: 500; letter-spacing: 0; font-variation-settings: normal; }
   .w5-sum__head::after { content: ". "; }
   .w5-sum__text { display: inline; line-height: 1.5; }

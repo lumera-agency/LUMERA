@@ -23,9 +23,9 @@
   grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 20rem) auto;
   column-gap: clamp(1.5rem, 3vw, 3.5rem);
   align-items: center;
-  /* (22 Oct, the owner: the block's main thing fits the screen at first glance) by the screen's height too: the four rows
-     fit under the block's head on a 900 px or a 720 px screen, as a link from the topbar lands on it */
-  padding: clamp(1rem, 2.4vh, 2.125rem) 0;
+  /* by the screen's height too (22 Oct, the owner: the block's main thing fits the screen at first glance); roomier
+     since there are three rows (4 Nov) */
+  padding: clamp(1.75rem, 4.5vh, 3.25rem) 0;
   color: var(--ink-dark);
   text-decoration: none;
   transition: opacity 0.5s var(--ease-out);

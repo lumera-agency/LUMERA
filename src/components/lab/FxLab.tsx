@@ -54,7 +54,7 @@ export function FxLab({ locale }: { locale: string }) {
   const cards = useRef<HTMLDivElement>(null);
   const smoke = useRef<HTMLDivElement>(null);
   const lang = locale === "ru" ? "ru" : "uk";
-  const images = [1, 2, 3, 4].map((n) => `/img/what/what-${n}-${lang}.webp`);
+  const images = [1, 2, 4].map((n) => `/img/what/what-${n}-${lang}.webp`);
   useHoverReveal(list, { rows: "[data-row]", images });
   useSpotlight(cards, ".lab-card");
 
@@ -134,7 +134,7 @@ export function FxLab({ locale }: { locale: string }) {
 
       <Block id="hover-reveal" title="HoverReveal">
         <ol ref={list} className="border-t border-line">
-          {["Дизайн і розробка", "Автоматизація", "SaaS-продукти", "Реклама й аналітика"].map((name, i) => (
+          {["Дизайн і розробка", "Автоматизація", "Реклама й аналітика"].map((name, i) => (
             <li key={name} className="border-b border-line">
               <a href="#hover-reveal" data-row="" className="group flex items-baseline gap-8 py-6 transition-opacity">
                 <span className="font-mono text-label text-ink-mute">0{i + 1}</span>
@@ -170,7 +170,7 @@ export function FxLab({ locale }: { locale: string }) {
       <Block id="horizontal-ride" title="HorizontalRide" reveal={false}>
         <div className="ride lab-ride" data-lab-ride="">
           <div className="lab-track">
-            {["Дизайн", "Сайт", "Реклама", "Автоматизація", "SaaS"].map((w, i) => (
+            {["Дизайн", "Сайт", "Реклама", "Автоматизація"].map((w, i) => (
               <article key={w} className="lab-panel">
                 <div className="lab-panel__media" style={{ "--h": `${70 + i * 18}` } as React.CSSProperties} />
                 <div className="lab-panel__copy">
@@ -182,7 +182,7 @@ export function FxLab({ locale }: { locale: string }) {
             ))}
           </div>
           <div className="ride__hud">
-            <p className="ride__count" aria-hidden="true"><b data-ride-now="">01</b> / <span data-ride-of="">05</span></p>
+            <p className="ride__count" aria-hidden="true"><b data-ride-now="">1</b> / <span data-ride-of="">4</span></p>
             <span className="ride__bar" aria-hidden="true"><i data-ride-bar="" /></span>
             <ul className="ride__names" data-ride-names="" />
           </div>

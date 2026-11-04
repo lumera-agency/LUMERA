@@ -10,6 +10,7 @@ import { SiteNavProvider } from "@/components/layout/site-nav/SiteNavProvider";
 import { getSiteNav } from "@/content/site-nav";
 import "../globals.css";
 import "@/components/layout/page/page.css";
+import { RootKeep } from "@/components/layout/RootKeep";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads"];
@@ -71,13 +72,16 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: EARLY }} />
-      </head>
+      <head />
       <body>
+        {/* EARLY as the body's first markup, not a React <script>: it runs as the page is parsed, before anything is
+            drawn, and a render in the browser (a language switch) neither runs it again nor warns about a script tag */}
+        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY}</script>` }} />
+        <RootKeep />
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>
-        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" size={110} grow={1.15} lensGrow={1.35} />
+        {/* (over the footer's index the lens steps aside for the plain pointer: footer.css; the owner, 3 Nov) */}
+        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" quiet="[data-wordmark], .footer__index" size={110} grow={1.15} lensGrow={1.35} />
         <NextIntlClientProvider messages={clientMessages}>
           <SiteNavProvider value={siteNav}>{children}</SiteNavProvider>
         </NextIntlClientProvider>

@@ -10,6 +10,24 @@ const $ = (selector, root = document) => root.querySelector(selector);
 
 const preset = { api: null, pending: null, reducedMotion: false };
 const topbarH = topbarHeight;
+// what is still to come (frames, timers, observers): stopped with the presets, so the page in the other
+// language starts clean
+const running = new Set();
+function track(stop) {
+  running.add(stop);
+  return () => {
+    running.delete(stop);
+    stop();
+  };
+}
+function nextFrame(fn) {
+  const done = track(() => cancelAnimationFrame(frame));
+  const frame = requestAnimationFrame(() => { done(); fn(); });
+}
+function later(fn, ms) {
+  const done = track(() => clearTimeout(timer));
+  const timer = setTimeout(() => { done(); fn(); }, ms);
+}
 
 const presetPhone = () => window.matchMedia('(max-width: 700px)').matches;
 /** How far below the top of the screen the list of presets should land: just under the topbar. (Phones
@@ -40,13 +58,16 @@ function pingWhenInView(el) {
   let timer = 0;
   const io = new IntersectionObserver((entries) => {
     if (!entries.some((e) => e.isIntersecting && e.intersectionRatio >= 0.9)) return;
+    stopWatching();
+    el.classList.add('is-pinged');
+    later(() => el.classList.remove('is-pinged'), 700);
+  }, { threshold: [0.9, 1], rootMargin: `-${Math.max(0, Math.round(presetOffset() - 24))}px 0px -${presetFloor() - 12}px 0px` });
+  const stopWatching = track(() => {
     io.disconnect();
     clearTimeout(timer);
-    el.classList.add('is-pinged');
-    setTimeout(() => el.classList.remove('is-pinged'), 700);
-  }, { threshold: [0.9, 1], rootMargin: `-${Math.max(0, Math.round(presetOffset() - 24))}px 0px -${presetFloor() - 12}px 0px` });
+  });
   io.observe(el);
-  timer = setTimeout(() => io.disconnect(), 5000);
+  timer = setTimeout(stopWatching, 5000);
 }
 
 function goPreset(id, { tune = false, scroll = true } = {}) {
@@ -61,17 +82,14 @@ function goPreset(id, { tune = false, scroll = true } = {}) {
   if (!preset.reducedMotion) pingWhenInView(chosen);
 }
 
-function initPresetLinks(reducedMotion) {
-  preset.reducedMotion = reducedMotion;
-  document.addEventListener('click', (e) => {
-    const a = e.target.closest?.('a[data-cfg-preset]');
-    if (!a || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    e.preventDefault();
-    delete document.documentElement.dataset.cfgPending; // main.js may have stashed this same click
-    a.closest('dialog')?.close();
-    const opts = { tune: a.hasAttribute('data-cfg-tune') };
-    requestAnimationFrame(() => goPreset(a.dataset.cfgPreset, opts));
-  });
+function onPresetLink(e) {
+  const a = e.target.closest?.('a[data-cfg-preset]');
+  if (!a || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  delete document.documentElement.dataset.cfgPending; // main.js may have stashed this same click
+  a.closest('dialog')?.close();
+  const opts = { tune: a.hasAttribute('data-cfg-tune') };
+  nextFrame(() => goPreset(a.dataset.cfgPreset, opts));
 }
 
 /** The configurator is mounted: a preset asked for before (here, or stashed by main.js) is applied now —
@@ -88,7 +106,7 @@ function presetReady(api) {
   goPreset(p.id, { tune: p.tune, scroll: false });
   const go = () => {
     let n = 4; // main.js's arrive(): a jump now and one after ScrollTrigger's first refresh (the next frame)
-    const frame = () => (n-- ? requestAnimationFrame(frame) : goPreset(p.id));
+    const frame = () => (n-- ? nextFrame(frame) : goPreset(p.id));
     frame();
   };
   go(); // the page is in place (the blocks are server-rendered)
@@ -96,10 +114,16 @@ function presetReady(api) {
 
 const keepWhole = (plan) => plan.split(' · ').map((part) => part.replace(/ /g, '\u00a0').replace(/–/g, '–\u2060')).join(' · ');
 
-let started = false;
+/** Wires the page's preset links; returns destroy(), which unwires them and drops the configurator they act on. */
 export function initPresets(reducedMotion) {
-  if (started) return;
-  started = true;
-  initPresetLinks(reducedMotion);
+  preset.reducedMotion = reducedMotion;
+  document.addEventListener('click', onPresetLink);
+  return function destroy() {
+    document.removeEventListener('click', onPresetLink);
+    running.forEach((stop) => stop());
+    running.clear();
+    preset.api = null;
+    preset.pending = null;
+  };
 }
 export { presetReady, keepWhole };

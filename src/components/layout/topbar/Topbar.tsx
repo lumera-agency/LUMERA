@@ -15,6 +15,10 @@ import { NavChevron, NavPanel } from "@/components/layout/site-nav/NavPanel";
 import { navDisclosure, type NavDisclosure } from "@/components/layout/site-nav/disclosure";
 import "./topbar.css";
 
+/** The bar's last state: a language switch renders the page anew, and the new bar starts as the old one was rather
+ *  than sliding in again (the first render, hydrating, gets false as the server did). */
+let lastShown = false;
+
 /**
  * The compact page navigation: appears only once the hero has scrolled away. «Послуги ⌄» leads it on every page (its
  * panel hangs under the bar: NavPanel), then the page's own blocks. On phones the menu button opens the site menu
@@ -24,7 +28,7 @@ import "./topbar.css";
  */
 export function Topbar({ links, cta, always = false, home }: { links?: readonly NavLink[]; cta?: NavCta; always?: boolean; home?: string } = {}) {
   const t = useTranslations();
-  const [shown, setVisible] = useState(false);
+  const [shown, setVisible] = useState(() => lastShown);
   const visible = always || shown;
   const open = useMenuOpen();
   // the main page's own «Послуги» block: the panel stands for it
@@ -58,6 +62,7 @@ export function Topbar({ links, cta, always = false, home }: { links?: readonly 
     const check = () => {
       queued = 0;
       const show = page.getBoundingClientRect().top <= topbarHeight() + dpx(8);
+      lastShown = show;
       setVisible(show);
     };
     const queue = () => {

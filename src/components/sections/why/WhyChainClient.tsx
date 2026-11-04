@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
+import { switching } from "@/lib/place";
 
 /**
  * The section box for the chain (WhyChain): as the page scrolls, the link whose node has crossed 60 % of the screen
@@ -9,7 +10,8 @@ import { useEffect, useRef } from "react";
  */
 export function WhyChainClient({ children }: { children: React.ReactNode }) {
   const root = useRef<HTMLElement>(null);
-  useEffect(() => {
+  // (before the first paint: after a language switch the chain is lit as it was, not dark for a frame)
+  useLayoutEffect(() => {
     const chain = root.current?.querySelector<HTMLElement>("[data-chain]");
     if (!chain) return;
     const steps = [...chain.querySelectorAll<HTMLElement>("[data-step]")];
@@ -43,8 +45,9 @@ export function WhyChainClient({ children }: { children: React.ReactNode }) {
         s.classList.toggle("is-active", k === i);
         s.classList.toggle("is-past", k < i);
       });
-      // its glyph tells its story once, as it comes on (not when the chain is scrolled back up past it)
-      if (i > was && i >= 0 && !still) playStory?.(steps[i].querySelector(".w5-glyph svg"), steps[i].dataset.link!);
+      // its glyph tells its story once, as it comes on (not when the chain is scrolled back up past it, nor as the page
+      // comes back in the other language)
+      if (i > was && i >= 0 && !still && !switching()) playStory?.(steps[i].querySelector(".w5-glyph svg"), steps[i].dataset.link!);
     };
 
     const frame = () => {
@@ -59,7 +62,9 @@ export function WhyChainClient({ children }: { children: React.ReactNode }) {
     };
 
     let queued = 0;
-    let near = false;
+    // near the screen from the start (a language switch lands here): the observer's first word comes only later
+    const box = chain.getBoundingClientRect();
+    let near = box.bottom > -window.innerHeight / 2 && box.top < window.innerHeight * 1.5;
     const onScroll = () => {
       if (near && !queued) queued = requestAnimationFrame(() => ((queued = 0), frame()));
     };

@@ -60,16 +60,18 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
   const root = document.documentElement;
   const el = document.querySelector<HTMLElement>("[data-preloader]");
   if (!el || !root.classList.contains("js")) return;
-  // once per visit: the page reached again in this tab (back from another page, the browser's back)
-  // comes up at once; a reload and a language switch (LangSwitch leaves the scroll behind) play it again
+  // once per visit: the page reached again in this tab (back from another page, the browser's back) comes up at once;
+  // a reload plays it again. A language switch stays in the page (LangSwitch): the sheet the new words render with is
+  // never shown (preloader.css, html.pl-done)
   let again = false;
   try {
     const nav = performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined;
     const reload = nav?.type === "reload";
-    again = !reload && sessionStorage.getItem("eclo:seen") === "1" && sessionStorage.getItem("eclo:lang-scroll") == null;
+    again = !reload && sessionStorage.getItem("eclo:seen") === "1";
     sessionStorage.setItem("eclo:seen", "1");
   } catch {}
   if (again) {
+    root.classList.add("pl-done");
     el.remove();
     return;
   }
@@ -207,7 +209,12 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
           requestAnimationFrame(draw);
         };
         requestAnimationFrame(draw);
-        return { node, letters, cap: capH, stop: () => void (alive = false) };
+        // stopped with the sheet: the frame loop ends and the letters' contexts are let go at once (not left to the GC)
+        const stop = () => {
+          alive = false;
+          for (const { gl } of made) gl.getExtension("WEBGL_lose_context")?.loseContext();
+        };
+        return { node, letters, cap: capH, stop };
       });
     });
 
@@ -217,6 +224,7 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
   const gone = () => {
     name?.stop();
     el.remove();
+    root.classList.add("pl-done");
   };
   const nameW = Math.min(W * (PHONE ? 0.9 : 0.76), window.innerHeight * 1.3, 1400);
   const row = document.createElement("div");

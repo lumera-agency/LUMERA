@@ -7,14 +7,14 @@ import { ServicesClient } from "./ServicesClient";
 import { ServiceDesign } from "./panels/ServiceDesign";
 import { ServiceAds } from "./panels/ServiceAds";
 import { ServiceAutomation } from "./panels/ServiceAutomation";
-import { ServiceSaas } from "./panels/ServiceSaas";
 import "./services.css";
 import "./demos/demos.css";
 
-const TABS = [1, 2, 3, 4] as const;
+// no SaaS for now (the owner, 4 Nov: it was the fourth, panels/ServiceSaas)
+const TABS = [1, 2, 3] as const;
 
 /**
- * 3 · Послуги: the four services, one per page, each with a live demo of the work. Wide screens: a horizontal ride
+ * 3 · Послуги: the services, one per page, each with a live demo of the work. Wide screens: a horizontal ride
  * (fx/horizontal-ride). 861–1023 px: rows that stack. Phones: a switcher of chips over one window.
  */
 export async function Services() {
@@ -52,7 +52,6 @@ export async function Services() {
             <ServiceDesign />
             <ServiceAds />
             <ServiceAutomation />
-            <ServiceSaas />
           </div>
           {/* one panel back / on (wide screens, while the ride is on) */}
           <button className="ride__arrow ride__arrow--prev" type="button" data-ride-prev="" aria-label={t("services.ride.prev")}>
@@ -63,7 +62,7 @@ export async function Services() {
           </button>
           <div className="ride__hud">
             <p className="ride__count" aria-hidden="true">
-              <b data-ride-now="">1</b> / <span data-ride-of="">4</span>
+              <b data-ride-now="">1</b> / <span data-ride-of="">{TABS.length}</span>
             </p>
             <span className="ride__bar" aria-hidden="true"><i data-ride-bar="" /></span>
             <ul className="ride__names" data-ride-names="" aria-label={t("nav.services")} />
