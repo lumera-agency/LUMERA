@@ -1,7 +1,7 @@
 /*
  * «Про нас»'s behaviour, an island as on the sibling pages (React owns the markup, this module the motion): the parts
- * coming in as they reach the screen, the labels' shuffle, the broken-telephone demo (block 3), and where the visitor
- * lands.
+ * coming in as they reach the screen, the labels' shuffle, the folder (block 2), the broken-telephone demo (block 3),
+ * and where the visitor lands.
  * The section titles and the [data-sr] blocks are the main page's own reveals (PageShell → ScrollReveals).
  *
  * Ported ideas, rebuilt here on CSS and WAAPI (React Bits, reactbits.dev, MIT + Commons Clause; 21st.dev): Animated
@@ -26,6 +26,7 @@ export function startAbout() {
   started = true;
   initIn();
   initShuffle();
+  initFolder();
   initChain();
   arrive();
 }
@@ -116,6 +117,23 @@ function initShuffle() {
     }
   }, { rootMargin: '0px 0px -10% 0px' });
   $$('main.about .s-head__meta > span:last-child').forEach((label) => io.observe(label));
+}
+
+/* ---------- 2 · the folder (AboutWork), wide screens: its documents rise out of it once, one after another, as the
+   folder's front comes into view (about.css: .is-pre holds them down in it; phones take each document's own [data-in]).
+   Already on the screen at load: left as it is ---------- */
+function initFolder() {
+  const el = $('[data-folder]');
+  const lip = el && $('.about-folder__lip', el);
+  if (!lip || !motion) return;
+  if (el.getBoundingClientRect().top < window.innerHeight * 0.75) return;
+  el.classList.add('is-pre');
+  const io = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    io.disconnect();
+    el.classList.remove('is-pre');
+  }, { rootMargin: '0px 0px -12% 0px' });
+  io.observe(lip);
 }
 
 /* ---------- 3 · the broken-telephone demo (AboutDirect): plays once as its window comes into view. .is-pre holds the
