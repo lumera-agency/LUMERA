@@ -90,7 +90,12 @@ export async function RobotHero() {
             <b>{kickerLead}</b> <span>{kickerRest}</span>
           </span>{" "}
           <span className="bot-cover__a">{t("bot.cover.a")}</span> <span className="bot-cover__b">{t("bot.cover.b")}</span>{" "}
-          <span className="bot-cover__c">{t("bot.cover.c")}</span> <span className="bot-cover__d">{t("bot.cover.d")}</span>
+          {/* (the sticker's words in a span of their own: a browser's translator wraps text in tags that take on the
+              sticker's raise, and raised once more inside it they stretched it) */}
+          <span className="bot-cover__c">
+            <span>{t("bot.cover.c")}</span>
+          </span>{" "}
+          <span className="bot-cover__d">{t("bot.cover.d")}</span>
         </h1>
         <div className="ai-bot__scene" role="img" aria-label={t("bot.label")}>
           <BotStory>
