@@ -9,13 +9,11 @@ import { aiHref } from "@/components/ai/links";
 import { aiMetadata } from "@/components/ai/meta";
 import { aiRich } from "@/components/ai/rich";
 import { RobotHero } from "@/components/sections/ai-page/RobotHero";
+import { WhatIsAutomation } from "@/components/sections/ai-page/WhatIsAutomation";
 import { Proof } from "@/components/sections/ai-page/Proof";
 import { Pause } from "@/components/sections/ai-page/Pause";
 import { Niches } from "@/components/sections/ai-page/Niches";
-import { Path } from "@/components/sections/ai-page/Path";
 import { Offer } from "@/components/sections/ai-page/Offer";
-import { Terms } from "@/components/sections/ai-page/Terms";
-import { Calc } from "@/components/sections/ai-page/Calc";
 import { AUDIT, PRODUCTS, daysText, usd, weeksText } from "@/components/sections/ai-page/prices";
 import "@/components/sections/ai-page/ai-page.css";
 
@@ -26,9 +24,11 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/ai-avtom
 
 /**
  * «AI-автоматизація для бізнесу» — the AI section's own page (paid traffic leads here; the owner's rework, 21 Oct 2026:
- * the result first, the proof before the explanation, open prices): 1 the first screen → 2 the case (with «Як зараз /
- * Як буде») → a pause → 3 the niches → 4 one letter's way → 5 the lineup → 6 the terms and what is not included → 7 the
- * price calculator → 8 questions → 9 the request. The section numbers are counted here, so a block can be added
+ * open prices; his order of 5 Nov 2026: what it is first, then for whom, the proof, the offer): 1 the first screen's
+ * question → 2 what AI automation is and what the robot does (its console, one letter's way) → 3 the niches, what it
+ * takes over (the niches, the lineup's words, set as the main page's services) → 4 the case (with «Як зараз / Як
+ * буде») → a pause → 5 the prices: the lineup as a calculator → 6 questions → 7 the request, with what comes with the
+ * work and what is not done (the terms, as the main page's request has them; 5 Nov 2026). The section numbers are counted here, so a block can be added
  * (phase 2: the losses calculator after the lineup) without renumbering by hand.
  */
 export default async function AiAutomationPage({ params }: PageProps<"/[locale]/ai-avtomatyzatsiia">) {
@@ -36,13 +36,13 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
   setRequestLocale(locale);
   const t = await getTranslations("ai");
   const c = await getTranslations("aiCommon");
+  const root = await getTranslations();
   const lang = (await getLocale()) === "ru" ? "ru" : "uk";
   const facts = aiFacts(locale);
   const nav = [
-    { href: "#case", text: t("nav.case") },
     { href: "#how", text: t("nav.how") },
+    { href: "#case", text: t("nav.case") },
     { href: "#offer", text: t("nav.offer") },
-    { href: "#calc", text: t("nav.calc") },
     { href: "#faq", text: c("nav.faq") },
     { href: "#contact", text: c("nav.lead"), bar: false },
     { href: aiHref(locale, "/"), text: c("nav.home"), bar: false },
@@ -65,21 +65,19 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
     <AiShell
       page="ai"
       nav={nav}
-      footerLinks={[...nav.slice(0, 5), { href: aiHref(locale, "/"), text: studioName }]}
+      footerLinks={[...nav.slice(0, 4), { href: aiHref(locale, "/"), text: studioName }]}
       cta={{ href: "#contact", text: c("cta.auto") }}
       barCta={{ href: "#contact", text: t("topbar.cta") }}
       claim={t("foot.claim")}
     >
       <RobotHero />
       <PageShell>
+        <WhatIsAutomation index={next()} />
+        <Niches index={next()} />
         <Proof index={next()} />
         <Pause />
-        <Niches index={next()} />
-        <Path index={next()} />
         <Offer index={next()} />
-        <Terms index={next()} />
-        <Calc index={next()} />
-        <AiFaq index={next()} items={faq} intro={t.rich("faq.intro", aiRich)} />
+        <AiFaq index={next()} items={faq} intro={t("faq.intro")} write={c("footer.write")} />
         <AiContact
           index={next()}
           title={t.rich("form.title", aiRich)}
@@ -87,6 +85,8 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
           placeholder={t("form.ph")}
           picks={{ label: t("form.chips.label"), items: [1, 2, 3, 4, 5].map((i) => t(`form.chip.${i}`)) }}
           plan={{ label: t("calc.att.text"), clear: t("calc.att.x") }}
+          get={{ title: root("contact.get.title"), items: [1, 2, 3, 4].map((i) => t(`terms.get.${i}`)) }}
+          out={{ title: t("out.title"), items: [1, 2, 3, 4].map((i) => t(`out.${i}`)) }}
         />
       </PageShell>
     </AiShell>

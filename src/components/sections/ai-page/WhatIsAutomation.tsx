@@ -1,9 +1,16 @@
 import { getTranslations } from "next-intl/server";
 import { aiRich } from "@/components/ai/rich";
+import { TextFill } from "@/components/fx/text-fill/TextFill";
 import { LetterFlow, type FlowCopy } from "./LetterFlow";
 
-/** Як це працює (after the niches since 21 Oct 2026): one letter's way through the program, as a live scheme (LetterFlow: React and GSAP) (ivory). */
-export async function Path({ index }: { index: number }) {
+/**
+ * 2 · Що таке AI-автоматизація, right under the first screen (the owner, 5 Nov 2026: what it is comes first, not in
+ * block 4; ivory, the sheet that slides over the pinned first screen). What it is, in two sentences set large, their
+ * words filling in with the ink as they come up (the main page's statement: fx/TextFill), all of it in the ink once it
+ * is wholly on the screen (the owner: no half-grey text); then one letter's way through the program, as a live scheme
+ * (LetterFlow: React and GSAP). What it can do for a business is block 3's.
+ */
+export async function WhatIsAutomation({ index }: { index: number }) {
   const t = await getTranslations("ai");
   const c = await getTranslations("aiCommon");
   const copy: FlowCopy = {
@@ -29,7 +36,7 @@ export async function Path({ index }: { index: number }) {
     replayLabel: t("replay.path"),
   };
   return (
-    <section className="section section--ivory ai-sec" id="how" aria-labelledby="how-title">
+    <section className="section section--ivory ai-sec ai-what" id="how" aria-labelledby="how-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
@@ -39,9 +46,18 @@ export async function Path({ index }: { index: number }) {
           <h2 className="s-head__title" id="how-title" data-split="">
             <span className="tone">{t.rich("how.title", aiRich)}</span>
           </h2>
-          <p className="s-head__intro">{t("how.intro")}</p>
         </header>
-        <LetterFlow copy={copy} loop />
+        {/* (the fill ends once the whole statement is on the screen, its foot at 78 % of it: by then every word is
+            in the ink, none left grey) */}
+        <TextFill className="ai-what__lead" start="top 92%" end="bottom 78%">
+          {t("how.intro")}
+        </TextFill>
+        <div className="ai-what__path">
+          <p className="ai-what__k" data-rv="">
+            {t("how.path")}
+          </p>
+          <LetterFlow copy={copy} loop />
+        </div>
       </div>
     </section>
   );

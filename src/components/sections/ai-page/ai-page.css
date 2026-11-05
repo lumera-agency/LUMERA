@@ -1,308 +1,217 @@
 /*
- * The AI page's own blocks (sections/ai-page; the owner's rework, 21 Oct 2026: the result first, the proof before the
- * explanation, open prices). Everything here is scoped to main[data-ai-page="ai"]: components/ai/ai.css is shared with
- * the cases, the sites page and the ads page. The lineup's cards reuse ai.css's service cards (.ai-svc) and their
- * scenes; the price calculator reuses its .ai-calc. Phase 1 lays the blocks out; phase 3 sets the final weights.
+ * The AI page's own blocks (sections/ai-page), set as the main page's (the owner, 5 Nov 2026: its rows, windows, pills,
+ * call strips and request). Everything here is scoped to main[data-ai-page="ai"]: components/ai/ai.css is shared with
+ * the cases, the sites page and the ads page. The tasks' scenes are ai.css's (.ai-svc__art); the price calculator is
+ * its .ai-calc.
  */
 
-/* ---------- 1 · the first screen «Пульт» (the owner's pick, 26 Oct 2026): its layout and console are hero-console.css;
-   here the words' small parts shared with the earlier first screens ---------- */
-main[data-ai-page="ai"] .ai-hero__audit { margin: 1.125rem 0 0; font-size: var(--fs-small); color: var(--ink-soft); text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 0 0.5rem rgba(0, 0, 0, 0.85); }
-main[data-ai-page="ai"] .ai-hero__loss { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; color: var(--ink); text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.85); }
-main[data-ai-page="ai"] .ai-hero__loss svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+/* frames that can be seen on the black (the owner, 30 Oct 2026: «никак не видно рамок») */
+main[data-ai-page="ai"] { --ai-frame: rgb(246 246 243 / 0.2); }
 
-/* ---------- 2 · Кейс (ivory, the sheet over the first screen): who and what, the morning before and after, the screenshots ---------- */
-main[data-ai-page="ai"] .ai-proof__lead { display: grid; gap: 0.875rem; max-width: 46rem; }
-main[data-ai-page="ai"] .ai-proof__k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
-main[data-ai-page="ai"] .ai-proof__tag { padding: 0.35em 0.75em; border-radius: 62.4375rem; color: #fcfcfa; background: var(--ink-dark); }
-/* before (muted, a hairline frame) and after (a white card, the accent) */
-main[data-ai-page="ai"] .ai-split__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: stretch; margin-top: var(--rhythm-s); }
-main[data-ai-page="ai"] .ai-split__col { display: grid; grid-template-rows: auto auto 1fr; gap: clamp(1.5rem, 3vw, 2.25rem); padding: clamp(1.75rem, 3.4vw, 3rem); border-radius: var(--radius-lg); }
-main[data-ai-page="ai"] .ai-split__col--now { color: var(--ink-dark-mute); box-shadow: inset 0 0 0 1px var(--line-dark); }
-main[data-ai-page="ai"] .ai-split__col--next { color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.08), 0 2rem 3.5rem -2.5rem rgba(60, 45, 30, 0.5); }
-main[data-ai-page="ai"] .ai-split__k { margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; }
-main[data-ai-page="ai"] .ai-split__col--next .ai-split__k { color: var(--ember-deep); }
-main[data-ai-page="ai"] .ai-split__rows { display: grid; align-content: start; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
-main[data-ai-page="ai"] .ai-split__row { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); column-gap: 1rem; align-items: baseline; font-size: var(--fs-body); line-height: 1.45; }
-main[data-ai-page="ai"] .ai-split__t { font: 400 var(--fs-label)/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
-/* the case's numbers, once: the block's largest type, first in its column; the bar is the morning's length (fx/ShrinkTotal) */
-main[data-ai-page="ai"] .ai-split__total { display: grid; gap: 0.5rem; margin: 0; }
-main[data-ai-page="ai"] .ai-split__v { font-size: clamp(3rem, 7vw, 6.5rem); font-weight: 400; line-height: 0.95; letter-spacing: -0.045em; white-space: nowrap; }
-main[data-ai-page="ai"] .ai-split__n { font-variant-numeric: tabular-nums; }
-main[data-ai-page="ai"] .ai-split__when { font-size: var(--fs-body); }
-main[data-ai-page="ai"] .ai-split__bar { display: block; height: 0.25rem; margin-top: 0.75rem; border-radius: 62.4375rem; overflow: hidden; background: var(--line-dark); }
-main[data-ai-page="ai"] .ai-split__fill { display: block; height: 100%; border-radius: inherit; background: currentColor; transform-origin: 0 50%; }
-main[data-ai-page="ai"] .ai-split__col--next :is(.ai-split__v, .ai-split__fill) { color: var(--ember-deep); }
-/* the audit's line and the button on the left, the two demos on the right at their own width (22rem each: the scheme's
-   type stays 11–13 px); below 1200 px the demos go under the text, side by side, and on phones one under the other */
-main[data-ai-page="ai"] .ai-proof__grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--rhythm-s) var(--col-gap); align-items: start; margin-top: var(--rhythm-m); }
-main[data-ai-page="ai"] .ai-proof__audit { max-width: 32ch; margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; color: var(--ink-dark); text-wrap: pretty; }
-/* «Читати кейс»: a filled button (the owner, 21 Oct 2026: «виділити»), ember on the ivory, white type 4.6:1 */
-main[data-ai-page="ai"] .ai-proof__go { --btn-bg: var(--ember-btn); --btn-ink: #fff; --btn-wave: #0f0e0d; --btn-glow: rgb(194 77 24 / 0.45); margin-top: 1.5rem; }
-main[data-ai-page="ai"] .ai-proof__ex-go svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-main[data-ai-page="ai"] .ai-proof__shots { display: grid; grid-template-columns: repeat(2, minmax(0, 22rem)); justify-content: start; gap: 1rem; }
-main[data-ai-page="ai"] .ai-shot { display: grid; gap: 0.625rem; margin: 0; }
-main[data-ai-page="ai"] .ai-shot__cap { font: 400 var(--fs-label)/1.3 var(--font-mono); letter-spacing: 0.06em; color: var(--ink-dark-mute); }
-main[data-ai-page="ai"] .ai-shot__note { letter-spacing: 0.02em; }
-main[data-ai-page="ai"] .ai-shot { grid-template-rows: minmax(0, 1fr) auto; }
-/* side by side, the captions take two lines' room each, so a caption that wraps (Russian) never shortens its window */
-@media (min-width: 601px) { main[data-ai-page="ai"] .ai-shot__cap { min-height: 2.6em; } }
+/* ---------- the parts the blocks share ---------- */
+/* a mono label over a part */
+main[data-ai-page="ai"] :is(.ai-what__k, .ai-task__k, .ai-task__for) { margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; }
 
-/* the two demos: dark windows on the ivory (pictures of screens: signal lives inside them) */
-main[data-ai-page="ai"] .ai-demo { display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-md); color: var(--ink); background: #0d0d0d; box-shadow: 0 0 0 1px rgba(15, 14, 13, 0.14), 0 1.875rem 3.75rem -2.25rem rgba(60, 45, 30, 0.55); }
-main[data-ai-page="ai"] .ai-proof__shots { align-items: stretch; }
+/* a window round a picture of the robot's work, as the main page's (three dots and its name in the bar) */
+main[data-ai-page="ai"] .ai-win { overflow: hidden; border-radius: var(--radius-lg); background: #0b0b0b; box-shadow: inset 0 0 0 1px var(--ai-frame), 0 2.5rem 5rem -2.5rem #000; }
+main[data-ai-page="ai"] .ai-win__bar { display: flex; align-items: center; gap: 0.4375rem; height: 2.5rem; margin: 0; padding: 0 1rem; border-bottom: 1px solid rgb(246 246 243 / 0.08); font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: 0.06em; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-win__bar i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgb(246 246 243 / 0.16); }
+main[data-ai-page="ai"] .ai-win__bar span { margin-left: 0.5rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+main[data-ai-page="ai"] .ai-win .ai-svc__art { margin: 0; border-radius: 0; background: none; box-shadow: none; }
+
+/* the way on from a row, to the case or the example: a button, a lime frame round a faint lime ground and a lime
+   disc with the arrow; under the pointer lime fills it from below and the disc turns dark (the owner, 5 Nov 2026: a
+   word beside a disc did not read as a button) */
+main[data-ai-page="ai"] .ai-task__go { --btn-line: rgb(218 255 2 / 0.5); --btn-fill: var(--lime); --btn-fill-ink: #0d0d0d; gap: 0.875rem; padding: 0 0.3125rem 0 1.375rem; background: rgb(218 255 2 / 0.07); }
+main[data-ai-page="ai"] .ai-task__go .btn__icon { width: 2.375rem; height: 2.375rem; border-radius: 50%; color: #0d0d0d; background: var(--lime); transition: background-color 0.45s var(--ease-out), color 0.45s var(--ease-out); }
+main[data-ai-page="ai"] .ai-task__go .arrow { inset: 0.6875rem; width: auto; height: auto; stroke-width: 1.9; }
+main[data-ai-page="ai"] .ai-task__go:is(:hover, :focus-visible) .btn__icon { color: var(--lime); background: #0d0d0d; }
+
+/* a button on the ivory: a dark pill with a lime disc (the main page's on its ivory; ember there sat badly) */
+main[data-ai-page="ai"] .section--ivory .btn--primary { --btn-bg: var(--ink-dark); --btn-ink: #fcfcfa; --btn-wave: #2b2926; --btn-glow: rgb(15 14 13 / 0.3); gap: 1rem; padding: 0 0.375rem 0 1.5rem; }
+main[data-ai-page="ai"] .section--ivory .btn--primary .btn__icon { width: 2.375rem; height: 2.375rem; border-radius: 50%; color: #0d0d0d; background: var(--lime); }
+main[data-ai-page="ai"] .section--ivory .btn--primary .arrow { inset: 0.6875rem; width: auto; height: auto; stroke-width: 1.9; }
+
+/* a call strip at a block's foot: a question on the left, its button on the right (the main page's services) */
+main[data-ai-page="ai"] .ai-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.25rem 2rem; margin-top: var(--rhythm-m); padding-top: var(--rhythm-s); border-top: 1px solid var(--ai-frame); }
+main[data-ai-page="ai"] .ai-cta__q { max-width: 46ch; margin: 0; font-size: var(--fs-h4); line-height: 1.3; color: var(--ink); text-wrap: balance; }
+main[data-ai-page="ai"] .ai-cta__q span { color: var(--ink-soft); }
+
+/* the words of a statement start faint and fill with the ink as it comes up (fx/TextFill; the main page's services.css
+   has the same start) */
+main[data-ai-page="ai"] [data-statement] .w { opacity: 0.18; }
+
+/* ---------- 2 · Що таке AI-автоматизація (ivory, the sheet over the first screen): the statement, one letter's way ---------- */
+main[data-ai-page="ai"] .ai-what__lead { max-width: 24em; margin: 0; font-size: clamp(1.6rem, 2.9vw, 3.1rem); font-weight: 300; line-height: 1.18; letter-spacing: -0.025em; color: var(--ink-dark); text-wrap: balance; }
+main[data-ai-page="ai"] .ai-what__path { margin-top: var(--rhythm-l); padding-top: var(--rhythm-s); border-top: 1px solid var(--line-dark); }
+main[data-ai-page="ai"] .ai-what__k { color: var(--ink-dark-mute); }
+main[data-ai-page="ai"] .ai-what__path .flow { margin-top: 2rem; }
+
+/* ---------- 3 · Що робот візьме на себе: an opening with the console, then a row for each task (the main page's services) ---------- */
+main[data-ai-page="ai"] .ai-tasks__open { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: center; }
+main[data-ai-page="ai"] .ai-tasks__lead { grid-column: 1 / span 5; margin: 0; font-size: clamp(1.5rem, 2.4vw, 2.5rem); font-weight: 300; line-height: 1.2; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
+main[data-ai-page="ai"] .ai-tasks__console { grid-column: 7 / -1; }
+main[data-ai-page="ai"] .ai-tasks__list { margin: var(--rhythm-l) 0 0; padding: 0; list-style: none; }
+/* a task: its picture on the left (cols 1–6), its words on the right (8–12), a hairline between the rows */
+main[data-ai-page="ai"] .ai-task { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: center; padding-block: var(--rhythm-s); border-top: 1px solid var(--ai-frame); }
+main[data-ai-page="ai"] .ai-task__demo { grid-column: 1 / span 6; }
+/* the three windows one height: a 2.5 rem bar over 19 rem of picture */
+main[data-ai-page="ai"] .ai-task__demo .ai-demo { height: 21.5rem; border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--ai-frame), 0 2.5rem 5rem -2.5rem #000; }
+/* the scenes were drawn for a card: in a window they are larger (zoom; their height before it, 19 rem after) */
+main[data-ai-page="ai"] .ai-task__demo .ai-svc__art--crm { zoom: 1.3; height: 14.6rem; padding-inline: 1.5rem; }
+main[data-ai-page="ai"] .ai-task__demo .ai-svc__art--mail { zoom: 1.35; height: 14.07rem; }
+main[data-ai-page="ai"] .ai-task__text { grid-column: 8 / -1; display: grid; justify-items: start; }
+main[data-ai-page="ai"] .ai-task__k { display: flex; gap: 0.75rem; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-task__k span:first-child { color: var(--lime); }
+main[data-ai-page="ai"] .ai-task__t { margin: 1rem 0 0; font-size: clamp(1.75rem, 2.6vw, 2.5rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
+main[data-ai-page="ai"] .ai-task__p { max-width: 38ch; margin: 0.875rem 0 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+main[data-ai-page="ai"] .ai-task__for { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; margin-top: 1.5rem; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-task__for span + span { color: var(--ink); }
+main[data-ai-page="ai"] .ai-task__checks { width: 100%; margin-top: 0.75rem; }
+main[data-ai-page="ai"] .ai-task__checks li,
+main[data-ai-page="ai"] .ai-task__checks li:first-child { grid-template-columns: 1.25rem 1fr; gap: 0.625rem; align-items: start; padding: 0.375rem 0; border-top: 0; }
+main[data-ai-page="ai"] .ai-task__checks .check { width: 1.125rem; height: 1.125rem; margin-top: 1px; }
+main[data-ai-page="ai"] .ai-task__checks .check svg { width: 0.6875rem; height: 0.6875rem; }
+main[data-ai-page="ai"] .ai-task__checks li div { font-size: var(--fs-small); font-weight: 400; line-height: 1.45; color: var(--ink); }
+main[data-ai-page="ai"] .ai-task__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.875rem; width: 100%; margin: 1.5rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--ai-frame); }
+main[data-ai-page="ai"] .ai-task__price b { font-size: var(--fs-h4); font-weight: 400; color: var(--ink); }
+main[data-ai-page="ai"] .ai-task__price span { font: 400 var(--fs-label)/1.2 var(--font-mono); color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-task__more { margin: 0.5rem 0 0; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-task__go { margin-top: 1.25rem; }
+@media (max-width: 1100px) {
+  main[data-ai-page="ai"] .ai-task__demo { grid-column: 1 / span 7; }
+  main[data-ai-page="ai"] .ai-task__text { grid-column: 9 / -1; }
+}
+@media (max-width: 860px) {
+  main[data-ai-page="ai"] :is(.ai-tasks__lead, .ai-tasks__console, .ai-task__demo, .ai-task__text) { grid-column: 1 / -1; }
+  main[data-ai-page="ai"] .ai-tasks__console { margin-top: 2rem; }
+  main[data-ai-page="ai"] .ai-task__text { margin-top: 1.75rem; }
+  main[data-ai-page="ai"] .ai-task__demo .ai-svc__art--crm { zoom: 1.1; height: 13.6rem; padding-inline: 1rem; }
+  main[data-ai-page="ai"] .ai-task__demo .ai-svc__art--mail { zoom: 1.1; height: 13.6rem; }
+  main[data-ai-page="ai"] .ai-task__demo .ai-demo { height: 17.5rem; }
+}
+
+/* the case's feed of orders (the first task's picture): the bot's chat in Telegram */
+main[data-ai-page="ai"] .ai-demo { display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-md); color: var(--ink); background: #0b0b0b; }
 main[data-ai-page="ai"] .ai-demo__bar { display: flex; flex: none; align-items: center; gap: 0.4375rem; height: 2.125rem; padding: 0 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); font-size: 0.6875rem; color: var(--ink-mute); }
 main[data-ai-page="ai"] .ai-demo__bar i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(246, 246, 243, 0.16); }
 main[data-ai-page="ai"] .ai-demo__bar span { margin-left: 0.25rem; }
-
-/* «Схема робота» (SVG, 300 × 360) */
-main[data-ai-page="ai"] .ai-scheme { display: block; width: 100%; height: auto; margin: auto 0; font-family: var(--font-sans); }
-main[data-ai-page="ai"] .ai-scheme text { font-size: 11px; fill: var(--ink-soft); text-anchor: middle; }
-main[data-ai-page="ai"] .ai-scheme__count rect { fill: var(--signal); }
-main[data-ai-page="ai"] .ai-scheme__count text { font: 500 10.5px var(--font-mono); fill: var(--on-accent); }
-main[data-ai-page="ai"] .ai-scheme__wire { fill: none; stroke: rgba(246, 246, 243, 0.22); stroke-width: 1.5; }
-main[data-ai-page="ai"] .ai-scheme__wire--out { stroke: rgba(218, 255, 2, 0.45); }
-main[data-ai-page="ai"] .ai-scheme__src rect { fill: #1a1a1a; stroke: rgba(246, 246, 243, 0.14); }
-main[data-ai-page="ai"] .ai-scheme__src text { fill: var(--ink); }
-main[data-ai-page="ai"] .ai-scheme__box { fill: #141414; stroke: rgba(218, 255, 2, 0.55); stroke-width: 1.2; }
-main[data-ai-page="ai"] .ai-scheme text.ai-scheme__title { font-size: 13px; font-weight: 500; text-anchor: start; fill: var(--ink); }
-main[data-ai-page="ai"] .ai-scheme__check text { font-size: 11.5px; text-anchor: start; fill: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-scheme__dot-off { fill: none; stroke: rgba(246, 246, 243, 0.3); }
-main[data-ai-page="ai"] .ai-scheme__tick { transform-box: fill-box; transform-origin: center; }
-main[data-ai-page="ai"] .ai-scheme__tick circle { fill: var(--signal); }
-main[data-ai-page="ai"] .ai-scheme__tick path { fill: none; stroke: var(--on-accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop { font-size: 10.5px; fill: var(--ink-mute); opacity: 0; }
-main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop--far { text-anchor: start; }
-main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop--dup { text-anchor: end; }
-main[data-ai-page="ai"] .ai-scheme__out rect { fill: #1a1a1a; stroke: rgba(246, 246, 243, 0.16); }
-main[data-ai-page="ai"] .ai-scheme__out--tg rect:not(.ai-scheme__ring) { stroke: var(--signal); }
-main[data-ai-page="ai"] .ai-scheme text.ai-scheme__out-t { font-size: 12px; font-weight: 500; fill: var(--ink); }
-main[data-ai-page="ai"] .ai-scheme text.ai-scheme__out-s { font-size: 10.5px; fill: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-scheme__ring { fill: none; stroke: var(--signal); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
-main[data-ai-page="ai"] .ai-scheme text.ai-scheme__plus { font: 600 12px var(--font-mono); fill: var(--signal); text-anchor: start; }
-main[data-ai-page="ai"] .ai-scheme__ad { fill: #f6f6f3; opacity: 0; }
-main[data-ai-page="ai"] .ai-scheme__go { fill: var(--signal); opacity: 0; }
-
-/* «Що приходить щодня» (the bot's chat) */
-main[data-ai-page="ai"] .ai-feed__bar { display: flex; flex: none; align-items: center; gap: 0.625rem; padding: 0.625rem 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); background: #151515; }
-main[data-ai-page="ai"] .ai-feed__ava { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font-size: 0.8125rem; font-weight: 600; color: var(--on-accent); background: var(--signal); }
+main[data-ai-page="ai"] .ai-feed__bar { display: flex; flex: none; align-items: center; gap: 0.625rem; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); background: #121212; }
+main[data-ai-page="ai"] .ai-feed__ava { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; font-size: 0.875rem; font-weight: 600; color: var(--on-accent); background: var(--signal); }
 main[data-ai-page="ai"] .ai-feed__who { display: grid; line-height: 1.2; }
-main[data-ai-page="ai"] .ai-feed__who b { font-size: 0.8125rem; font-weight: 500; }
-main[data-ai-page="ai"] .ai-feed__who span { font-size: 0.6875rem; color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-feed__chat { display: grid; flex: 1; align-content: start; gap: 0.5rem; padding: 0.75rem; }
-main[data-ai-page="ai"] .ai-feed__day { justify-self: center; margin: 0 0 0.25rem; padding: 0.2rem 0.625rem; border-radius: 62.4375rem; font-size: 0.6875rem; color: var(--ink-mute); background: rgba(255, 255, 255, 0.05); }
-main[data-ai-page="ai"] .ai-feed__msg { justify-self: start; max-width: 94%; padding: 0.5rem 0.6875rem 0.4375rem; border-radius: 0.875rem 0.875rem 0.875rem 0.25rem; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); }
-main[data-ai-page="ai"] .ai-feed__t { margin: 0; font-size: 0.75rem; font-weight: 500; line-height: 1.35; color: var(--ink); }
-main[data-ai-page="ai"] .ai-feed__b { margin: 0.125rem 0 0; font-size: 0.75rem; line-height: 1.4; color: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-feed__f { display: flex; justify-content: space-between; gap: 0.75rem; margin: 0.3125rem 0 0; font-size: 0.6875rem; color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-feed__f u { color: #8cc4ff; text-decoration-color: rgba(140, 196, 255, 0.5); }
-
-/* the loops: CSS only, while the demo is on the screen (InView: .is-on); the markup above is the final frame */
+main[data-ai-page="ai"] .ai-feed__who b { font-size: 0.875rem; font-weight: 500; }
+main[data-ai-page="ai"] .ai-feed__who span { font-size: 0.75rem; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-feed__chat { display: grid; flex: 1; align-content: start; gap: 0.625rem; padding: 1rem; }
+main[data-ai-page="ai"] .ai-feed__day { justify-self: center; margin: 0 0 0.25rem; padding: 0.2rem 0.625rem; border-radius: 62.4375rem; font-size: 0.75rem; color: var(--ink-mute); background: rgba(255, 255, 255, 0.05); }
+main[data-ai-page="ai"] .ai-feed__msg { justify-self: start; max-width: 86%; padding: 0.625rem 0.875rem 0.5rem; border-radius: 0.875rem 0.875rem 0.875rem 0.25rem; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); }
+main[data-ai-page="ai"] .ai-feed__t { margin: 0; font-size: 0.875rem; font-weight: 500; line-height: 1.35; color: var(--ink); }
+main[data-ai-page="ai"] .ai-feed__b { margin: 0.125rem 0 0; font-size: 0.8125rem; line-height: 1.4; color: var(--ink-soft); }
+main[data-ai-page="ai"] .ai-feed__f { display: flex; justify-content: space-between; gap: 0.75rem; margin: 0.375rem 0 0; font-size: 0.75rem; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-feed__f u { color: #8cc4ff; text-decoration: none; }
+/* the loop: CSS only, while the demo is on the screen (InView: .is-on); the markup is the final frame */
 @media (prefers-reduced-motion: no-preference) {
   main[data-ai-page="ai"] .ai-demo:not(.is-on) * { animation-play-state: paused !important; }
-  main[data-ai-page="ai"] .ai-scheme__ad--1 { animation: ai-sch-ad1 7s linear infinite; }
-  main[data-ai-page="ai"] .ai-scheme__ad--2 { animation: ai-sch-ad2 7s linear infinite; }
-  main[data-ai-page="ai"] .ai-scheme__ad--3 { animation: ai-sch-ad3 7s linear infinite; }
-  main[data-ai-page="ai"] .ai-scheme__check--1 .ai-scheme__tick { animation: ai-sch-tick1 7s var(--ease-out) infinite; }
-  main[data-ai-page="ai"] .ai-scheme__check--2 .ai-scheme__tick { animation: ai-sch-tick2 7s var(--ease-out) infinite; }
-  main[data-ai-page="ai"] .ai-scheme__check--3 .ai-scheme__tick { animation: ai-sch-tick3 7s var(--ease-out) infinite; }
-  main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop--far { animation: ai-sch-far 7s ease-out infinite; }
-  main[data-ai-page="ai"] .ai-scheme text.ai-scheme__drop--dup { animation: ai-sch-dup 7s ease-out infinite; }
-  main[data-ai-page="ai"] .ai-scheme__go--tg { animation: ai-sch-go-tg 7s linear infinite; }
-  main[data-ai-page="ai"] .ai-scheme__go--sheet { animation: ai-sch-go-sheet 7s linear infinite; }
-  main[data-ai-page="ai"] .ai-scheme__ring { animation: ai-sch-ring 7s ease-out infinite; }
-  main[data-ai-page="ai"] .ai-scheme text.ai-scheme__plus { animation: ai-sch-plus 7s ease-out infinite; }
   main[data-ai-page="ai"] .ai-feed__msg--1 { animation: ai-feed-1 7.5s var(--ease-out) infinite; }
   main[data-ai-page="ai"] .ai-feed__msg--2 { animation: ai-feed-2 7.5s var(--ease-out) infinite; }
   main[data-ai-page="ai"] .ai-feed__msg--3 { animation: ai-feed-3 7.5s var(--ease-out) infinite; }
 }
-/* three ads come down their wires into the selection */
-@keyframes ai-sch-ad1 { 0% { opacity: 0; transform: translate(0, 0); } 2% { opacity: 1; } 6% { transform: translate(0, 30px); } 14% { transform: translate(98px, 30px); } 18% { opacity: 1; transform: translate(98px, 60px); } 19%, 100% { opacity: 0; transform: translate(98px, 60px); } }
-@keyframes ai-sch-ad2 { 0%, 6% { opacity: 0; transform: translate(0, 0); } 8% { opacity: 1; } 18% { opacity: 1; transform: translate(0, 60px); } 19%, 100% { opacity: 0; transform: translate(0, 60px); } }
-@keyframes ai-sch-ad3 { 0%, 10% { opacity: 0; transform: translate(0, 0); } 12% { opacity: 1; } 15% { transform: translate(0, 30px); } 22% { transform: translate(-98px, 30px); } 25% { opacity: 1; transform: translate(-98px, 60px); } 26%, 100% { opacity: 0; transform: translate(-98px, 60px); } }
-/* the checks tick one by one */
-@keyframes ai-sch-tick1 { 0%, 26% { opacity: 0; transform: scale(0.4); } 30%, 100% { opacity: 1; transform: none; } }
-@keyframes ai-sch-tick2 { 0%, 31% { opacity: 0; transform: scale(0.4); } 35%, 100% { opacity: 1; transform: none; } }
-@keyframes ai-sch-tick3 { 0%, 36% { opacity: 0; transform: scale(0.4); } 40%, 100% { opacity: 1; transform: none; } }
-/* the far one and the repeat drop out */
-@keyframes ai-sch-far { 0%, 28% { opacity: 0; transform: translate(6px, 0); } 31%, 46% { opacity: 1; transform: none; } 52%, 100% { opacity: 0; transform: none; } }
-@keyframes ai-sch-dup { 0%, 33% { opacity: 0; transform: translate(-6px, 0); } 36%, 50% { opacity: 1; transform: none; } 56%, 100% { opacity: 0; transform: none; } }
-/* the right one goes to Telegram and to the table */
-@keyframes ai-sch-go-tg { 0%, 42% { opacity: 0; transform: translate(0, 0); } 43% { opacity: 1; } 46% { transform: translate(0, 26px); } 52% { transform: translate(-60px, 26px); } 55% { opacity: 1; transform: translate(-60px, 54px); } 56%, 100% { opacity: 0; transform: translate(-60px, 54px); } }
-@keyframes ai-sch-go-sheet { 0%, 42% { opacity: 0; transform: translate(0, 0); } 43% { opacity: 1; } 46% { transform: translate(0, 26px); } 52% { transform: translate(60px, 26px); } 55% { opacity: 1; transform: translate(60px, 54px); } 56%, 100% { opacity: 0; transform: translate(60px, 54px); } }
-@keyframes ai-sch-ring { 0%, 55% { opacity: 0; transform: none; } 58% { opacity: 1; transform: none; } 70%, 100% { opacity: 0; transform: scale(1.1); } }
-@keyframes ai-sch-plus { 0%, 56% { opacity: 0; transform: translate(0, 4px); } 60%, 92% { opacity: 1; transform: none; } 98%, 100% { opacity: 0; transform: none; } }
 /* the bot's messages arrive one after another, stay, and the morning starts again */
 @keyframes ai-feed-1 { 0%, 4% { opacity: 0; transform: translateY(14px) scale(0.98); } 10%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
 @keyframes ai-feed-2 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(0.98); } 28%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
 @keyframes ai-feed-3 { 0%, 40% { opacity: 0; transform: translateY(14px) scale(0.98); } 46%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
 
-/* the salon: an example with its own weight (the owner, 30 Oct 2026: «подчеркнуть»): a dark card with its chat, on the ivory */
-main[data-ai-page="ai"] .ai-proof__ex { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 1.5rem var(--col-gap); margin-top: var(--rhythm-m); padding: clamp(1.5rem, 3.4vw, 3rem); border-radius: var(--radius-lg); color: var(--ink); background: #0d0d0d; text-decoration: none; box-shadow: 0 1.875rem 3.75rem -2.25rem rgba(60, 45, 30, 0.55); transition: transform var(--dur) var(--ease-out); }
-main[data-ai-page="ai"] .ai-proof__ex-body { display: grid; justify-items: start; gap: 1rem; }
-main[data-ai-page="ai"] .ai-proof__ex-k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.625rem; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-proof__ex-tag { padding: 0.35em 0.75em; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.4); }
-main[data-ai-page="ai"] .ai-proof__ex-t { max-width: 18ch; font-size: clamp(1.625rem, 3vw, 2.5rem); font-weight: 400; line-height: 1.12; letter-spacing: -0.02em; color: var(--ink); text-wrap: balance; }
-main[data-ai-page="ai"] .ai-proof__ex-go { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0 1.125rem; border-radius: 62.4375rem; font-size: var(--fs-small); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.4); transition: background-color var(--dur-fast), color var(--dur-fast); }
-main[data-ai-page="ai"] .ai-proof__ex-go svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-main[data-ai-page="ai"] .ai-proof__ex .ai-svc__art { height: 11rem; margin: 0; }
-@media (hover: hover) {
-  main[data-ai-page="ai"] .ai-proof__ex:hover { transform: translateY(-0.25rem); }
-  main[data-ai-page="ai"] .ai-proof__ex:hover .ai-proof__ex-go { color: var(--ink-dark); background: var(--ink); }
+/* ---------- 4 · Кейс (ivory): the client, the morning before and after as two table rows, the full case ---------- */
+main[data-ai-page="ai"] .ai-proof__lead { display: grid; gap: 0.875rem; max-width: 46rem; }
+main[data-ai-page="ai"] .ai-proof__k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+main[data-ai-page="ai"] .ai-proof__tag { padding: 0.35em 0.75em; border-radius: 62.4375rem; color: #fcfcfa; background: var(--ink-dark); }
+/* before and after: two rows between hairlines (the owner, 5 Nov 2026): the row's name, its number with the morning's
+   bar, its steps; «after» in ember */
+main[data-ai-page="ai"] .ai-split__grid { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: var(--rhythm-s); border-top: 1px solid var(--line-dark); }
+main[data-ai-page="ai"] .ai-split__col { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: center; padding: clamp(1.5rem, 3.4vh, 2.25rem) 0; border-bottom: 1px solid var(--line-dark); }
+main[data-ai-page="ai"] .ai-split__col--now { color: var(--ink-dark-mute); }
+main[data-ai-page="ai"] .ai-split__col--next { color: var(--ink-dark); }
+main[data-ai-page="ai"] .ai-split__k { grid-column: 1 / span 2; margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; }
+main[data-ai-page="ai"] .ai-split__col--next .ai-split__k { color: var(--ember-deep); }
+main[data-ai-page="ai"] .ai-split__total { grid-column: 3 / span 4; display: grid; gap: 0.5rem; margin: 0; }
+main[data-ai-page="ai"] .ai-split__v { font-size: clamp(2.5rem, 4.4vw, 4rem); font-weight: 400; line-height: 0.95; letter-spacing: -0.045em; white-space: nowrap; }
+main[data-ai-page="ai"] .ai-split__n { font-variant-numeric: tabular-nums; }
+main[data-ai-page="ai"] .ai-split__when { font-size: var(--fs-body); }
+main[data-ai-page="ai"] .ai-split__bar { display: block; height: 0.25rem; margin-top: 0.75rem; border-radius: 62.4375rem; overflow: hidden; background: var(--line-dark); }
+main[data-ai-page="ai"] .ai-split__fill { display: block; height: 100%; border-radius: inherit; background: currentColor; transform-origin: 0 50%; }
+main[data-ai-page="ai"] .ai-split__col--next :is(.ai-split__v, .ai-split__fill) { color: var(--ember-deep); }
+main[data-ai-page="ai"] .ai-split__rows { grid-column: 8 / -1; display: grid; align-content: start; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .ai-split__row { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); column-gap: 1rem; align-items: baseline; font-size: var(--fs-body); line-height: 1.45; }
+main[data-ai-page="ai"] .ai-split__t { font: 400 var(--fs-label)/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
+/* what the robot does there, and the way to the full case */
+main[data-ai-page="ai"] .ai-proof__end { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: center; margin-top: var(--rhythm-m); }
+main[data-ai-page="ai"] .ai-proof__audit { grid-column: 1 / span 7; max-width: 30ch; margin: 0; font-size: clamp(1.375rem, 2vw, 1.875rem); font-weight: 300; line-height: 1.3; letter-spacing: -0.015em; color: var(--ink-dark); text-wrap: pretty; }
+main[data-ai-page="ai"] .ai-proof__end .btn { grid-column: 8 / -1; justify-self: end; }
+@media (max-width: 860px) {
+  main[data-ai-page="ai"] .ai-split__col { grid-template-columns: minmax(0, 1fr); row-gap: 1rem; }
+  main[data-ai-page="ai"] :is(.ai-split__k, .ai-split__total, .ai-split__rows, .ai-proof__audit, .ai-proof__end .btn) { grid-column: 1; }
+  main[data-ai-page="ai"] .ai-proof__end { grid-template-columns: minmax(0, 1fr); row-gap: 1.5rem; }
+  main[data-ai-page="ai"] .ai-proof__end .btn { justify-self: start; }
 }
-main[data-ai-page="ai"] .ai-proof__ex:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 0.25rem; }
-@media (max-width: 1199px) {
-  main[data-ai-page="ai"] .ai-proof__grid { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 760px) {
-  main[data-ai-page="ai"] .ai-proof__ex { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 760px) {
-  main[data-ai-page="ai"] .ai-split__grid { grid-template-columns: minmax(0, 1fr); }
-}
-/* the smallest phones: the big number stays on one line inside its card */
+/* the smallest phones: the big number stays on one line */
 @media (max-width: 374px) {
-  main[data-ai-page="ai"] .ai-split__col { padding: 1.5rem 1.25rem; }
   main[data-ai-page="ai"] .ai-split__v { font-size: 2.625rem; }
 }
-@media (max-width: 600px) {
-  main[data-ai-page="ai"] .ai-proof__shots { grid-template-columns: minmax(0, 22rem); gap: 1.5rem; }
-  main[data-ai-page="ai"] .ai-shot--scheme { display: none; }
-}
 
-/* a dark block right before an ivory one gets the same air below its last line as above its title (the audit and the
-   niches' last line had touched the ivory edge: the owner, 21 Oct 2026) */
-main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
-@media (max-width: 600px) {
-  main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: 4.5rem; }
-}
-
-/* ---------- the pause: one phrase, a lot of air ---------- */
+/* ---------- the pause: a short story, a lot of air ---------- */
 main[data-ai-page="ai"] .ai-pause { display: grid; align-items: center; min-height: 80svh; padding-block: clamp(6rem, 18vh, 12rem); }
 /* (a phone: the pause stays a pause, without a whole empty screen around one phrase) */
 @media (max-width: 600px) {
   main[data-ai-page="ai"] .ai-pause { min-height: 62svh; padding-block: 5rem; }
 }
-main[data-ai-page="ai"] .ai-pause__text { max-width: 22ch; margin: 0 auto; font-size: var(--fs-display); font-weight: 300; line-height: 1.12; letter-spacing: -0.03em; text-align: center; color: var(--ink-mute); text-wrap: balance; }
-main[data-ai-page="ai"] .ai-pause__b { font-weight: 400; color: var(--ink); }
+/* the story in white, the main text (the owner, 5 Nov 2026: not grey); its last words a little heavier */
+main[data-ai-page="ai"] .ai-pause__text { max-width: 30ch; margin: 0 auto; font-size: clamp(2rem, 3.6vw, 3.5rem); font-weight: 300; line-height: 1.16; letter-spacing: -0.03em; text-align: center; color: var(--ink); text-wrap: balance; }
+main[data-ai-page="ai"] .ai-pause__b { font-weight: 500; }
 /* BlurText's words move on their own (fx/BlurText) */
 main[data-ai-page="ai"] .blur-text__w { display: inline-block; }
 
-/* ---------- 3 · Ніші: three businesses to recognise yourself in ---------- */
-/* a computer gets one design, a phone another (the owner's picks, 30 Oct 2026); both are in the page */
-@media (min-width: 861px) { main[data-ai-page="ai"] .ai-narrow { display: none !important; } }
-@media (max-width: 860px) { main[data-ai-page="ai"] .ai-wide { display: none !important; } }
-/* computers: a sliding switch and one panel with its scene (after 21st.dev Slide Tabs) */
-main[data-ai-page="ai"] .ai-nt { margin-top: var(--rhythm-m); }
-main[data-ai-page="ai"] .ai-nt__tabs { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 40rem; padding: 0.25rem; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px var(--ai-frame); }
-main[data-ai-page="ai"] .ai-nt__thumb { position: absolute; top: 0.25rem; bottom: 0.25rem; left: 0.25rem; width: calc((100% - 0.5rem) / 3); border-radius: inherit; background: var(--ink); transform: translateX(calc(var(--i) * 100%)); transition: transform 0.45s var(--ease-out); }
-main[data-ai-page="ai"] .ai-nt__tab { position: relative; min-height: 2.875rem; padding: 0.25rem 0.5rem; border: 0; border-radius: inherit; font: 400 var(--fs-small)/1.15 var(--font-sans); color: var(--ink-soft); background: none; cursor: pointer; transition: color 0.3s; -webkit-tap-highlight-color: transparent; }
-main[data-ai-page="ai"] .ai-nt__tab.is-on { color: var(--on-ink); }
-main[data-ai-page="ai"] .ai-nt__tab:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.125rem; }
-main[data-ai-page="ai"] .ai-nt__panel { margin-top: 1rem; border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--ai-frame); }
-main[data-ai-page="ai"] .ai-nt__in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 1.5rem var(--col-gap); padding: clamp(1.5rem, 3.4vw, 3rem); }
-main[data-ai-page="ai"] .ai-nt__price { margin: 0; font-size: clamp(2.25rem, 4.6vw, 4rem); font-weight: 400; line-height: 1; letter-spacing: -0.03em; color: var(--ember-ink, var(--ember)); }
-main[data-ai-page="ai"] .ai-nt__list { display: grid; gap: 0.625rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
-main[data-ai-page="ai"] .ai-nt__list li { font-size: var(--fs-lead); font-weight: 300; line-height: 1.35; color: var(--ink); }
-main[data-ai-page="ai"] .ai-nt__in .ai-svc__art { height: 11rem; margin: 0; }
-/* phones: three ivory cards on the black, seen at once, nothing to learn */
-main[data-ai-page="ai"] .ai-nc { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; }
-main[data-ai-page="ai"] .ai-nc__card { --ink-dark: #0f0e0d; --ink-dark-soft: rgba(15, 14, 13, 0.74); display: grid; align-content: start; gap: 0.5rem; padding: clamp(1.5rem, 2.8vw, 2.5rem); border-radius: var(--radius-lg); color: var(--ink-dark); background: #fcfcfa; }
-main[data-ai-page="ai"] .ai-nc__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink-dark); }
-main[data-ai-page="ai"] .ai-nc__p { margin: 0; font-size: clamp(2.25rem, 3.6vw, 3.25rem); font-weight: 400; line-height: 1.05; letter-spacing: -0.03em; color: var(--ember-deep); }
-main[data-ai-page="ai"] .ai-nc__list { display: grid; gap: 0.5rem; margin: 1rem 0 0; padding: 0; list-style: none; }
-main[data-ai-page="ai"] .ai-nc__list li { font-size: var(--fs-body); font-weight: 300; line-height: 1.45; color: var(--ink-dark-soft); }
-@media (prefers-reduced-motion: reduce) {
-  main[data-ai-page="ai"] :is(.ai-nt__thumb, .ai-proof__ex) { transition: none; }
-}
-main[data-ai-page="ai"] .ai-niches__more { margin: var(--rhythm-m) 0 0; font-size: var(--fs-body); color: var(--ink-soft); }
-@media (max-width: 860px) {
-  main[data-ai-page="ai"] .ai-niches__list { grid-template-columns: minmax(0, 1fr); row-gap: 2.25rem; }
-}
-
-/* ---------- 5 · the lineup: the free part, four products, the audit ---------- */
-/* frames that can be seen (the owner, 30 Oct 2026: «никак не видно рамок») */
-main[data-ai-page="ai"] { --ai-frame: rgb(246 246 243 / 0.26); }
-main[data-ai-page="ai"] .ai-offer__card { box-shadow: inset 0 0 0 1px var(--ai-frame); }
-main[data-ai-page="ai"] .ai-offer__audit { box-shadow: inset 0 0 0 1px var(--ai-frame) !important; }
-main[data-ai-page="ai"] .ai-offer__card .ai-svc__art { border-bottom-color: var(--ai-frame) !important; }
-main[data-ai-page="ai"] .ai-offer__inc { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 1.5rem var(--col-gap); }
-main[data-ai-page="ai"] .ai-offer__inc-k { margin: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-offer__inc-t { margin: 0.625rem 0 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
-main[data-ai-page="ai"] .ai-offer__inc-p { max-width: 52ch; margin: 0.5rem 0 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-offer__inc-art { height: 9rem; margin: 0; }
-main[data-ai-page="ai"] .ai-offer__list { margin: var(--rhythm-m) 0 0; padding: 0; list-style: none; }
-/* a card holds one picture and its words: no frame inside the frame */
-main[data-ai-page="ai"] .ai-offer :is(.ai-offer__card .ai-svc__art, .ai-offer__inc-art) { border-radius: 0; box-shadow: none; background: none; }
-main[data-ai-page="ai"] .ai-offer__card .ai-svc__art { margin: 0; border-bottom: 1px solid var(--line); }
-main[data-ai-page="ai"] .ai-offer__card .ai-svc__body { gap: 0.75rem; padding: 1.5rem; }
-main[data-ai-page="ai"] .ai-offer__card .ai-svc__acts { padding-top: 0.5rem; }
-main[data-ai-page="ai"] .ai-offer__art-plus { display: grid; place-items: center; }
-main[data-ai-page="ai"] .ai-offer__art-plus span { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; border: 1px dashed var(--border-strong); font-size: 1.5rem; font-weight: 300; line-height: 1; color: var(--ink-soft); }
-/* «Обговорити»: a quiet link, the price is what the card is for */
-main[data-ai-page="ai"] .ai-offer__talk { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: var(--fs-small); color: var(--ink); text-decoration: none; }
-main[data-ai-page="ai"] .ai-offer__talk svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
-main[data-ai-page="ai"] .ai-offer__talk:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.1875rem; }
-@media (hover: hover) { main[data-ai-page="ai"] .ai-offer__talk:hover svg { transform: translate(0.1875rem, -0.1875rem); } }
-/* computers: a price list, all names and prices on the left, the chosen one's panel beside them (OfferPicker) */
-main[data-ai-page="ai"] .ai-oa { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); grid-auto-rows: min-content; gap: 0.625rem 1rem; margin-top: var(--rhythm-m); }
-main[data-ai-page="ai"] .ai-oa__item { display: contents; }
-main[data-ai-page="ai"] .ai-oa__h { grid-column: 1; margin: 0; font: inherit; border-radius: 1.125rem; overflow: hidden; box-shadow: inset 0 0 0 1px var(--ai-frame); transition: background-color 0.25s; }
-main[data-ai-page="ai"] .ai-oa__head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; width: 100%; min-height: 5rem; padding: 0.75rem 1.25rem; border: 0; text-align: left; color: var(--ink); background: none; cursor: pointer; transition: color 0.25s; }
-main[data-ai-page="ai"] .ai-oa__head:focus-visible { outline: 2px solid var(--ink); outline-offset: -0.25rem; border-radius: 1.125rem; }
-main[data-ai-page="ai"] .ai-oa__name { font-size: var(--fs-h4); line-height: 1.2; }
-main[data-ai-page="ai"] .ai-oa__price .ai-offer__price { flex-direction: column; align-items: flex-end; gap: 0.125rem; }
-main[data-ai-page="ai"] .is-open > .ai-oa__h { background: var(--ink); }
-main[data-ai-page="ai"] .is-open > .ai-oa__h .ai-oa__head, main[data-ai-page="ai"] .is-open > .ai-oa__h :is(.ai-offer__sum, .ai-offer__wk) { color: var(--on-ink); }
-main[data-ai-page="ai"] .ai-oa__panel { grid-column: 2; grid-row: 1 / span 4; border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--ai-frame); }
-main[data-ai-page="ai"] .ai-oa__panel[hidden] { display: none; }
-main[data-ai-page="ai"] .ai-oa__panel .ai-svc__art { height: 13rem; margin: 0; border-radius: 0; background: none; box-shadow: none; }
-main[data-ai-page="ai"] .ai-oa__panel .ai-svc__body { display: flex; flex-direction: column; gap: 0.75rem; padding: 1.75rem; }
-@media (hover: hover) { main[data-ai-page="ai"] .ai-oa__item:not(.is-open) > .ai-oa__h:hover { box-shadow: inset 0 0 0 1px var(--ink); } }
-/* phones: cards that pin and stack as you scroll, no sideways gesture (after React Bits Scroll Stack; CSS sticky only).
-   A screen too short to hold a whole card gets a plain list, so nothing is covered before it is read. */
-@media (max-width: 860px) {
-  main[data-ai-page="ai"] .ai-offer__list { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-  main[data-ai-page="ai"] .ai-offer__card .ai-svc__art { height: 7rem; }
-}
-@media (max-width: 860px) and (min-height: 600px) {
-  main[data-ai-page="ai"] .ai-offer__card { position: sticky; top: calc(var(--topbar-h) + 0.5rem + var(--i) * 0.5rem); background: #000; box-shadow: inset 0 0 0 1px var(--ai-frame), 0 -1.25rem 2.5rem -1rem #000; }
-}
-main[data-ai-page="ai"] .ai-offer__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin: 0; }
-main[data-ai-page="ai"] .ai-offer__sum { font-size: var(--fs-h4); font-weight: 400; color: var(--ink); }
-main[data-ai-page="ai"] .ai-offer__sum--talk { font-size: var(--fs-body); color: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-offer__wk { font: 400 var(--fs-label)/1.2 var(--font-mono); white-space: nowrap; color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-offer__monthly { margin: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-offer__infra { color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-offer__audit { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto; align-items: center; gap: 1rem var(--col-gap); margin-top: var(--rhythm-m); padding: clamp(1.5rem, 3vw, 2.5rem); border-radius: 1.375rem; box-shadow: inset 0 0 0 1px var(--border-strong); scroll-margin-top: calc(var(--topbar-h) + 1rem); }
-main[data-ai-page="ai"] .ai-offer__audit-t { margin: 0 0 0.375rem; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
-main[data-ai-page="ai"] .ai-offer__audit-p { margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
-@media (max-width: 1100px) {
-  main[data-ai-page="ai"] .ai-offer__audit { grid-template-columns: minmax(0, 1fr); justify-items: start; }
-}
-@media (max-width: 760px) {
-  main[data-ai-page="ai"] .ai-offer__inc { grid-template-columns: minmax(0, 1fr); }
-}
-
-/* ---------- 6 · Наші умови: plain text on the ivory, no cards ---------- */
-main[data-ai-page="ai"] .ai-terms__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; gap: 3rem var(--col-gap); margin-top: var(--rhythm-m); }
-main[data-ai-page="ai"] .ai-terms__text { display: block; max-width: 40ch; margin: 0; font-size: var(--fs-h4); font-weight: 300; line-height: 1.5; color: var(--ink-dark); text-wrap: pretty; }
-/* what we don't do: the honest limits, beside the terms, on thin lines */
-main[data-ai-page="ai"] .ai-out__t { margin: 0 0 1rem; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink-dark); }
-main[data-ai-page="ai"] .ai-out__list { display: grid; margin: 0; padding: 0; border-top: 1px solid var(--line-dark); list-style: none; }
-main[data-ai-page="ai"] .ai-out__item { padding: 0.875rem 0; border-bottom: 1px solid var(--line-dark); font-size: var(--fs-body); font-weight: 300; line-height: 1.45; color: var(--ink-dark-soft); text-wrap: pretty; }
-@media (max-width: 860px) {
-  main[data-ai-page="ai"] .ai-terms__grid { grid-template-columns: minmax(0, 1fr); }
-}
-
-/* ---------- 7 · the price calculator: two groups now (the lineup, the site) ---------- */
+/* ---------- 5 · Ціни: the products as a calculator, the free part beside the sum, the audit's call strip ---------- */
+main[data-ai-page="ai"] .ai-offer__calc { margin-top: var(--rhythm-m); scroll-margin-top: calc(var(--topbar-h) + 1rem); }
 main[data-ai-page="ai"] .ai-pcalc .ai-calc__note + .ai-calc__note { margin-top: 0.375rem; }
+/* what every package gets: a small window with its scene, its name and line, over the sum */
+main[data-ai-page="ai"] .ai-offer__inc { margin-bottom: 1.5rem; }
+main[data-ai-page="ai"] .ai-offer__inc .ai-svc__art { height: 9rem; }
+main[data-ai-page="ai"] .ai-offer__inc-t { margin: 1.125rem 0 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
+main[data-ai-page="ai"] .ai-offer__inc-p { margin: 0.375rem 0 0; font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+/* the audit: its name and price, a line on it, the button */
+main[data-ai-page="ai"] .ai-offer__audit { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); }
+main[data-ai-page="ai"] .ai-offer__audit-head { grid-column: 1 / span 4; }
+main[data-ai-page="ai"] .ai-offer__audit-t { margin: 0 0 0.375rem; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
+main[data-ai-page="ai"] .ai-offer__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin: 0; }
+main[data-ai-page="ai"] .ai-offer__sum { font-size: var(--fs-h4); font-weight: 400; color: var(--ember-ink); }
+main[data-ai-page="ai"] .ai-offer__wk { font: 400 var(--fs-label)/1.2 var(--font-mono); white-space: nowrap; color: var(--ink-mute); }
+main[data-ai-page="ai"] .ai-offer__audit-p { grid-column: 5 / span 5; margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+main[data-ai-page="ai"] .ai-offer__audit .btn { grid-column: 10 / -1; justify-self: end; }
+@media (max-width: 1100px) {
+  main[data-ai-page="ai"] .ai-offer__audit { grid-template-columns: minmax(0, 1fr); row-gap: 1rem; }
+  main[data-ai-page="ai"] :is(.ai-offer__audit-head, .ai-offer__audit-p, .ai-offer__audit .btn) { grid-column: 1; justify-self: start; }
+}
 
-/* ---------- 1 → 2 on a phone (the owner, 26 Oct 2026: «убери наезд экрана на мобильном телефоне, он не нужен»): the
-   first screen no longer pins and block 2 no longer slides over it as a sheet; the page simply scrolls. Computers keep
-   the sheet (ai.css: html.ai-stick .ai-hero[data-cover]). ---------- */
+/* ---------- 7 · the request: what comes with the work (#terms) and what is not done, under its title ---------- */
+main[data-ai-page="ai"] .get--out .check { border-color: var(--ai-frame); background: none; }
+main[data-ai-page="ai"] .get--out .check svg { stroke: var(--ink-mute); stroke-width: 2; stroke-dashoffset: 0; }
+main[data-ai-page="ai"] .get--out li div { color: var(--ink-mute); }
+
+/* ---------- the blocks' edges ---------- */
+/* a dark block right before an ivory one gets the same air below its last line as above its title */
+main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
+@media (max-width: 600px) {
+  main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: 4.5rem; }
+}
+/* 1 → 2 on a phone (the owner, 26 Oct 2026: «убери наезд экрана на мобильном телефоне, он не нужен»): the first screen
+   no longer pins and block 2 no longer slides over it as a sheet; the page simply scrolls. Computers keep the sheet
+   (ai.css: html.ai-stick .ai-hero[data-cover]). */
 @media (max-width: 899px) {
   html.ai-stick main[data-ai-page="ai"] .ai-hero[data-cover] { position: relative; top: auto; }
   html.ai-stick main[data-ai-page="ai"] .ai-hero[data-cover] + .page > .section:first-of-type { border-radius: 0; box-shadow: none; }
   html.ai-stick main[data-ai-page="ai"] .ai-hero[data-cover] :is(.ai-hero__in, .ai-hero__bg) { animation: none; }
 }
+
+/* ---------- links in the text: no underline (the owner, 5 Nov 2026), ember on the dark, deeper on the ivory ---------- */
+main[data-ai-page="ai"] .link { text-decoration: none; color: var(--ember-ink); transition: color var(--dur-fast); }
+main[data-ai-page="ai"] .section--ivory .link { color: var(--ember-deep); }
+@media (hover: hover) { main[data-ai-page="ai"] .link:hover { color: var(--ink); } main[data-ai-page="ai"] .section--ivory .link:hover { color: var(--ink-dark); } }

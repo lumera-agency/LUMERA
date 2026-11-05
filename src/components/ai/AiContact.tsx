@@ -17,13 +17,16 @@ type Props = {
   /** this page's own title and line, in place of the shared ones */
   title?: React.ReactNode;
   text?: string;
+  /** under the title, as the main page's request: what comes with the work (lime ticks; #terms) and what is not done */
+  get?: { title: string; items: string[] };
+  out?: { title: string; items: string[] };
 };
 
 /**
  * The request, on the main page's form (sections/contact: lead-form.js validates and sends it to /api/lead): the task
  * is fixed («Автоматизація», a hidden field), the note asks what is still done by hand.
  */
-export async function AiContact({ index, placeholder, picks, plan, title, text }: Props) {
+export async function AiContact({ index, placeholder, picks, plan, title, text, get, out }: Props) {
   const t = await getTranslations();
   const c = await getTranslations("aiCommon");
   return (
@@ -40,6 +43,44 @@ export async function AiContact({ index, placeholder, picks, plan, title, text }
             </h2>
             <p className="s-head__intro">{text ?? c("lead.text")}</p>
           </header>
+          {get && (
+            <section className="get" id="terms" aria-labelledby="get-t" data-rv="">
+              <p className="get__t" id="get-t">{get.title}</p>
+              <ul className="checks get__list">
+                {get.items.map((item) => (
+                  <li className="is-done" key={item}>
+                    <span className="check" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <path d="m5 12.5 4.2 4.2L19 7" />
+                      </svg>
+                    </span>
+                    <div>
+                      <span>{item}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {out && (
+            <section className="get get--out" aria-labelledby="out-t" data-rv="">
+              <p className="get__t" id="out-t">{out.title}</p>
+              <ul className="checks get__list">
+                {out.items.map((item) => (
+                  <li key={item}>
+                    <span className="check check--out" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M7 7l10 10M17 7 7 17" />
+                      </svg>
+                    </span>
+                    <div>
+                      <span>{item}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
         {/* /api/lead forwards leads to the channel set in the host's environment variables, never in this code */}
         <form className="lead-form card" data-lead-form="" method="post" action="#contact" data-endpoint="/api/lead" noValidate aria-labelledby="contact-title">

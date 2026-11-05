@@ -2,7 +2,8 @@
 /*
  * Where the first screen's robot goes (three/ai-robot): its canvas over the whole screen, the head on this slot. Once
  * the page has loaded and the browser is idle, so the page never waits for three.js; without WebGL nothing comes and
- * the story runs on its own. With reduced motion the robot still comes, drawn once in its pose.
+ * the page shows the table's still, every request booked (.is-still on the screen: robot-hero.css keeps the rows as
+ * waiting slots only while a robot is to come). With reduced motion the robot still comes, drawn once in its pose.
  */
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
@@ -38,7 +39,7 @@ export function RobotSlot({ words }: { words: BotWords }) {
     <>
       <span ref={mark} hidden />
       {places && (
-        <WebGLGate>
+        <WebGLGate onSkip={() => places.host.classList.add("is-still")}>
           <RobotStage host={places.host} slot={places.slot} words={words} still={still} />
         </WebGLGate>
       )}

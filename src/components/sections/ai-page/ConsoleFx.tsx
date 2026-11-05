@@ -1,17 +1,17 @@
 "use client";
 /*
- * The AI page's first screen · «Пульт» (the owner's pick, 26 Oct 2026, of four art-directed designs of the live flow):
- * the console's conductor. While the first screen
- * may run (useHeroRun), one request takes a 2.6 s turn (P1 → P4, then again): the queue advances (CSS transitions on
+ * The AI page's console «Пульт» (LiveConsole; the owner's pick, 26 Oct 2026, of four art-directed designs of the live
+ * flow): its conductor. While the console may run (useConsoleRun), one request takes a 2.6 s turn (P1 → P4, then
+ * again): the queue advances (CSS transitions on
  * the cards' data-slot), the lime packet runs the track station by station, the curve to its place lights, the place's
  * dot turns ember and its count ticks, a log line slides in on top and the day's counters roll (digit strips). Two
  * setTimeout steps a turn (the queue at 0, everything else at 420 ms as WAAPI one-shots with delays), kept across
  * pauses. On a computer the console leans up to 2.5° to the pointer (a small rAF lerp that stops once settled) and its
- * edge lights under it; on a phone a tap starts the next turn once the packet has gone. Nothing runs at rest, covered,
- * off screen, in a hidden tab or with reduced motion: then the server's still stays.
+ * edge lights under it; on a phone a tap starts the next turn once the packet has gone. Nothing runs off screen, in a
+ * hidden tab or with reduced motion: then the server's still stays.
  */
 import { useEffect, useRef } from "react";
-import { useHeroRun } from "./useHeroRun";
+import { useConsoleRun } from "./useConsoleRun";
 
 export type ConsoleLine = { src: string; res: string; srcS: string; resS: string };
 
@@ -271,8 +271,8 @@ function pointer(stage: HTMLElement, c: Conductor) {
   const fig = stage.querySelector<HTMLElement>(".ai-console__fig");
   const tilt = stage.querySelector<HTMLElement>(".ai-console__tilt");
   const ring = stage.querySelector<HTMLElement>(".ai-console__ring");
-  const hero = stage.closest<HTMLElement>(".ai-console");
-  if (!fig || !tilt || !ring || !hero) return () => {};
+  const block = stage.closest<HTMLElement>(".ai-console");
+  if (!fig || !tilt || !ring || !block) return () => {};
   if (!matchMedia("(hover: hover) and (pointer: fine)").matches) {
     fig.addEventListener("click", c.tap);
     return () => fig.removeEventListener("click", c.tap);
@@ -315,13 +315,13 @@ function pointer(stage: HTMLElement, c: Conductor) {
   };
   const enter = () => ring.classList.add("is-on");
   const out = () => ring.classList.remove("is-on");
-  hero.addEventListener("pointermove", move);
-  hero.addEventListener("pointerleave", leave);
+  block.addEventListener("pointermove", move);
+  block.addEventListener("pointerleave", leave);
   tilt.addEventListener("pointerenter", enter);
   tilt.addEventListener("pointerleave", out);
   return () => {
-    hero.removeEventListener("pointermove", move);
-    hero.removeEventListener("pointerleave", leave);
+    block.removeEventListener("pointermove", move);
+    block.removeEventListener("pointerleave", leave);
     tilt.removeEventListener("pointerenter", enter);
     tilt.removeEventListener("pointerleave", out);
     cancelAnimationFrame(raf);
@@ -331,9 +331,9 @@ function pointer(stage: HTMLElement, c: Conductor) {
   };
 }
 
-export function HeroConsoleFx({ lines, children }: { lines: ConsoleLine[]; children: React.ReactNode }) {
+export function ConsoleFx({ lines, children }: { lines: ConsoleLine[]; children: React.ReactNode }) {
   const stage = useRef<HTMLDivElement>(null);
-  const running = useHeroRun(stage);
+  const running = useConsoleRun(stage);
   const ctl = useRef<Conductor | null>(null);
   const words = useRef(lines);
 

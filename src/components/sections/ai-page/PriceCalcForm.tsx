@@ -32,7 +32,7 @@ const fill = (pattern: string, values: Record<string, string>) => pattern.replac
  * product's, plus the landing's when one is built, as the main page's engine adds them), the assistant's monthly
  * support. «Надіслати розрахунок» puts it into the form as its plan (the main page's form: package and details).
  */
-export function PriceCalcForm({ copy }: { copy: PriceCopy }) {
+export function PriceCalcForm({ copy, aside }: { copy: PriceCopy; /** over the sum, in its column (the prices block's free part) */ aside?: React.ReactNode }) {
   const [product, setProduct] = useState<Product>("search");
   const [site, setSite] = useState<Site>("existing");
   const [focus, setFocus] = useState<string | null>(null);
@@ -95,7 +95,7 @@ export function PriceCalcForm({ copy }: { copy: PriceCopy }) {
   );
 
   return (
-    <form className="ai-calc ai-pcalc" aria-labelledby="calc-title" onSubmit={(e) => e.preventDefault()}>
+    <form className="ai-calc ai-pcalc" aria-labelledby="offer-title" onSubmit={(e) => e.preventDefault()}>
       <div className="ai-calc__opts">
         <fieldset className="ai-calc__g" data-rv="">
           <legend className="ai-calc__l">{copy.g1}</legend>
@@ -112,6 +112,7 @@ export function PriceCalcForm({ copy }: { copy: PriceCopy }) {
         </fieldset>
       </div>
       <div className="ai-calc__sum">
+        {aside}
         <div className="ai-calc__card" data-rv="">
           <p className="ai-calc__k"><span>{copy.k}</span><span className="ai-calc__weeks">{r.weeks}</span></p>
           <p className="ai-calc__name">{r.name}</p>
