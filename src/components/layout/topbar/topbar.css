@@ -75,13 +75,15 @@
   .topbar .lang--start { display: flex; justify-self: start; }
   .topbar__end .lang { display: none; }
 }
-/* phones up to 480: UA · RU stays in sight (the owner, 15 Oct; again 4 Nov). The room for it: the burger gives up its
-   word «Меню» (the lines alone read as the menu), the gaps and the language boxes get tighter (on touch a link's hit
-   area reaches past its box anyway) */
+/* phones up to 480: UA · RU stays in sight (the owner, 15 Oct; again 4 Nov), and the burger keeps its word «Меню» as on
+   the main page (the owner, 5 Nov). The room for both: the gaps and the language boxes get tighter (on touch a link's
+   hit area reaches past its box anyway); only the narrowest phones give up the word */
 @media (max-width: 480px) {
   .topbar { column-gap: 0.75rem; }
   .topbar .lang--start { gap: 0.25rem; }
   .topbar .lang--start .lang__link { min-width: 1.5rem; }
+}
+@media (max-width: 359px) {
   .topbar__menu { padding: 0; }
   .topbar__menu-label { display: none; }
 }
