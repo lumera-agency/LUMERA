@@ -1358,3 +1358,13 @@ main[data-ai-page="ads"] #price { overflow-x: clip; }
   .rk-pc--featured:hover { box-shadow: inset 0 0 0 1.5px var(--lime), 0 2.5rem 4rem -2rem rgb(160 210 60 / 0.45); }
 }
 @media (prefers-reduced-motion: reduce) { .rk-prices::before { animation: none; } }
+/* the folded part keeps the form's gap between its fields on every screen */
+main[data-ai-page="ads"] .ai-fmore__body { display: grid; gap: inherit; }
+
+/* phones: the request as on the AI page (the owner, 5 Nov): two fields and the button, the note and the site behind one
+   line (FormMore); the two lines above the button go, «Що ви отримуєте» stands under the form, as the AI page's terms */
+@media (max-width: 600px) {
+  main.ai .rk-sure { display: none; }
+  main.ai #contact .rk-get { display: block; margin-top: 2rem; }
+  main[data-ai-page="ads"] .lead-form .field__hint { display: none; }
+}

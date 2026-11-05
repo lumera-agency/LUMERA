@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { ContactClient } from "@/components/sections/contact/ContactClient";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import { aiRich as R } from "@/components/ai/rich";
+import { FormMore } from "@/components/ai/FormMore";
 import "@/components/sections/contact/contact.css";
 
 /**
@@ -81,24 +82,27 @@ export async function SitesContact() {
             <p className="field__hint" id="f-contact-hint">{t("contact.field.hint")}</p>
             <p className="field__err" id="f-contact-err" hidden>{t("contact.field.err.2")}</p>
           </div>
-          <div className="field">
-            <label htmlFor="f-note">
-              <span>{s("form.note")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
-            </label>
-            {/* quick picks: a tap puts the format into the plan box (and takes it out again); the field stays free text */}
-            <div className="ai-picks" role="group" aria-label={s("form.chips.label")}>
-              {picks.map(([pick, text]) => (
-                <button className="ai-pick" type="button" aria-pressed="false" data-pick={pick} key={pick}>{text}</button>
-              ))}
+          {/* phones: two fields and the button; the note, the picks and the site wait behind one line (FormMore, as on the AI page) */}
+          <FormMore label={s("form.more")}>
+            <div className="field">
+              <label htmlFor="f-note">
+                <span>{s("form.note")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
+              </label>
+              {/* quick picks: a tap puts the format into the plan box (and takes it out again); the field stays free text */}
+              <div className="ai-picks" role="group" aria-label={s("form.chips.label")}>
+                {picks.map(([pick, text]) => (
+                  <button className="ai-pick" type="button" aria-pressed="false" data-pick={pick} key={pick}>{text}</button>
+                ))}
+              </div>
+              <textarea id="f-note" name="note" rows={3} placeholder={s("form.ph")}></textarea>
             </div>
-            <textarea id="f-note" name="note" rows={3} placeholder={s("form.ph")}></textarea>
-          </div>
-          <div className="field" data-site-field="" hidden>
-            <label htmlFor="f-site">
-              <span>{s("form.site")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
-            </label>
-            <input id="f-site" name="site" type="text" inputMode="url" autoComplete="url" placeholder="vash-sait.ua" />
-          </div>
+            <div className="field" data-site-field="" hidden>
+              <label htmlFor="f-site">
+                <span>{s("form.site")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
+              </label>
+              <input id="f-site" name="site" type="text" inputMode="url" autoComplete="url" placeholder="vash-sait.ua" />
+            </div>
+          </FormMore>
           <div className="lead-form__foot">
             <button className="btn btn--primary" type="submit" data-form-submit="">
               <span className="btn__label">{t("contact.btn.label")}</span>

@@ -43,3 +43,15 @@ main[data-ai-page="sites"] .ai-dlg__panel { background: #000; }
 /* the first screen's sample mock («Ваш бренд») */
 main[data-ai-page="sites"] .ms--auth { background: linear-gradient(90deg, rgba(239, 235, 227, 0.05) 1px, transparent 1px) 0 0 / 8em 100%, #000; }
 main[data-ai-page="sites"] .ms--auth::before { content: none; }
+
+/* the folded part keeps the form's gap between its fields on every screen */
+main[data-ai-page="sites"] .ai-fmore__body { display: grid; gap: inherit; }
+
+/* phones: the request as on the AI page (the owner, 5 Nov): two fields and the button, the rest behind one line
+   (FormMore); «Що ви отримуєте» under the form, as the AI page's terms */
+@media (max-width: 600px) {
+  main[data-ai-page="sites"] .contact { row-gap: 0; }
+  main[data-ai-page="sites"] .contact .lead-form { margin-top: 2rem; }
+  main[data-ai-page="sites"] .contact .st-get { order: 3; margin-top: 2rem; padding-top: 0; border-top: 0; }
+  main[data-ai-page="sites"] .lead-form .field__hint { display: none; }
+}
