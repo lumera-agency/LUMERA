@@ -245,9 +245,13 @@
   cursor: pointer;
   transition: color var(--dur-fast);
 }
-.navp__strip a:is(:hover, :focus-visible),
-.navp__strip button:is(:hover, :focus-visible) { color: var(--lime); }
-.navp__strip a:hover svg { transform: rotate(45deg); }
+.navp__strip a:focus-visible,
+.navp__strip button:focus-visible { color: var(--lime); }
+@media (hover: hover) {
+  .navp__strip a:hover,
+  .navp__strip button:hover { color: var(--lime); }
+  .navp__strip a:hover svg { transform: rotate(45deg); }
+}
 .navp__strip :focus-visible { outline: 2px solid var(--lime); outline-offset: 0.25rem; border-radius: 0.25rem; }
 
 /* low screens (a laptop's browser): the pictures stay, only lower, so the panel still fits under the header */

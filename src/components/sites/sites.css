@@ -269,7 +269,9 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-stage__acts .st-ghost { flex: 1 0 100%; justify-content: flex-start; }
 .st-ghost { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; font: inherit; font-size: var(--fs-small); color: #efebe3; text-decoration: underline; text-decoration-color: rgba(226, 101, 42, 0.8); text-underline-offset: 4px; background: none; cursor: pointer; }
 .st-ghost svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.st-ghost:hover { color: var(--ember-ink); }
+@media (hover: hover) {
+  .st-ghost:hover { color: var(--ember-ink); }
+}
 .st-more2 { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 8px 0 16px; border: 0; border-radius: 999px; font: 500 var(--fs-small)/1 var(--font-sans); color: #efebe3; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.18); cursor: pointer; transition: background-color var(--dur-fast); }
 .st-more2 i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: #0f0e0d; background: #efebe3; transition: transform var(--dur) var(--ease-out); }
 .st-more2 svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
@@ -335,7 +337,9 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-fmts__end { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 32px; margin-top: var(--rhythm-s); }
 .st-fmts__note { margin: 0; font-size: var(--fs-body-s); font-weight: 300; color: var(--ink-dark-soft); }
 .st-fmts__note .link { padding-block: 12px; color: var(--ink-dark); text-decoration-color: rgba(176, 70, 26, 0.7); }
-.st-fmts__note .link:hover { color: var(--ember-deep); }
+@media (hover: hover) {
+  .st-fmts__note .link:hover { color: var(--ember-deep); }
+}
 .st-fmts__end .ai-replay { margin-left: auto; }
 
 
@@ -1052,7 +1056,9 @@ html:not(.motion) .faq__item::after { transition: none; }
 .st-hw-end__g b { font-weight: 400; color: var(--ember-deep); }
 .st-hw-end__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 26px; }
 .st-hw-end__calc { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-small); color: var(--ink-dark); text-decoration-color: rgba(176, 70, 26, 0.7); }
-.st-hw-end__calc:hover { color: var(--ember-deep); }
+@media (hover: hover) {
+  .st-hw-end__calc:hover { color: var(--ember-deep); }
+}
 .st-hw-end__note { margin: 12px 0 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-dark-mute); }
 
 /* the entrance (scene «how»): the board rises, the plan's boxes tick one by one */

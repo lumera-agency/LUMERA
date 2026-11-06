@@ -313,7 +313,6 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
           <ButtonLink href={action.href} variant="primary" className="menu-sheet__cta" onClick={(e) => go(e, action.href)}>
             {action.text}
           </ButtonLink>
-          <p className="menu-sheet__note">{t("preloader.note")}</p>
         </div>
       </div>
     </div>,

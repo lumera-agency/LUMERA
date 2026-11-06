@@ -156,10 +156,12 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
     if (reducedMotion) invalidate();
   }, [sizeW, sizeH, heroRef, mask, orbit, gl, reducedMotion, invalidate]);
 
-  // the pointer, -1…1 across the window (the stone leans toward it)
+  // the pointer, -1…1 across the window (the stone leans toward it); a mouse or a pen only: a finger on a phone is
+  // scrolling, the stone leaning after it looked like a fault (the owner, 6 Nov 2026)
   useEffect(() => {
     if (reducedMotion) return;
     const move = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
       heroPointer.tx = (e.clientX / window.innerWidth) * 2 - 1;
       heroPointer.ty = (e.clientY / window.innerHeight) * 2 - 1;
     };

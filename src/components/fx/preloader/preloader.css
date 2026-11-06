@@ -23,7 +23,7 @@ html:not(.js) .preloader { display: none; }
    script (Preloader.tsx) */
 html.pl-done .preloader { display: none; }
 /* pure black, nothing on it but the name and the words (the owner, 3 Nov: «на чёрном фоне, убери блики») */
-.preloader__bg { position: absolute; inset: 0; background: #000; }
+.preloader__bg { position: absolute; inset: 0 0 calc(-1 * var(--screen-under)); background: #000; } /* (on under Safari's floating bar, as the menu's columns) */
 .preloader__frame { position: absolute; inset: 0; animation: preloader-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
 @keyframes preloader-in { from { opacity: 0; } }
 

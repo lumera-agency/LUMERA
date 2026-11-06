@@ -12,7 +12,9 @@
   .roll__c > span { transition: none; }
 }
 /* the trigger: any ancestor with .roll-host (the site's nav links bring their own rule, header.css) */
-.roll-host:hover .roll__c > span,
 .roll-host:focus-visible .roll__c > span { transform: translateY(-100%); }
-.roll-host:hover .roll__c > span + span,
 .roll-host:focus-visible .roll__c > span + span { transform: translateY(0); }
+@media (hover: hover) {
+  .roll-host:hover .roll__c > span { transform: translateY(-100%); }
+  .roll-host:hover .roll__c > span + span { transform: translateY(0); }
+}

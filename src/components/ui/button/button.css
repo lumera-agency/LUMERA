@@ -61,10 +61,12 @@
   transition: transform var(--dur) var(--ease-out);
 }
 .arrow--b { transform: translate(-120%, 120%); }
-.btn:hover .arrow--a,
 .btn:focus-visible .arrow--a { transform: translate(120%, -120%); }
-.btn:hover .arrow--b,
 .btn:focus-visible .arrow--b { transform: translate(0, 0); }
+@media (hover: hover) {
+  .btn:hover .arrow--a { transform: translate(120%, -120%); }
+  .btn:hover .arrow--b { transform: translate(0, 0); }
+}
 
 /* ghost and line: the fill sweeps up from the bottom (the header's «Обговорити проєкт»); the primary shapes it its own way */
 .btn--ghost { --btn-line: rgb(246 246 243 / 0.6); }
@@ -85,8 +87,12 @@
   transform: translateY(102%);
   transition: transform var(--dur-slow) var(--ease-out);
 }
-:is(.btn--ghost, .btn--line):is(:hover, :focus-visible) { color: var(--btn-fill-ink); box-shadow: inset 0 0 0 1px var(--btn-fill); }
-.btn:is(:hover, :focus-visible)::before { transform: translateY(0); }
+:is(.btn--ghost, .btn--line):focus-visible { color: var(--btn-fill-ink); box-shadow: inset 0 0 0 1px var(--btn-fill); }
+.btn:focus-visible::before { transform: translateY(0); }
+@media (hover: hover) {
+  :is(.btn--ghost, .btn--line):hover { color: var(--btn-fill-ink); box-shadow: inset 0 0 0 1px var(--btn-fill); }
+  .btn:hover::before { transform: translateY(0); }
+}
 
 /* primary: the liquid comes up domed and settles flat (the owner, 4 Nov: a «fluid rise»); the button lifts a little with a glow of its own colour */
 .btn--primary {
@@ -109,8 +115,12 @@
   /* between the header's (expo.out, gone at once) and the old wave's (in-out, slow to start): the owner, «что то среднее» */
   transition: transform 0.8s cubic-bezier(0.33, 1, 0.68, 1), border-radius 0.8s cubic-bezier(0.33, 1, 0.68, 1);
 }
-.btn--primary:is(:hover, :focus-visible) { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--btn-line), 0 1rem 2.75rem -1rem var(--btn-glow); }
-.btn--primary:is(:hover, :focus-visible)::before { transform: none; border-radius: 0; }
+.btn--primary:focus-visible { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--btn-line), 0 1rem 2.75rem -1rem var(--btn-glow); }
+.btn--primary:focus-visible::before { transform: none; border-radius: 0; }
+@media (hover: hover) {
+  .btn--primary:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--btn-line), 0 1rem 2.75rem -1rem var(--btn-glow); }
+  .btn--primary:hover::before { transform: none; border-radius: 0; }
+}
 .btn--primary:active { transform: translateY(0) scale(0.97); }
 @media (max-width: 420px) {
   .btn--primary { width: 100%; justify-content: space-between; }
@@ -135,4 +145,6 @@
   text-underline-offset: 0.25em;
   transition: text-decoration-color var(--dur-fast), color var(--dur-fast);
 }
-.link:hover { text-decoration-color: currentColor; }
+@media (hover: hover) {
+  .link:hover { text-decoration-color: currentColor; }
+}

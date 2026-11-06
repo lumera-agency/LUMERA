@@ -4,6 +4,9 @@
 .footer__up .ico { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 .footer { padding: var(--rhythm-section) var(--gutter) 1.75rem; border-top: 1px solid var(--line); background: #080808; }
+/* phones: the request's form ends its block 4.5 rem above the rule, the footer's words start closer under it (the
+   two together were 170 to 190 px of empty screen, the owner, 6 Nov 2026) */
+@media (max-width: 600px) { .footer { padding-top: 3.5rem; } }
 .footer__top {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -31,7 +34,9 @@
 .footer__end { grid-column: 11 / -1; justify-self: end; display: flex; align-items: center; gap: 1.25rem; }
 .footer__up { white-space: nowrap; }
 .footer__up { color: var(--ink-soft); text-decoration: none; }
-.footer__up:hover { color: var(--ink); }
+@media (hover: hover) {
+  .footer__up:hover { color: var(--ink); }
+}
 .footer__legal { margin: 0; }
 .footer__up { display: inline-flex; align-items: center; min-height: 2.75rem; }
 .footer__mark {
@@ -117,9 +122,14 @@
 }
 .footer__link > span { transition: transform var(--dur) var(--ease-out); }
 .footer__link b { font: 400 var(--fs-label) / 1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-mute); white-space: nowrap; transition: color var(--dur-fast); }
-.footer__link:is(:hover, :focus-visible) { color: var(--lime); }
-.footer__link:is(:hover, :focus-visible) > span { transform: translateX(0.25rem); }
-.footer__link:is(:hover, :focus-visible) b { color: var(--lime); }
+.footer__link:focus-visible { color: var(--lime); }
+.footer__link:focus-visible > span { transform: translateX(0.25rem); }
+.footer__link:focus-visible b { color: var(--lime); }
+@media (hover: hover) {
+  .footer__link:hover { color: var(--lime); }
+  .footer__link:hover > span { transform: translateX(0.25rem); }
+  .footer__link:hover b { color: var(--lime); }
+}
 .footer__link:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.125rem; border-radius: 0.25rem; }
 .footer__link--phone { justify-content: flex-start; gap: 0.5rem; font-family: var(--font-mono); font-size: var(--fs-small); font-variant-numeric: tabular-nums; color: var(--ink); }
 .footer__map svg { flex: none; width: 1rem; height: 1rem; }
@@ -138,7 +148,10 @@
   text-decoration: none;
   transition: background var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast);
 }
-.footer__chats a:is(:hover, :focus-visible) { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+.footer__chats a:focus-visible { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+@media (hover: hover) {
+  .footer__chats a:hover { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+}
 .footer__chats a:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.125rem; }
 /* the cases' fold (FooterCases): a plain column here, a row with a plus on phones */
 .footer__acc { display: none; }
@@ -235,10 +248,16 @@
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12h15M13.5 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
   transition: transform var(--dur-slow) var(--ease-out), background-color var(--dur);
 }
-.footer__row:is(:hover, :focus-visible) { color: var(--ink); }
-.footer__row:is(:hover, :focus-visible) .footer__row-line { transform: scaleX(1); transform-origin: 0 50%; }
-.footer__row:is(:hover, :focus-visible) .footer__row-name { transform: translateX(0.75rem); }
-.footer__row:is(:hover, :focus-visible) .footer__row-go { transform: translateX(0.375rem); background-color: var(--lime); }
+.footer__row:focus-visible { color: var(--ink); }
+.footer__row:focus-visible .footer__row-line { transform: scaleX(1); transform-origin: 0 50%; }
+.footer__row:focus-visible .footer__row-name { transform: translateX(0.75rem); }
+.footer__row:focus-visible .footer__row-go { transform: translateX(0.375rem); background-color: var(--lime); }
+@media (hover: hover) {
+  .footer__row:hover { color: var(--ink); }
+  .footer__row:hover .footer__row-line { transform: scaleX(1); transform-origin: 0 50%; }
+  .footer__row:hover .footer__row-name { transform: translateX(0.75rem); }
+  .footer__row:hover .footer__row-go { transform: translateX(0.375rem); background-color: var(--lime); }
+}
 @media (prefers-reduced-motion: reduce) {
   .footer__row,
   .footer__row > * { transition: none; }

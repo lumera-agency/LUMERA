@@ -30,11 +30,18 @@
    it), the bubble squashes from its tail, the handset rings and its waves come on one after the other */
 .contacts__btn { overflow: hidden; }
 @media (prefers-reduced-motion: no-preference) {
-  .contacts__btn:is(:hover, :focus-visible) .ico--tg { animation: ico-fly 0.62s var(--ease-out); }
-  .contacts__btn:is(:hover, :focus-visible) .ico--viber { transform-origin: 30% 92%; animation: ico-pop 0.56s var(--ease-out); }
-  .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico--phone { animation: ico-ring 0.72s ease-in-out; }
-  .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico__wave { animation: ico-wave 0.42s var(--ease-out) both; }
-  .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico__wave + .ico__wave { animation-delay: 0.14s; }
+  .contacts__btn:focus-visible .ico--tg { animation: ico-fly 0.62s var(--ease-out); }
+  .contacts__btn:focus-visible .ico--viber { transform-origin: 30% 92%; animation: ico-pop 0.56s var(--ease-out); }
+  .contacts__btn:is(:focus-visible, [aria-expanded="true"]) .ico--phone { animation: ico-ring 0.72s ease-in-out; }
+  .contacts__btn:is(:focus-visible, [aria-expanded="true"]) .ico__wave { animation: ico-wave 0.42s var(--ease-out) both; }
+  .contacts__btn:is(:focus-visible, [aria-expanded="true"]) .ico__wave + .ico__wave { animation-delay: 0.14s; }
+  @media (hover: hover) {
+    .contacts__btn:hover .ico--tg { animation: ico-fly 0.62s var(--ease-out); }
+    .contacts__btn:hover .ico--viber { transform-origin: 30% 92%; animation: ico-pop 0.56s var(--ease-out); }
+    .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico--phone { animation: ico-ring 0.72s ease-in-out; }
+    .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico__wave { animation: ico-wave 0.42s var(--ease-out) both; }
+    .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) .ico__wave + .ico__wave { animation-delay: 0.14s; }
+  }
 }
 @keyframes ico-fly {
   40% { transform: translate(160%, -160%); }
@@ -52,7 +59,10 @@
   70% { transform: rotate(-3deg); }
 }
 @keyframes ico-wave { from { opacity: 0; } }
-.contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) { background: var(--lime); color: var(--on-ink); }
+.contacts__btn:is(:focus-visible, [aria-expanded="true"]) { background: var(--lime); color: var(--on-ink); }
+@media (hover: hover) {
+  .contacts__btn:is(:hover, :focus-visible, [aria-expanded="true"]) { background: var(--lime); color: var(--on-ink); }
+}
 .contacts__btn:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.125rem; }
 
 /* the phone's card: the two numbers, then the two chats */
@@ -106,9 +116,14 @@
   text-decoration: none;
   transition: background var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast);
 }
-.contacts__phone:is(:hover, :focus-visible) { background: rgb(246 246 243 / 0.06); color: var(--lime); }
-.contacts__phone:is(:hover, :focus-visible) svg { color: var(--lime); }
-.contacts__chats a:is(:hover, :focus-visible) { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+.contacts__phone:focus-visible { background: rgb(246 246 243 / 0.06); color: var(--lime); }
+.contacts__phone:focus-visible svg { color: var(--lime); }
+.contacts__chats a:focus-visible { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+@media (hover: hover) {
+  .contacts__phone:hover { background: rgb(246 246 243 / 0.06); color: var(--lime); }
+  .contacts__phone:hover svg { color: var(--lime); }
+  .contacts__chats a:hover { background: var(--lime); color: var(--on-ink); box-shadow: none; }
+}
 .contacts__card :focus-visible { outline: 2px solid var(--lime); outline-offset: -0.125rem; }
 @keyframes contacts-in {
   from { opacity: 0; transform: translateY(-0.375rem); }
