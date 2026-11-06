@@ -2,7 +2,8 @@
  * Touch screens: the hero is laid out in viewport units, and some phone browsers (in-app browsers
  * above all) resize the viewport as their bars slide away mid-scroll; the hero would re-flow and the
  * stone would resize under the finger. The viewport is measured once (the large and small heights
- * Safari's units use: --vh, --hero-min) and again only for a new width (a turn). From website-v2.
+ * Safari's units use: --vh, --hero-min) and again only for a new width (a turn). From website-v2. Every page runs it
+ * (PageShell): the first screens are sized from it (tokens.css: --screen-l, --screen-s).
  */
 export function lockViewport() {
   if (!matchMedia("(hover: none) and (pointer: coarse)").matches) return () => {};

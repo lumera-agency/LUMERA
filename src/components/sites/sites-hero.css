@@ -177,7 +177,7 @@ html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { anima
 
   /* g3: the poster on a phone: the H1 top left, the lead right under it, the stone, the button (all in the first
      screen); then «02 Ціни» and the prices. The stone takes what the first screen has left */
-  .st-hg { --hg-pad: 1rem; --hg-thm: 3.14; --hg-fs: min(calc(100cqi / var(--hg-l2)), 7.2svh, 3.5rem); --hg-st: clamp(8.5rem, calc(100svh - var(--topbar-h) - var(--hg-pad) - var(--hg-fs) * var(--hg-thm) - 13.75rem), 25.5rem); } /* (19 Oct: «чуть побольше», then «маленький»: the stone takes what the first screen has left above the button, up to 408) */
+  .st-hg { --hg-pad: 1rem; --hg-thm: 3.14; --hg-fs: min(calc(100cqi / var(--hg-l2)), var(--screen-s) * 0.072, 3.5rem); --hg-st: clamp(8.5rem, calc(var(--screen-s) - var(--topbar-h) - var(--hg-pad) - var(--hg-fs) * var(--hg-thm) - 13.75rem), 25.5rem); } /* (19 Oct: «чуть побольше», then «маленький»: the stone takes what the first screen has left above the button, up to 408) */
   /* the H1 in three lines: «Дизайн» / «і розробка» / «сайтів» */
   .st-h1 { grid-template-columns: var(--t5-i) max-content; grid-template-areas: "a a" "i b" "s s"; }
   .st-hg .st-hg__grid { grid-template-rows: none; min-height: 0; }
@@ -384,8 +384,10 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   /* a phone: the first screen is the words and the droplet, and at its foot the prices, then the button; the formats'
      line waits for block 2 (it says the same) */
   /* (room above «ДИЗАЙН»: «Й»'s breve rises above the caps, it must not reach the topbar) */
-  main[data-ai-page="sites"] .st-hg { --hg-h: calc(100svh - var(--topbar-h) - 2.25rem); padding-top: calc(var(--topbar-h) + 1.5rem); }
-  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
+  /* (the first screen in the small screen; the strip under it, under the browser's floating bar, stays empty, so the
+     sample site never shows there) */
+  main[data-ai-page="sites"] .st-hg { --hg-h: calc(var(--screen-s) - var(--topbar-h) - 2.25rem); padding-top: calc(var(--topbar-h) + 1.5rem); }
+  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); margin-bottom: var(--screen-under); }
   /* the words and the droplet at the top, under the topbar */
   .st-hg .st-hg__title,
   .st-hg .st-hg__stone { grid-row: 1; align-self: start; }

@@ -92,6 +92,13 @@
   --gutter: clamp(1.25rem, 3.65vw, 4.5rem);
   --header-h: clamp(4.25rem, calc(var(--vh, 1vh) * 9), 5.75rem);
   --topbar-h: 4rem;
+  /* the screen's height, locked on touch screens (lib/viewport), so nothing re-flows as the browser's bars move:
+     --screen-l the large one (the bars away), --screen-s the small one (the bars out). A first screen is --screen-l
+     tall, so the next block never shows under a floating bar (Safari 26, the owner's iPhone, 6 Nov 2026); its words
+     and its button keep within --screen-s, the strip under them (--screen-under) is the first screen's ground only */
+  --screen-l: calc(var(--vh, 1vh) * 100);
+  --screen-s: var(--hero-min, 100vh);
+  --screen-under: calc(var(--screen-l) - var(--screen-s));
   --col-gap: clamp(1rem, 2vw, 2rem);
   --card-gap: clamp(0.875rem, 1.4vw, 1.375rem);
   --rhythm-xs: clamp(1.125rem, 3vh, 2rem);        /* label → title */
@@ -112,5 +119,8 @@
   --stone-tex: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='3' stitchTiles='stitch'/><feColorMatrix values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/><feComponentTransfer result='grit'><feFuncR type='linear' slope='1.6' intercept='0.1'/><feFuncG type='linear' slope='1.6' intercept='0.1'/><feFuncB type='linear' slope='1.6' intercept='0.1'/></feComponentTransfer><feTurbulence type='fractalNoise' baseFrequency='0.007' numOctaves='4' seed='8' stitchTiles='stitch'/><feColorMatrix values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/><feComponentTransfer result='mottle'><feFuncR type='linear' slope='1.8' intercept='0.04'/><feFuncG type='linear' slope='1.8' intercept='0.04'/><feFuncB type='linear' slope='1.8' intercept='0.04'/></feComponentTransfer><feBlend in='grit' in2='mottle' mode='multiply'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
 
   color-scheme: dark;
+}
+@supports (height: 100svh) {
+  :root { --screen-s: var(--hero-min, 100svh); }
 }
 @media (max-width: 600px) { :root { --fs-display: clamp(1.875rem, 8.6vw, 2.3rem); } }

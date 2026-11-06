@@ -11,6 +11,7 @@ import { ScrollReveals } from "@/components/fx/scroll-reveal/ScrollReveals";
 import { useSpotlight } from "@/components/fx/spotlight/useSpotlight";
 import { rememberPlace } from "@/lib/boot";
 import { routeAnchorLinks } from "@/lib/scroll";
+import { lockViewport } from "@/lib/viewport";
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   const page = useRef<HTMLDivElement>(null);
@@ -20,6 +21,8 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   const head = useRef<HTMLSpanElement>(null);
 
   useSpotlight(page, ".card");
+  // every page's first screen is sized from the locked screen heights (tokens.css: --screen-l, --screen-s)
+  useEffect(() => lockViewport(), []);
 
   // links to a block go there without a #id in the address; a reload comes back to the same place
   useEffect(() => {

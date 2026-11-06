@@ -288,7 +288,7 @@ html.motion .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new .bo
 @media (max-width: 599px) {
   /* one screen high, the whole screen, under the browser's bars too (black to the foot: the owner, 4 Nov 2026); what
      does not fit of the table is cut off at the foot (the robot stays this large, the table cut) */
-  main[data-ai-page="ai"] .ai-hero.ai-bot { --pad-top: 0.75rem; --robot: min(68vw, 20rem); height: 100vh; height: 100lvh; min-height: 34rem; }
+  main[data-ai-page="ai"] .ai-hero.ai-bot { --pad-top: 0.75rem; --robot: min(68vw, 20rem); height: 100vh; height: 100lvh; height: var(--screen-l); min-height: 34rem; }
   main[data-ai-page="ai"] .ai-bot .ai-bot__title { font-size: min(var(--cover) * 1.35, (100vw - 2 * var(--gutter)) / 6.1); }
   .ai-bot__title > .bot-cover__a::after { content: "\A"; white-space: pre; }
   .ai-bot__title > .bot-cover__b::after { content: none; }

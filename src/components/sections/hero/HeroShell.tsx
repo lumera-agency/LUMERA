@@ -4,7 +4,6 @@ import { createRoot, type Root } from "react-dom/client";
 import dynamic from "next/dynamic";
 import { boot, loader, sceneRun, useSceneRunning } from "@/lib/boot";
 import { useReducedMotion } from "@/lib/hooks";
-import { lockViewport } from "@/lib/viewport";
 import { WebGLGate } from "@/components/three/lib/WebGLGate";
 import { useBoot } from "./useBoot";
 import "./hero.css";
@@ -66,7 +65,6 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       alive = false;
     };
   }, []);
-  useEffect(() => lockViewport(), []);
 
   // pause the canvases off-screen, under the page (touch: the hero is sticky, never off-screen, only
   // covered) and in a background tab; the hero's height for its sticky top (hero.css)

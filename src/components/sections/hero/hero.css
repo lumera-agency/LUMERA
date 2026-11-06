@@ -5,7 +5,7 @@
   position: relative;
   min-height: 100vh;
   min-height: 100svh;
-  min-height: var(--hero-min, 100svh); /* touch: the small viewport, measured once (js/main.js) */
+  min-height: var(--screen-l); /* touch: the large viewport, measured once (lib/viewport); the content keeps to the small one */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -77,12 +77,14 @@ html.has-fluid .hero__fluid { display: block; }
 .hero.is-away .rail__node,
 .hero.is-away .rail__title { animation-play-state: paused; }
 
+/* (the small screen's height under the header, not the hero's: on a phone the strip under it lies under the browser's
+   floating bar, the rail stays above it; where the words need more, they take it) */
 .hero__content {
   position: relative;
   z-index: 4;
-  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: calc(var(--screen-s) - var(--header-h));
   padding: 0 var(--gutter) clamp(1.5rem, calc(var(--vh, 1vh) * 5.5), 4.5rem);
 }
 

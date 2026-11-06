@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- the account's screenshots are shown as they are, never re-encoded (the client's numbers stay pixel for pixel) */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/button/Button";
 
 type Ring = { left: number; top: number; width: number; height: number };
@@ -20,7 +20,7 @@ export type CaseView = {
   how: React.ReactNode;
   shots: CaseShot[];
 };
-export type CasesText = { index: number; nav: string; title: React.ReactNode; intro: string; cta: string; site: string; before: string };
+export type CasesText = { index: number; nav: string; title: React.ReactNode; intro: string; cta: string; site: string; before: string; swipe: string };
 
 /** a number, its «≈» and its unit smaller; «before → after» with the old one struck through */
 function Num({ text, count = false }: { text: string; count?: boolean }) {
@@ -74,10 +74,29 @@ const STAT_ICON: Record<"n" | "cr" | "spend", React.ReactNode> = {
 
 /** the account's window, as tall as the column: its screenshots' tabs and the client's site in the bar (a lime link,
  *  plainly one to follow), the screenshot as large as the room allows (top left, as in the account), who and when and
- *  the note on the numbers at its foot */
+ *  the note on the numbers at its foot. One column (phones) shows the screenshot wider than the window, so its figures
+ *  stay readable: it scrolls sideways and opens on the ringed cells (without rings on its middle, where the figures are) */
 function Window({ c, text }: { c: CaseView; text: CasesText }) {
   const [shot, setShot] = useState(0);
+  const [panned, setPanned] = useState(false);
+  const pan = useRef<HTMLDivElement>(null);
+  const opened = useRef(0);
   const current = c.shots[shot] ?? c.shots[0];
+  /* (again at each new size: the scroller has none until the one-column CSS applies, and a turn changes it) */
+  useEffect(() => {
+    const scroller = pan.current;
+    if (!scroller) return;
+    const rings = current.rings ?? [];
+    const focus = rings.length ? (Math.min(...rings.map((ring) => ring.left)) + Math.max(...rings.map((ring) => ring.left + ring.width))) / 200 : 0.5;
+    const open = () => {
+      if (scroller.scrollWidth <= scroller.clientWidth) return;
+      scroller.scrollLeft = focus * scroller.scrollWidth - scroller.clientWidth / 2;
+      opened.current = scroller.scrollLeft;
+    };
+    const sized = new ResizeObserver(open);
+    sized.observe(scroller);
+    return () => sized.disconnect();
+  }, [current]);
   return (
     <figure className="rk-cs-win">
       <div className="rk-cs-win__bar">
@@ -96,12 +115,19 @@ function Window({ c, text }: { c: CaseView; text: CasesText }) {
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
         </a>
       </div>
-      <div className="rk-cs-win__body">
-        <span className="rk-cs-win__in" style={{ "--ar": current.w / current.h } as React.CSSProperties} key={`${c.id}-${current.id}`}>
-          <img src={current.src} width={current.w} height={current.h} alt={current.alt} loading="lazy" decoding="async" />
-          {current.rings?.map((ring, index) => (
-            <span className="rk-cs-ring" aria-hidden="true" key={index} style={{ left: `${ring.left}%`, top: `${ring.top}%`, width: `${ring.width}%`, height: `${ring.height}%` }} />
-          ))}
+      <div className="rk-cs-win__body" data-panned={panned || undefined}>
+        {/* (the scroller is only a box in one column; on a computer it gives way and the screenshot fits the window) */}
+        <div className="rk-cs-win__pan" ref={pan} onScroll={(event) => Math.abs(event.currentTarget.scrollLeft - opened.current) > 8 && setPanned(true)}>
+          <span className="rk-cs-win__in" style={{ "--ar": current.w / current.h, "--w": current.w } as React.CSSProperties} key={`${c.id}-${current.id}`}>
+            <img src={current.src} width={current.w} height={current.h} alt={current.alt} loading="lazy" decoding="async" />
+            {current.rings?.map((ring, index) => (
+              <span className="rk-cs-ring" aria-hidden="true" key={index} style={{ left: `${ring.left}%`, top: `${ring.top}%`, width: `${ring.width}%`, height: `${ring.height}%` }} />
+            ))}
+          </span>
+        </div>
+        <span className="rk-cs-win__hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M8 7.5 3.5 12 8 16.5M16 7.5l4.5 4.5-4.5 4.5M4 12h16" /></svg>
+          {text.swipe}
         </span>
       </div>
       <figcaption className="rk-cs-win__foot"><b>{c.who}</b> · {c.per}. {c.before && <em>{text.before}.</em>} {c.cap}</figcaption>
@@ -115,6 +141,8 @@ function Window({ c, text }: { c: CaseView; text: CasesText }) {
  * ember), the case's three numbers (each with its lime mark, a lime highlighter swept under the number as it runs up
  * from zero), what was done, the button at the column's foot; on the right only the account's window, as tall as the
  * column. A link to one case (…#case-pest, the site's menu) shows it: the cards keep those ids (runtime openCase).
+ * One column (phones, the owner's setting of 6 Nov 2026): the heading, the cards, the numbers and what was done, the
+ * window, the button last (the left column gives way to its parts, the CSS orders them).
  */
 export function AdsCases({ cases, text }: { cases: CaseView[]; text: CasesText }) {
   const [active, setActive] = useState(0);

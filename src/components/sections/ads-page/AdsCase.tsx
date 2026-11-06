@@ -80,7 +80,7 @@ export async function AdsCase({ index }: { index: number }) {
       <div className="container">
         <AdsCases
           cases={cases}
-          text={{ index, nav: t("nav.case"), title: t.rich("case.title", R), intro: t("case.intro"), cta: t("cta"), site: t("case.site"), before: t("case.before") }}
+          text={{ index, nav: t("nav.case"), title: t.rich("case.title", R), intro: t("case.intro"), cta: t("cta"), site: t("case.site"), before: t("case.before"), swipe: t("case.swipe") }}
         />
       </div>
     </section>

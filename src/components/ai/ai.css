@@ -604,7 +604,7 @@ main[data-ai-page="ai"] .ai-hero--center::before { z-index: 1; }
    (--hero-h: its height, js/ai-page.js), the block after it rises over it like a sheet; the first screen dims under
    it. The dimming is a scroll-driven CSS animation (no script, no frames at rest); where it isn't supported the sheet
    still slides over ---------- */
-html.ai-stick .ai-hero[data-cover] { position: sticky; top: min(0px, calc(100vh - var(--hero-h, 100vh))); top: min(0px, calc(100svh - var(--hero-h, 100svh))); z-index: 0; }
+html.ai-stick .ai-hero[data-cover] { position: sticky; top: min(0px, calc(100vh - var(--hero-h, 100vh))); top: min(0px, calc(var(--screen-s) - var(--hero-h, 100svh))); z-index: 0; }
 /* the page after the first screen (layout/page PageShell) rides over it; its own background goes, so the first
    block's rounded corners show the pinned screen behind them; the dark blocks carry their own */
 html.ai-stick .ai-hero[data-cover] + .page { z-index: 1; background: transparent; }
@@ -981,7 +981,7 @@ html.motion main[data-ai-page="ai"] .ai-hero--center .ai-hero__stone { animation
 main[data-ai-page="case"] .ai-hero__title { max-width: 15ch; font-size: clamp(2.5rem, min(4.75vw, calc(var(--vh, 1vh) * 7.6)), 5.4rem); }
 /* the first screen at least the window's height, as the AI page's (22 Oct, the owner: «прокрутил вверх, но видно секцию
    ниже»): shorter, it pinned from the very top, block 2 peeked in under it (shown once revealed) and it sat dimmed */
-main[data-ai-page="case"] .ai-hero--film { display: grid; align-content: center; min-height: 100vh; min-height: 100svh; }
+main[data-ai-page="case"] .ai-hero--film { display: grid; align-content: center; min-height: 100vh; min-height: var(--screen-l); }
 /* a fine grain over the first screen (static: drawn once, never repainted) */
 main:is([data-ai-page="ai"], [data-ai-page="case"]) .ai-hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--stone-tex); background-size: 37.5rem 37.5rem; opacity: 0.05; }
 main:is([data-ai-page="ai"], [data-ai-page="case"]) .ai-hero__in { position: relative; }

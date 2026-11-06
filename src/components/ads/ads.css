@@ -613,8 +613,10 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
      the way of a request, then the button across at the foot of the screen. The words keep a set rhythm; the height
      left over goes in three, above the title, above the window and above the button, so no gap grows large. The
      words' box steps aside (display: contents) so the button can come after the window, and the row becomes the
-     container the title is sized by. */
-  main[data-ai-page="ads"] .rk-hero { display: grid; align-content: stretch; min-height: 100svh; padding-top: calc(var(--topbar-h) + 1.25rem); padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+     container the title is sized by. The owner's iPhone, 6 Nov 2026: block 2 showed under Safari's floating bar, and the
+     safe area's inset at the foot changed as the bar folded, so the whole screen jumped. Now the first screen is the
+     large screen's height, its words and button laid out in the small one, the strip under them black. */
+  main[data-ai-page="ads"] .rk-hero { display: grid; align-content: stretch; min-height: var(--screen-l); padding-top: calc(var(--topbar-h) + 1.25rem); padding-bottom: calc(1rem + var(--screen-under)); }
   main[data-ai-page="ads"] .rk-hero .ai-hero__in { container-type: inline-size; display: flex; flex-direction: column; align-items: stretch; }
   main[data-ai-page="ads"] .rk-hero .ai-hero__copy { display: contents; }
   main[data-ai-page="ads"] .rk-hero .ai-hero__title { margin-top: auto; }
@@ -748,7 +750,10 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
    dark with its price in ember */
 .rk-cs__cards { display: grid; gap: 0.5rem; }
 .rk-cs-card { display: grid; grid-template-columns: minmax(0, 1fr) auto 1.25rem; grid-template-rows: auto auto; align-items: center; column-gap: 0.875rem; padding: clamp(0.5rem, 1.2vh, 0.875rem) 1rem; border: 0; border-radius: 1rem; text-align: left; color: var(--ink-dark); background: #fff; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1); cursor: pointer; transition: box-shadow 0.25s, background-color 0.25s, color 0.25s, transform 0.25s var(--ease-out); }
-.rk-cs-card:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transform: translateX(2px); }
+@media (hover: hover) {
+  .rk-cs-card:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transform: translateX(2px); }
+  .rk-cs-card:hover .rk-cs-card__go svg { transform: translateX(3px); }
+}
 .rk-cs-card:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; }
 .rk-cs-card__n { grid-row: 1 / span 2; display: grid; gap: 0.25rem; font-size: 1rem; font-weight: 500; }
 .rk-cs-card__n small { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: 0.04em; color: var(--ink-dark-mute); }
@@ -756,7 +761,6 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
 .rk-cs-card__k { grid-column: 2; justify-self: end; margin-top: 0.125rem; font-size: 0.75rem; color: var(--ink-dark-mute); }
 .rk-cs-card__go { grid-column: 3; grid-row: 1 / span 2; }
 .rk-cs-card__go svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s var(--ease-out); }
-.rk-cs-card:hover .rk-cs-card__go svg { transform: translateX(3px); }
 .rk-cs-card[aria-selected="true"] { color: var(--ivory); background: var(--ink-dark); box-shadow: 0 1rem 2rem -1.25rem rgba(15, 14, 13, 0.6); transform: none; cursor: default; }
 .rk-cs-card[aria-selected="true"] .rk-cs-card__v { color: var(--ember); }
 .rk-cs-card[aria-selected="true"] :is(.rk-cs-card__n small, .rk-cs-card__k) { color: rgba(246, 246, 243, 0.6); }
@@ -796,9 +800,11 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
 .rk-cs-win__site:hover svg { transform: translate(2px, -2px); }
 .rk-cs-win__site:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
 .rk-cs-win__body { flex: 1; display: flex; align-items: flex-start; min-height: 0; background: #fff; container-type: size; }
+.rk-cs-win__pan { display: contents; }
 .rk-cs-win__in { position: relative; display: block; width: min(100cqw, 100cqh * var(--ar)); aspect-ratio: var(--ar); }
 .rk-cs-win__in img { display: block; width: 100%; height: 100%; }
 /* the key cells ringed on the screenshot */
+.rk-cs-win__hint { display: none; }
 .rk-cs-ring { position: absolute; border-radius: 0.375rem; box-shadow: 0 0 0 2px var(--ink-dark), 0 0 0 5px rgba(255, 255, 255, 0.85); pointer-events: none; }
 .rk-cs-win__foot { padding: 0.75rem 1rem; border-top: 1px solid rgba(15, 14, 13, 0.08); font-size: 0.75rem; line-height: 1.45; color: var(--ink-dark-mute); text-wrap: pretty; }
 .rk-cs-win__foot b { font-weight: 500; color: var(--ink-dark); }
@@ -812,17 +818,36 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
   .rk-cs-dl__ico { width: 1.5rem; height: 1.5rem; }
   .rk-cs-dl dd { font-size: 1.25rem; }
 }
-/* narrower than 901 px (the phones' own setting comes later): one column, the heading, the cards, the numbers, the
-   button, then the window, its screenshot scrolled sideways at a readable size */
+/* narrower than 901 px (the owner's setting for phones, 6 Nov 2026): one column, the heading, the cards, the numbers
+   and what was done, the window, the button last. The left column gives way to its parts so the window can stand
+   between them. The window's bar keeps the dots and the client's site in one row (the address would push the site
+   onto a row of its own), the screenshots' tabs under them as halves. The screenshot at 0.8 of its own pixels, where
+   the account's figures are still readable: wider than a phone, so it scrolls sideways (AdsCases opens it on the
+   ringed cells) and says so until it is moved */
 @media (max-width: 900px) {
-  .rk-cs { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+  .rk-cs { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: 1.25rem; }
+  .rk-cs__left { display: contents; }
+  .rk-cs-win { order: 1; }
+  .rk-cs-end { order: 2; }
   .rk-cs-head { grid-template-columns: minmax(0, 1fr); }
   .rk-cs-head__title { white-space: normal; }
   .rk-cs-head__intro { text-align: left; }
-  .rk-cs-win__bar { flex-wrap: wrap; }
-  .rk-cs-win__body { container-type: normal; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
-  .rk-cs-win__in { width: max(100%, 40rem); }
+  .rk-cs-win__bar { flex-wrap: wrap; row-gap: 0.5rem; }
+  .rk-cs-win__host { display: none; }
+  .rk-cs-win__site { margin-left: auto; }
+  .rk-cs-win__tabs { order: 1; flex: 1 1 100%; margin-left: 0; }
+  .rk-cs-win__tabs button { flex: 1; }
+  .rk-cs-win__body { position: relative; display: block; container-type: normal; }
+  .rk-cs-win__pan { display: block; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+  .rk-cs-win__pan::-webkit-scrollbar { display: none; }
+  .rk-cs-win__in { width: max(100%, var(--w) * 0.8px); }
   .rk-cs-end .btn { width: 100%; justify-content: space-between; }
+}
+/* phones: every screenshot is wider than the window, the hint says it moves */
+@media (max-width: 600px) {
+  .rk-cs-win__hint { position: absolute; right: 0.625rem; bottom: 0.625rem; display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.4375rem 0.75rem 0.4375rem 0.625rem; border-radius: 99px; font: 400 0.6875rem/1 var(--font-mono); color: var(--ivory); background: rgb(15 14 13 / 0.85); pointer-events: none; transition: opacity 0.3s; }
+  .rk-cs-win__hint svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: var(--lime); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .rk-cs-win__body[data-panned] .rk-cs-win__hint { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .rk-cs-facts, .rk-cs-win { animation: none; }
@@ -854,7 +879,7 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
    so the button still stands on the screen */
 @media (max-width: 600px) and (max-height: 740px) {
   main[data-ai-page="ads"] .rk-hero { padding-top: calc(var(--topbar-h) + 0.75rem); }
-  main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --title-fs: min(100cqi / 6, 8svh); }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --title-fs: min(100cqi / 6, var(--screen-s) * 0.08); }
   main[data-ai-page="ads"] .rk-hero .ai-hero__visual { padding-top: 1rem; }
   main[data-ai-page="ads"] .rk-hero .ai-hero__actions { padding-top: 0.75rem; }
   .rk-fl__bus { height: 1rem; }
