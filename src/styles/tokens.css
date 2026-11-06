@@ -93,12 +93,13 @@
   --header-h: clamp(4.25rem, calc(var(--vh, 1vh) * 9), 5.75rem);
   --topbar-h: 4rem;
   /* the screen's height, locked on touch screens (lib/viewport), so nothing re-flows as the browser's bars move:
-     --screen-l the large one (the bars away), --screen-s the small one (the bars out). A first screen is --screen-l
-     tall, so the next block never shows under a floating bar (Safari 26, the owner's iPhone, 6 Nov 2026); its words
-     and its button keep within --screen-s, the strip under them (--screen-under) is the first screen's ground only */
-  --screen-l: calc(var(--vh, 1vh) * 100);
+     --screen-s the small one (the bars out), --screen-under the strip under it that may still be seen (the bars
+     away; on an iPhone, under Safari's floating bar, lib/viewport sets it from the screen), --screen-l the two. A first
+     screen is --screen-l tall, so the next block never shows under a floating bar (the owner's iPhone, 6 Nov 2026);
+     its words and its button keep within --screen-s, the strip is the first screen's ground only */
   --screen-s: var(--hero-min, 100vh);
-  --screen-under: calc(var(--screen-l) - var(--screen-s));
+  --screen-under: calc(var(--vh, 1vh) * 100 - var(--screen-s));
+  --screen-l: calc(var(--screen-s) + var(--screen-under));
   --col-gap: clamp(1rem, 2vw, 2rem);
   --card-gap: clamp(0.875rem, 1.4vw, 1.375rem);
   --rhythm-xs: clamp(1.125rem, 3vh, 2rem);        /* label → title */
@@ -122,5 +123,12 @@
 }
 @supports (height: 100svh) {
   :root { --screen-s: var(--hero-min, 100svh); }
+}
+/* Safari on an iPhone, before lib/viewport has measured the screen (the first paint): its floating bar's strip, about
+   what an iPhone's measures (iOS 27: 160), so the next block does not flash under the bar */
+@supports (-webkit-touch-callout: none) {
+  @media (hover: none) and (pointer: coarse) {
+    :root { --screen-under: max(calc(var(--vh, 1vh) * 100 - var(--screen-s)), 10rem); }
+  }
 }
 @media (max-width: 600px) { :root { --fs-display: clamp(1.875rem, 8.6vw, 2.3rem); } }

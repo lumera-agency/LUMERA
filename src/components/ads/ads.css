@@ -843,9 +843,10 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
   .rk-cs-win__in { width: max(100%, var(--w) * 0.8px); }
   .rk-cs-end .btn { width: 100%; justify-content: space-between; }
 }
-/* phones: every screenshot is wider than the window, the hint says it moves */
+/* phones: every screenshot is wider than the window, the hint says it moves (on the left: the page's «up» button
+   stands at the right foot of the screen and covered it) */
 @media (max-width: 600px) {
-  .rk-cs-win__hint { position: absolute; right: 0.625rem; bottom: 0.625rem; display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.4375rem 0.75rem 0.4375rem 0.625rem; border-radius: 99px; font: 400 0.6875rem/1 var(--font-mono); color: var(--ivory); background: rgb(15 14 13 / 0.85); pointer-events: none; transition: opacity 0.3s; }
+  .rk-cs-win__hint { position: absolute; left: 0.625rem; bottom: 0.625rem; display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.4375rem 0.75rem 0.4375rem 0.625rem; border-radius: 99px; font: 400 0.6875rem/1 var(--font-mono); color: var(--ivory); background: rgb(15 14 13 / 0.85); pointer-events: none; transition: opacity 0.3s; }
   .rk-cs-win__hint svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: var(--lime); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .rk-cs-win__body[data-panned] .rk-cs-win__hint { opacity: 0; }
 }
