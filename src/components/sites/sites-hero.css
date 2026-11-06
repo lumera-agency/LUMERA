@@ -1,12 +1,11 @@
 /*
- * «Дизайн і сайти»: the first screen, «Плакат» (SitesHero.tsx; the owner's pick, 18 Oct 2026). One screen set as a
- * poster on a 12-column grid: four corner blocks round a large centred stone.
- *
- * The one rule: no word crosses the stone. The stone has its own grid area (.st-hg__stone, a box about the size of its
- * silhouette); everything in it is sized from that box in em, so the still, the live stone's canvas and the glow scale
- * with it. Sizes come from the screen (cqi of the words' column, vh), never from a measurement: CLS 0.
- * Kept from the earlier first screen: the backdrop and its grain (sites.css), the button and «сайтів» in ember (lime till 21 Oct), the
- * mock below, the pin, the entrance (CSS, once; without motion, the final frame).
+ * «Дизайн і сайти»: the first screen (SitesHero.tsx). On a computer «Плакат» (the owner's pick of five settings, 5 Nov
+ * 2026): the words in Sofia Sans Extra Condensed across one sheet, the droplet in front, the prices on the right (the
+ * sheet, below). Upright (a phone, a tablet held upright) the poster of 20 Oct: «ДИЗАЙН» on the right, «І РОЗРОБКА»
+ * under it, «САЙТІВ.» on the left, the droplet between them, then the prices and the button (the owner, 5 Nov: as it
+ * was). Sizes come from the screen (cqi of the words' column, vh), never from a measurement: CLS 0. Kept from the
+ * earlier first screens: the black ground, the mock below, the pin, the entrance (CSS, once; without motion, the final
+ * frame).
  */
 
 /* ---------- the frame ---------- */
@@ -30,9 +29,9 @@ html:lang(ru) main[data-ai-page="sites"] .st-hg { --hg-l1: 10.2; --hg-l2: 6.6; }
 .st-hg .st-hg__title { margin: 0; max-width: none; font-size: var(--hg-fs); line-height: 0.96; letter-spacing: -0.04em; text-wrap: initial; filter: none; }
 
 /* ==========================================================================
-   The H1, «Дизайн і код» (t5 of nine, the owner's pick, 19 Oct 2026; SitesHero.tsx Title): each word in the face of
-   what it means. «Дизайн» in Source Serif 4 italic (the lead's face), «розробка» in IBM Plex Mono lowercase, as code (it
-   types in once behind an ember caret), «сайтів» in Geologica 800, ember (the result). Sizes matched on the x-height
+   The H1's base, «Дизайн і код» (t5 of nine, the owner's pick, 19 Oct 2026; SitesHero.tsx Title; the sheet and the
+   upright poster below set their own faces over it): each word in the face of what it means. «Дизайн» in Source Serif 4
+   italic (the lead's face), «розробка» in IBM Plex Mono lowercase, as code, «сайтів» in Geologica 800, ember (the result). Sizes matched on the x-height
    (serif 1.12, mono 0.97), so the line reads as one sentence. A grid with columns in em («Дизайн» 3.37 in the serif,
    «і» 0.21, RU «и» 0.57): offsets never come from a measurement, so a late face moves nothing (CLS 0). Weights outside
    a face's declared range are set with font-variation-settings (the files carry the whole axis: nothing new is fetched)
@@ -51,6 +50,9 @@ html:lang(ru) main[data-ai-page="sites"] .st-hg { --hg-l1: 10.2; --hg-l2: 6.6; }
 /* (20 Oct) «ДИЗАЙН» in Helvetica Neue Medium Italic on a computer: named by itself, as the system's own (a browser asked for
    weight 500 italic of «Helvetica Neue» takes the Bold Italic); where it is missing, the stack below it takes over */
 @font-face { font-family: "St Hero Helvetica Medium"; font-style: italic; font-weight: 500; src: local("HelveticaNeue-MediumItalic"), local("Helvetica Neue Medium Italic"); }
+/* (5 Nov) the computer's poster in Sofia Sans Extra Condensed (the file sites-pv.css loads anyway, the Cyrillic one preloaded) */
+@font-face { font-family: "St Hero XC"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "St Hero XC"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 main[data-ai-page="sites"] .st-hg { --t5-a: 3.369em; --t5-i: 0.211em; }
 html:lang(ru) main[data-ai-page="sites"] .st-hg { --t5-i: 0.573em; }
 .st-h1 {
@@ -65,9 +67,7 @@ html:lang(ru) main[data-ai-page="sites"] .st-hg { --t5-i: 0.573em; }
 .st-h1__i { grid-area: i; font-variation-settings: "wght" 300; color: var(--ink-soft); }
 .st-h1__b { grid-area: b; font-family: "St Hero Mono", var(--font-mono); font-size: 0.97em; font-weight: 400; font-variation-settings: normal; letter-spacing: -0.02em; }
 .st-h1__s { grid-area: s; font-variation-settings: "wght" 800; letter-spacing: -0.05em; }
-/* the caret: an ember bar from the cap height to the baseline, one mono letter (0.58 em) per step; unseen at rest */
 .st-h1__code { position: relative; }
-.st-h1__caret { position: absolute; left: 0.02em; top: 0.13em; width: 0.08em; height: 0.76em; background: var(--ember); opacity: 0; pointer-events: none; }
 /* desktop: the grid counts the H1 as two lines of 0.96 (1.92 em), so the lead's rows keep their size and the lead its
    place; what the H1 has more hangs into the stone's row, whose box is smaller by that much (--hg-th in --hg-st) */
 @media (min-width: 761px) {
@@ -88,15 +88,13 @@ html:lang(ru) main[data-ai-page="sites"] .st-hg { --t5-i: 0.573em; }
 /* the prices: hero.from as three items (number, format, «від», sum) */
 .st-hg .st-hg__px { margin: 0; padding: 0; list-style: none; font: 400 0.8125rem/1.45 var(--font-mono); letter-spacing: 0.01em; color: var(--ink-soft); }
 .st-hg__pi { display: flex; align-items: baseline; column-gap: 0.9em; min-width: 0; }
-.st-hg__pn { flex: none; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
 .st-hg__pt { min-width: 0; }
 .st-hg__pp { margin-left: auto; white-space: nowrap; }
 .st-hg__from { color: var(--ink-mute); }
 .st-hg__pp b { font-weight: 500; color: var(--ink); }
 
-/* a mono label on a column start (the grid's furniture), its number first */
+/* a mono label on a column start (the grid's furniture) */
 .st-hg .st-hg__k { display: flex; align-items: baseline; gap: 0.9em; margin: 0; font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute); }
-.st-hg__k span { color: var(--ink-soft); letter-spacing: 0.06em; }
 
 /* the button: clear air above «02 Ціни» (the owner, 19 Oct: «кнопка сидит прямо на ценах»); this rule outranks the
    AI hero's own margins, so the space is set here */
@@ -159,19 +157,16 @@ html.motion main[data-ai-page="sites"] .st-hg .st-hg__mark { animation: st-hg-fa
 html.motion main[data-ai-page="sites"] .st-hg .st-hg__pill { animation: st-hg-pill 0.8s var(--ease-out) calc(0.62s + var(--i, 1) * 0.09s) backwards; }
 @keyframes st-hg-pill { from { opacity: 0; transform: scale(0.3); } }
 @keyframes st-hg-fade { from { opacity: 0; } }
-/* the H1: «Дизайн», «і» rise out of their masks; «розробка» types (55 ms a letter, the caret ahead of it, gone once it
-   has typed); «сайтів» rises as the typing ends. Every part starts unseen for the first frames, so a face that lands a
+/* the H1: «Дизайн», «і» rise out of their masks; «розробка» comes in a letter at a time (55 ms a letter); «сайтів» rises
+   as it ends. Every part starts unseen for the first frames, so a face that lands a
    frame late is never seen to move */
 html.motion main[data-ai-page="sites"] .st-hg .st-h1__m > .tone:not(.st-h1__code) { animation: st-h1-in 0.8s var(--ease-out) 0.1s backwards; }
 html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__i > .tone { animation-delay: 0.16s; }
-html.motion main[data-ai-page="sites"] .st-hg .st-h1__k { animation: st-hg-fade 0.01s linear calc(0.36s + var(--i) * 0.055s) backwards; }
-html.motion main[data-ai-page="sites"] .st-hg .st-h1__caret {
-  animation: st-h1-caret calc(var(--n) * 0.055s) steps(var(--n), jump-start) 0.36s forwards, st-h1-caretshow calc(var(--n) * 0.055s + 0.5s) linear 0.3s;
-}
+/* (5 Nov) the word whole, so its kerning holds: it opens from the left a letter's step at a time */
+html.motion main[data-ai-page="sites"] .st-hg .st-h1__code { animation: st-h1-type calc(var(--n) * 0.055s) steps(var(--n), jump-start) 0.36s backwards; }
+@keyframes st-h1-type { from { clip-path: inset(-0.3em 100% -0.3em -0.3em); } to { clip-path: inset(-0.3em -0.3em -0.3em -0.3em); } }
 html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { animation-duration: 0.85s; animation-delay: calc(0.3s + var(--n) * 0.055s); }
 @keyframes st-h1-in { from { opacity: 0; transform: translateY(104%); } 25% { opacity: 1; } }
-@keyframes st-h1-caret { from { transform: translateX(0); } to { transform: translateX(calc(var(--n) * 0.58em)); } }
-@keyframes st-h1-caretshow { from, 88% { opacity: 1; } to { opacity: 0; } }
 
 /* ==========================================================================
    A phone (and a narrow tablet)
@@ -255,47 +250,35 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
 .st-hg .st-hg__corner { display: contents; }
 
 /* ==========================================================================
-   The poster as a sheet (Figma «Website», Frame 10; the owner, 20 Oct 2026): a computer, and any screen at least as wide
-   as tall. The whole first screen is one sheet in the frame's proportions, 1810 × 900 px of the frame (its content box),
-   scaled as a picture is, centred, the room around it left as margin: the composition is the same on every screen, it
-   never spreads apart. --u is one frame px (across, and every size); down it may stretch up to a fifth (--v), so a
-   squarer screen keeps less empty room; --ox / --oy are the sheet's margins inside the words' column.
-   On the sheet (the owner's pick of two, 20 Oct: the grid of the earlier sketch «A», Frame 10's type): «ДИЗАЙН» large on
-   the right (Helvetica Neue Bold Italic 225, tracking −8 %), «И РАЗРАБОТКА» a line under it on the right edge (72),
-   «САЙТОВ.» large bottom left in ember (Helvetica Neue Medium 225), the droplet in the middle between them, in front
-   (turned −7°). Cap heights, frame px: «ДИЗАЙН» 80–240, «И РАЗРАБОТКА» 330–381, «САЙТОВ.» 540–700. Corners: the
-   formats with their pictures and the button under them top left, the prices in three columns along the foot, a cross
-   outside each corner. The H1 still reads «Дизайн і розробка сайтів» (its plain sentence); the four words are its
-   visible parts, each in its own mask. --w-b: «РОЗРОБКА» / «РАЗРАБОТКА» in its em, so «И» sits right before it
+   The poster as a sheet, «Плакат» (the owner's pick of five settings, 5 Nov 2026): a computer, and any screen at least
+   as wide as tall. The whole first screen is one sheet in the frame's proportions, 1810 × 900 units, scaled as a
+   picture is, centred, the room around it left as margin. --u is one unit across (and every size); down it may stretch
+   up to a fifth (--v), so a squarer screen keeps less empty room; --ox / --oy are the sheet's margins inside the words'
+   column. The words in Sofia Sans Extra Condensed 800, capitals: «ДИЗАЙН І РОЗРОБКА» across the top (2.41 em, its
+   baseline at 156), «САЙТІВ.» at the foot in ember (5.3 em, its baseline at 845; its em's baseline at 0.797); the
+   droplet's middle at 860 / 398, in front of both; the prices from 1190 across, 200 down. No formats and no button here
+   (the topbar has «Обговорити», the formats are block 2); the upright poster below keeps both
    ========================================================================== */
 @media (min-width: 761px) and (min-aspect-ratio: 1/1) and (min-height: 501px) {
   main[data-ai-page="sites"] .st-hg {
     /* the first screen under the topbar, less the hero's own top padding and room for the crosses below */
-    --hg-h: calc(100svh - var(--topbar-h) - clamp(1.5rem, 5.2vh, 3.75rem) - 1.5 * var(--hg-pad));
+    --hg-h: calc(100svh - var(--topbar-h) - clamp(2rem, 6.6vh, 4.375rem) - 1.5 * var(--hg-pad));
+    /* (5 Nov: a little more room between the topbar and «ДИЗАЙН І РОЗРОБКА») */
+    padding-top: calc(var(--topbar-h) + clamp(2rem, 6.6vh, 4.375rem));
     --u: min(calc(100cqi / 1810), calc(var(--hg-h) / 900));
     --v: min(calc(var(--hg-h) / 900), calc(var(--u) * 1.2));
     --ox: calc((100cqi - 1810 * var(--u)) / 2);
     --oy: calc((var(--hg-h) - 900 * var(--v)) / 2);
-    --w-b: 5.24;
   }
-  html:lang(ru) main[data-ai-page="sites"] .st-hg { --w-b: 6.05; }
   .st-hg .st-hg__grid { display: block; position: relative; height: var(--hg-h); min-height: 0; }
-  /* the corners */
-  .st-hg .st-hg__corner { display: block; position: absolute; z-index: 3; }
-  .st-hg .st-hg__corner--tl { left: var(--ox); top: var(--oy); width: max(15rem, calc(466 * var(--u))); }
-  .st-hg .st-hg__corner--bl { left: var(--ox); bottom: var(--oy); width: max(38rem, calc(820 * var(--u))); }
-  .st-hg .st-hg__lead { margin-top: 0.875rem; font-size: max(1rem, calc(26 * var(--u))); }
-  /* the button under the formats */
-  .st-hg .st-hg__acts { position: absolute; z-index: 3; left: var(--ox); top: calc(var(--oy) + max(200 * var(--v), 8.5rem)); margin: 0; }
-  /* the prices along the foot: three columns on one line, a dot where each starts */
-  .st-hg .st-hg__k--px { padding-top: 0; border-top: 0; }
-  .st-hg .st-hg__px { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 1.25rem; margin-top: 0.75rem; border-top: 1px solid rgb(246 246 243 / 0.22); }
-  .st-hg .st-hg__pi { position: relative; display: block; padding: 1.1rem 0 0; }
-  .st-hg .st-hg__pi::before { content: ""; position: absolute; left: 0; top: -0.22rem; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--ink); }
-  .st-hg .st-hg__pn { display: block; }
-  .st-hg .st-hg__pt { display: block; margin: 0.35rem 0 0.15rem; font: 500 1rem/1.3 var(--font-sans); color: var(--ink); white-space: nowrap; }
-  .st-hg .st-hg__pp { display: block; margin-left: 0; }
-  main[data-ai-page="sites"] .st-hg .ai-hero__actions { margin: 0; }
+  .st-hg :is(.st-hg__corner--tl, .st-hg__acts) { display: none; }
+  /* the prices on the right, between the two lines: the format in the words' face, «від» and the sum in mono */
+  .st-hg .st-hg__corner--bl { display: block; position: absolute; z-index: 3; left: calc(var(--ox) + 1190 * var(--u)); top: calc(var(--oy) + 200 * var(--v)); width: calc(620 * var(--u)); }
+  .st-hg .st-hg__k--px { font-size: 0.75rem; }
+  .st-hg .st-hg__px { margin-top: 0.75rem; border-top: 1px solid rgb(246 246 243 / 0.3); font-size: clamp(0.9375rem, 1.15vw, 1.125rem); }
+  .st-hg .st-hg__pi { column-gap: 1rem; padding: 0.4375rem 0; border-bottom: 1px solid rgb(246 246 243 / 0.14); }
+  .st-hg .st-hg__pt { font: 700 clamp(1.5rem, 2.2vw, 2rem)/1 "St Hero XC", "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink); }
+  .st-hg__pp b { font-weight: 500; color: var(--ink); }
   .st-hg__mark--tl,
   .st-hg__mark--bl { left: calc(var(--ox) - var(--gutter) * 0.5); }
   .st-hg__mark--tr,
@@ -305,27 +288,30 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-hg__mark--bl,
   .st-hg__mark--br { top: calc(var(--oy) + 900 * var(--v) + var(--hg-pad) * 0.5); }
   .st-hg__mark { z-index: 3; }
-  /* the words: a layer over the sheet, each word placed in frame px */
-  .st-hg .st-hg__title { position: absolute; grid-area: auto; inset: 0; z-index: 1; margin: 0; font-size: calc(100 * var(--u)); line-height: normal; letter-spacing: 0; pointer-events: none; }
-  .st-h1 { display: block; position: absolute; inset: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; text-transform: uppercase; }
-  .st-h1__m { position: absolute; padding: 0 0.22em 0.12em 0.16em; margin: 0 -0.22em -0.12em -0.16em; white-space: nowrap; }
+  /* the words: a layer over the sheet, each word placed in units */
+  .st-hg .st-hg__title { position: absolute; grid-area: auto; inset: 0; z-index: 1; margin: 0; font-size: calc(100 * var(--u)); line-height: 1; letter-spacing: 0; pointer-events: none; }
+  .st-h1 { display: block; position: absolute; inset: 0; font-family: "St Hero XC", "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; }
+  .st-h1__m { position: absolute; padding: 0.2em 0.1em 0.14em; margin: -0.2em -0.1em -0.14em; line-height: 1; white-space: nowrap; }
   .st-h1__a,
   .st-h1__i,
-  .st-h1__b { font-family: inherit; font-style: italic; font-weight: 700; font-variation-settings: normal; color: #fff; }
-  .st-h1__a { right: var(--ox); top: calc(var(--oy) + 22 * var(--v)); font-size: 2.25em; letter-spacing: -0.08em; padding-right: 0.22em; margin-right: -0.22em; }
-  /* the owner, 20 Oct: «ДИЗАЙН» a step lighter than the rest (medium) */
-  .st-hg .st-h1 .st-h1__a { font-family: "St Hero Helvetica Medium", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 500; letter-spacing: -0.07em; }
-  .st-h1__i { right: calc(var(--ox) + (var(--w-b) + 0.3) * 72 * var(--u)); top: calc(var(--oy) + 312 * var(--v)); font-size: 0.72em; letter-spacing: -0.07em; }
-  .st-h1__b { right: var(--ox); top: calc(var(--oy) + 312 * var(--v)); font-size: 0.72em; letter-spacing: -0.07em; }
-  /* (never down on the prices: on a small sheet they keep their size in rem, so the word stays above their room) */
-  .st-h1__s { left: calc(var(--ox) + 230 * var(--u)); top: min(calc(var(--oy) + 483 * var(--v)), calc(var(--oy) + 900 * var(--v) - 10.5rem - 225 * var(--u))); font-size: 2.25em; font-style: normal; font-weight: 500; font-variation-settings: normal; letter-spacing: -0.07em; color: var(--ember); }
+  .st-h1__b,
+  .st-h1__s { font-family: inherit; font-style: normal; font-weight: 800; font-variation-settings: normal; letter-spacing: 0; }
+  .st-h1__a,
+  .st-h1__i,
+  .st-h1__b { top: calc(var(--oy) - 36 * var(--v)); font-size: 2.41em; color: #fff; }
+  .st-h1__a { left: var(--ox); }
+  .st-h1__i { left: calc(var(--ox) + 678 * var(--u)); }
+  .st-h1__b { left: calc(var(--ox) + 819 * var(--u)); }
+  /* «РОЗРОБКА» is shorter than «РАЗРАБОТКА»: the line a little larger, nearer the sheet's width */
+  html:lang(uk) .st-hg :is(.st-h1__a, .st-h1__i, .st-h1__b) { top: calc(var(--oy) - 51 * var(--v)); font-size: 2.6em; }
+  html:lang(uk) .st-hg .st-h1__i { left: calc(var(--ox) + 732 * var(--u)); }
+  html:lang(uk) .st-hg .st-h1__b { left: calc(var(--ox) + 817 * var(--u)); }
+  .st-h1__s { left: calc(var(--ox) - 4 * var(--u)); top: calc(var(--oy) + 845 * var(--v) - 399 * var(--u)); font-size: 5em; letter-spacing: 0; color: var(--ember); }
   .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
   .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
   .st-h1__s .tone::after { content: "."; }
-  .st-h1__caret { display: none; }
-  /* the droplet: in front of the words, where the frame has it, at its size (a 700 px canvas) */
-  /* (21 Oct: a little to the right, 850 → 910) */
-  .st-hg .st-hg__stone { position: absolute; grid-area: auto; left: calc(var(--ox) + 910 * var(--u)); top: calc(var(--oy) + 400 * var(--v)); width: 0; height: 0; margin: 0; z-index: 2; font-size: calc(700 / 9.4 * var(--u)); }
+  /* the droplet: in front of both lines */
+  .st-hg .st-hg__stone { position: absolute; grid-area: auto; left: calc(var(--ox) + 860 * var(--u)); top: calc(var(--oy) + 398 * var(--v)); width: 0; height: 0; margin: 0; z-index: 2; font-size: calc(790 / 9.4 * var(--u)); }
   .st-hg .ai-hero__rock { top: 50%; }
 }
 
@@ -366,7 +352,6 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
   .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
   .st-h1__s .tone::after { content: "."; }
-  .st-h1__caret { display: none; }
   /* the droplet in the middle of the room between the words, in the computer's own pose, a little larger than the room:
      it just overlaps «И РАЗРАБОТКА» above and «САЙТОВ.» below, every word stays readable */
   .st-hg .st-hg__stone { grid-column: 1; grid-row: 1; justify-self: center; align-self: start; width: 0; height: 0; margin: calc(107 * var(--pu) + var(--gap) * 0.58) calc(24 * var(--pu)) 0 0; z-index: 2; font-size: calc(var(--gap) * 0.2); }
@@ -420,7 +405,12 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
 .st-hg__title.is-fx .st-h1 { visibility: hidden; }
 /* the soap bubble (SitesBubble.tsx): a layer over the whole first screen, over its words, its corners and the droplet
    (the pinned first screen is a layer of its own: block 2 still slides over it) */
-.st-hg .st-bubble { position: absolute; left: 0; top: 0; z-index: 4; width: 100%; height: 100vh; height: 100svh; pointer-events: none; }
+/* (5 Nov: the first screen no longer pins, so the bubble rides a rail as tall as the whole hero, its first screen and
+   the sample site, the canvas sticking to the screen's top: it stays till block 2 comes in. The hero clips instead of
+   hiding its overflow: hidden would make it the sticky canvas' scroller) */
+.st-hero.st-hg { overflow: clip; }
+.st-hg .st-bubble-rail { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.st-hg .st-bubble { position: sticky; top: 0; display: block; width: 100%; height: 100vh; height: 100svh; pointer-events: none; }
 /* a computer: the bubble is the pointer while it shows over the first screen (SitesBubble: is-bubble) */
 .st-hg.is-bubble,
 .st-hg.is-bubble * { cursor: none; }

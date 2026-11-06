@@ -41,18 +41,14 @@
   transition: opacity var(--dur-fast);
 }
 .navp__in { position: relative; display: flex; flex-direction: column; height: 100%; transition: opacity 0.3s; }
-.navp__main,
 .navp__foot { display: block; color: inherit; text-decoration: none; }
-.navp__main:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.25rem; border-radius: var(--radius-md); }
 
-/* the page's sections under the name: the formats with their prices, the cases with a chip */
-.navp__subs { margin-top: 0.75rem; }
-.navp__sub { display: block; overflow: hidden; color: var(--ink-soft); text-decoration: none; transition: color var(--dur-fast); }
+/* the page's sections under the name, as plain text (the whole card is the link): the formats with their prices, the
+   cases with a chip */
+.navp__subs { display: block; margin-top: 0.75rem; }
+.navp__sub { display: block; overflow: hidden; color: var(--ink-soft); transition: color var(--dur-fast); }
 .navp__sub > span { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 1.875rem; font-size: var(--fs-small); line-height: 1.25; }
-.navp__sub b { font: 400 var(--fs-label) / 1 var(--font-mono); color: var(--ink-mute); white-space: nowrap; transition: color var(--dur-fast); }
-.navp__sub:is(:hover, :focus-visible) { color: var(--lime); }
-.navp__sub:is(:hover, :focus-visible) b { color: var(--lime); }
-.navp__sub:focus-visible { outline: 2px solid var(--lime); outline-offset: 0.125rem; border-radius: 0.25rem; }
+.navp__sub b { font: 400 var(--fs-label) / 1 var(--font-mono); color: var(--ink-mute); white-space: nowrap; }
 .navp__tag {
   flex: none;
   padding: 0.25rem 0.5rem;

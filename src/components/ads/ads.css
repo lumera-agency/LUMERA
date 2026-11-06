@@ -28,46 +28,83 @@ main[data-ai-page="ads"] .ai-hero__bg .flux-lines-container { position: absolute
 main[data-ai-page="ads"] .ai-hero__bg .flux-lines-container::after { content: ""; position: absolute; inset: auto 0 0; height: 12rem; background: linear-gradient(rgb(0 0 0 / 0), #000); pointer-events: none; }
 main[data-ai-page="ads"] .ai-hero__in { position: relative; z-index: 2; }
 main[data-ai-page="ads"] .ai-hero__title { filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.55)) drop-shadow(0 2px 1.25rem rgba(0, 0, 0, 0.75)); }
-main[data-ai-page="ads"] .ai-hero__title .hl { white-space: nowrap; }
 main[data-ai-page="ads"] .rk-hero { padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5rem)); padding-bottom: clamp(3.5rem, 9vh, 6.5rem); }
 .rk-hero .ai-hero__in { align-items: center; }
+/* side by side (the owner, 5 Nov 2026): the words as tall as the window, the title's top on its top and the button's
+   foot on its foot, the room left above and below the facts */
+@media (min-width: 901px) {
+  .rk-hero .ai-hero__in { align-items: stretch; }
+  .rk-hero .ai-hero__visual { align-self: start; }
+}
 /* wide screens: the first screen fills the screen (the words and the way side by side are shorter than it) */
 @media (min-width: 1101px) { main[data-ai-page="ads"] .rk-hero { display: grid; align-content: center; min-height: min(100svh, 60rem); } }
 .rk-hero .ai-hero__copy { grid-column: 1 / span 6; }
 .rk-hero .ai-hero__visual { grid-column: 7 / -1; justify-items: stretch; }
-.rk-hero .ai-hero__title--auto { max-width: none; font-size: clamp(2.4rem, 3.5vw, 3.5rem); line-height: 1.02; letter-spacing: -0.04em; }
-.rk-hero .ai-hero__lead { max-width: 40ch; color: var(--ink); text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 0 0.5rem rgba(0, 0, 0, 0.85), 0 1px 1.125rem rgba(0, 0, 0, 0.95); }
+/* the words (the owner's setting of 5 Nov 2026): the title white and large, «Реклама / и аналитика» in two medium lines
+   set tight; the lead; the facts as a numbered table whose words hang on a line and whose rules end where «аналитика»
+   ends; the buttons under it. The words' box is a container, so the title is sized to its width. The hang: the second
+   column beside the window (the third from 1440 px), the start of «аналитика» when the words stand alone (below
+   901 px). The rules' length: the title's second line (measured, in the title's em: 5.66 Russian, 5.3 Ukrainian; to
+   measure again if its words or face change) */
+main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --cols: 6; --step: calc((100cqi + var(--col-gap)) / var(--cols)); --hang: var(--step); --title-fs: calc(100cqi / 7.1); --title-w: 5.66; container-type: inline-size; display: flex; flex-direction: column; }
+html[lang="uk"] main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --title-w: 5.3; }
+main[data-ai-page="ads"] .rk-hero .ai-hero__title { max-width: none; margin: 0; font-size: var(--title-fs); line-height: 0.72; letter-spacing: -0.045em; text-wrap: balance; }
+main[data-ai-page="ads"] .rk-hero .ai-hero__title .ai-l:first-child { font-weight: 500; }
+/* white, and «Реклама и аналитика» breaks before «и» (a no-break space binds it to «аналитика» in the messages) */
+main[data-ai-page="ads"] .rk-hero .ai-hero__title .tone .hl { color: inherit; white-space: normal; }
+/* «й аналітика»: the breve rises 0.76 em above its line, so below 0.82 it touches «Р» above (measured) */
+html[lang="uk"] main[data-ai-page="ads"] .rk-hero .ai-hero__title { line-height: 0.82; }
+.rk-hero .ai-hero__lead { max-width: calc(5 * var(--step) - var(--col-gap)); margin-top: 1.75rem; font-size: 1.0625rem; line-height: 1.55; color: var(--ink); }
+/* the facts' padding is the room around them; their margins take what the window's height leaves */
+.rk-hero .ai-hero__actions { order: 2; margin-top: 0; }
 /* the words come in once, from CSS on the first paint (the AI page's rise), the way after them */
 html.motion main[data-ai-page="ads"] .rk-hero .ai-l > .tone { animation: ai-line-in 0.8s var(--ease-out) 0.05s backwards; }
-html.motion main[data-ai-page="ads"] .rk-hero .ai-l + .ai-l > .tone { animation-delay: 0.16s; }
 html.motion main[data-ai-page="ads"] .rk-hero .ai-hero__lead { animation: ai-rise-in 0.65s var(--ease-out) 0.3s backwards; }
 html.motion main[data-ai-page="ads"] .rk-hero .ai-hero__actions { animation: ai-rise-in 0.65s var(--ease-out) 0.4s backwards; }
 html.motion main[data-ai-page="ads"] .rk-hero__facts { animation: ai-rise-in 0.65s var(--ease-out) 0.45s backwards; }
 html.motion main[data-ai-page="ads"] .rk-hero .ai-hero__visual { animation: ai-rise-in 0.9s var(--ease-out) 0.35s backwards; }
-/* while block 2 slides over the pinned first screen, the lines dim with the words (the AI page's scroll-driven dim) */
-@supports (animation-timeline: view()) and (timeline-scope: --a) {
-  @media (prefers-reduced-motion: no-preference) {
-    html.ai-stick main[data-ai-page="ads"] .ai-hero[data-cover] .ai-hero__bg { animation: ai-hero-dim linear both; animation-timeline: --ai-cover; animation-range: entry 0% entry 100%; }
-  }
+
+/* the confirmed facts: a table, a row each between hairlines, its number in the hang */
+/* main[data-ai-page] so the margin outweighs main.ai ol, which zeroes every list's */
+main[data-ai-page="ads"] .rk-hero__facts { order: 1; display: grid; width: calc(var(--title-w) * var(--title-fs)); max-width: 100%; margin: auto 0; padding: 1.25rem 0; list-style: none; counter-reset: fact; font: 400 1rem/1.4 var(--font-sans); color: var(--ink); text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.9); }
+.rk-hero__f { display: grid; grid-template-columns: var(--hang) minmax(0, 1fr); align-items: baseline; padding-block: 0.5625rem; border-top: 1px solid rgb(246 246 243 / 0.22); counter-increment: fact; }
+.rk-hero__f:last-child { border-bottom: 1px solid rgb(246 246 243 / 0.22); }
+.rk-hero__f::before { content: counter(fact); font: 400 0.75rem/1 var(--font-mono); letter-spacing: 0.06em; }
+.rk-hero__facts b { font-weight: 500; }
+
+/* the first screen's ground (AdsFibers.tsx; the owner's spec, 5 Nov 2026): near black, a big soft green haze round
+   the middle of the stream, the hot glow at its origin (moved with it), and a soft dark behind the words so the stream
+   passing behind them is dimmed. The black itself thinned with three faint glows in the stream's colours, aurora top
+   left, lime down the left, violet bottom right (the owner, 5 Nov 2026: not strong); each fades out before the foot,
+   so the next block meets plain black */
+main[data-ai-page="ads"] .rk-hero .ai-hero__bg {
+  background:
+    radial-gradient(55% 40% at 10% 14%, rgb(90 242 217 / 0.09), transparent 70%),
+    radial-gradient(45% 35% at 4% 58%, rgb(160 210 60 / 0.065), transparent 70%),
+    radial-gradient(50% 38% at 94% 66%, rgb(123 92 255 / 0.09), transparent 70%),
+    #040504;
 }
+.rk-fib { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.rk-fib::before { content: ""; position: absolute; inset: 0; background: radial-gradient(46% 50% at 62% 56%, rgba(120, 170, 40, 0.12), rgba(120, 170, 40, 0.04) 55%, transparent 100%); }
+.rk-fib__gl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.rk-fib__origin { position: absolute; left: 0; top: 0; width: 180px; height: 180px; margin: -90px 0 0 -90px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.7), rgba(214, 245, 120, 0.42) 28%, rgba(198, 240, 60, 0.14) 58%, transparent 100%); opacity: 0; mix-blend-mode: screen; will-change: transform, opacity; }
+main[data-ai-page="ads"] .rk-hero .ai-hero__copy { position: relative; }
+main[data-ai-page="ads"] .rk-hero .ai-hero__copy::before { content: ""; position: absolute; inset: -22% -16% -22% -14%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.32) 55%, transparent 100%); pointer-events: none; }
+main[data-ai-page="ads"] .rk-hero :is(.ai-hero__title, .ai-hero__lead) { text-shadow: 0 0 1.25rem rgb(4 5 4 / 0.7); }
 
-/* one line of confirmed facts under the button (mono, quiet) */
-.rk-hero__facts { max-width: 46ch; margin: 1.25rem 0 0; font: 400 0.8125rem/1.5 var(--font-mono); letter-spacing: 0.01em; color: var(--ink-soft); text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.9); }
-.rk-hero__facts b { font-weight: 500; color: var(--ink); }
-.rk-hero__f { white-space: nowrap; }
-
-/* the way of a request: one dark window, the networks on top, the lines, the site, the week's requests */
-.rk-fl { display: grid; justify-items: end; gap: 0.375rem; width: min(36rem, 100%); justify-self: end; }
-.rk-fl__win { --ln: rgba(246, 246, 243, 0.2); width: 100%; padding: 0.875rem 1rem 1rem; border-radius: 1.25rem; text-align: left; background: rgba(5, 5, 5, 0.94); box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.75), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.95); }
+/* the way of a request: one window of frosted glass (the owner's reference, 5 Nov: the lines pass behind it, blurred),
+   the networks on top, the lines, the site, the week's requests */
+.rk-fl { display: grid; justify-items: end; gap: 0.375rem; width: min(38rem, 100%); justify-self: end; }
+.rk-fl__win { --ln: rgba(246, 246, 243, 0.2); width: 100%; padding: 0.875rem 1rem 1rem; border-radius: 1.5rem; text-align: left; background: linear-gradient(160deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.035) 46%, rgb(255 255 255 / 0.06)), rgba(14, 16, 14, 0.72); -webkit-backdrop-filter: blur(28px) saturate(1.15); backdrop-filter: blur(28px) saturate(1.15); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.9); }
 .rk-fl__top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0 0 0.75rem; font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
 main.ai .rk-fl__src { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
 .rk-fl__src li { padding: 0 0.25rem; }
-.rk-fl__chip { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.5rem; padding: 0.625rem 0.75rem; border-radius: 0.875rem; background: #141414; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1); }
+.rk-fl__chip { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.5rem; padding: 0.625rem 0.75rem; border-radius: 0.875rem; background: rgb(255 255 255 / 0.05); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1); }
 .rk-fl__ico { width: 1.375rem; height: 1.375rem; fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .rk-fl__name { display: grid; min-width: 0; line-height: 1.2; }
 .rk-fl__name b { font-size: 0.875rem; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rk-fl__name small { font: 400 0.6875rem/1.3 var(--font-mono); color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rk-fl__n { display: grid; place-items: center; min-width: 1.75rem; height: 1.75rem; padding: 0 0.375rem; border-radius: 99px; font: 500 0.875rem/1 var(--font-mono); color: var(--on-accent, #111); background: var(--ember); }
+.rk-fl__n { display: grid; place-items: center; min-width: 1.75rem; height: 1.75rem; padding: 0 0.375rem; border-radius: 99px; font: 500 0.875rem/1 var(--font-mono); color: var(--on-ink); background: var(--lime); }
 .rk-fl__n .rk-part__n { margin: 0; color: inherit; }
 /* the lines: down from each network, across, and down into the site (drawn as thin backgrounds at the chips' middles) */
 .rk-fl__bus { position: relative; height: 2.5rem; background: linear-gradient(var(--ln), var(--ln)) calc(100% / 6) 0 / 1px 50% no-repeat, linear-gradient(var(--ln), var(--ln)) 50% 0 / 1px 100% no-repeat, linear-gradient(var(--ln), var(--ln)) calc(500% / 6) 0 / 1px 50% no-repeat, linear-gradient(var(--ln), var(--ln)) 50% 50% / calc(200% / 3) 1px no-repeat; }
@@ -77,11 +114,11 @@ main.ai .rk-fl__src { display: grid; grid-template-columns: repeat(3, minmax(0, 
 .rk-fl__run b { position: absolute; top: 0; left: 50%; width: 0.5rem; height: 0.5rem; margin: -0.25rem 0 0 -0.25rem; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0.75rem rgba(246, 246, 243, 0.7), 0 0 0 0.1875rem rgba(246, 246, 243, 0.16); opacity: 0; }
 .rk-fl__run[data-i="0"] b { left: calc(100% / 6); }
 .rk-fl__run[data-i="2"] b { left: calc(500% / 6); }
-.rk-fl__hub { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: max-content; max-width: 100%; margin: 0 auto; padding: 0.5rem 0.875rem 0.5rem 0.625rem; border-radius: 99px; font-size: 0.875rem; color: var(--ink); background: #141414; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
+.rk-fl__hub { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: max-content; max-width: 100%; margin: 0 auto; padding: 0.5rem 0.875rem 0.5rem 0.625rem; border-radius: 99px; font-size: 0.875rem; color: var(--ink); background: rgb(255 255 255 / 0.06); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14); }
 .rk-fl__hub svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .rk-fl__hub b { font-weight: 500; }
 .rk-fl__hub small { font: 400 0.6875rem/1 var(--font-mono); color: var(--ink-mute); }
-.rk-fl__box { border-radius: 1rem; background: #0e0e0e; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08); }
+.rk-fl__box { border-radius: 1rem; background: rgb(0 0 0 / 0.3); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08); }
 .rk-fl__k { margin: 0; padding: 0.75rem 1.125rem 0.375rem; font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
 .rk-fl .ai-replay { margin-right: -0.875rem; }
 
@@ -98,7 +135,8 @@ main.ai .rk-fl__src { display: grid; grid-template-columns: repeat(3, minmax(0, 
 .rk-inbox__src { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.3125rem 0.75rem 0.3125rem 0.375rem; border-radius: 62.4375rem; font: 400 0.75rem/1.2 var(--font-mono); white-space: nowrap; color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
 .rk-inbox__tick { display: grid; place-items: center; width: 1.125rem; height: 1.125rem; border-radius: 50%; font-size: 0.625rem; font-weight: 600; color: var(--on-accent); background: var(--ink); }
 .rk-part__n { display: inline-block; height: 1.2em; margin-left: -0.125rem; overflow: hidden; font-variant-numeric: tabular-nums; color: var(--ink); }
-.rk-part__strip { display: block; transform: translateY(calc(var(--n) * -100% / (var(--n) + 1))); }
+/* the strip holds 0…n; it shows --shown, n unless a phone shows fewer of the rows */
+.rk-part__strip { display: block; transform: translateY(calc(var(--shown, var(--n)) * -100% / (var(--n) + 1))); }
 .rk-part__strip > span { display: block; height: 1.2em; line-height: 1.2em; }
 
 /* ==========================================================================
@@ -516,16 +554,11 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 .rk-track.is-pre :is(.rk-sp__page b, .rk-sp__bar b) { transform: scaleX(0); }
 .rk-track.is-pre :is(.rk-sp__body b, .rk-sp__cur) { opacity: 0; }
 .rk-track.is-pre .rk-sp__pair > * { opacity: 0.4; }
-.rk-kase.is-pre .rk-kase__m { opacity: 0; }
-.rk-kase.is-pre .rk-count__strip { transform: none; }
-.rk-kase.is-pre .rk-kase__seg i.is-on { transform: scaleX(0); }
-.rk-kase.is-pre .rk-kase__shot[open] :is(.rk-case__win, .rk-case__ring) { opacity: 0; }
 .rk-live.is-pre { opacity: 0; }
 .rk-path.is-pre .rk-path__flow { opacity: 0; }
 /* a scene waiting or playing keeps its moving parts on their own layers (gone at rest) */
 .rk-fl.is-warm :is(.rk-inbox__row, .rk-inbox__src, .rk-part__strip, .rk-fl__run, .rk-fl__run b, .rk-fl__hub, .rk-fl__n),
 .rk-track.is-warm :is(.rk-sp__wave b, .rk-sp__chips b, .rk-sp__form b, .rk-sp__ok, .rk-sp__knob, .rk-sp__off, .rk-sp--rep b, .rk-sp__page b, .rk-sp__bar b, .rk-sp__body b, .rk-sp__cur, .rk-sp__pair > *),
-.rk-kase.is-warm :is(.rk-kase__m, .rk-count__strip, .rk-kase__seg i, .rk-case__win, .rk-case__ring),
 .rk-serp.is-warm :is(.rk-serp__ad, .rk-toast, .rk-type__caret),
 .rk-serp.is-warm .rk-serp__org,
 .rk-feed.is-warm :is(.rk-crowd__dot, .rk-crowd__dot b, .rk-post, .rk-toast, .rk-aud__chips li),
@@ -540,8 +573,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 @media (max-width: 1439px) {
   /* the four setups two by two (four across only where each card keeps its button whole) */
   main.ai .rk-prices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 1279px) {
 }
 @media (max-width: 1100px) {
   /* «ще 2» only where the setups stand side by side: a stacked card lists every item */
@@ -578,17 +609,23 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .rk-path__sk, .rk-path__fh, .rk-path__cap p span { display: none; }
   .rk-path { padding: 0.875rem 0.875rem 1.125rem; border-radius: 1.125rem; }
   /* the first screen, all of it in one phone screen (the owner, 20 Oct: the way ran under the fold and block 2 slid
-     over it): the title, two lines of lead, the button across, one line of facts, the way of a request. A 4 px rhythm:
-     tight inside a group (12), generous between groups (20–24). The prices are a scroll or the menu away. */
-  main[data-ai-page="ads"] .rk-hero { display: grid; align-content: start; min-height: 100svh; padding-top: calc(var(--topbar-h) + 1.25rem); padding-bottom: 1rem; }
-  main[data-ai-page="ads"] .rk-hero .ai-hero__title--auto { font-size: min(clamp(2.1rem, 9.6vw, 2.75rem), calc((100vw - 2 * var(--gutter)) / 10.2)); }
-  main[data-ai-page="ads"] .rk-hero .ai-hero__lead { max-width: 34ch; margin-top: 0.75rem; font-size: 0.9375rem; line-height: 1.5; color: var(--ink-soft); }
-  main[data-ai-page="ads"] .rk-hero .ai-hero__actions { margin-top: 1.25rem; }
+     over it). The owner, 5 Nov 2026: the title, the lead in the facts' table's place (larger, as wide as the title),
+     the way of a request, then the button across at the foot of the screen. The words keep a set rhythm; the height
+     left over goes in three, above the title, above the window and above the button, so no gap grows large. The
+     words' box steps aside (display: contents) so the button can come after the window, and the row becomes the
+     container the title is sized by. */
+  main[data-ai-page="ads"] .rk-hero { display: grid; align-content: stretch; min-height: 100svh; padding-top: calc(var(--topbar-h) + 1.25rem); padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__in { container-type: inline-size; display: flex; flex-direction: column; align-items: stretch; }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__copy { display: contents; }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__title { margin-top: auto; }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__lead { max-width: calc(var(--title-w) * var(--title-fs)); margin-top: 1rem; font-size: 1.125rem; line-height: 1.45; text-wrap: balance; }
+  main[data-ai-page="ads"] .rk-hero__facts { display: none; }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__visual { order: 2; margin-top: auto; padding-top: 1.5rem; }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__actions { order: 3; margin-top: auto; padding-top: 1rem; }
   main[data-ai-page="ads"] .rk-hero .ai-hero__actions .btn--primary { width: 100%; justify-content: space-between; }
   main[data-ai-page="ads"] .rk-hero .ai-down { display: none; }
-  .rk-hero__facts { margin-top: 0.75rem; font: 400 0.8125rem/1.4 var(--font-sans); letter-spacing: 0; color: var(--ink-soft); }
-  main[data-ai-page="ads"] .rk-hero .ai-hero__visual { margin-top: 1.25rem; }
-  .rk-fl__win { padding: 0.625rem 0.5rem 0.5rem; border-radius: 1rem; }
+  /* no drop shadow: the button sits right under the window and the shadow darkened its top */
+  .rk-fl__win { padding: 0.625rem 0.5rem 0.5rem; border-radius: 1rem; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
   .rk-fl__top { margin-bottom: 0.5rem; padding: 0 0.375rem; }
   .rk-fl__src li { padding: 0 0.1875rem; }
   .rk-fl__chip { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0.25rem 0.375rem; padding: 0.4375rem 0.4375rem 0.5rem 0.5625rem; border-radius: 0.75rem; }
@@ -603,8 +640,9 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .rk-fl__hub svg { width: 1.125rem; height: 1.125rem; }
   .rk-fl__box { border-radius: 0.75rem; }
   .rk-fl__k { padding: 0.5rem 0.75rem 0.125rem; }
-  /* the latest three requests, one line each */
-  .rk-fl .rk-inbox__row:nth-child(4) { display: none; }
+  /* the latest three requests, one line each, and the counts above only theirs */
+  .rk-fl .rk-inbox__row[data-wide] { display: none; }
+  .rk-fl .rk-part__n { --shown: var(--n-phone); }
   .rk-fl .rk-inbox__row { grid-template-columns: minmax(0, 1fr) auto; min-height: 2.5rem; padding: 0.3125rem 0.625rem 0.3125rem 0.75rem; }
   .rk-fl .rk-inbox__ava { display: none; }
   .rk-fl .rk-inbox__who time { display: none; }
@@ -673,67 +711,130 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .rk-aud__chips li { font-size: 0.625rem; }
 }
 
-/* ==========================================================================
-   4 · Кейс (ivory): one card with the numbers that matter (the owner's lighter pass, 20 Oct): the price of a request
-   large, requests, conversion, spend; what worked in one line; the account's screenshot beside them (folded on phones)
-   ========================================================================== */
-/* «before → after»: the old number small and struck through above the new one */
-.rk-kase__ba { display: grid; justify-items: start; gap: 0.125rem; }
-.rk-kase__was { font: 400 0.875rem/1.2 var(--font-mono); letter-spacing: 0; color: var(--ink-dark-mute); text-decoration-thickness: 1px; }
-.rk-kase-panel[hidden] { display: none; }
-.rk-kase { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 1.25rem clamp(1.5rem, 3vw, 3rem); align-items: start; color: var(--ink-dark); }
-.rk-kase__main { display: grid; gap: 0.875rem; min-width: 0; }
-.rk-kase__shot { grid-column: 2; grid-row: 1 / span 2; min-width: 0; }
-.rk-kase__end { display: grid; justify-items: start; gap: 1rem; grid-column: 1; }
-.rk-kase__who { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; font-size: var(--fs-body-s); color: var(--ink-dark-soft); }
-.rk-kase__chip { padding: 0.35rem 0.65rem; border-radius: 99px; font: 500 0.6875rem/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ivory); background: var(--ink-dark); }
-.rk-kase__per { margin: 0; font: 400 0.75rem/1.4 var(--font-mono); color: var(--ink-dark-mute); }
-.rk-kase__stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.625rem; margin: 0.25rem 0 0; }
-.rk-kase__m { display: grid; align-content: start; gap: 0.3rem; min-width: 0; padding: 0.875rem 1rem 1rem; border-radius: 0.875rem; background: #fff; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1); }
-.rk-kase__m--cpl { grid-column: 1 / -1; padding: 1.125rem 1.25rem 1.25rem; color: var(--ivory); background: var(--ink-dark); box-shadow: none; }
-.rk-kase__m--cr { grid-column: 1 / -1; }
-.rk-kase__k { font: 400 var(--fs-label)/1.3 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
-.rk-kase__v { margin: 0; font-size: clamp(1.625rem, 2.4vw, 2.125rem); font-weight: 300; line-height: 1.05; letter-spacing: -0.03em; white-space: nowrap; }
-.rk-kase__m--cpl .rk-kase__v { font-size: clamp(2.75rem, 5vw, 3.75rem); }
-.rk-kase__s { margin: 0; font: 400 0.75rem/1.4 var(--font-mono); color: var(--ink-dark-mute); }
-.rk-kase__m--cpl :is(.rk-kase__k, .rk-kase__s) { color: rgba(246, 246, 243, 0.62); }
-.rk-kase__seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.25rem; margin-top: 0.5rem; }
-.rk-kase__seg i { height: 0.375rem; border-radius: 99px; background: rgba(15, 14, 13, 0.1); }
-.rk-kase__seg i.is-on { background: var(--ember-deep); transform-origin: 0 50%; }
-.rk-kase__how { margin: 0.25rem 0 0; font-size: var(--fs-body-s); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
-.rk-kase__honest { margin: 0; padding: 1rem 0 0; border-top: 1px solid var(--line-dark); font-size: var(--fs-body-s); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
-.rk-kase :is(.rk-kase__how, .rk-kase__honest) b { font-weight: 500; color: var(--ink-dark); }
-/* wide: the screenshot stands open beside the numbers, no toggle */
-.rk-kase__sum { display: none; }
-.rk-kase__shot .rk-case__cap { margin-top: 0.625rem; }
+/* the rolled numbers' signs and spaces stand still (AdsAnalytics) */
 .rk-count__c { display: inline-block; white-space: pre; }
-/* the account's window */
-.rk-case__win { width: 100%; min-width: 0; border-radius: 1rem; overflow: hidden; background: #0b0b0b; box-shadow: 0 2rem 3rem -2rem rgba(0, 0, 0, 0.45); }
-.rk-case__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.625rem 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.08); }
-.rk-case__bar > i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(246, 246, 243, 0.18); }
-.rk-case__host { margin-left: 0.25rem; padding: 0.25rem 0.6rem; border-radius: 0.375rem; font: 400 0.75rem/1 var(--font-mono); color: var(--ink-soft); background: rgba(246, 246, 243, 0.06); }
-.rk-case__tabs { display: inline-flex; gap: 0.25rem; margin-left: auto; }
-.rk-case__tab { min-height: 2.25rem; padding: 0 0.75rem; border: 0; border-radius: 99px; font: 400 0.75rem/1 var(--font-mono); color: var(--ink-soft); background: transparent; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.18); cursor: pointer; transition: background-color 0.2s, color 0.2s; }
-.rk-case__tab[aria-selected="true"] { color: #111; background: var(--ink); box-shadow: none; }
-.rk-case__tab:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
-.rk-case__ok { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.6rem; border-radius: 99px; font: 400 0.6875rem/1 var(--font-mono); color: var(--ink); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.35); }
-.rk-case__ok b { width: 0.875rem; height: 0.875rem; border-radius: 50%; background: var(--ink) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23111' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 0.625rem no-repeat; }
-.rk-case__pic { position: relative; background: #fff; }
-.rk-case__pic[hidden] { display: none; }
-.rk-case__pic:focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
-.rk-case__in { position: relative; }
-.rk-case__in img { display: block; width: 100%; height: auto; }
-.rk-case__ring { position: absolute; border-radius: 0.375rem; box-shadow: 0 0 0 2px var(--ink-dark), 0 0 0 5px rgba(255, 255, 255, 0.85); pointer-events: none; }
-.rk-case__swipe { display: none; }
-.rk-case__cap { font: 400 0.75rem/1.5 var(--font-mono); color: var(--ink-dark-mute); text-wrap: pretty; }
+
+/* ==========================================================================
+   2 · Кейси (ivory; the owner's setting of 6 Nov 2026, AdsCases.tsx): on a computer the block is one screen under the
+   bar. Its heading is the first row; under it the left column holds the cases as three small cards, the case's three
+   numbers, what was done and the button at its foot, the right one only the account's window, as tall as the column.
+   The two columns share their top and their foot
+   ========================================================================== */
+main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot: clamp(1rem, 3.2vh, 2rem); }
+.rk-cs { display: grid; grid-template-columns: minmax(19rem, 4fr) minmax(0, 8fr); grid-template-rows: auto minmax(0, 1fr); column-gap: clamp(1.25rem, 2.4vw, 2.5rem); row-gap: clamp(1rem, 2.4vh, 1.75rem); color: var(--ink-dark); }
+@media (min-width: 901px) {
+  /* (#case.rk-case: the page's own bottom space for #case is set further down and must give way here) */
+  main[data-ai-page="ads"] #case.rk-case { padding-top: var(--cs-top); padding-bottom: var(--cs-foot); }
+  .rk-cs { height: calc(100svh - var(--topbar-h) - var(--cs-top) - var(--cs-foot)); min-height: 34rem; max-height: 60rem; }
+}
+.rk-cs :is(p, dl, dd, figure) { margin: 0; }
+/* the heading across: the index, the title on one line, the intro on the right, a rule under them */
+.rk-cs-head { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: clamp(0.375rem, 1vh, 0.625rem) 2rem; padding-bottom: clamp(0.75rem, 1.8vh, 1.125rem); border-bottom: 1px solid var(--line-dark); }
+.rk-cs-head__meta { grid-column: 1 / -1; display: flex; gap: 0.625rem; font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+.rk-cs-head__title { margin: 0; font-size: clamp(1.875rem, min(3.4vw, 5.4vh), 3.5rem); font-weight: 500; line-height: 1; letter-spacing: -0.04em; white-space: nowrap; color: var(--ink-dark); }
+.rk-cs-head__title .hl { font-style: normal; color: var(--ember-deep); }
+.rk-cs-head__intro { max-width: 34ch; padding-bottom: 0.2em; font-size: 0.9375rem; line-height: 1.45; text-align: right; color: var(--ink-dark-soft); }
+/* the left column: the cards close together, a wider step to the numbers, the button at the foot; the height a short
+   case leaves goes evenly between the three (the owner, 6 Nov: it all gathered over the button) */
+.rk-cs__left { display: flex; flex-direction: column; justify-content: space-between; gap: clamp(0.875rem, 2.2vh, 1.75rem); min-width: 0; min-height: 0; }
+.rk-cs__left > * { flex-shrink: 0; }
+/* a number, its «≈» and its unit smaller; «before → after» with the old one struck through */
+.rk-cs-num { display: inline-flex; align-items: baseline; gap: 0.375rem; }
+.rk-cs-num__was { font: 400 0.75rem/1.2 var(--font-mono); letter-spacing: 0; color: var(--ink-dark-mute); text-decoration-thickness: 1px; }
+.rk-cs-num__now { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rk-cs-num__approx { margin-right: 0.12em; font-weight: 200; opacity: 0.55; }
+.rk-cs-num__unit { margin-left: 0.18em; font-size: 0.42em; font-weight: 400; letter-spacing: 0; }
+/* the cards: the name and «Кейс 2» on the left, the price large on the right with what it is under it; the chosen one
+   dark with its price in ember */
+.rk-cs__cards { display: grid; gap: 0.5rem; }
+.rk-cs-card { display: grid; grid-template-columns: minmax(0, 1fr) auto 1.25rem; grid-template-rows: auto auto; align-items: center; column-gap: 0.875rem; padding: clamp(0.5rem, 1.2vh, 0.875rem) 1rem; border: 0; border-radius: 1rem; text-align: left; color: var(--ink-dark); background: #fff; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1); cursor: pointer; transition: box-shadow 0.25s, background-color 0.25s, color 0.25s, transform 0.25s var(--ease-out); }
+.rk-cs-card:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transform: translateX(2px); }
+.rk-cs-card:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; }
+.rk-cs-card__n { grid-row: 1 / span 2; display: grid; gap: 0.25rem; font-size: 1rem; font-weight: 500; }
+.rk-cs-card__n small { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: 0.04em; color: var(--ink-dark-mute); }
+.rk-cs-card__v { justify-self: end; font-size: clamp(1.625rem, min(2.6vw, 4.2vh), 2.5rem); font-weight: 500; line-height: 1; letter-spacing: -0.04em; }
+.rk-cs-card__k { grid-column: 2; justify-self: end; margin-top: 0.125rem; font-size: 0.75rem; color: var(--ink-dark-mute); }
+.rk-cs-card__go { grid-column: 3; grid-row: 1 / span 2; }
+.rk-cs-card__go svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s var(--ease-out); }
+.rk-cs-card:hover .rk-cs-card__go svg { transform: translateX(3px); }
+.rk-cs-card[aria-selected="true"] { color: var(--ivory); background: var(--ink-dark); box-shadow: 0 1rem 2rem -1.25rem rgba(15, 14, 13, 0.6); transform: none; cursor: default; }
+.rk-cs-card[aria-selected="true"] .rk-cs-card__v { color: var(--ember); }
+.rk-cs-card[aria-selected="true"] :is(.rk-cs-card__n small, .rk-cs-card__k) { color: rgba(246, 246, 243, 0.6); }
+.rk-cs-card[aria-selected="true"] .rk-cs-card__go { visibility: hidden; }
+/* the case's three numbers (the owner, 6 Nov: the client must see them): each with its lime mark, the number running
+   up from zero with a lime highlighter swept under it as the case comes */
+.rk-cs-facts { display: flex; flex-direction: column; gap: clamp(0.625rem, 1.6vh, 1rem); animation: rk-cs-in 0.4s var(--ease-out) both; }
+@keyframes rk-cs-in { from { opacity: 0; transform: translateY(0.5rem); } }
+.rk-cs-dl { display: grid; border-top: 1px solid var(--line-dark); }
+.rk-cs-dl > div { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: clamp(0.3rem, 1vh, 0.75rem) 0; border-bottom: 1px solid var(--line-dark); }
+.rk-cs-dl dt { display: flex; align-items: center; gap: 0.625rem; font-size: clamp(0.875rem, 1.9vh, 1rem); font-weight: 500; color: var(--ink-dark); }
+.rk-cs-dl__ico { display: grid; place-items: center; flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--lime); }
+.rk-cs-dl__ico svg { width: 1rem; height: 1rem; fill: none; stroke: var(--ink-dark); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.rk-cs-dl dd { font-size: clamp(1.375rem, 3.1vh, 2.25rem); font-weight: 500; line-height: 1.1; letter-spacing: -0.03em; text-align: right; }
+.rk-cs-dl .rk-cs-num__now { padding: 0 0.2em; background: linear-gradient(100deg, transparent 0.25em, rgb(218 255 2 / 0.9) 0.3em, rgb(218 255 2 / 0.9) calc(100% - 0.3em), transparent calc(100% - 0.25em)) 0 88% / 0% 58% no-repeat; animation: rk-cs-mark 0.7s var(--ease-out) 0.35s forwards; }
+@keyframes rk-cs-mark { to { background-size: 100% 58%; } }
+.rk-cs-how { font-size: clamp(0.875rem, 1.8vh, 1.0625rem); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+.rk-cs-how b { font-weight: 500; color: var(--ink-dark); }
+.rk-cs-end { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; }
+/* the account's window, as tall as the column; the screenshot as large as its body allows (a size container: the
+   picture is the body's width or, if that is too tall, its height), from the top left as the account shows it */
+.rk-cs-win { display: flex; flex-direction: column; min-width: 0; min-height: 0; border-radius: 1rem; overflow: hidden; background: #fff; box-shadow: 0 2rem 3.5rem -2.25rem rgba(15, 14, 13, 0.5), inset 0 0 0 1px rgba(15, 14, 13, 0.08); animation: rk-cs-in 0.4s var(--ease-out) both; }
+.rk-cs-win__bar { display: flex; align-items: center; gap: 0.5rem; min-height: 3rem; padding: 0.5rem 0.625rem 0.5rem 0.875rem; background: #0b0b0b; }
+.rk-cs-win__bar > i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(246, 246, 243, 0.18); }
+.rk-cs-win__host { margin-left: 0.25rem; padding: 0.3rem 0.6rem; border-radius: 0.375rem; font: 400 0.75rem/1 var(--font-mono); color: var(--ink-soft); background: rgba(246, 246, 243, 0.06); }
+.rk-cs-win__tabs { display: inline-flex; gap: 0.25rem; margin-left: auto; }
+.rk-cs-win__tabs button { min-height: 2rem; padding: 0 0.75rem; border: 0; border-radius: 99px; font: 400 0.75rem/1 var(--font-mono); color: var(--ink-soft); background: rgba(246, 246, 243, 0.08); cursor: pointer; transition: background-color 0.2s, color 0.2s; }
+.rk-cs-win__tabs button[aria-selected="true"] { color: #111; background: var(--ink); }
+.rk-cs-win__tabs button:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+/* the client's site: a lime link in the bar (the owner, 6 Nov: plainly one to follow), its arrow moving on hover */
+.rk-cs-win__site { display: inline-flex; align-items: center; gap: 0.375rem; min-height: 2rem; margin-left: 0.5rem; padding: 0 0.625rem 0 0.875rem; border-radius: 99px; font-size: 0.8125rem; line-height: 1; white-space: nowrap; text-decoration: none; color: var(--ink-dark); background: var(--lime); transition: box-shadow 0.25s; }
+.rk-cs-win__host + .rk-cs-win__site { margin-left: auto; }
+.rk-cs-win__site span { opacity: 0.7; }
+.rk-cs-win__site b { font-weight: 600; }
+.rk-cs-win__site svg { width: 0.9375rem; height: 0.9375rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.25s var(--ease-out); }
+.rk-cs-win__site:hover { box-shadow: 0 0 1.25rem rgb(218 255 2 / 0.45); }
+.rk-cs-win__site:hover svg { transform: translate(2px, -2px); }
+.rk-cs-win__site:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.rk-cs-win__body { flex: 1; display: flex; align-items: flex-start; min-height: 0; background: #fff; container-type: size; }
+.rk-cs-win__in { position: relative; display: block; width: min(100cqw, 100cqh * var(--ar)); aspect-ratio: var(--ar); }
+.rk-cs-win__in img { display: block; width: 100%; height: 100%; }
+/* the key cells ringed on the screenshot */
+.rk-cs-ring { position: absolute; border-radius: 0.375rem; box-shadow: 0 0 0 2px var(--ink-dark), 0 0 0 5px rgba(255, 255, 255, 0.85); pointer-events: none; }
+.rk-cs-win__foot { padding: 0.75rem 1rem; border-top: 1px solid rgba(15, 14, 13, 0.08); font-size: 0.75rem; line-height: 1.45; color: var(--ink-dark-mute); text-wrap: pretty; }
+.rk-cs-win__foot b { font-weight: 500; color: var(--ink-dark); }
+.rk-cs-win__foot em { font-style: normal; font-weight: 500; color: var(--ember-deep); }
+/* low screens (800 px): the longest case's words close up a little so its button still stands level with the window */
+@media (min-width: 901px) and (max-height: 820px) {
+  .rk-cs { row-gap: 0.875rem; }
+  .rk-cs-head__title { font-size: 1.875rem; }
+  .rk-cs-how { font-size: 0.875rem; line-height: 1.42; }
+  .rk-cs-dl > div { padding-block: 0.25rem; }
+  .rk-cs-dl__ico { width: 1.5rem; height: 1.5rem; }
+  .rk-cs-dl dd { font-size: 1.25rem; }
+}
+/* narrower than 901 px (the phones' own setting comes later): one column, the heading, the cards, the numbers, the
+   button, then the window, its screenshot scrolled sideways at a readable size */
+@media (max-width: 900px) {
+  .rk-cs { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+  .rk-cs-head { grid-template-columns: minmax(0, 1fr); }
+  .rk-cs-head__title { white-space: normal; }
+  .rk-cs-head__intro { text-align: left; }
+  .rk-cs-win__bar { flex-wrap: wrap; }
+  .rk-cs-win__body { container-type: normal; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .rk-cs-win__in { width: max(100%, 40rem); }
+  .rk-cs-end .btn { width: 100%; justify-content: space-between; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rk-cs-facts, .rk-cs-win { animation: none; }
+  .rk-cs-dl .rk-cs-num__now { animation-duration: 0.01s; animation-delay: 0s; }
+}
 
 /* the first screen from 901 to 1100 px: still side by side, the words in five columns, the way of a request in seven */
 @media (min-width: 901px) and (max-width: 1100px) {
   main[data-ai-page="ads"] .rk-hero { display: grid; align-content: center; min-height: min(100svh, 60rem); }
   .rk-hero .ai-hero__copy { grid-column: 1 / span 5; }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --cols: 5; --title-fs: calc(100cqi / 6.2); }
   .rk-hero .ai-hero__visual { grid-column: 6 / -1; }
-  .rk-hero .ai-hero__title--auto { font-size: 2.25rem; }
-  .rk-hero .ai-hero__lead { max-width: 34ch; }
   /* the networks in two rows (the mark and the count on top, the name under), so «Instagram» never cuts at 960 px */
   .rk-fl__chip { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0.375rem; }
   .rk-fl__n { grid-column: 2; grid-row: 1; }
@@ -742,15 +843,32 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 /* below 901 px: the words, then the way of a request under them */
 @media (max-width: 900px) {
   .rk-hero .ai-hero__copy, .rk-hero .ai-hero__visual { grid-column: 1 / -1; }
+  /* the title as wide as the words (5.66 em is «и аналитика»), up to 5.5 rem; the hang where «аналитика» starts (0.786 em
+     in, measured; «й » is as wide) */
+  main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --title-fs: min(100cqi / 6, 5.5rem); --hang: calc(var(--title-fs) * 0.786); }
+  .rk-hero .ai-hero__lead { max-width: 36ch; }
   .rk-hero .ai-hero__visual { margin-top: 2.5rem; }
-  .rk-fl { justify-self: start; width: min(38rem, 100%); }
+  .rk-fl { justify-self: start; }
+}
+/* short phones (an SE, or a phone with the browser's bars out): the gaps close up and the title follows the height,
+   so the button still stands on the screen */
+@media (max-width: 600px) and (max-height: 740px) {
+  main[data-ai-page="ads"] .rk-hero { padding-top: calc(var(--topbar-h) + 0.75rem); }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --title-fs: min(100cqi / 6, 8svh); }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__visual { padding-top: 1rem; }
+  main[data-ai-page="ads"] .rk-hero .ai-hero__actions { padding-top: 0.75rem; }
+  .rk-fl__bus { height: 1rem; }
+  .rk-fl__link { height: 0.5rem; }
+}
+/* tall phones: the room goes to the content before the gaps; the lead a step larger, the oldest request back in the
+   list and its count with it */
+@media (max-width: 600px) and (min-height: 860px) {
+  main[data-ai-page="ads"] .rk-hero .ai-hero__lead { font-size: 1.25rem; }
+  .rk-fl .rk-inbox__row[data-wide] { display: grid; }
+  .rk-fl .rk-part__n { --shown: var(--n); }
 }
 
 /* the lighter pass (the owner, 20 Oct): the three new blocks narrower, and the phone page loses its secondary text */
-@media (max-width: 1100px) {
-  .rk-kase { grid-template-columns: minmax(0, 1fr); }
-  .rk-kase__shot, .rk-kase__end { grid-column: auto; grid-row: auto; }
-}
 @media (max-width: 860px) {
   /* the steps as rows: the picture on the left, the words beside */
   main.ai .rk-track__list { grid-template-columns: minmax(0, 1fr); gap: 0.875rem; }
@@ -765,24 +883,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .rk-track__step { grid-template-columns: 5.25rem minmax(0, 1fr); gap: 0.875rem; }
   .rk-track__pic { height: 4.5rem; font-size: 0.66rem; }
   .rk-track__t { font-size: 1.0625rem; }
-  /* the case: the screenshot open, a row that scrolls sideways (the owner's brief of 21 Oct: the most valuable thing on the page) */
-  .rk-kase { gap: 1rem; }
-  .rk-kase__was { font-size: 0.8125rem; }
-  .rk-kase__m--cpl .rk-kase__v { font-size: 2.75rem; }
-  .rk-kase__v { font-size: 1.625rem; }
-  .rk-kase__sum { display: none; align-items: center; justify-content: space-between; min-height: 2.75rem; padding: 0.5rem 0.25rem 0; border-top: 1px solid var(--line-dark); font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-soft); list-style: none; cursor: pointer; }
-  .rk-kase__sum::-webkit-details-marker { display: none; }
-  .rk-kase__sum::after { content: "+"; content: "+" / ""; font-size: 1rem; color: var(--ink-dark-mute); }
-  .rk-kase__shot[open] > .rk-kase__sum { margin-bottom: 0.75rem; }
-  .rk-kase__shot[open] > .rk-kase__sum::after { content: "−"; content: "−" / ""; }
-  html.js:not(.rk-go) .rk-kase__shot[data-fold] > :not(summary) { display: none; }
-  html.js:not(.rk-go) .rk-kase__shot[data-fold] > summary::after { content: "+"; content: "+" / ""; }
-  .rk-kase__end .btn { width: 100%; justify-content: space-between; }
-  .rk-case__pic { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
-  .rk-case__in { width: 40rem; }
-  .rk-case__swipe { display: block; margin-top: 0.625rem; font: 400 0.6875rem/1 var(--font-mono); color: var(--ink-dark-mute); text-align: center; }
-  .rk-case__tabs { order: 3; width: 100%; margin-left: 0; }
-  .rk-case__ok { margin-left: auto; }
   /* less text: the cards' paragraphs (their mock-ups and lists say it), the setups' one-liners, and under the form the
      next steps and «Що ви отримуєте» (the two lines above the button say both) */
   .rk-card__p, .rk-pc__d { display: none; }
@@ -802,84 +902,26 @@ main[data-ai-page="ads"] .field :is(input, textarea)::placeholder { color: rgba(
 main[data-ai-page="ads"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { padding-bottom: clamp(5.5rem, 12vh, 9.5rem); }
 
 /* ==========================================================================
-   4 · Кейси: a stack of short dark cards (React Bits «Stack»; phones, then wide screens too, the owner, 21 Oct): each
-   card the case's name, period, headline number in signal and two small ones; the top card is swiped (a finger or the
-   mouse) or sent away with the arrows and tucks under the pile; the case's details (what was done, the screenshot, the
-   honest line, the button) follow it: beside the stack on wide screens, under it on phones and tablets
-   ========================================================================== */
-.rk-kase-pick { display: none; }
-.rk-kgrid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; }
-.rk-kase-panel { grid-column: 2; grid-row: 1; min-width: 0; }
-.rk-kstack { grid-column: 1; grid-row: 1; display: grid; gap: 1rem; min-width: 0; position: sticky; top: calc(var(--topbar-h) + 1.5rem); }
-.rk-kstack__pile { position: relative; height: 25.5rem; }
-.rk-kstack__card { position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column; height: 24rem; padding: 1.5rem 1.625rem 1.625rem; border-radius: var(--radius-lg); color: var(--ivory); background: var(--ink-dark); box-shadow: 0 1.75rem 3rem -1.75rem rgba(15, 14, 13, 0.65); transform-origin: 50% 100%; transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s var(--ease-out); touch-action: pan-y; -webkit-user-select: none; user-select: none; cursor: grab; }
-.rk-kstack__card[data-pos="0"] { z-index: 3; }
-.rk-kstack__card[data-pos="1"] { z-index: 2; transform: translateY(0.75rem) scale(0.95); opacity: 0.7; }
-.rk-kstack__card[data-pos="2"] { z-index: 1; transform: translateY(1.5rem) scale(0.9); opacity: 0.45; }
-.rk-kstack__card.is-drag { transition: none; cursor: grabbing; }
-.rk-kstack__card.is-thrown { z-index: 4; }
-/* the cards under the top one show only their edges (their words would read through the peek) */
-.rk-kstack__card > * { transition: opacity 0.3s var(--ease-out); }
-.rk-kstack__card:not([data-pos="0"]):not(.is-thrown) > * { opacity: 0; }
-.rk-kstack__top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0; }
-.rk-kstack__chip { padding: 0.3rem 0.6rem; border-radius: 99px; font: 500 0.75rem/1 var(--font-mono); letter-spacing: 0.04em; color: var(--ink-dark); background: var(--ivory); }
-.rk-kstack__of { font: 400 0.75rem/1 var(--font-mono); color: rgba(246, 246, 243, 0.62); }
-.rk-kstack__name { margin: 1.25rem 0 0; font: 400 0.75rem/1.3 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: rgba(246, 246, 243, 0.8); }
-.rk-kstack__when { margin: 0.25rem 0 0; font: 400 0.6875rem/1.3 var(--font-mono); color: rgba(246, 246, 243, 0.58); }
-.rk-kstack__v { margin: auto 0 0; font-size: clamp(3.5rem, 7.6vw, 7.5rem); font-weight: 300; line-height: 0.92; letter-spacing: -0.045em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ember); }
-.rk-kstack__k { margin: 0.625rem 0 0; font-size: 0.875rem; line-height: 1.35; color: rgba(246, 246, 243, 0.62); }
-.rk-kstack__mini { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin: 1.25rem 0 0; padding-top: 0.875rem; border-top: 1px solid rgba(246, 246, 243, 0.14); }
-.rk-kstack__mini > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.4rem; }
-.rk-kstack__mini .rk-kase__ba { display: inline-flex; align-items: baseline; gap: 0.35rem; }
-.rk-kstack__mini dt { font-size: 0.8125rem; line-height: 1.4; color: rgba(246, 246, 243, 0.58); }
-.rk-kstack__mini dd { margin: 0; font-size: 0.8125rem; line-height: 1.4; white-space: nowrap; color: rgba(246, 246, 243, 0.88); }
-.rk-kstack .rk-kase__was { font-size: 0.75rem; color: rgba(246, 246, 243, 0.5); }
-.rk-kstack__nav { display: flex; align-items: center; justify-content: space-between; }
-.rk-kstack__btn { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; color: var(--ink-dark); background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.2); cursor: pointer; transition: box-shadow 0.25s, transform 0.25s var(--ease-out); }
-.rk-kstack__btn:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.45); transform: translateY(-1px); }
-.rk-kstack__btn:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; }
-.rk-kstack__btn svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.rk-kstack__dots { display: flex; gap: 0.25rem; }
-.rk-kstack__dots i { width: 1.5rem; height: 0.375rem; border-radius: 99px; background: rgba(15, 14, 13, 0.18); transform: scaleX(0.34); transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.4s; }
-.rk-kstack__dots i.is-on { background: var(--ink-dark); transform: none; }
-/* the details card: the name, period and numbers are on the stack already; one column, the screenshot in the middle */
-.rk-kase { grid-template-columns: minmax(0, 1fr); }
-.rk-kase__main > :is(.rk-kase__who, .rk-kase__per, .rk-kase__stats) { display: none; }
-.rk-kase__shot, .rk-kase__end { grid-column: auto; grid-row: auto; }
-.rk-kstack.is-pre :is(.rk-kstack__card, .rk-kstack__nav) { opacity: 0; }
-.rk-kstack.is-pre .rk-count__strip { transform: none; }
-.rk-kstack.is-warm :is(.rk-kstack__card, .rk-count__strip) { will-change: transform, opacity; }
-@media (max-width: 900px) {
-  .rk-kgrid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-  .rk-kase-panel, .rk-kstack { grid-column: 1; grid-row: auto; }
-  .rk-kstack { position: static; }
-  .rk-kstack { width: min(34rem, 100%); }
-}
-@media (max-width: 600px) {
-  .rk-kstack { width: auto; gap: 0.875rem; }
-  .rk-kstack__pile { height: 19.5rem; }
-  .rk-kstack__card { height: 18rem; padding: 1rem 1.125rem 1.125rem; border-radius: 1.25rem; box-shadow: 0 1.5rem 2.5rem -1.5rem rgba(15, 14, 13, 0.65); }
-  .rk-kstack__name { margin-top: 0.875rem; }
-  .rk-kstack__when { margin-top: 0.125rem; }
-  .rk-kstack__k { margin-top: 0.375rem; font-size: 0.8125rem; }
-  .rk-kstack__mini { margin-top: 0.875rem; padding-top: 0.75rem; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .rk-kstack__card, .rk-kstack__dots i { transition: none; }
-}
-
-/* ==========================================================================
    The owner's brief of 21 Oct: the proof outweighs the explaining. The order is the first screen, the cases (the one
    light block), a pause, the ads, the analytics, the terms, the price, how we work, the questions, the request; lime
-   marks only an action, ember only a result; cards only where things are compared or chosen (the setups, the cases'
-   stack); the scenes play again when they come back, their «Приклад · дані умовні» a quiet line under them
+   marks only an action, ember only a result; cards only where things are compared or chosen (the setups, the cases);
+   the scenes play again when they come back, their «Приклад · дані умовні» a quiet line under them
    ========================================================================== */
 /* 1 · every button that leads to the request in lime (the kit's are ember after the first screen): the page's, the
-   footer's; on the ivory a dark edge, as lime alone would not hold there */
+   footer's; on the ivory the AI page's ivory button, a dark pill with a lime disc holding the arrow (the owner, 6 Nov:
+   the lime one with a dark edge said nothing) */
 main[data-ai-page="ads"] .btn--primary,
 main[data-ai-page="ads"] ~ .footer .btn--primary { --btn-bg: var(--lime); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.5); }
-main[data-ai-page="ads"] .section--ivory .btn--primary { --btn-line: var(--ink-dark); --btn-wave: var(--ink-dark); }
-main[data-ai-page="ads"] .section--ivory .btn--primary:is(:hover, :focus-visible) { --btn-ink: var(--ivory); }
+/* the quiet buttons (ghost, line) fill with lime too, not the kit's ember (the owner, 6 Nov): the page's, the bar's and
+   the footer's */
+body:has(main[data-ai-page="ads"]) :is(.page, .topbar, .footer) :is(.btn--ghost, .btn--line) { --btn-fill: var(--lime); --btn-fill-ink: var(--on-ink); }
+main[data-ai-page="ads"] .section--ivory .btn--primary { --btn-bg: var(--ink-dark); --btn-ink: #fcfcfa; --btn-line: transparent; --btn-wave: #2b2926; --btn-glow: rgb(15 14 13 / 0.3); gap: 1rem; padding: 0 0.375rem 0 1.5rem; }
+main[data-ai-page="ads"] .section--ivory .btn--primary .btn__icon { width: 2.375rem; height: 2.375rem; border-radius: 50%; color: #0d0d0d; background: var(--lime); }
+main[data-ai-page="ads"] .section--ivory .btn--primary .arrow { inset: 0.6875rem; width: auto; height: auto; stroke-width: 1.9; }
+/* no hover fill (the owner, 6 Nov: the dark wave on the dark pill could not be seen): no wave, no lift, no glow; the
+   arrow still slides through its disc */
+main[data-ai-page="ads"] .section--ivory .btn--primary::before { display: none; }
+main[data-ai-page="ads"] .section--ivory .btn--primary:is(:hover, :focus-visible) { transform: none; box-shadow: inset 0 0 0 1px var(--btn-line); }
 /* a quick pick chosen in the form is the visitor's action too */
 main[data-ai-page="ads"] .ai-pick[aria-pressed="true"] { background: rgba(218, 255, 2, 0.1); box-shadow: inset 0 0 0 1px var(--lime); }
 main[data-ai-page="ads"] .ai-pick[aria-pressed="true"]::before { color: var(--lime); }
@@ -889,7 +931,6 @@ main[data-ai-page="ads"] .checks .is-done .check { border-color: var(--ink); bac
 
 /* the sample's note: under its window, small and quiet (it was a chip in the window's bar) */
 .rk-note { margin: 0.625rem 0 0; font: 400 0.75rem/1.4 var(--font-mono); letter-spacing: 0.02em; color: var(--ink-mute); }
-.rk-fl .rk-note { text-align: right; }
 
 /* 3 · Реклама on a narrower screen: the scene on the left, its words on the right, the note under the scene */
 @media (min-width: 861px) and (max-width: 1100px) {
@@ -901,17 +942,6 @@ main[data-ai-page="ads"] .checks .is-done .check { border-color: var(--ink); bac
 
 /* 2 · the cases on wide screens: the stack on the left, what was done and the honest line beside it, and the account's
    screenshot across the whole block under both (it was half as wide in the details card) */
-@media (min-width: 901px) {
-  .rk-kstack { position: relative; top: auto; z-index: 1; }
-  .rk-kase-panel { grid-column: 1 / -1; grid-row: 1; }
-  .rk-kase { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(1.5rem, 3vw, 3rem); row-gap: 1.5rem; }
-  /* room for the stack (its pile, its arrows) in the first column, so the screenshot starts under it */
-  .rk-kase::before { content: ""; grid-column: 1; grid-row: 1 / span 2; height: 29.25rem; }
-  .rk-kase__main { grid-column: 2; grid-row: 1; align-self: end; }
-  .rk-kase__end { grid-column: 2; grid-row: 2; align-self: start; }
-  .rk-kase__shot { grid-column: 1 / -1; grid-row: 3; margin-top: clamp(1.5rem, 3vw, 2.5rem); }
-  .rk-kase__how { font-size: var(--fs-lead); }
-}
 
 /* 7 · Як працюємо: one line through the five steps, a dot on it under each picture */
 main.ai .rk-track__list { position: relative; }
@@ -991,12 +1021,7 @@ main[data-ai-page="ads"] #how { padding-top: var(--ad-after-l); }
 main[data-ai-page="ads"] #faq { padding-top: var(--ad-after-s); }
 main[data-ai-page="ads"] #contact { padding-top: var(--ad-after-l); }
 
-/* the first screen, stronger (the owner, 21 Oct: it looked weak): on wide screens the title as large as the blocks'
-   titles, the words in seven columns and the way of a request in five; its window in the demos' lime frame */
-@media (min-width: 1101px) {
-  /* as large as the six columns allow (a line is about 12.3 times the size wide) */
-  .rk-hero .ai-hero__title--auto { font-size: 3.65vw; }
-}
+/* the first screen on wide screens: the networks in two rows where the window is narrow */
 @media (min-width: 1101px) and (max-width: 1240px) {
   /* the window is under 30 rem here: the networks in two rows, as from 901 px, so no name cuts */
   .rk-fl__chip { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0.375rem; }
@@ -1004,29 +1029,9 @@ main[data-ai-page="ads"] #contact { padding-top: var(--ad-after-l); }
   .rk-fl__name { grid-column: 1 / -1; }
 }
 @media (min-width: 1440px) {
-  .rk-hero .ai-hero__copy { grid-column: 1 / span 7; }
-  .rk-hero .ai-hero__visual { grid-column: 8 / -1; }
-  .rk-hero .ai-hero__title--auto { font-size: min(4.3vw, 4.75rem); }
+  /* the words and the window six columns each (the owner, 5 Nov 2026: the window larger), the hang on the third */
+  main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --hang: calc(2 * var(--step)); --title-fs: calc(100cqi / 6.1); }
 }
-
-/* the links beside a button or under a list: white words and a round arrow, no underline, so they never read as one
-   more lime action next to the button (the owner, 21 Oct) */
-main[data-ai-page="ads"] .ai-down { gap: 0.625rem; color: var(--ink); text-decoration: none; }
-main[data-ai-page="ads"] .ai-down svg { box-sizing: content-box; flex: none; padding: 0.5rem; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.35); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
-main[data-ai-page="ads"] .ai-down svg { width: 1rem; height: 1rem; padding: 0.625rem; }
-main[data-ai-page="ads"] .ai-down:hover svg { color: var(--on-ink); background: var(--ink); box-shadow: none; }
-main[data-ai-page="ads"] .ai-down:hover svg { transform: translateY(0.125rem); }
-
-/* each case links the client's site (the owner, 21 Oct): a label and the address with the round arrow of the page's
-   links, in the ivory's dark ink; it opens in a new tab */
-.rk-kase__site { display: flex; flex-wrap: wrap; align-items: center; gap: 0 0.75rem; margin: 0; font-size: var(--fs-body-s); color: var(--ink-dark-soft); }
-.rk-kase__go { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: var(--fs-body); font-weight: 500; color: var(--ink-dark); text-decoration: none; }
-.rk-kase__go svg { box-sizing: content-box; flex: none; width: 0.875rem; height: 0.875rem; padding: 0.4375rem; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
-.rk-kase__go:hover svg { color: var(--ivory); background: var(--ink-dark); box-shadow: none; transform: translate(0.125rem, -0.125rem); }
-.rk-kase__go:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; border-radius: 0.375rem; }
-/* a case whose screenshot shows the account before our changes: the window's chip says so, at the bar's right end (the
-   owner, 21 Oct) */
-.rk-case__ok--before { margin-left: auto; }
 
 /* the rhythm of the type (Impeccable critique, 26 Oct: one heading size on every block, the first screen's title smaller
    than the blocks', the pause and the request ask no louder than the rest). Four tiers: the pause and the request ask the
@@ -1228,3 +1233,93 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
   /* the pause: as tall as its sentence */
   .rk-pause > .container { padding-block: 2.5rem; }
 }
+
+/* ==========================================================================
+   the hover pass (the owner, 6 Nov 2026: block 6 and 7 livelier, at least on hover; block 3's words no longer float
+   under the pictures; the ticks in lime)
+   ========================================================================== */
+/* the ticks, all of them in lime: filled with a dark tick in the lists of block 3 and the recommended price card, a lime
+   ring and tick in the others */
+.rk-checks li::before { background-color: var(--lime); }
+.rk-pc__inc li::before { color: var(--on-ink); background: var(--lime); }
+.rk-pc:not(.rk-pc--featured) .rk-pc__inc li::before, .rk-addon__more .rk-pc__inc li::before { color: var(--lime); background: none; box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.55); }
+
+/* 3 · the channels (the owner, 6 Nov): no frames; each demo frosted glass like the first screen's window, over a soft
+   glow of the stream's colours so the glass reads; on a computer each network a row, its demo on one side and its words
+   on the other, the rows alternating. The ticks as rows between hairlines; the price a plain line, its sum the largest
+   of the foot */
+.rk-card { position: relative; isolation: isolate; }
+.rk-card__media { overflow: hidden; outline: 0; background: linear-gradient(160deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.035) 46%, rgb(255 255 255 / 0.06)), rgba(14, 16, 14, 0.72); -webkit-backdrop-filter: blur(28px) saturate(1.15); backdrop-filter: blur(28px) saturate(1.15); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 3rem 5rem -3rem rgba(0, 0, 0, 0.9); }
+.rk-card__media .ai-sheet__bar { border-bottom-color: rgba(255, 255, 255, 0.08); }
+.rk-card::before { content: ""; position: absolute; left: 6%; top: 4%; z-index: -1; width: 70%; height: 22rem; border-radius: 50%; background: radial-gradient(closest-side, rgb(160 210 60 / 0.22), rgb(90 242 217 / 0.08) 60%, transparent); filter: blur(30px); pointer-events: none; }
+.rk-card[data-ch="meta"]::before { left: auto; right: 6%; background: radial-gradient(closest-side, rgb(123 92 255 / 0.22), rgb(90 242 217 / 0.08) 60%, transparent); }
+.rk-checks { align-self: stretch; gap: 0; border-top: 1px solid var(--line); }
+.rk-checks li { padding: 0.625rem 0 0.625rem 2rem; border-bottom: 1px solid var(--line); transition: color 0.25s; }
+.rk-checks li::before { top: 0.75rem; transition: transform 0.35s var(--ease-out), box-shadow 0.35s; }
+.rk-card__foot { border-top: 0; }
+.rk-card__price b { font-size: 1.375rem; font-weight: 500; letter-spacing: -0.02em; }
+@media (hover: hover) {
+  .rk-checks li:hover::before { transform: scale(1.15); box-shadow: 0 0 0.75rem rgb(218 255 2 / 0.6); }
+}
+@media (min-width: 1101px) {
+  .rk-ch__grid { grid-template-columns: minmax(0, 1fr); gap: clamp(3rem, 6vw, 5.5rem); }
+  .rk-card { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-rows: auto auto; column-gap: clamp(2.5rem, 5vw, 5rem); align-items: center; }
+  .rk-card__media { grid-column: 1; grid-row: 1; height: 30rem; }
+  .rk-card > .rk-note { grid-column: 1; grid-row: 2; }
+  .rk-card__body { grid-column: 2; grid-row: 1 / span 2; padding: 0; }
+  .rk-card[data-ch="meta"] { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .rk-card[data-ch="meta"] .rk-card__media, .rk-card[data-ch="meta"] > .rk-note { grid-column: 2; }
+  .rk-card[data-ch="meta"] .rk-card__body { grid-column: 1; }
+  .rk-card__t { font-size: clamp(1.875rem, 2.6vw, 2.5rem); }
+}
+
+/* 6 · the terms: each with its mark and number over the sentence; on hover a lime line draws itself along the
+   hairline from the left, the mark lights up lime and the number turns lime */
+.rk-terms__item { position: relative; }
+.rk-terms__item::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 2px; border-radius: 99px; background: var(--lime); transform: scaleX(0); transform-origin: 0 50%; transition: transform 0.7s var(--ease-out); }
+.rk-terms__head { display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem; }
+.rk-terms__mark { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.22); transition: background-color 0.4s var(--ease-out), box-shadow 0.4s, transform 0.5s var(--ease-out); }
+.rk-terms__mark svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.3s; }
+.rk-terms__head .rk-terms__n { margin: 0; transition: color 0.3s; }
+.rk-terms__p { transition: color 0.4s, transform 0.5s var(--ease-out); }
+@media (hover: hover) {
+  .rk-terms__item:hover::before { transform: none; }
+  .rk-terms__item:hover .rk-terms__mark { background: var(--lime); box-shadow: 0 0 1.75rem -0.25rem rgb(218 255 2 / 0.55); transform: rotate(-8deg) scale(1.06); }
+  .rk-terms__item:hover .rk-terms__mark svg { stroke: var(--on-ink); }
+  .rk-terms__item:hover .rk-terms__n { color: var(--lime); }
+  .rk-terms__item:hover .rk-terms__p { transform: translateX(0.25rem); }
+}
+@media (max-width: 900px) { .rk-terms__head { display: none; } }
+
+/* 7 · the prices: a card's sum warms to lime on hover (the cards themselves: the glass further down); the strips «Можна
+   додати» light their title and a lime bar on the left */
+.rk-pc { position: relative; transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out); }
+.rk-pc__sum b { transition: color 0.35s; }
+.rk-addon { position: relative; transition: background-color 0.3s; }
+.rk-addon::before { content: ""; position: absolute; left: -1rem; top: 0.75rem; bottom: 0.75rem; width: 2px; border-radius: 99px; background: var(--lime); transform: scaleY(0); transition: transform 0.4s var(--ease-out); }
+.rk-addon__t { transition: color 0.3s; }
+@media (hover: hover) {
+  .rk-pc:hover .rk-pc__sum b { color: var(--lime); }
+  .rk-addon:hover::before { transform: none; }
+  .rk-addon:hover .rk-addon__t { color: var(--lime); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rk-card, .rk-pc, .rk-terms__item::before, .rk-terms__mark, .rk-terms__p, .rk-addon::before { transition: none; }
+  .rk-pc:hover { transform: none; }
+}
+
+/* 7 · the price cards as glass over an aurora (the owner's pick of 6 Nov 2026, for now): soft glows of the stream's
+   colours drift behind the row, the cards frosted glass over them (the recommended one keeps its lime edge); the hovered
+   card lifts and the light behind it warms */
+.rk-prices { position: relative; isolation: isolate; }
+/* (the aurora reaches past the row's sides: the block clips it, or the page would scroll sideways) */
+main[data-ai-page="ads"] #price { overflow-x: clip; }
+.rk-prices::before { content: ""; position: absolute; inset: -10% -4%; z-index: -1; background: radial-gradient(30% 50% at 20% 40%, rgb(160 210 60 / 0.3), transparent 70%), radial-gradient(28% 45% at 55% 60%, rgb(90 242 217 / 0.2), transparent 70%), radial-gradient(30% 50% at 85% 35%, rgb(123 92 255 / 0.25), transparent 70%); filter: blur(30px); animation: rk-pc-aurora 16s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes rk-pc-aurora { to { transform: translate(2%, -3%) scale(1.06); filter: blur(30px) hue-rotate(-12deg); } }
+.rk-pc { background: linear-gradient(160deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.03) 50%, rgb(255 255 255 / 0.06)), rgb(12 13 12 / 0.55); -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1), 0 2rem 3rem -2rem rgb(0 0 0 / 0.8); }
+.rk-pc--featured { box-shadow: inset 0 0 0 1.5px rgb(218 255 2 / 0.8), 0 2rem 3rem -2rem rgb(0 0 0 / 0.8); }
+@media (hover: hover) {
+  .rk-pc:hover { transform: translateY(-6px); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25), 0 2.5rem 4rem -2rem rgb(160 210 60 / 0.35); }
+  .rk-pc--featured:hover { box-shadow: inset 0 0 0 1.5px var(--lime), 0 2.5rem 4rem -2rem rgb(160 210 60 / 0.45); }
+}
+@media (prefers-reduced-motion: reduce) { .rk-prices::before { animation: none; } }

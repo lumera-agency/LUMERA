@@ -1,11 +1,10 @@
 "use client";
 /*
  * The site menu on phones (both burgers open it), «Колони»: a black sheet drops in as the preloader's five columns,
- * left to right, as the desktop panel does. The four services rise out of their masks, each with its «від» price; a
- * tap opens a service's sections (its page's blocks, its formats and cases) as an accordion, one at a time; on a
- * service's own page it is open already, and the block being read is lime. Under them: «Як працюємо», «Ціни», «Про
- * нас», the two phones, Telegram and Viber; the CTA stays at the foot. A link to a block on this page takes the page
- * there under the sheet, so the block is there when the columns lift.
+ * left to right, as the desktop panel does. The services rise out of their masks, each with its «від» price, each one
+ * link to its page (the owner, 5 Nov 2026: no links to the pages' sections); the one whose page this is is lime. Under
+ * them: «Як працюємо», «Ціни», «Про нас», the two phones, Telegram and Viber; the CTA stays at the foot. A link to a
+ * block on this page takes the page there under the sheet, so the block is there when the columns lift.
  * A modal dialog in <body> (never inside a transformed header): the page holds still under it, Esc and the cross
  * close it, Tab stays inside, focus goes back to the burger. Reduced motion: a fade.
  */
@@ -55,10 +54,10 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
   const mounted = useSyncExternalStore(noSubscribe, () => true, () => false);
   const sheet = useRef<HTMLDivElement>(null);
   const wasOpen = useRef(false);
-  const [expanded, setExpanded] = useState<number | null>(own >= 0 ? own : null);
   const [current, setCurrent] = useState<string | null>(null);
-  // the blocks of this page the menu leads to: its service's sections, or its own links
-  const watched = [...(own >= 0 ? nav.services[own].subs.map((s) => s.href) : []), ...pageLinks.map((l) => l.href)]
+  // the blocks of this page the menu leads to: its own links
+  const watched = pageLinks
+    .map((l) => l.href)
     .map((h) => (h.includes("#") ? `#${h.split("#")[1]}` : ""))
     .filter(Boolean)
     .join(" ");
@@ -105,7 +104,6 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     } else {
       const done = () => {
         gsap.set(root, { visibility: "hidden" });
-        setExpanded(own >= 0 ? own : null); // the next time it opens as it did the first
       };
       if (reduced) gsap.to(root, { autoAlpha: 0, duration: 0.2, onComplete: done });
       else {
@@ -239,11 +237,14 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
               {L.what}
             </p>
             <ul className="menu-sheet__list">
-              {nav.services.map((s, i) => {
-                const isOpen = expanded === i;
-                const id = `menu-svc-${i}`;
-                const head = (
-                  <>
+              {nav.services.map((s, i) => (
+                <li key={s.n} className="menu-sheet__item" data-current={own === i ? "" : undefined}>
+                  <a
+                    className="menu-sheet__svc"
+                    href={s.path === null && onMain ? "#svc-4" : s.href}
+                    aria-current={own === i ? "page" : undefined}
+                    onClick={s.path === null ? goSaas : (e) => go(e, s.href)}
+                  >
                     <span className="menu-sheet__name">
                       <span>{s.short}</span>
                     </span>
@@ -254,60 +255,10 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
                     ) : (
                       <span />
                     )}
-                  </>
-                );
-                return (
-                  <li key={s.n} className="menu-sheet__item" data-current={own === i ? "" : undefined}>
-                    {s.subs.length ? (
-                      <button className="menu-sheet__svc" type="button" aria-expanded={isOpen} aria-controls={id} onClick={() => setExpanded(isOpen ? null : i)}>
-                        {head}
-                        <svg className="menu-sheet__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false" data-menu-fade="">
-                          <path d="M2.5 4.5 6 8l3.5-3.5" />
-                        </svg>
-                      </button>
-                    ) : (
-                      <a className="menu-sheet__svc" href={onMain ? "#svc-4" : s.href} onClick={goSaas}>
-                        {head}
-                        <Arrow />
-                      </a>
-                    )}
-                    {s.subs.length > 0 && (
-                      <div className="menu-sheet__subs" id={id} data-open={isOpen ? "" : undefined} inert={!isOpen}>
-                        <ul>
-                          {s.subs.map((sub, j) => {
-                            const hash = sub.href.includes("#") ? `#${sub.href.split("#")[1]}` : null;
-                            return (
-                              <li key={sub.text} style={{ "--j": j } as React.CSSProperties}>
-                                <a
-                                  className="menu-sheet__sub"
-                                  href={sub.href}
-                                  aria-current={own === i && hash && current === hash ? "location" : undefined}
-                                  onClick={(e) => go(e, sub.href)}
-                                >
-                                  <span>{sub.text}</span>
-                                  {sub.price ? (
-                                    <b>{sub.price}</b>
-                                  ) : sub.tag ? (
-                                    <span className="menu-sheet__tag">{sub.tag}</span>
-                                  ) : (
-                                    <Arrow />
-                                  )}
-                                </a>
-                              </li>
-                            );
-                          })}
-                          <li style={{ "--j": s.subs.length } as React.CSSProperties}>
-                            <a className="menu-sheet__sub menu-sheet__sub--page" href={s.href} onClick={(e) => go(e, s.href)}>
-                              <span>{t("nav.openPage")}</span>
-                              <Arrow />
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
+                    <Arrow />
+                  </a>
+                </li>
+              ))}
             </ul>
 
             {pageLinks.length > 0 && (

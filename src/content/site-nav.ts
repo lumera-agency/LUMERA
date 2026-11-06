@@ -5,7 +5,8 @@ import { PRODUCTS } from "@/components/sections/ai-page/prices";
 import { CONTACTS, phoneText, telHref, telegramHref, viberHref } from "@/config/contacts";
 import { SITE_NAV } from "./nav";
 
-/** A section of a service's page in the phone menu: its anchor there (or another page), a price or a tag. */
+/** A section of a service's page, listed in its card in the header's panel as plain text (the owner, 5 Nov 2026: the
+ *  card is one link to the page, its sections are not links); its anchor there (or another page), a price or a tag. */
 export type SiteNavSub = { text: string; href: string; price?: string; tag?: string };
 /** One service in the header's panel and the phone menu: its page, picture, «від» price (none for SaaS), sections. */
 export type SiteNavService = {
@@ -101,8 +102,8 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const title = t.raw("case.hero.title") as string;
   const [, caseName = "", caseV = "", caseK = ""] = /^(.*?):\s*<hl>(.*?)<\/hl>\s*(.*)$/.exec(title) ?? [];
 
-  // the services' sections in the phone menu: each page's own blocks, in its own words (its nav), the formats with
-  // the engine's prices, the cases where they are
+  // the services' sections in their cards: each page's own blocks, in its own words (its nav), the formats with the
+  // engine's prices, the cases where they are
   const at = (path: string, hash: string) => `${href(path)}${hash}`;
   const SITES = "/dyzain-i-saity";
   const AI = "/ai-avtomatyzatsiia";

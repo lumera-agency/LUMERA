@@ -1,12 +1,14 @@
 "use client";
 /*
  * The panels under «Послуги» and «Кейси» (the header and the topbar): four columns, one card each. Services: the
- * picture, the name, the line, the «від» price, the link to the page. Cases: the chip, the figure with its key, who it
- * is for and the honest sentence. The strip under them leads on: the calculator, the other panel, «Про нас».
+ * picture, the name, the page's sections (the formats with their prices, the cases) as plain text, the «від» price; the
+ * whole card is one link to the service's page (the owner, 5 Nov 2026: the sections are not links of their own). Cases:
+ * the chip, the figure with its key, who it is for and the honest sentence. The strip under them leads on: the
+ * calculator, the other panel, «Про нас».
  * Hidden until opened (disclosure.ts animates them).
  */
 import { usePathname } from "@/i18n/navigation";
-import { focusBlock, goToBlock } from "@/lib/scroll";
+import { focusBlock } from "@/lib/scroll";
 import { useSiteNav } from "./SiteNavProvider";
 import type { NavPanelId } from "./disclosure";
 import "./nav-panel.css";
@@ -36,21 +38,6 @@ function goToService(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
   if (panel) focusBlock(panel);
 }
 
-/** A section of this very page (a format on «Дизайн і сайти»): no reload, a tab is chosen, the page glides there. */
-function goToSection(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
-  const url = new URL(href, location.href);
-  if (url.pathname !== location.pathname || !url.hash) return;
-  let target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
-  if (!target) return;
-  e.preventDefault();
-  if (target.matches('[role="tab"]')) {
-    target.click();
-    target = target.closest("section") ?? target;
-  }
-  goToBlock(target);
-  focusBlock(target);
-}
-
 export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
   const nav = useSiteNav();
   const path = usePathname();
@@ -71,43 +58,39 @@ export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
           const ids = `${id}-${s.n}`;
           const page = saas && onMain ? "#svc-4" : s.href;
           const toPage = saas && onMain ? (e: React.MouseEvent<HTMLAnchorElement>) => goToService(e, "svc-4") : undefined;
+          const current = s.path === path;
           return (
             <li key={s.n}>
-              <div className="navp__card" data-current={s.path === path ? "" : undefined}>
-                <div className="navp__in">
-                  <a className="navp__main" href={page} aria-current={s.path === path ? "page" : undefined} aria-labelledby={`${ids}-name`} onClick={toPage}>
-                    <span className="navp__meta">
-                      <span data-line="">{s.n}</span>
-                    </span>
-                    <span className="navp__pic" data-pic="">
-                      {/* eslint-disable-next-line @next/next/no-img-element -- the What block's 4:5 picture, cropped */}
-                      <img src={s.img} alt="" width={680} height={850} loading="lazy" decoding="async" />
-                    </span>
-                    <span className="navp__name" id={`${ids}-name`}>
-                      <span data-line="">{s.name}</span>
-                    </span>
-                    {s.subs.length === 0 && (
-                      <span className="navp__desc">
-                        <span data-line="">{s.desc}</span>
-                      </span>
-                    )}
-                  </a>
-                  {/* the page's sections, as the phone menu has them: the formats with their prices, the cases */}
-                  {s.subs.length > 0 && (
-                    <ul className="navp__subs" aria-label={s.name}>
+              <a className="navp__card" href={page} onClick={toPage} data-current={current ? "" : undefined} aria-current={current ? "page" : undefined} aria-labelledby={`${ids}-name`} aria-describedby={s.subs.length ? undefined : `${ids}-desc`}>
+                <span className="navp__in">
+                  <span className="navp__meta">
+                    <span data-line="">{s.n}</span>
+                  </span>
+                  <span className="navp__pic" data-pic="">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- the What block's 4:5 picture, cropped */}
+                    <img src={s.img} alt="" width={680} height={850} loading="lazy" decoding="async" />
+                  </span>
+                  <span className="navp__name" id={`${ids}-name`}>
+                    <span data-line="">{s.name}</span>
+                  </span>
+                  {/* the page's sections: what is there, not links (the card leads to the page) */}
+                  {s.subs.length > 0 ? (
+                    <span className="navp__subs" aria-hidden="true">
                       {s.subs.map((sub) => (
-                        <li key={sub.text}>
-                          <a className="navp__sub" href={sub.href} onClick={(e) => goToSection(e, sub.href)}>
-                            <span data-line="">
-                              <span>{sub.text}</span>
-                              {sub.price ? <b>{sub.price}</b> : sub.tag ? <i className="navp__tag">{sub.tag}</i> : null}
-                            </span>
-                          </a>
-                        </li>
+                        <span className="navp__sub" key={sub.text}>
+                          <span data-line="">
+                            <span>{sub.text}</span>
+                            {sub.price ? <b>{sub.price}</b> : sub.tag ? <i className="navp__tag">{sub.tag}</i> : null}
+                          </span>
+                        </span>
                       ))}
-                    </ul>
+                    </span>
+                  ) : (
+                    <span className="navp__desc" id={`${ids}-desc`}>
+                      <span data-line="">{s.desc}</span>
+                    </span>
                   )}
-                  <a className="navp__foot" href={page} onClick={toPage} tabIndex={-1} aria-hidden="true">
+                  <span className="navp__foot">
                     <span data-line="">
                       {s.price ? <span className="navp__price">{s.price}</span> : <span />}
                       <span className="navp__go">
@@ -117,9 +100,9 @@ export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
                         </span>
                       </span>
                     </span>
-                  </a>
-                </div>
-              </div>
+                  </span>
+                </span>
+              </a>
             </li>
           );
         })

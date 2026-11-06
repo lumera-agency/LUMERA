@@ -45,7 +45,11 @@ export async function AdsTerms({ index }: { index: number }) {
                   </span>
                   <span className="rk-terms__lab">{t(`terms.labels.${n}`)}</span>
                 </summary>
-                <span className="rk-terms__n" aria-hidden="true">{String(n).padStart(2, "0")}</span>
+                {/* wider screens: the term's mark and number over its sentence (phones have them in the title row) */}
+                <span className="rk-terms__head" aria-hidden="true">
+                  <span className="rk-terms__mark"><svg viewBox="0 0 24 24" focusable="false">{ICON[n]}</svg></span>
+                  <span className="rk-terms__n">{n}</span>
+                </span>
                 <p className="rk-terms__p">{t(`terms.items.${n}`)}</p>
               </details>
             </li>

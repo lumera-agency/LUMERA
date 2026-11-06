@@ -47,9 +47,6 @@ export function startAds() {
   initFolds();
   initMore();
   initFaqMore();
-  initCaseTabs();
-  initCaseStack();
-  initCover();
   initChPick();
   initScenes();
   initHowPick();
@@ -58,16 +55,18 @@ export function startAds() {
   arrive();
 }
 
+
+
 /* ---------- every block's parts come in as they reach the screen: each rises a little and fades in on a long, soft
    curve, the ones arriving together one after another (the AI pages' reveal, kept quieter than the scenes so those read
    as the events). In a card the parts follow their frame in, one after another. A part already on the screen or passed
    stays as it is ---------- */
 /** frames that hold a scene: they only fade in, so a mock never slides while its own story starts (the review, 20 Oct) */
-const STILL = '.rk-card, .rk-kase, .rk-track';
+const STILL = '.rk-card, .rk-track';
 const REVEAL = [
   'main.rk .ai-sec .s-head__meta', 'main.rk .ai-sec .s-head__intro',
   '.rk-card', '.rk-live__how', '.rk-live__foot', '.rk-path__foot', '.rk-first', '.rk-pc', '.rk-addons__h', '.rk-addon',
-  '.rk-price__note', '.rk-track', '.rk-kase', 'main.rk .faq', '.rk-next', '.rk-get',
+  '.rk-price__note', '.rk-track', 'main.rk .faq', '.rk-next', '.rk-get',
   '.rk-terms__list', '.rk-paths',
   'main.rk .lead-form',
 ].join(', ');
@@ -222,10 +221,10 @@ function arrive() {
   target.scrollIntoView({ block: 'start', behavior: 'instant' });
 }
 
-/** A link to one case (the site's menu and footer: …#case-pest): that case is shown, on the tabs and the phones' stack. */
+/** A link to one case (the site's menu and footer: …#case-pest): its card is chosen (AdsCases), the block shown. */
 function openCase(target) {
   if (!target?.matches('[data-case-pick]')) return false;
-  pickCase(target.dataset.casePick);
+  target.click();
   return true;
 }
 /* the same link on this very page: the address changes its #, the page shows that case and glides to the block */
@@ -358,162 +357,6 @@ function initFaqMore() {
   });
 }
 
-/* ---------- 4 · the cases: a switcher between the clients' cases, and in each case its screenshots as tabs (arrow keys
-   move between them); a screenshot opened by a tap on a phone rises and gets its rings ---------- */
-function initCaseTabs() {
-  const tablist = (tabs, choose) => tabs.forEach((tab, i) => {
-    tab.addEventListener('click', () => choose(tab));
-    tab.addEventListener('keydown', (e) => {
-      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-      e.preventDefault();
-      choose(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length], true);
-    });
-  });
-  for (const card of $$('.rk-kase')) {
-    const tabs = $$('[data-case-tab]', card);
-    tablist(tabs, (tab, focus = false) => {
-      for (const t of tabs) {
-        const on = t === tab;
-        t.setAttribute('aria-selected', String(on));
-        t.tabIndex = on ? 0 : -1;
-        const pic = $(`[data-case-pic="${t.dataset.caseTab}"]`, card);
-        if (pic) pic.hidden = !on;
-        if (pic && on && motion) pic.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: SOFT });
-      }
-      if (focus) tab.focus();
-    });
-    const shot = $('.rk-kase__shot', card);
-    shot?.addEventListener('toggle', () => { if (shot.open && motion) caseShot(shot, 0, (el, k, o) => el.animate(k, { fill: 'backwards', easing: OUT, ...o })); });
-  }
-  const picks = $$('[data-case-pick]');
-  const choosePick = (pick, focus = false) => {
-    for (const p of picks) {
-      const on = p === pick;
-      p.setAttribute('aria-selected', String(on));
-      p.tabIndex = on ? 0 : -1;
-      const panel = $(`[data-case-panel="${p.dataset.casePick}"]`);
-      if (panel) panel.hidden = !on;
-      if (panel && on && motion) panel.animate([{ opacity: 0, translate: '0 12px' }, { opacity: 1, translate: '0 0' }], { duration: 520, easing: SOFT });
-    }
-    // phones: the chosen tab comes to the middle of its row
-    const row = pick.parentElement;
-    if (row.scrollWidth > row.clientWidth) {
-      const x = pick.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft - (row.clientWidth - pick.offsetWidth) / 2;
-      row.scrollTo({ left: x, behavior: motion ? 'smooth' : 'instant' });
-    }
-    if (focus) pick.focus({ preventScroll: true });
-    stackTo(pick.dataset.casePick); // phones: the same case on top of the stack
-  };
-  tablist(picks, choosePick);
-  pickCase = (id) => { const pick = picks.find((p) => p.dataset.casePick === id); if (pick) choosePick(pick); };
-}
-
-/** shows the details of the case the phones' stack has on top (set by initCaseTabs) */
-let pickCase = () => {};
-/** puts a case on top of the phones' stack at once (set by initCaseStack) */
-let stackTo = () => {};
-
-/* ---------- 4 · phones: the cases as a stack of short cards (React Bits «Stack»): a swipe or the arrows send the top
-   card away (to the left, it tucks under the pile) or bring the bottom one back on top; the new top card's numbers roll
-   up and the details below follow it ---------- */
-function initCaseStack() {
-  const stack = $('.rk-kstack');
-  if (!stack) return;
-  const order = $$('.rk-kstack__card', stack);
-  const dots = $$('[data-case-dot]', stack);
-  let busy = false;
-  const place = () => order.forEach((card, i) => { card.dataset.pos = String(i); card.setAttribute('aria-hidden', String(i > 0)); });
-  const sync = () => {
-    const id = order[0].dataset.caseCard;
-    dots.forEach((d) => d.classList.toggle('is-on', d.dataset.caseDot === id));
-    pickCase(id);
-  };
-  const roll = (card) => {
-    if (!motion) return;
-    $$('.rk-count__strip', card).forEach((strip, j) => {
-      const d = Number(strip.parentElement.style.getPropertyValue('--d')) || 0;
-      strip.animate([{ transform: 'translateY(0%)' }, { transform: `translateY(${-d * 10}%)` }], { duration: 900 + j * 60, delay: 140, easing: SOFT, fill: 'backwards' });
-    });
-  };
-  const go = (dir, from = '') => {
-    if (busy) return;
-    if (dir > 0) {
-      // the top card flies off to the left, then slips in under the pile
-      const top = order.shift();
-      order.push(top);
-      order.slice(0, -1).forEach((card, i) => { card.dataset.pos = String(i); });
-      if (!motion) { top.style.transform = ''; place(); sync(); return; }
-      busy = true;
-      top.classList.add('is-thrown');
-      const fly = top.animate([{ transform: from || 'none', opacity: 1 }, { transform: 'translateX(-115%) rotate(-9deg)', opacity: 0 }], { duration: 320, easing: EXIT, fill: 'forwards' });
-      roll(order[0]);
-      sync();
-      fly.onfinish = () => {
-        top.classList.remove('is-thrown');
-        top.style.transform = '';
-        place();
-        fly.cancel();
-        top.animate([{ offset: 0, transform: 'translateY(2.5rem) scale(0.85)', opacity: 0 }], { duration: 420, easing: SOFT });
-        busy = false;
-      };
-    } else {
-      // the bottom card comes back on top from the left
-      const back = order.pop();
-      order.unshift(back);
-      order.forEach((card) => { card.style.transform = ''; });
-      place();
-      if (motion) {
-        back.animate([{ offset: 0, transform: 'translateX(-115%) rotate(-9deg)', opacity: 0 }], { duration: 460, easing: SOFT });
-        roll(back);
-      }
-      sync();
-    }
-  };
-  stackTo = (id) => {
-    const i = order.findIndex((card) => card.dataset.caseCard === id);
-    if (i <= 0) return;
-    order.push(...order.splice(0, i));
-    order.forEach((card) => { card.style.transform = ''; });
-    place();
-    dots.forEach((d) => d.classList.toggle('is-on', d.dataset.caseDot === id)); // the details follow already (choosePick)
-  };
-  $$('[data-kstack-go]', stack).forEach((btn) => btn.addEventListener('click', () => go(Number(btn.dataset.kstackGo))));
-  // a swipe on the top card (the page keeps its vertical scroll: touch-action pan-y)
-  let drag = null;
-  stack.addEventListener('pointerdown', (e) => {
-    const card = e.target.closest('.rk-kstack__card');
-    if (!card || card !== order[0] || busy) return;
-    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, card, on: false };
-  });
-  stack.addEventListener('pointermove', (e) => {
-    if (!drag || e.pointerId !== drag.id) return;
-    const dx = e.clientX - drag.x;
-    const dy = e.clientY - drag.y;
-    if (!drag.on) {
-      if (Math.abs(dx) < 8) return;
-      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
-      drag.on = true;
-      drag.card.classList.add('is-drag');
-      try { drag.card.setPointerCapture(e.pointerId); } catch { /* a pointer the browser no longer tracks */ }
-    }
-    drag.dx = dx;
-    drag.card.style.transform = `translateX(${dx}px) rotate(${(dx / 24).toFixed(2)}deg)`;
-  });
-  const end = () => {
-    if (!drag) return;
-    const { card, dx, on } = drag;
-    drag = null;
-    card.classList.remove('is-drag');
-    if (!on) return;
-    if (Math.abs(dx) > 70) { go(dx < 0 ? 1 : -1, card.style.transform); return; }
-    const was = card.style.transform;
-    card.style.transform = '';
-    if (motion) card.animate([{ transform: was }, { transform: 'none' }], { duration: 380, easing: SOFT });
-  };
-  stack.addEventListener('pointerup', end);
-  stack.addEventListener('pointercancel', end);
-}
-
 /** parts a tap has just shown: they rise into place one after another */
 function cascadeIn(els, rise) {
   if (!motion) return;
@@ -534,21 +377,6 @@ function goToForm(kb = false) {
   setTimeout(focus, motion ? 400 : 0);
 }
 
-/* ---------- 1 → 2 · block 2 slides over the first screen (ai.css: html.ai-stick, a first screen marked data-cover): it
-   pins once its bottom reaches the screen's bottom, so its height goes to CSS (--hero-h), kept fresh on resize ---------- */
-/** the first screen pins and block 2 slides over it on wider screens only; phones scroll it away as an ordinary block
- *  (the owner, 21 Oct: «на моб версії ефект наїзду не потрібен») */
-function initCover() {
-  const hero = $('.ai-hero[data-cover]');
-  if (!hero || typeof ResizeObserver !== 'function') return;
-  const set = () => root.style.setProperty('--hero-h', `${hero.offsetHeight}px`);
-  set();
-  new ResizeObserver(set).observe(hero);
-  const apply = () => root.classList.toggle('ai-stick', !phoneMQ.matches);
-  apply();
-  phoneMQ.addEventListener('change', apply);
-}
-
 /* ---------- 5 · the steps' line: each dot lights as it reaches the middle of the screen and the line runs on to the
    next one (CSS transitions on transform and opacity, once each). Steps already passed are lit at once ---------- */
 /* ==========================================================================
@@ -567,7 +395,7 @@ const LOOP = new Set(['hero']);
 const LOOP_HOLD = 2600;
 
 function initScenes() {
-  const defs = { hero: playHero, google: playGoogle, meta: playMeta, live: playLive, path: playPath, case: playCase, kstack: playStack, how: playHow, page: playPage };
+  const defs = { hero: playHero, google: playGoogle, meta: playMeta, live: playLive, path: playPath, how: playHow, page: playPage };
   for (const el of $$('[data-scene]')) {
     const play = defs[el.dataset.scene];
     if (!play) continue;
@@ -785,12 +613,13 @@ const tap = (scene, el, delay) =>
   anim(scene, el, [{ opacity: 0.9, transform: 'scale(0.3)' }, { opacity: 0, transform: 'scale(1.6)' }], { duration: 560, delay, fill: 'none' });
 
 /* ---------- 1 · the way of a request (the owner's redesign, 20 Oct; Magic UI's / 21st.dev's Animated Beam): four times
-   (Google, Instagram, Facebook, Google) a light leaves the network, runs down its line, across, into «Ваш сайт», which
+   (Google, Instagram, Facebook, Google; phones three, the first Google left out) a light leaves the network, runs down its line, across, into «Ваш сайт», which
    answers, and on down into the list, where the request lands on top with its source (React Bits' AnimatedList: the
    earlier ones step down), and that network's count goes up. About 4 s ---------- */
 const HERO_STEP = 820;
 function playHero(scene, replay) {
-  const rows = $$('.rk-inbox__row', scene.el); // newest first, as at rest
+  // newest first, as at rest; only the rows shown (phones hide the oldest)
+  const rows = $$('.rk-inbox__row', scene.el).filter((row) => row.getClientRects().length);
   const n = rows.length;
   // the first light leaves once the window has risen into place (its own CSS rise ends at about 1.1 s)
   const base = replay ? 200 : Math.max(250, 1000 - performance.now());
@@ -845,7 +674,9 @@ function playHero(scene, replay) {
     const k = ts.length;
     if (!strip || !k) continue;
     const end = ts[k - 1] + STEP;
-    const yy = (j) => `translateY(${((-j * 100) / (k + 1)).toFixed(3)}%)`;
+    // the strip holds 0…n for all the rows, so a step is a share of all its digits, not of the k shown
+    const digits = strip.children.length;
+    const yy = (j) => `translateY(${((-j * 100) / digits).toFixed(3)}%)`;
     const frames = [{ offset: 0, transform: yy(0) }];
     ts.forEach((tt, j) => {
       frames.push({ offset: tt / end, transform: yy(j), easing: OUT });
@@ -1243,46 +1074,6 @@ function playPage(scene) {
   }
   // the clear page's button: a hover, a press
   timeline(scene, $('.rk-cur__pill', el), 6650, [[6650, { transform: 'none' }], [6800, { transform: 'scale(1.04)' }, OUT], [6850, { transform: 'scale(1.04)' }], [6910, { transform: 'scale(0.96)' }], [7250, { transform: 'none' }, SPRING]], { fill: 'none' });
-}
-
-/* ---------- 4 · the case: the four tiles rise one after another and their digits roll up from 0 (React Bits Counter),
-   the one segment of four fills; where the screenshot stands open beside them, it rises and gets its two rings. The
-   numbers land on the account's own. About 1.8 s ---------- */
-function playCase(scene) {
-  const tiles = $$('.rk-kase__m', scene.el);
-  tiles.forEach((tile, i) => {
-    show(scene, tile, 80 + i * 110, 'translateY(0.75rem)', 560);
-    $$('.rk-count__strip', tile).forEach((strip, j) => {
-      const d = Number(strip.parentElement.style.getPropertyValue('--d')) || 0;
-      anim(scene, strip, [{ transform: 'translateY(0%)' }, { transform: `translateY(${-d * 10}%)` }], { duration: 1100 + j * 80, delay: 220 + i * 110, easing: SOFT });
-    });
-  });
-  anim(scene, $('.rk-kase__seg i', scene.el), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 700, delay: 900, easing: MOVE });
-  const shot = $('.rk-kase__shot', scene.el);
-  if (shot?.open) caseShot(shot, 300, (el, k, o) => anim(scene, el, k, o));
-}
-/** the account's window rises, then its two key cells get their rings */
-function caseShot(shot, at, run) {
-  run($('.rk-case__win', shot), [{ opacity: 0, transform: 'translateY(1rem)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: at });
-  $$('.rk-case__ring', shot).forEach((ring, i) => {
-    run(ring, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: at + 600 + i * 160 });
-    run(ring, [{ transform: 'scale(1.12)' }, { transform: 'none' }], { duration: 560, delay: at + 600 + i * 160, easing: SPRING });
-  });
-}
-
-/* ---------- 4 · phones: the stack deals itself in (the cards land on the pile one by one), the top card's numbers roll
-   up, then it leans to the left once and back, so the next case shows its edge. About 2.4 s ---------- */
-function playStack(scene) {
-  const cards = $$('.rk-kstack__card', scene.el).sort((a, b) => Number(a.dataset.pos) - Number(b.dataset.pos));
-  cards.slice().reverse().forEach((card, i) =>
-    anim(scene, card, [{ offset: 0, opacity: 0, transform: 'translateY(2.5rem) scale(0.9) rotate(-4deg)' }], { duration: 640, delay: 80 + i * 140, easing: SOFT }));
-  const top = cards[0];
-  $$('.rk-count__strip', top).forEach((strip, j) => {
-    const d = Number(strip.parentElement.style.getPropertyValue('--d')) || 0;
-    anim(scene, strip, [{ transform: 'translateY(0%)' }, { transform: `translateY(${-d * 10}%)` }], { duration: 1000 + j * 60, delay: 560, easing: SOFT });
-  });
-  anim(scene, $('.rk-kstack__nav', scene.el), [{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: 640 });
-  anim(scene, top, [{ transform: 'none' }, { transform: 'translateX(-1.75rem) rotate(-2deg)', offset: 0.45 }, { transform: 'none' }], { duration: 900, delay: 1500, easing: MOVE, fill: 'none' });
 }
 
 /* ---------- 8 · how we work, picture by picture: the voices of the call rise and settle, the queries come in (the useless

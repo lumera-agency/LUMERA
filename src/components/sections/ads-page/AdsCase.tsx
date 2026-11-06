@@ -1,7 +1,6 @@
-/* eslint-disable @next/next/no-img-element -- the account's screenshots are shown as they are, never re-encoded (the client's numbers stay pixel for pixel) */
 import { getTranslations } from "next-intl/server";
-import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich as R } from "@/components/ai/rich";
+import { AdsCases, type CaseView } from "@/components/ads/AdsCases";
 
 /** A cell ringed on a screenshot, in % of the image */
 type Ring = { left: number; top: number; width: number; height: number };
@@ -9,11 +8,9 @@ type Shot = { id: string; src: string; w: number; h: number; rings?: Ring[] };
 type Case = {
   id: "ac" | "pest" | "volter";
   shots: Shot[];
-  /** the conversion tile's segments: [filled, of] (≈ 1 in 4), or none */
-  seg?: [number, number];
   /** the client's site, linked from the case (the owner, 21 Oct) */
   site: string;
-  /** the screenshot shows the account before our changes: the window's chip and its caption say so */
+  /** the screenshot shows the account before our changes: the window's foot says so */
   before?: boolean;
 };
 
@@ -33,7 +30,6 @@ type Case = {
 const CASES: Case[] = [
   {
     id: "ac",
-    seg: [1, 4],
     site: "https://airfrost.com.ua",
     shots: [
       { id: "kw", src: "/img/ads/case-ac-keywords.jpg", w: 780, h: 400, rings: [{ left: 78, top: 13, width: 10.6, height: 7.5 }, { left: 88.6, top: 13, width: 11, height: 7.5 }] },
@@ -55,205 +51,37 @@ const CASES: Case[] = [
     shots: [{ id: "cmp", src: "/img/ads/case-volter-campaigns.jpg", w: 1138, h: 335 }],
   },
 ];
-/** the four numbers: the price of a request first (the large tile), requests and spend side by side, conversion under them */
-const METRICS = ["cpl", "n", "spend", "cr"] as const;
-
-/** A number whose digits stand on strips of 0–9 (React Bits' Counter, as in block 3): the runtime rolls each digit up
- *  from 0 once; signs, spaces and the comma stay put. Screen readers get the text itself. */
-function Roll({ text, sr = true }: { text: string; sr?: boolean }) {
-  return (
-    <>
-      <span className="rk-count" aria-hidden="true">
-        {Array.from(text).map((ch, i) =>
-          /\d/.test(ch) ? (
-            <span className="rk-count__d" style={{ "--d": ch } as React.CSSProperties} key={i}>
-              <span className="rk-count__sizer">0</span>
-              <span className="rk-count__strip">
-                {"0123456789".split("").map((n) => <span key={n}>{n}</span>)}
-              </span>
-            </span>
-          ) : (
-            <span className="rk-count__c" key={i}>{ch}</span>
-          ),
-        )}
-      </span>
-      {sr && <span className="visually-hidden">{text}</span>}
-    </>
-  );
-}
-
-/** A number, or «before → after»: the old one small and struck through, the new one rolled up large */
-function Value({ text }: { text: string }) {
-  const [was, now] = text.split(" → ");
-  if (!now) return <Roll text={text} />;
-  return (
-    <>
-      <span className="rk-kase__ba" aria-hidden="true">
-        <s className="rk-kase__was">{was}</s>
-        <Roll text={now} sr={false} />
-      </span>
-      <span className="visually-hidden">{text}</span>
-    </>
-  );
-}
+/** the numbers: the price of a request (on its card), then requests, conversion and spend */
+const METRICS = ["cpl", "n", "cr", "spend"] as const;
 
 /**
  * 2 · Кейси (the page's one light block, right after the first screen: the owner's brief of 21 Oct, the proof before the
- * explaining; the headline number the largest type on the page, in ember; the screenshot across the block, open on
- * phones too): the clients' cases behind a switcher (the owner, 21 Oct: more cases, the page no longer than one;
- * each tab shows the case's headline number, as 21st.dev's «Logo Cloud Story Tabs»; phones swipe the tabs as a row):
- * each is one card with the numbers that matter (21st.dev's «Stats Bento»): the price of a request or of an accepted
- * call large, then requests or calls, spend, conversion; what was done in one line; the account's screenshots under
- * «Скриншот з акаунта» (open beside the numbers on wide screens, folded on phones; tabs, the key cells ringed); the
- * honest line; the button. Plays once per case (runtime: scene «case»): the tiles rise, the digits roll up.
+ * explaining). The words are resolved here, the switching and the numbers' run are AdsCases (a client part): the setting
+ * of 6 Nov 2026 is described there.
  */
 export async function AdsCase({ index }: { index: number }) {
   const t = await getTranslations("ads");
+  const cases: CaseView[] = CASES.map((c) => ({
+    id: c.id,
+    name: t(`case.${c.id}.name`),
+    who: t(`case.${c.id}.who`),
+    per: t(`case.${c.id}.per`),
+    site: c.site,
+    host: new URL(c.site).hostname,
+    before: Boolean(c.before),
+    cap: c.before ? t(`case.${c.id}.cap`) : t("case.cap"),
+    tab: { v: t(`case.${c.id}.tab.v`), k: t(`case.${c.id}.tab.k`) },
+    metrics: METRICS.map((key) => ({ key, k: t(`case.${c.id}.m.${key}.k`), v: t(`case.${c.id}.m.${key}.v`) })),
+    how: t.rich(`case.${c.id}.how`, R),
+    shots: c.shots.map((shot) => ({ ...shot, label: t(`case.${c.id}.shots.${shot.id}`), alt: t(`case.${c.id}.alt.${shot.id}`) })),
+  }));
   return (
     <section className="section section--ivory ai-sec rk-case" id="case" aria-labelledby="case-title">
       <div className="container">
-        <header className="s-head">
-          <p className="s-head__meta">
-            <span className="s-head__index">{index}</span>
-            <span>{t("nav.case")}</span>
-          </p>
-          <h2 className="s-head__title" id="case-title" data-split="">
-            <span className="tone">{t.rich("case.title", R)}</span>
-          </h2>
-          <p className="s-head__intro">{t("case.intro")}</p>
-        </header>
-
-        {/* the cases as a stack of short cards (React Bits «Stack»; phones on 21 Oct, then wide screens too): the top one
-            is swiped or sent away and tucks under the pile; the case's details follow it, beside the stack on wide screens,
-            under it on phones (runtime: initCaseStack, scene «kstack») */}
-        <div className="rk-kgrid">
-          <div className="rk-kstack" data-scene="kstack">
-            <div className="rk-kstack__pile">
-              {CASES.map((c, i) => (
-                <article className="rk-kstack__card" data-case-card={c.id} data-pos={i} aria-hidden={i > 0} key={c.id}>
-                  <p className="rk-kstack__top">
-                    <span className="rk-kstack__chip">{t(`case.${c.id}.chip`)}</span>
-                    <span className="rk-kstack__of">{t("case.of", { n: i + 1, total: CASES.length })}</span>
-                  </p>
-                  <h3 className="rk-kstack__name">{t(`case.${c.id}.name`)}</h3>
-                  <p className="rk-kstack__when">{t(`case.${c.id}.when`)}</p>
-                  <p className="rk-kstack__v"><Value text={t(`case.${c.id}.tab.v`)} /></p>
-                  <p className="rk-kstack__k">{t(`case.${c.id}.tab.k`)}</p>
-                  <dl className="rk-kstack__mini">
-                    {(["n", "cr"] as const).map((m) => (
-                      <div key={m}>
-                        <dt>{t(`case.${c.id}.m.${m}.k`)}</dt>
-                        <dd><Value text={t(`case.${c.id}.m.${m}.v`)} /></dd>
-                      </div>
-                    ))}
-                  </dl>
-                </article>
-              ))}
-            </div>
-            <div className="rk-kstack__nav">
-              <button type="button" className="rk-kstack__btn" data-kstack-go="-1" aria-label={t("case.prev")}>
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5.5 8.5 12l6.5 6.5" /></svg>
-              </button>
-              <span className="rk-kstack__dots" aria-hidden="true">
-                {CASES.map((c, i) => <i className={i === 0 ? "is-on" : undefined} data-case-dot={c.id} key={c.id} />)}
-              </span>
-              <button type="button" className="rk-kstack__btn" data-kstack-go="1" aria-label={t("case.next")}>
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5.5 15.5 12 9 18.5" /></svg>
-              </button>
-            </div>
-          </div>
-
-          {/* the switcher: one case at a time (runtime: initCasePick; arrow keys move between them) */}
-          <div className="rk-kase-pick" role="tablist" aria-label={t("case.pick")}>
-            {CASES.map((c, i) => (
-              <button type="button" className="rk-kase-pick__b" role="tab" id={`case-${c.id}`} aria-controls={`case-${c.id}-panel`} aria-selected={i === 0} tabIndex={i === 0 ? 0 : -1} data-case-pick={c.id} key={c.id}>
-                <span className="rk-kase-pick__n">{t(`case.${c.id}.name`)}</span>
-                <b className="rk-kase-pick__v">{t(`case.${c.id}.tab.v`)}</b>
-                <small className="rk-kase-pick__k">{t(`case.${c.id}.tab.k`)}</small>
-              </button>
-            ))}
-          </div>
-
-          {CASES.map((c, i) => (
-            <div className="rk-kase-panel" role="tabpanel" id={`case-${c.id}-panel`} aria-labelledby={`case-${c.id}`} data-case-panel={c.id} hidden={i > 0} key={c.id}>
-              <article className="rk-kase" data-scene="case" aria-labelledby={`case-${c.id}-who`}>
-                <div className="rk-kase__main">
-                  <p className="rk-kase__who" id={`case-${c.id}-who`}>
-                    <span className="rk-kase__chip">{t(`case.${c.id}.chip`)}</span>
-                    <span>{t(`case.${c.id}.who`)}</span>
-                  </p>
-                  <p className="rk-kase__per">{t(`case.${c.id}.per`)}</p>
-                  <dl className="rk-kase__stats">
-                    {METRICS.map((m) => (
-                      <div className={`rk-kase__m rk-kase__m--${m}`} key={m}>
-                        <dt className="rk-kase__k">{t(`case.${c.id}.m.${m}.k`)}</dt>
-                        <dd className="rk-kase__v"><Value text={t(`case.${c.id}.m.${m}.v`)} /></dd>
-                        <dd className="rk-kase__s">
-                          {t(`case.${c.id}.m.${m}.s`)}
-                          {m === "cr" && c.seg && (
-                            <span className="rk-kase__seg" aria-hidden="true">
-                              {Array.from({ length: c.seg[1] }, (_, k) => <i className={k < c.seg![0] ? "is-on" : undefined} key={k} />)}
-                            </span>
-                          )}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                  <p className="rk-kase__site">
-                    <span>{t("case.site")}</span>
-                    <a className="rk-kase__go" href={c.site} target="_blank" rel="noopener">
-                      {new URL(c.site).hostname}
-                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-arrow" /></svg>
-                    </a>
-                  </p>
-                  <p className="rk-kase__how">{t.rich(`case.${c.id}.how`, R)}</p>
-                </div>
-
-                <details className="rk-kase__shot" open>
-                  <summary className="rk-kase__sum">{t("case.shot")}</summary>
-                  <div className="rk-case__win">
-                    <div className="rk-case__bar">
-                      <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
-                      <span className="rk-case__host">ads.google.com</span>
-                      {/* tabs only when there is more than one screenshot */}
-                      {c.shots.length > 1 && (
-                        <span className="rk-case__tabs" role="tablist" aria-label={t("case.tabs")}>
-                          {c.shots.map((s, k) => (
-                            <button type="button" className="rk-case__tab" role="tab" id={`case-${c.id}-tab-${s.id}`} aria-controls={`case-${c.id}-pic-${s.id}`} aria-selected={k === 0} tabIndex={k === 0 ? 0 : -1} data-case-tab={s.id} key={s.id}>
-                              {t(`case.${c.id}.shots.${s.id}`)}
-                            </button>
-                          ))}
-                        </span>
-                      )}
-                      {c.before ? (
-                        <span className="rk-case__ok rk-case__ok--before">{t("case.before")}</span>
-                      ) : (
-                        <span className="rk-case__ok"><b aria-hidden="true" />{t("case.ok")}</span>
-                      )}
-                    </div>
-                    {c.shots.map((s, k) => (
-                      <div className="rk-case__pic" id={`case-${c.id}-pic-${s.id}`} role={c.shots.length > 1 ? "tabpanel" : undefined} aria-labelledby={c.shots.length > 1 ? `case-${c.id}-tab-${s.id}` : undefined} tabIndex={0} data-case-pic={s.id} hidden={k > 0} key={s.id}>
-                        <div className="rk-case__in">
-                          <img src={s.src} width={s.w} height={s.h} alt={t(`case.${c.id}.alt.${s.id}`)} loading="lazy" decoding="async" />
-                          {s.rings?.map((r, j) => (
-                            <span className="rk-case__ring" aria-hidden="true" key={j} style={{ left: `${r.left}%`, top: `${r.top}%`, width: `${r.width}%`, height: `${r.height}%` }} />
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="rk-case__swipe" aria-hidden="true">← {t("case.swipe")} →</p>
-                  <p className="rk-case__cap">{c.before ? t(`case.${c.id}.cap`) : t("case.cap")}</p>
-                </details>
-
-                <div className="rk-kase__end">
-                  <p className="rk-kase__honest">{t.rich(`case.${c.id}.honest`, R)}</p>
-                  <ButtonLink href="#contact" variant="primary">{t("cta")}</ButtonLink>
-                </div>
-              </article>
-            </div>
-          ))}
-        </div>
+        <AdsCases
+          cases={cases}
+          text={{ index, nav: t("nav.case"), title: t.rich("case.title", R), intro: t("case.intro"), cta: t("cta"), site: t("case.site"), before: t("case.before") }}
+        />
       </div>
     </section>
   );

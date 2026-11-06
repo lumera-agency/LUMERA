@@ -1,0 +1,175 @@
+"use client";
+/* eslint-disable @next/next/no-img-element -- the account's screenshots are shown as they are, never re-encoded (the client's numbers stay pixel for pixel) */
+import { useEffect, useState } from "react";
+import { ButtonLink } from "@/components/ui/button/Button";
+
+type Ring = { left: number; top: number; width: number; height: number };
+export type CaseShot = { id: string; src: string; w: number; h: number; rings?: Ring[]; label: string; alt: string };
+export type CaseMetric = { key: "cpl" | "n" | "cr" | "spend"; k: string; v: string };
+export type CaseView = {
+  id: string;
+  name: string;
+  who: string;
+  per: string;
+  site: string;
+  host: string;
+  before: boolean;
+  cap: string;
+  tab: { v: string; k: string };
+  metrics: CaseMetric[];
+  how: React.ReactNode;
+  shots: CaseShot[];
+};
+export type CasesText = { index: number; nav: string; title: React.ReactNode; intro: string; cta: string; site: string; before: string };
+
+/** a number, its «≈» and its unit smaller; «before → after» with the old one struck through */
+function Num({ text, count = false }: { text: string; count?: boolean }) {
+  const [was, now] = text.includes(" → ") ? text.split(" → ") : [null, text];
+  const match = now.match(/^(≈\s*)?(.+?)(\s*(?:грн|%))?$/);
+  const body = match?.[2] ?? now;
+  return (
+    <span className="rk-cs-num">
+      {was && <s className="rk-cs-num__was">{was}</s>}
+      <span className="rk-cs-num__now">
+        {match?.[1] && <span className="rk-cs-num__approx">≈</span>}
+        {count ? <CountUp value={body} /> : body}
+        {match?.[3] && <small className="rk-cs-num__unit">{match[3].trim()}</small>}
+      </span>
+    </span>
+  );
+}
+
+/** a number that runs up from zero when it appears (the owner, 6 Nov: the client must see the numbers), written as the
+ *  message writes it (a space between thousands, a comma before the decimals); still with reduced motion */
+function CountUp({ value }: { value: string }) {
+  const target = Number(value.replace(/[\s ]/g, "").replace(",", "."));
+  const decimals = value.includes(",") ? value.split(",")[1].length : 0;
+  const [shown, setShown] = useState(value);
+  useEffect(() => {
+    if (!Number.isFinite(target) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const start = performance.now();
+    const DURATION = 900;
+    let frame = 0;
+    const tick = (time: number) => {
+      const progress = Math.min(1, (time - start) / DURATION);
+      const eased = 1 - (1 - progress) ** 3;
+      const [whole, fraction] = (target * eased).toFixed(decimals).split(".");
+      setShown(whole.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + (fraction ? `,${fraction}` : ""));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [target, decimals]);
+  return <>{shown}</>;
+}
+
+const metric = (c: CaseView, key: CaseMetric["key"]) => c.metrics.find((m) => m.key === key)!;
+const ArrowRight = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5.5 15.5 12 9 18.5" /></svg>;
+/** the three numbers' marks: a rising line, a target, coins */
+const STAT_ICON: Record<"n" | "cr" | "spend", React.ReactNode> = {
+  n: <path d="M4 17l5-5 4 4 7-8M15 8h5v5" />,
+  cr: <><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="4" /><circle cx="12" cy="12" r="0.8" /></>,
+  spend: <><ellipse cx="12" cy="7" rx="7" ry="3" /><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" /></>,
+};
+
+/** the account's window, as tall as the column: its screenshots' tabs and the client's site in the bar (a lime link,
+ *  plainly one to follow), the screenshot as large as the room allows (top left, as in the account), who and when and
+ *  the note on the numbers at its foot */
+function Window({ c, text }: { c: CaseView; text: CasesText }) {
+  const [shot, setShot] = useState(0);
+  const current = c.shots[shot] ?? c.shots[0];
+  return (
+    <figure className="rk-cs-win">
+      <div className="rk-cs-win__bar">
+        <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
+        <span className="rk-cs-win__host">ads.google.com</span>
+        {c.shots.length > 1 && (
+          <span className="rk-cs-win__tabs" role="tablist">
+            {c.shots.map((s, index) => (
+              <button type="button" role="tab" aria-selected={index === shot} onClick={() => setShot(index)} key={s.id}>{s.label}</button>
+            ))}
+          </span>
+        )}
+        <a className="rk-cs-win__site" href={c.site} target="_blank" rel="noopener">
+          <span>{text.site}</span>
+          <b>{c.host}</b>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
+        </a>
+      </div>
+      <div className="rk-cs-win__body">
+        <span className="rk-cs-win__in" style={{ "--ar": current.w / current.h } as React.CSSProperties} key={`${c.id}-${current.id}`}>
+          <img src={current.src} width={current.w} height={current.h} alt={current.alt} loading="lazy" decoding="async" />
+          {current.rings?.map((ring, index) => (
+            <span className="rk-cs-ring" aria-hidden="true" key={index} style={{ left: `${ring.left}%`, top: `${ring.top}%`, width: `${ring.width}%`, height: `${ring.height}%` }} />
+          ))}
+        </span>
+      </div>
+      <figcaption className="rk-cs-win__foot"><b>{c.who}</b> · {c.per}. {c.before && <em>{text.before}.</em>} {c.cap}</figcaption>
+    </figure>
+  );
+}
+
+/**
+ * The cases (the owner's setting of 6 Nov 2026, after four rounds of layouts): the block is one screen on a computer.
+ * Its heading is the first row; under it, on the left, the cases as three small cards (the chosen one dark, its price in
+ * ember), the case's three numbers (each with its lime mark, a lime highlighter swept under the number as it runs up
+ * from zero), what was done, the button at the column's foot; on the right only the account's window, as tall as the
+ * column. A link to one case (…#case-pest, the site's menu) shows it: the cards keep those ids (runtime openCase).
+ */
+export function AdsCases({ cases, text }: { cases: CaseView[]; text: CasesText }) {
+  const [active, setActive] = useState(0);
+  const c = cases[active];
+  /** the arrow keys move between the cases while a card has the focus */
+  const keys = (event: React.KeyboardEvent) => {
+    const step = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 0;
+    if (!step) return;
+    event.preventDefault();
+    const next = (active + step + cases.length) % cases.length;
+    setActive(next);
+    document.getElementById(`case-${cases[next].id}`)?.focus();
+  };
+  return (
+    <div className="rk-cs">
+      <header className="rk-cs-head">
+        <p className="rk-cs-head__meta"><span>{text.index}</span>{text.nav}</p>
+        <h2 className="rk-cs-head__title" id="case-title"><span className="tone">{text.title}</span></h2>
+        <p className="rk-cs-head__intro">{text.intro}</p>
+      </header>
+      <div className="rk-cs__left">
+        <div className="rk-cs__cards" role="tablist" aria-orientation="vertical" aria-label={text.nav} onKeyDown={keys}>
+          {cases.map((item, index) => (
+            <button
+              type="button"
+              role="tab"
+              className="rk-cs-card"
+              id={`case-${item.id}`}
+              data-case-pick={item.id}
+              aria-selected={index === active}
+              tabIndex={index === active ? 0 : -1}
+              onClick={() => setActive(index)}
+              key={item.id}
+            >
+              <span className="rk-cs-card__n"><small>{text.nav} {index + 1}</small>{item.name}</span>
+              <span className="rk-cs-card__v"><Num text={item.tab.v} /></span>
+              <span className="rk-cs-card__k">{item.tab.k}</span>
+              <span className="rk-cs-card__go" aria-hidden="true"><ArrowRight /></span>
+            </button>
+          ))}
+        </div>
+        <div className="rk-cs-facts" role="tabpanel" aria-labelledby={`case-${c.id}`} key={c.id}>
+          <dl className="rk-cs-dl">
+            {(["n", "cr", "spend"] as const).map((key) => (
+              <div key={key}>
+                <dt><span className="rk-cs-dl__ico" aria-hidden="true"><svg viewBox="0 0 24 24">{STAT_ICON[key]}</svg></span>{metric(c, key).k}</dt>
+                <dd><Num text={metric(c, key).v} count /></dd>
+              </div>
+            ))}
+          </dl>
+          <p className="rk-cs-how">{c.how}</p>
+        </div>
+        <div className="rk-cs-end"><ButtonLink href="#contact" variant="primary">{text.cta}</ButtonLink></div>
+      </div>
+      <Window c={c} text={text} key={c.id} />
+    </div>
+  );
+}
