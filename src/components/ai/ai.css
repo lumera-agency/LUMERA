@@ -84,8 +84,6 @@ html:not(.motion) .ai-replay { display: none; }
 .section--ivory .ai-replay:focus-visible { outline-color: var(--ink-dark); }
 
 /* ---------- topbar on this page: «Хочу такого робота»; on phones the sticky bar below carries it ---------- */
-@media (max-width: 600px) { .ai-topbar__cta { display: none; } }
-.topbar__sheet .topbar__home { color: var(--ink-soft); font-size: 1.05rem; }
 
 /* ==========================================================================
    Hero
@@ -320,8 +318,8 @@ html:not(.motion) .ai-replay { display: none; }
 
 /* ---------- phones ---------- */
 @media (max-width: 600px) {
-  .ai-sec { padding-top: 4.5rem; }
-  .ai-sec.section--ivory { padding-bottom: 4.5rem; }
+  .ai-sec { padding-top: var(--rhythm-section); }
+  .ai-sec.section--ivory { padding-bottom: var(--rhythm-section); }
   .s-head { margin-bottom: 2rem; }
   .s-head__meta { margin-bottom: 1rem; }
 
@@ -438,20 +436,12 @@ html:not(.motion) .ai-replay { display: none; }
 main[data-ai-page="ai"] .ai-hero__actions { flex-direction: column; align-items: flex-start; row-gap: 0.875rem; }
 
 .ai-todo { display: grid; justify-items: end; gap: 0.375rem; width: min(28.75rem, 100%); }
-.ai-todo__win { width: 100%; border-radius: 1rem; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.95); }
-.ai-todo__bar { height: 2.75rem; padding: 0 0.75rem 0 1rem; }
-.ai-todo__bar > span:not(.ai-sample) { display: inline-block; margin-left: 0.5rem; padding: 0.3em 0.85em; font-size: 0.75rem; color: var(--ink-soft); }
-.ai-todo__list { padding: 0.25rem 0; }
 .ai-todo__row { position: relative; isolation: isolate; display: grid; grid-template-columns: 1.75rem minmax(0, 1fr) auto; column-gap: 0.875rem; align-items: center; min-height: 3.75rem; padding: 0.625rem 1.25rem 0.625rem 1.125rem; }
 .ai-todo__row + .ai-todo__row { border-top: 1px solid rgba(246, 246, 243, 0.07); }
-.ai-todo__n { position: relative; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font: 500 0.75rem/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-mute); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.28); }
 .ai-todo__fill { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; font-style: normal; color: var(--on-accent); background: var(--signal); }
-.ai-todo__row--you .ai-todo__fill { background: var(--ember); }
 .ai-todo__t { font-size: 0.9375rem; line-height: 1.35; color: var(--ink); text-wrap: pretty; opacity: 0.7; }
-.ai-todo__row--you .ai-todo__t { opacity: 1; }
 .ai-todo__who { justify-self: end; font: 400 0.75rem/1.2 var(--font-mono); letter-spacing: 0.02em; white-space: nowrap; color: var(--ink-soft); }
 .ai-todo__who > [aria-hidden] { color: var(--signal); }
-.ai-todo__row--you .ai-todo__who { font-weight: 500; color: var(--ember-ink); }
 .ai-todo__hl { position: absolute; inset: 0; z-index: -1; background: rgba(210, 86, 28, 0.08); }
 .ai-todo .ai-replay { margin-right: -0.875rem; }
 
@@ -460,33 +450,16 @@ main[data-ai-page="ai"] .ai-hero__actions { flex-direction: column; align-items:
 
 
 /* ---------- 3 · the services: a price list, no frames ---------- */
-.ai-do__sum { font-weight: 500; color: var(--ink); }
 .ai-do__foot { max-width: 72ch; margin-top: var(--rhythm-s); font-size: var(--fs-small); font-weight: 300; line-height: 1.6; color: var(--ink-mute); text-wrap: pretty; }
 .ai-do__foot .link { display: flex; align-items: center; gap: 0.375rem; width: max-content; min-height: 2.75rem; margin-top: 2px; color: var(--ink-soft); }
 .ai-do__foot .link svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---------- 4 · the doors (ivory) ---------- */
-.ai-doors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--col-gap); }
 .ai-door { display: grid; grid-template-columns: 17.5rem minmax(0, 1fr); column-gap: 2rem; align-items: stretch; padding: 1.5rem; border-radius: var(--radius-lg); color: var(--ink-dark); text-decoration: none; background: var(--card-ivory); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1), 0 1.875rem 3.75rem -2.625rem rgba(60, 45, 30, 0.45); transition: box-shadow var(--dur) var(--ease-out); }
-.ai-door__media { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; justify-items: center; gap: 0.75rem; }
-.ai-door__still { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 0.875rem; background: #0d0d0d; box-shadow: 0 0 0 1px rgba(15, 14, 13, 0.14); outline: 1px solid rgba(255, 255, 255, 0.06); outline-offset: -1px; }
-.ai-door__body { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; padding-top: 2px; }
-.ai-door__k { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 0.75rem; }
-.ai-door__tag { display: inline-flex; align-items: center; height: 1.5rem; padding: 0 0.625rem; border-radius: 62.4375rem; font: 500 0.6875rem/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
-.ai-door__tag--case { color: var(--card-ivory); background: var(--ink-dark); }
-.ai-door__tag--ex { color: var(--ink-dark); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.45); }
-.ai-door__m { font-size: var(--fs-small); color: var(--ink-dark-mute); }
-.ai-door__t { margin: 0.25rem 0 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; text-wrap: balance; }
-.ai-door__t b { font-weight: 400; color: var(--ember-deep); }
-.ai-door__p { max-width: 38ch; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-dark-soft); text-wrap: pretty; }
-.ai-door__go { display: inline-flex; align-items: center; margin-top: auto; font-size: var(--fs-body-s); font-weight: 500; }
-.ai-door__go svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
 .ai-door:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 0.25rem; border-radius: var(--radius-lg); }
 @media (hover: hover) {
   .ai-door:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3), 0 1.875rem 3.75rem -2.375rem rgba(60, 45, 30, 0.55); }
-  .ai-door:hover .ai-door__go svg { transform: translate(0.1875rem, -0.1875rem); }
 }
-.ai-doors__sample { display: none; }
 
 /* ---------- 5 · the form's quick picks ---------- */
 .ai-picks { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2px 0 0.25rem; }
@@ -506,46 +479,24 @@ main[data-ai-page="ai"] .ai-hero__actions { flex-direction: column; align-items:
 }
 @media (max-width: 1100px) {
   .ai-door { grid-template-columns: 9.375rem minmax(0, 1fr); column-gap: 1.25rem; padding: 1.25rem; }
-  .ai-door__still { border-radius: 0.625rem; }
-  .ai-door__sample { display: none; }
-  .ai-doors__sample { display: flex; justify-content: flex-end; margin-top: 0.75rem; }
 }
 @media (max-width: 860px) {
   .ai-hero__visual { margin-top: 3rem; }
   .ai-todo { width: min(32.5rem, 100%); }
-  .ai-doors { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .ai-door { grid-template-columns: 12.5rem minmax(0, 1fr); column-gap: 1.5rem; padding: 1.25rem; }
-  .ai-door__still { border-radius: 0.75rem; }
 }
 @media (max-width: 600px) {
   main[data-ai-page="ai"] .ai-hero__title--auto { font-size: clamp(1.85rem, 8.2vw, 2.2rem); }
-  #services { padding-bottom: 4.5rem; }
+  #services { padding-bottom: var(--rhythm-section); }
 
   .ai-todo { width: 100%; }
-  .ai-todo__bar { flex-wrap: wrap; height: auto; min-height: 2.5rem; padding: 0.4375rem 0.625rem 0.4375rem 0.75rem; row-gap: 0.375rem; }
-  .ai-todo__bar > i { display: none; }
-  .ai-todo__bar > span:not(.ai-sample) { display: inline-block; margin-left: 0; font-size: 0.7188rem; }
-  .ai-todo__list { padding: 2px 0; }
   .ai-todo__row { grid-template-columns: 1.625rem minmax(0, 1fr) auto; column-gap: 0.75rem; min-height: 2.75rem; padding: 0.5625rem 0.875rem 0.5625rem 0.75rem; }
-  .ai-todo__n { width: 1.625rem; height: 1.625rem; font-size: 0.7188rem; }
   .ai-todo__t { font-size: 0.875rem; }
   .ai-todo__who { font-size: 0.7188rem; }
 
 
   .ai-do__foot { margin-top: 1.125rem; font-size: 0.8125rem; }
-
-  .ai-doors { gap: 0.625rem; }
   .ai-door { grid-template-columns: 6rem minmax(0, 1fr); column-gap: 0.875rem; padding: 0.875rem; border-radius: 1.125rem; }
-  .ai-door__still { border-radius: 0.625rem; }
-  .ai-door__sample,
-  .ai-door__p { display: none; }
-  .ai-door__body { gap: 0.5rem; padding-top: 0; }
-  .ai-door__k { gap: 0.375rem 0.5rem; }
-  .ai-door__tag { height: 1.375rem; padding: 0 0.5rem; font-size: 0.6875rem; letter-spacing: 0.1em; }
-  .ai-door__m { font-size: var(--fs-caption); }
-  .ai-door__t { margin: 0; font-size: var(--fs-h4); line-height: 1.25; }
-  .ai-door__go { font-size: 0.8438rem; }
-  .ai-door__go svg { width: 0.875rem; height: 0.875rem; }
 
   main[data-ai-page="ai"] #f-contact-hint { display: none; }
   main[data-ai-page="ai"] #contact textarea { min-height: 4.75rem; }
@@ -586,10 +537,6 @@ main[data-ai-page="ai"] .ai-hero--center .ai-hero__actions { flex-direction: row
    the stone (a still of it, img/ai/lock-stone.webp = img/stone.webp); grain over it, the words over all.
    Static: it comes in once with the words (CSS: ai-stone-in) */
 .ai-hero__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(120% 95% at 70% 56%, #161616 0%, #0c0c0c 52%, #070707 100%); }
-/* the stone stands behind the whole text block, as the first screen's background (owner, 2026-10-12: twice the size it
-   was, in the middle); a soft light behind it, as on the main page. Its size follows the title's font (.ai-hero__head
-   carries the same clamp as the title) */
-.ai-hero__head { position: relative; font-size: clamp(2.5rem, min(4.75vw, calc(var(--vh, 1vh) * 7.6)), 5.4rem); }
 /* its centre is the text block's (the title, the lead and the button): half the title's height plus 1.6 em below it */
 .ai-hero__rock { position: absolute; z-index: -1; left: 50%; top: calc(50% + 1.6em); width: 0; height: 0; pointer-events: none; }
 .ai-hero__glow { position: absolute; left: 0; top: 0; width: 16em; aspect-ratio: 1; border-radius: 50%; transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(255, 246, 232, 0.09), rgba(255, 246, 232, 0.03) 55%, rgba(255, 246, 232, 0) 100%); }
@@ -628,7 +575,6 @@ html.ai-stick .ai-hero[data-cover] + .page > .section:first-of-type { border-rad
 }
 
 /* ---------- 3 · the services: four cards, a short scene each (no glow: the owner, 2026-10-12), «Детальніше» opens the panel ---------- */
-.ai-svcs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
 .ai-svc {
   position: relative;
   isolation: isolate;
@@ -643,40 +589,6 @@ html.ai-stick .ai-hero[data-cover] + .page > .section:first-of-type { border-rad
 }
 @media (hover: hover) and (pointer: fine) { .ai-svc:hover { transform: translateY(-0.25rem); } }
 .ai-svc__art { position: relative; height: 11rem; margin: 0.5rem 0.5rem 0; border-radius: 1rem; overflow: hidden; text-align: left; background: radial-gradient(80% 90% at 50% 100%, rgba(246, 246, 243, 0.05), transparent 70%), #0b0b0b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); }
-.ai-svc__body { display: flex; flex-direction: column; flex: 1; gap: 0.625rem; padding: 1.25rem 1.25rem 1.25rem; }
-.ai-svc__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
-.ai-svc__p { margin: 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
-.ai-svc__facts { align-self: flex-start; margin: 0.25rem 0 0; padding: 0.375rem 0.6875rem; border-radius: 62.4375rem; font: 400 0.75rem/1.2 var(--font-mono); white-space: nowrap; color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.22); }
-.ai-svc__facts--talk { padding-inline: 0; white-space: normal; box-shadow: none; }
-.ai-svc__note { margin: -0.25rem 0 0 0.6875rem; font: 400 0.7188rem/1.3 var(--font-mono); color: var(--ink-mute); }
-.ai-svc__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: auto; padding-top: 0.75rem; }
-.ai-svc__more {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  height: 2.75rem;
-  padding: 0 0.5625rem 0 1.125rem;
-  border: 0;
-  border-radius: 62.4375rem;
-  font: 500 var(--fs-small)/1 var(--font-sans);
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color var(--dur-fast), box-shadow var(--dur-fast);
-}
-.ai-svc__more i { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; color: var(--on-accent); background: var(--ink); transition: transform var(--dur) var(--ease-out); }
-.ai-svc__more svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-.ai-svc__more:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.1875rem; }
-/* «Дивитися кейс»: a button of its own; on a pointer it grows a little and fills with ember */
-.ai-svc__case { --h: 2.75rem; height: 2.75rem; transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
-@media (hover: hover) {
-  .ai-svc__more:hover { background: rgba(255, 255, 255, 0.1); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.34); }
-  .ai-svc__more:hover i { transform: rotate(90deg); }
-  .ai-svc__case:hover { transform: scale(1.05); }
-}
-.ai-svcs__end { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1rem; }
 
 /* the cards' scenes · 1 a site form sends, the Telegram message drops in */
 .ai-mf { position: absolute; left: 1rem; top: 1.125rem; width: 46%; display: grid; gap: 0.4375rem; padding: 0.75rem; border-radius: 0.625rem; background: #161616; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.08); }
@@ -750,14 +662,7 @@ html.ai-modal { overflow: hidden; }
 .ai-dlg__lead { max-width: 58ch; margin: 0.75rem 0 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
 .ai-dlg__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; margin-top: 1.625rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
 .ai-dlg__h { margin: 0 0 1rem; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.ai-dlg__steps { margin: 0; padding: 0; list-style: none; }
-.ai-dlg__step { position: relative; display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); column-gap: 0.875rem; padding-bottom: 1.125rem; }
-.ai-dlg__step:not(:last-child)::before { content: ""; position: absolute; left: 0.8438rem; top: 2rem; bottom: 0.25rem; width: 1px; background: var(--line); }
 .ai-dlg__n { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font: 500 0.75rem/1 var(--font-mono); color: var(--on-accent); background: var(--signal); }
-.ai-dlg__step--person .ai-dlg__n { background: var(--ember); }
-.ai-dlg__step p { margin: 2px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
-.ai-dlg__who { display: block; margin-bottom: 2px; font: 400 0.6875rem/1.3 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); }
-.ai-dlg__step--person .ai-dlg__who { color: var(--ember-ink); }
 .ai-dlg__inc { display: grid; gap: 0.625rem; margin: 0; padding: 0; list-style: none; }
 .ai-dlg__inc li,
 .ai-calc__inc li { position: relative; padding-left: 1.625rem; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
@@ -767,54 +672,8 @@ html.ai-modal { overflow: hidden; }
 .ai-dlg__sum { font: 300 1.9rem/1 var(--font-sans); letter-spacing: -0.02em; color: var(--ink); }
 .ai-dlg__once { text-transform: uppercase; letter-spacing: var(--track-caps); font-size: 0.6875rem; color: var(--ink-mute); }
 .ai-dlg__wk { margin-left: auto; white-space: nowrap; }
-.ai-dlg__price--talk { display: block; margin-top: 1rem; font-family: var(--font-sans); font-size: var(--fs-small); line-height: 1.45; }
 .ai-dlg__note { margin: 0.625rem 0 0; font: 400 0.7188rem/1.45 var(--font-mono); color: var(--ink-mute); }
-.ai-dlg__link { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; margin-top: 2px; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(210, 86, 28, 0.75); text-underline-offset: 0.1875rem; }
-.ai-dlg__link svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-@media (hover: hover) {
-  .ai-dlg__link:hover { color: var(--ember-ink); }
-}
-/* the examples in the «Складне» panel: two big buttons */
-.ai-dlg__door {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 1.25rem;
-  gap: 0.5rem 0.75rem;
-  align-items: center;
-  margin-bottom: 0.625rem;
-  padding: 0.875rem 1rem;
-  border-radius: 1rem;
-  color: var(--ink);
-  text-decoration: none;
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.12);
-  transition: background-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
-}
-.ai-dlg__tag { grid-column: 1; justify-self: start; padding: 0.25rem 0.5rem; border-radius: 62.4375rem; font: 500 0.625rem/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.32); }
-.ai-dlg__tag--case { color: var(--on-accent); background: var(--ink); box-shadow: none; }
-.ai-dlg__dt { grid-column: 1; font-size: var(--fs-body-s); line-height: 1.35; }
-.ai-dlg__dt b { font-weight: 400; color: var(--ember-ink); }
-.ai-dlg__door svg { grid-column: 2; grid-row: 1 / span 2; width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-out); }
-@media (hover: hover) {
-  .ai-dlg__door:hover { background: rgba(210, 86, 28, 0.14); box-shadow: inset 0 0 0 1px var(--ember); transform: translateY(-2px); }
-  .ai-dlg__door:hover svg { transform: translate(2px, -2px); }
-}
 .ai-dlg__foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.625rem; margin-top: 1.375rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
-
-/* ---------- 4 · the examples' buttons: a pill that fills with ember and grows a little when the card is pointed at ---------- */
-.ai-door__go {
-  align-self: flex-start;
-  gap: 0.625rem;
-  min-height: 2.75rem;
-  padding: 0 1.125rem;
-  border-radius: 62.4375rem;
-  text-decoration: none;
-  box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.35);
-  transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
-}
-@media (hover: hover) {
-  .ai-door:hover .ai-door__go { color: var(--on-accent); background: var(--ember); box-shadow: none; transform: scale(1.05); }
-}
-.ai-door:focus-visible .ai-door__go { color: var(--on-accent); background: var(--ember); box-shadow: none; }
 
 /* ---------- 5 · the calculator: option cards (the chosen one in ivory, as on the main page) and the sum beside ---------- */
 .ai-calc { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: start; }
@@ -822,7 +681,6 @@ html.ai-modal { overflow: hidden; }
 .ai-calc__sum { grid-column: 8 / -1; position: sticky; top: calc(var(--topbar-h) + 1.5rem); }
 .ai-calc__g { display: grid; gap: 0.625rem; min-width: 0; margin: 0; padding: 0; border: 0; }
 .ai-calc__l { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin-bottom: 0.75rem; padding: 0; font: 400 var(--fs-label)/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.ai-calc__lm { letter-spacing: 0.02em; text-transform: none; }
 .ai-opt {
   position: relative;
   display: grid;
@@ -850,7 +708,6 @@ html.ai-modal { overflow: hidden; }
 .ai-opt.is-on .ai-opt__d { color: rgba(15, 14, 13, 0.72); }
 .ai-opt.is-focus,
 .ai-chk.is-focus { outline: 2px solid var(--ink); outline-offset: 0.1875rem; }
-.ai-calc__chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .ai-chk { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0 1rem 0 0.8125rem; border-radius: 62.4375rem; font-size: var(--fs-small); color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.2); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--dur-fast), box-shadow var(--dur-fast), color var(--dur-fast); }
 .ai-chk::before { content: "+"; content: "+" / ""; width: 1ch; text-align: center; color: var(--ink-mute); }
 .ai-chk.is-on { color: var(--ink); background: rgba(210, 86, 28, 0.12); box-shadow: inset 0 0 0 1px var(--ember); }
@@ -878,20 +735,8 @@ html.ai-modal { overflow: hidden; }
 .ai-calc__send:disabled { opacity: 0.45; cursor: not-allowed; }
 .ai-calc__fine { margin: 0.625rem 0 0; font-size: var(--fs-caption); color: var(--ink-mute); }
 .ai-calc__tol { margin: 0.875rem 0 0; padding-top: 0.875rem; border-top: 1px solid var(--line); font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-mute); text-wrap: pretty; }
-/* the calculation in the form, once sent from the calculator */
-.ai-att { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.375rem 0.875rem; margin-bottom: 1.375rem; padding: 0.75rem 0.5rem 0.75rem 1rem; border-radius: 0.875rem; background: rgba(210, 86, 28, 0.1); box-shadow: inset 0 0 0 1px rgba(210, 86, 28, 0.5); }
-.ai-att[hidden] { display: none; }
-.ai-att__t { margin: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
-.ai-att__t b { font-weight: 500; color: var(--ink); }
-.ai-att__x { min-height: 2.75rem; padding: 0 0.625rem; border: 0; font: 400 var(--fs-small)/1 var(--font-sans); color: var(--ink-soft); text-decoration: underline; text-underline-offset: 0.1875rem; background: none; cursor: pointer; }
-@media (hover: hover) {
-  .ai-att__x:hover { color: var(--ink); }
-}
 
 /* ---------- the premium pass · widths ---------- */
-@media (max-width: 1180px) {
-  .ai-svcs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
 @media (max-width: 1100px) {
   .ai-calc__opts,
   .ai-calc__sum { grid-column: 1 / -1; }
@@ -907,11 +752,8 @@ html.ai-modal { overflow: hidden; }
   .ai-hero--center .ai-hero__lead { max-width: 34ch; }
   main[data-ai-page="ai"] .ai-hero--center .ai-hero__actions { flex-direction: column; gap: 0.75rem; }
   .ai-hero--center .ai-hero__visual { margin-top: 2.5rem; padding-bottom: 3.5rem; }
-  .ai-hero__head { font-size: min(clamp(2.35rem, 10.5vw, 3.4rem), calc((100vw - 2 * var(--gutter)) / 9.4)); }
   .ai-hero__stone { width: 6.8em; opacity: 0.5; }
   .ai-hero__canvas { width: 12.4em; height: 12.4em; }
-
-  .ai-svcs { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
   .ai-svc { border-radius: 1.25rem; }
   .ai-svc__art { height: 8.5rem; margin: 0.375rem 0.375rem 0; border-radius: 0.875rem; }
   .ai-svc__art--crm { gap: 0.375rem; padding: 0.625rem 0.875rem; }
@@ -920,9 +762,6 @@ html.ai-modal { overflow: hidden; }
   .ai-mt { bottom: 0.625rem; }
   .ai-mt__sk,
   .ai-mt__row { min-height: 1.375rem; }
-  .ai-svc__body { padding: 0.875rem 1rem 1rem; gap: 0.5rem; }
-  .ai-svc__t { font-size: var(--fs-h4); }
-  .ai-svc__acts { padding-top: 0.5rem; }
 
   .ai-dlg { width: 100%; max-width: 100%; max-height: 92dvh; margin: auto 0 0; }
   /* (22 Oct, the owner: «Подробнее … надо отступы на мобилке»: the page's own side margin, more room at the foot) */
@@ -931,11 +770,8 @@ html.ai-modal { overflow: hidden; }
   .ai-dlg__head { margin-bottom: 0.625rem; }
   .ai-dlg__t { font-size: 1.5rem; }
   .ai-dlg__grid { margin-top: 1.125rem; padding-top: 1.125rem; gap: 1.25rem; }
-  .ai-dlg__step { padding-bottom: 0.875rem; }
   .ai-dlg__foot { margin-top: 1.125rem; padding-top: 1rem; }
   .ai-dlg__foot .btn { flex: 1 1 100%; justify-content: space-between; }
-
-  .ai-door__go { min-height: 2.375rem; padding: 0 0.875rem; }
 
   .ai-opt { padding: 0.875rem 1rem; border-radius: 0.875rem; }
   .ai-opt__t,
@@ -945,7 +781,6 @@ html.ai-modal { overflow: hidden; }
   .ai-calc__price b { font-size: 2.8rem; }
 }
 @media (max-width: 374px) {
-  .ai-svc__more { padding-left: 0.875rem; }
   .ai-chk { padding: 0 0.8125rem 0 0.6875rem; font-size: 0.8125rem; }
 }
 
@@ -999,8 +834,6 @@ main:is([data-ai-page="ai"], [data-ai-page="case"]) .ai-hero__in { position: rel
 .ai-hero--film .ai-hero__visual { justify-items: center; }
 .ai-film { position: relative; width: min(26.25rem, 100%); aspect-ratio: 4 / 5; border-radius: 1.75rem; overflow: hidden; background: #0d0d0d; box-shadow: 0 0 0 1px rgba(246, 246, 243, 0.12), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.95); }
 .ai-film__video { display: block; width: 100%; height: 100%; object-fit: cover; }
-@media (max-width: 1100px) {
-}
 @media (max-width: 600px) {
   main[data-ai-page="case"] .ai-hero__title { font-size: clamp(2.35rem, 10.5vw, 3.4rem); }
   .ai-film { width: min(21.25rem, 100%); border-radius: 1.5rem; }

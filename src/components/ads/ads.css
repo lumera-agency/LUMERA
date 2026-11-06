@@ -476,7 +476,6 @@ main.ai .rk-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1
 .rk-pc__sum { display: flex; align-items: baseline; gap: 0.625rem; }
 .rk-pc__sum b { font-size: clamp(2.4rem, 3.4vw, 3.25rem); font-weight: 300; line-height: 1; letter-spacing: -0.035em; color: var(--ink); }
 .rk-pc__sum span { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.rk-pc__sum .rk-pc__talk { font-size: clamp(1.75rem, 2.4vw, 2.25rem); color: var(--ink-soft); letter-spacing: -0.02em; }
 .rk-pc__d { font-size: var(--fs-body); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
 .rk-pc__inc { display: grid; gap: 0.5rem; padding-top: 0.875rem; border-top: 1px solid var(--line); }
 .rk-pc__inc li { position: relative; padding-left: 1.625rem; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
@@ -716,9 +715,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .rk-post { width: 9.75rem; }
   .rk-aud__chips li { font-size: 0.625rem; }
 }
-
-/* the rolled numbers' signs and spaces stand still (AdsAnalytics) */
-.rk-count__c { display: inline-block; white-space: pre; }
 
 /* ==========================================================================
    2 · Кейси (ivory; the owner's setting of 6 Nov 2026, AdsCases.tsx): on a computer the block is one screen under the
@@ -1086,8 +1082,6 @@ main[data-ai-page="ads"] #contact .s-head__title { font-size: clamp(2.6rem, 5.2v
 /* the request block: the black of the page (the owner, 26 Oct: no ember light behind the form), the form on a surface of
    its own in the lime frame of the page's actions */
 main[data-ai-page="ads"] #contact .lead-form { border-color: transparent; background: #0f0e0d; box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.45), 0 2.5rem 5rem -2.5rem rgba(0, 0, 0, 0.9); }
-/* the footer's request button sat right under the form and led back up to it: on this page the footer keeps its claim */
-main[data-ai-page="ads"] ~ .footer .footer__lead > .btn { display: none; }
 
 /* ==========================================================================
    5 · Сторінка: the bridge to the sites page, a short film (the owner's pick of 26 Oct, «Курсор»). A fixed artboard in u

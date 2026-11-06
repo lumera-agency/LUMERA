@@ -11,6 +11,13 @@
 /* (the columns run on under Safari's floating bar on an iPhone: a fixed layer ends above it, and the page showed
    there, tokens.css --screen-under) */
 .menu-sheet__cols { position: absolute; inset: 0 0 calc(-1 * var(--screen-under)); display: flex; }
+/* a phone: the sheet itself is black (MenuSheet opens it at once there), and so is the page's ground while it is open:
+   Safari tints its bar from what is at the screen's edge, and the sheet alone was see-through, so the bar took the
+   page's lime or ivory (the owner, 6 Nov 2026) */
+@media (hover: none) and (pointer: coarse) {
+  .menu-sheet { background: #0a0a0a; }
+  html.menu-open, html.menu-open body { background: #0a0a0a; }
+}
 .menu-sheet__cols i {
   flex: 1 0 0;
   margin-right: -1px;

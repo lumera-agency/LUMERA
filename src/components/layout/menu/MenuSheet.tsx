@@ -81,6 +81,9 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     wasOpen.current = open;
     document.documentElement.classList.toggle("menu-open", open);
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // a phone: the sheet is black at once over the whole window (the falling columns left the strip under Safari's
+    // bar to the page for a second, lime or white there: the owner, 6 Nov 2026); only the rows still come in
+    const touch = matchMedia("(hover: none) and (pointer: coarse)").matches;
     const cols = root.querySelectorAll(".menu-sheet__cols i");
     const rows = root.querySelectorAll(".menu-sheet__name > span");
     const fades = root.querySelectorAll("[data-menu-fade]");
@@ -92,6 +95,12 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
       if (reduced) {
         gsap.set([cols, rows, fades, frame], { clearProps: "all" });
         gsap.fromTo(root, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 });
+      } else if (touch) {
+        gsap.set([cols, frame], { clearProps: "all" });
+        gsap.timeline()
+          .fromTo(root, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2, ease: "power1.out" }, 0)
+          .fromTo(rows, { yPercent: 115 }, { yPercent: 0, duration: 0.8, ease: "expo.out", stagger: 0.05 }, 0.08)
+          .fromTo(fades, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "expo.out", stagger: 0.03 }, 0.12);
       } else {
         gsap.timeline()
           .fromTo(cols, { yPercent: -101 }, { yPercent: 0, duration: 0.8, ease: "expo.inOut", stagger: 0.055 }, 0)
@@ -105,7 +114,7 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
       const done = () => {
         gsap.set(root, { visibility: "hidden" });
       };
-      if (reduced) gsap.to(root, { autoAlpha: 0, duration: 0.2, onComplete: done });
+      if (reduced || touch) gsap.to(root, { autoAlpha: 0, duration: 0.2, onComplete: done });
       else {
         gsap.timeline({ onComplete: done })
           .to(rows, { yPercent: -115, duration: 0.4, ease: "power3.in", stagger: 0.025 }, 0)

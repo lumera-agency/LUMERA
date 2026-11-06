@@ -61,7 +61,7 @@
 const BLUR_FROM = { filter: 'blur(10px)', opacity: 0, translate: '0 -0.55em' };
 const BLUR_TO = [{ filter: 'blur(5px)', opacity: 0.5, translate: '0 0.06em' }, { filter: 'blur(0px)', opacity: 1, translate: '0 0' }];
 // blur: false keeps the timing and the drift without the filter (the studio's Базовий: transform/opacity only)
-const strip = ({ filter, ...k }) => k;
+const strip = (frame) => { const rest = { ...frame }; delete rest.filter; return rest; };
 function blurText(root, { delay = 120, stepDuration = 0.35, blur = true } = {}) {
   const words = [...root.querySelectorAll('.rb-w')];
   const kf = blur ? [BLUR_FROM, ...BLUR_TO] : [BLUR_FROM, ...BLUR_TO].map(strip);

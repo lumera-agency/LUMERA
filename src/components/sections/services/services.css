@@ -94,33 +94,8 @@
   .service__more-btn::after { transition: none; }
   .ride.is-on .service.is-current .service__more-btn::before { animation: none; }
 }
-.service__dialog { width: min(35rem, calc(100vw - 2rem)); max-height: min(84vh, 42.5rem); padding: 0; border: 1px solid rgba(246, 246, 243, 0.14); border-radius: var(--radius-lg); background: #121212; color: var(--ink); overflow: auto; overscroll-behavior: contain; }
-.service__dialog::backdrop { background: rgba(0, 0, 0, 0.62); }
-.service__dialog-in { position: relative; padding: 1.625rem 1.625rem 1.5rem; }
-.service__dialog-t { margin: 0 3rem 1rem 0; font-size: var(--fs-h4); font-weight: 500; line-height: 1.25; }
-.service__dialog-x { position: absolute; top: 0.625rem; right: 0.625rem; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: none; color: var(--ink-mute); font-size: 1.5rem; line-height: 1; cursor: pointer; }
-@media (hover: hover) {
-  .service__dialog-x:hover { color: var(--ink); background: rgba(246, 246, 243, 0.06); }
-}
-.service__more-list { display: grid; gap: 0.875rem; margin: 0; }
-.service__more-list dt { font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.service__more-list dd { margin: 0.1875rem 0 0; font-size: var(--fs-small); line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
-.service__dialog-go { display: inline-block; margin-top: 1.25rem; font-size: var(--fs-small); }
 .services__cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.125rem 2rem; margin-top: var(--rhythm-m); } /* the same room above and below it (#services, base.css) */
 .services__cta-q { margin: 0; font-size: var(--fs-h4); line-height: 1.3; color: var(--ink); text-wrap: balance; }
-.services__note { max-width: var(--measure); margin: var(--rhythm-s) 0 0; font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-mute); text-wrap: pretty; }
-.services__note b {
-  margin-right: 0.6em;
-  padding: 0.25em 0.55em;
-  border-radius: 0.25rem;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  font-weight: 400;
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
-  color: var(--lime);
-  background: rgba(218, 255, 2, 0.08);
-}
 .service {
   position: relative;
   display: grid;
@@ -243,13 +218,6 @@
 
 @media (max-width: 600px) {
   .service__demo { aspect-ratio: 5 / 4; }
-}
-p.service__dialog-go { display: block; margin: 1.25rem 0 0; font-size: var(--fs-small); }
-p.service__dialog-go--alt { margin-top: 0.625rem; color: var(--ink-soft); }
-p.service__dialog-go--alt .link { color: inherit; }
-@media (max-width: 860px) {
-  p.service__dialog-go .link { padding-block: 0.8125rem; }
-  p.service__dialog-go--alt { margin-top: 1.625rem; }
 }
 .service-tabs { display: none; }
 @media (max-width: 600px) {

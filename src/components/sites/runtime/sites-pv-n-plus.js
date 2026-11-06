@@ -108,7 +108,7 @@ const PH = typeof matchMedia === 'function' && matchMedia('(max-width: 700px)').
 const MAIL = 'hello@vash-sait.ua';
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const DRAW = 'cubic-bezier(0.16, 1, 0.3, 1)';
-const INK = '#1e1e1c', SAGE = '#7e8b6a', SAGE_INK = '#56633f', CYC = '#f7f5f1';
+const INK = '#1e1e1c', SAGE = '#7e8b6a', CYC = '#f7f5f1';
 const pad = (n) => String(n).padStart(2, '0');
 const r1 = (n) => Math.round(n * 10) / 10;
 
@@ -317,7 +317,6 @@ const KIND = {
   north: ['pp-fill pp-north', { fill: SAGE }],
   tags: ['pp-line pp-tag', { stroke: INK, 'stroke-width': 0.8, fill: CYC }],
 };
-const LBL = { tag: [INK, 'Plex'], mute: ['rgba(30,30,28,0.62)', 'Plex'], disp: [INK, 'Unbounded'] };
 function planSVG(model, { tex = false, sw = SWATCH[0] } = {}) {
   const attrs = (o) => Object.entries(o).map(([k, v]) => `${k}="${k === 'fill' && v === 'var(--sw)' ? sw : v}"`).join(' ');
   const shapes = model.shapes.map(({ k, d, g }) => {
@@ -327,7 +326,7 @@ function planSVG(model, { tex = false, sw = SWATCH[0] } = {}) {
     return `<path class="${cls}" data-g="${g}" d="${d}"${draw ? ' pathLength="1"' : ''}/>`;
   }).join('');
   if (tex) return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VB[0]} ${VB[1]}" width="${VB[0]}" height="${VB[1]}"><rect width="${VB[0]}" height="${VB[1]}" fill="${CYC}"/>${shapes}</svg>`;
-  const text = model.labels.map(([x, y, t, s, a, w, rot, kind]) => `<text class="pp-t${kind ? ` pp-t--${kind}` : ''}" x="${r1(x)}" y="${r1(y)}" font-size="${s}" text-anchor="${a}"${rot ? ` transform="rotate(${rot} ${r1(x)} ${r1(y)})"` : ''}>${t.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`).join('');
+  const text = model.labels.map(([x, y, t, s, a, , rot, kind]) => `<text class="pp-t${kind ? ` pp-t--${kind}` : ''}" x="${r1(x)}" y="${r1(y)}" font-size="${s}" text-anchor="${a}"${rot ? ` transform="rotate(${rot} ${r1(x)} ${r1(y)})"` : ''}>${t.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`).join('');
   return `<svg class="pp" viewBox="0 0 ${VB[0]} ${VB[1]}" aria-hidden="true">${shapes}${text}</svg>`;
 }
 
@@ -336,7 +335,7 @@ const sheetGrid = () => { let d = ''; for (let x = 20; x < 400; x += 40) for (le
 const dl = (d, cls = '') => `<path class="pd-l${cls}" pathLength="1" d="${d}"/>`;
 const DRAWINGS = {
   // the make-up table: a mirror framed with bulbs, a counter, a stool
-  makeup: (L) => `${sheetGrid()}${dl('M120 56H280V176H120Z')}${dl('M132 68H268V164H132Z', ' pd-l--t')}${Array.from({ length: 6 }, (_, i) => `<circle class="pd-b" cx="${126 + i * 29.6}" cy="50" r="5"/><circle class="pd-b" cx="${126 + i * 29.6}" cy="182" r="5"/>`).join('')}${dl('M86 192H314M96 192V262M304 192V262M96 214H304', '')}${dl('M178 262v-34h44v34M172 228h56', ' pd-l--t')}<path class="pd-sage" d="M150 150c18-30 46-40 70-22"/>`,
+  makeup: () => `${sheetGrid()}${dl('M120 56H280V176H120Z')}${dl('M132 68H268V164H132Z', ' pd-l--t')}${Array.from({ length: 6 }, (_, i) => `<circle class="pd-b" cx="${126 + i * 29.6}" cy="50" r="5"/><circle class="pd-b" cx="${126 + i * 29.6}" cy="182" r="5"/>`).join('')}${dl('M86 192H314M96 192V262M304 192V262M96 214H304', '')}${dl('M178 262v-34h44v34M172 228h56', ' pd-l--t')}<path class="pd-sage" d="M150 150c18-30 46-40 70-22"/>`,
   // the steamer: the tank, the pole, the hanger and the head; a rail with three hangers
   steam: () => `${sheetGrid()}${dl('M110 250h60v-30h-60zM140 220V86M118 86h44')}${dl('M140 86c0-10 6-16 14-18M154 68c10 0 18 8 18 18v8')}${dl('M172 94c0 12-8 18-16 22M150 210c-16-8-26-22-24-40', ' pd-l--t')}${dl('M210 70H330M222 70v186M318 70v186M214 256h16M310 256h16')}${[240, 270, 300].map((x) => dl(`M${x} 70v8M${x - 14} 92l14-14 14 14M${x - 14} 92h28`, ' pd-l--t')).join('')}<path class="pd-sage" d="M128 64c-6-8 6-12 0-20M140 58c-6-8 6-12 0-20"/>`,
   // the parking: bays on a site plan, the P sign and the way to the door
@@ -429,13 +428,13 @@ export function build(H, c, data, e, opts = {}) {
       <div class="pn-halls__grid">
         <div class="pn-halls__side" data-in>
           ${mini}
-          <ol class="pn-halls__list">${s.services.slice(0, 3).map(([n, , p], i) => `<li class="pn-hrow${i ? '' : ' is-on'}" data-h="${i}"><span class="pn-hrow__l">${LET[i]}</span><b>${esc(names[i])}</b><span class="pn-hrow__a">${esc(s.halls[i][1])}</span><span class="pn-hrow__p">${esc(p)}</span></li>`).join('')}</ol>
+          <ol class="pn-halls__list">${s.services.slice(0, 3).map(([, , p], i) => `<li class="pn-hrow${i ? '' : ' is-on'}" data-h="${i}"><span class="pn-hrow__l">${LET[i]}</span><b>${esc(names[i])}</b><span class="pn-hrow__a">${esc(s.halls[i][1])}</span><span class="pn-hrow__p">${esc(p)}</span></li>`).join('')}</ol>
           <div class="pn-rate"><span class="pn-rate__k" data-rate-k>${up(`${t('hall')} ${LET[0]} · ${t('perHour')}`)}</span><b class="pn-rate__v"><span class="pn-num" data-rate-n>${digits(price(s.services[0][2])[0])}</span><small>${esc(price(s.services[0][2])[1])}</small></b></div>
           ${pbtn(esc(t('hallBtn')), ' pn-btn--line', ' data-book-hall')}
         </div>
         <figure class="pn-halls__view" data-in>
           <div class="pn-halls__ph">${hallImg.map((im, i) => `<img class="${i ? '' : 'is-on'}" data-h="${i}" src="${PH}${im}.jpg" alt="" decoding="async">`).join('')}<div class="pn-px" aria-hidden="true">${'<i></i>'.repeat(PXC * PXR)}</div></div>
-          <figcaption class="pn-halls__cap">${s.services.slice(0, 3).map(([n, d, p], i) => `<span class="pn-cap${i ? '' : ' is-on'}" data-h="${i}"><b>${up(`${t('hall')} ${LET[i]} · ${names[i]} · ${s.halls[i][1]} · ${p}`)}</b><span>${esc(H.noArea ? H.noArea(d) : d)}</span></span>`).join('')}</figcaption>
+          <figcaption class="pn-halls__cap">${s.services.slice(0, 3).map(([, d, p], i) => `<span class="pn-cap${i ? '' : ' is-on'}" data-h="${i}"><b>${up(`${t('hall')} ${LET[i]} · ${names[i]} · ${s.halls[i][1]} · ${p}`)}</b><span>${esc(H.noArea ? H.noArea(d) : d)}</span></span>`).join('')}</figcaption>
           <div class="pn-scrub" data-scrub style="--at:0"><div class="pn-scrub__t">${ticks}</div><i class="pn-scrub__head"></i><div class="pn-scrub__k">${names.map((n, i) => `<span data-h="${i}"${i ? '' : ' class="is-on"'}>${LET[i]} · ${esc(n)}</span>`).join('')}</div></div>
         </figure>
       </div>
@@ -613,7 +612,7 @@ export function enhance(site, ctx = {}) {
   const phoneMQ = matchMedia('(max-width: 700px)');
   const off = [];
   const dispose = (fn) => off.push(fn);
-  ctx.onDispose?.(() => { for (const fn of off) { try { fn(); } catch (err) { /* gone with the node */ } } });
+  ctx.onDispose?.(() => { for (const fn of off) { try { fn(); } catch { /* gone with the node */ } } });
   site.classList.toggle('pn-still', still);
   const $ = (sel, root = site) => root.querySelector(sel);
   const $$ = (sel, root = site) => [...root.querySelectorAll(sel)];
@@ -1327,7 +1326,7 @@ function mountLens(site, ctx, { L, plan, still, phone, vp, dispose, seen, swatch
     const ox = (tw - VB[0] * sc) / 2, oy = (th - VB[1] * sc) / 2;
     g.fillStyle = CYC; g.fillRect(0, 0, tw, th);
     g.drawImage(img, ox, oy, VB[0] * sc, VB[1] * sc);
-    try { await Promise.all([document.fonts.load('400 10px "IBM Plex Mono"', 'АZ'), document.fonts.load('500 10px "IBM Plex Mono"', 'АZ'), document.fonts.load('300 10px Unbounded', '01')]); } catch (err) { /* the fallback face */ }
+    try { await Promise.all([document.fonts.load('400 10px "IBM Plex Mono"', 'АZ'), document.fonts.load('500 10px "IBM Plex Mono"', 'АZ'), document.fonts.load('300 10px Unbounded', '01')]); } catch { /* the fallback face */ }
     for (const el of names) {
       const x = +el.getAttribute('x'), y = +el.getAttribute('y'), s = +el.getAttribute('font-size');
       const cs = getComputedStyle(el);
@@ -1436,7 +1435,7 @@ function mountLens(site, ctx, { L, plan, still, phone, vp, dispose, seen, swatch
   ro.observe(plan);
   dispose(() => {
     alive = false; cancelAnimationFrame(raf); io.disconnect(); ro.disconnect();
-    try { tex?.dispose(); mat?.dispose(); scene?.children.forEach((m) => m.geometry?.dispose()); renderer?.dispose(); renderer?.forceContextLoss(); } catch (err) { /* already lost */ }
+    try { tex?.dispose(); mat?.dispose(); scene?.children.forEach((m) => m.geometry?.dispose()); renderer?.dispose(); renderer?.forceContextLoss(); } catch { /* already lost */ }
   });
 
   // three.js and the first frame, once the hero has been seen (the poster until then)

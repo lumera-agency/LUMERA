@@ -132,6 +132,6 @@
   }
 }
 @media (max-width: 600px) { :root { --fs-display: clamp(1.875rem, 8.6vw, 2.3rem); } }
-/* phones: a block's padding 4.5 rem, as the service and case pages already had it; 13vh was about 110 px, so two
-   blocks stood 220 px of empty screen apart (the owner, 6 Nov 2026: «где то можно их уменьшить») */
-@media (max-width: 600px) { :root { --rhythm-section: 4.5rem; } }
+/* phones: a block's padding 4 rem on every page; 13vh was about 110 px, so two blocks stood 220 px of empty screen apart
+   (the owner, 6 Nov 2026: «где то можно их уменьшить», then the service and case pages' 4.5 rem too) */
+@media (max-width: 600px) { :root { --rhythm-section: 4rem; } }
