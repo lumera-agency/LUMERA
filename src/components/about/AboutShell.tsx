@@ -21,6 +21,8 @@ type Props = {
   cta: NavCta;
   /** the topbar's, a shorter word */
   barCta: NavCta;
+  /** TEMPORARY: the whole-page variant being shown (?p=a|b|c), for its own styles and scenes */
+  variant?: string;
   children: React.ReactNode;
 };
 
@@ -35,7 +37,7 @@ const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-m
  * start), the phone menu, the footer with the chrome wordmark, its contacts and the map of the site, the button back up.
  * Every request button leads to the page's own form (#contact, the main page's). No sticky bar on phones (the owner, 27 Oct).
  */
-export async function AboutShell({ nav, footerLinks, cta, barCta, children }: Props) {
+export async function AboutShell({ nav, footerLinks, cta, barCta, variant, children }: Props) {
   for (const font of FIRST_SCREEN_FONTS) preload(`/fonts/${font}.woff2`, { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const t = await getTranslations();
   const home = aiHref(await getLocale(), "/");
@@ -44,7 +46,7 @@ export async function AboutShell({ nav, footerLinks, cta, barCta, children }: Pr
       <AiSprite />
       <SmoothScroll lerp={0.08} />
       <Topbar always links={nav} cta={barCta} home={home} />
-      <main id="main" className="ai about" data-ai-page="about">
+      <main id="main" className="ai about" data-ai-page="about" data-about-p={variant}>
         {children}
       </main>
       <Footer links={footerLinks} cta={cta} />

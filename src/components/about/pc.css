@@ -1,0 +1,4 @@
+/* ==========================================================================
+   TEMPORARY · whole-page variant C of «Про нас» (?p=c, sections/about-page/pc/). Every rule is scoped to
+   main.about[data-about-p="c"]. The chosen variant's rules move into about.css, the others go
+   ========================================================================== */

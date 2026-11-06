@@ -306,6 +306,7 @@ main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
 .about-pick span { padding: 0 0.5rem 0 0.75rem; }
 .about-pick a { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; color: var(--ink); text-decoration: none; }
 .about-pick a[aria-current] { color: var(--on-ink); background: var(--ink); }
+.about-pick__sep { margin-left: 0.25rem; padding-left: 0.75rem !important; box-shadow: inset 1px 0 0 var(--border-strong); }
 
 /* 1 · «Чек»: one slip out of a dark terminal. The slot clips the slip at the terminal's top edge (room left around it
    for the slip's shade); the slip's top edge torn */
@@ -390,6 +391,7 @@ main.about .about-sticky .about-doc__d { grid-area: d; max-width: 36ch; margin-t
   main.about .about-sticky .about-doc__h { margin-top: 1.25rem; font-size: var(--fs-lead); font-weight: 500; letter-spacing: -0.01em; }
   main.about .about-sticky .about-doc__d { font-size: var(--fs-small); margin-top: 0.5rem; }
   .about-pick span { display: none; }
+  .about-pick .about-pick__sep { display: block; align-self: stretch; width: 1px; margin: 0.5rem 0.125rem; padding: 0 !important; overflow: hidden; color: transparent; background: var(--border-strong); box-shadow: none; }
 }
 @media (max-width: 600px) {
   /* 1: the slip and the terminal inside the gutter */
