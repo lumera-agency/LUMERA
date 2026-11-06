@@ -293,3 +293,107 @@ main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
   .about-lead .about-reach { display: none; }
   main.about .lead-form textarea { min-height: 4.75rem; }
 }
+
+/* ==========================================================================
+   TEMPORARY · block 2's three more variants (?v=1|2|3, sections/about-page/AboutWorkVariants.tsx) and their switch,
+   while the owner chooses (motionsites.ai's sections, on the page's tokens). The chosen one stays, the rest go
+   ========================================================================== */
+.about-work { --lip: 0rem; }
+.about-work__sign { margin: var(--rhythm-s) 0 0; font-size: var(--fs-lead); font-weight: 500; letter-spacing: -0.01em; text-align: right; color: var(--ink-dark); }
+
+/* the switch: a pill in the corner, the chosen one filled */
+.about-pick { position: fixed; z-index: 60; left: 50%; bottom: 1rem; translate: -50% 0; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 62.4375rem; font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); background: var(--bg); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.about-pick span { padding: 0 0.5rem 0 0.75rem; }
+.about-pick a { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; color: var(--ink); text-decoration: none; }
+.about-pick a[aria-current] { color: var(--on-ink); background: var(--ink); }
+
+/* 1 · «Чек»: one slip out of a dark terminal. The slot clips the slip at the terminal's top edge (room left around it
+   for the slip's shade); the slip's top edge torn */
+.about-rcpt { max-width: 30rem; margin: 0 auto; }
+.about-rcpt__slot { overflow: clip; margin: -2rem -2rem 0; padding: 2rem 2rem 0; }
+.about-rcpt__paper { position: relative; padding: 1.75rem 1.75rem 1.5rem; background: var(--card-ivory); box-shadow: 0 1.5rem 3rem -1.5rem var(--line-dark); }
+.about-rcpt__paper::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 0.4375rem; background: conic-gradient(from -45deg at 50% 100%, var(--card-ivory) 90deg, transparent 0) 0 0 / 0.875rem 100% repeat-x; }
+.about-rcpt__from { font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; text-align: center; color: var(--ink-dark-mute); }
+.about-rcpt__title { margin-top: 0.5rem; font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.08; letter-spacing: -0.03em; text-align: center; color: var(--ink-dark); }
+main.about .about-rcpt__list { margin: 1.5rem 0 0; padding: 0; list-style: none; border-top: 1px dashed var(--ink-dark-mute); }
+.about-rcpt__row { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; column-gap: 0.75rem; align-items: baseline; padding: 1rem 0; border-bottom: 1px dashed var(--line-dark); }
+.about-rcpt__n { font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: var(--track-num); font-variant-numeric: tabular-nums; color: var(--ink-dark-mute); }
+.about-rcpt__h { font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink-dark); }
+.about-rcpt__d { margin-top: 0.25rem; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+.about-rcpt__ok svg { display: block; width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--ink-dark); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.about-rcpt__row--keys .about-rcpt__ok svg { stroke: var(--ember-deep); }
+.about-rcpt__sign { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed var(--ink-dark-mute); font-size: var(--fs-lead); font-weight: 500; letter-spacing: -0.01em; text-align: center; color: var(--ink-dark); }
+.about-rcpt__bars { display: block; width: 70%; height: 2.25rem; margin: 1rem auto 0; background: repeating-linear-gradient(90deg, var(--ink-dark) 0 2px, transparent 2px 5px, var(--ink-dark) 5px 6px, transparent 6px 8px, var(--ink-dark) 8px 11px, transparent 11px 13px); }
+/* the terminal: a dark body, its slot along the top edge (where the slip goes in), its name and a light */
+.about-rcpt__term { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; height: 4.5rem; margin: 0 -1.5rem; padding: 0.75rem 1.5rem 0; border-radius: 0.5rem 0.5rem var(--radius-lg) var(--radius-lg); background: var(--ink-dark); box-shadow: inset 0 1px 0 var(--border-strong); font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.about-rcpt__term::before { content: ""; position: absolute; top: 0; left: 1.25rem; right: 1.25rem; height: 0.375rem; border-radius: 0 0 0.5rem 0.5rem; background: var(--bg); box-shadow: inset 0 -1px 0 var(--border-strong); }
+.about-rcpt__led { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ink-mute); }
+/* wide screens: the slip comes up out of the slot in a printer's short pushes, once */
+@keyframes about-print {
+  0% { translate: 0 100%; }
+  16%, 23% { translate: 0 76%; }
+  39%, 46% { translate: 0 52%; }
+  62%, 69% { translate: 0 28%; }
+  85%, 89% { translate: 0 8%; }
+}
+@media (min-width: 861px) {
+  main.about .about-rcpt [data-in].is-pre { opacity: 1; translate: none; }
+  .about-rcpt.is-pre .about-rcpt__paper { translate: 0 100%; }
+  .about-rcpt.is-play .about-rcpt__paper { animation: about-print 2.6s var(--ease-out) backwards; }
+}
+
+/* 2 · «3D-стопка»: the documents without the folder. Each slot's depth looks from the middle one, so the pile and the
+   row lean the same way */
+.about-pile .about-doc { overflow: visible; perspective: 80rem; perspective-origin: calc(50% + (2 - var(--i)) * (100% + var(--card-gap))) 100%; }
+.about-pile .about-doc__sheet { transform-origin: 50% 100%; }
+@keyframes about-unpile {
+  0% { opacity: 0; translate: var(--mx) 5rem; rotate: x 64deg; transform: rotate(var(--rz)); }
+  32%, 48% { opacity: 1; translate: var(--mx) var(--my); rotate: x 54deg; transform: rotate(var(--rz)); }
+}
+@media (min-width: 861px) {
+  .about-pile .about-doc { --mx: calc((2 - var(--i)) * (100% + var(--card-gap))); --my: calc(var(--i) * -0.875rem); --rz: calc((var(--i) - 2) * 3deg); }
+  .about-pile .about-doc__sheet { transition: rotate 0.6s var(--ease-out), translate 0.6s var(--ease-out); }
+  .about-pile.is-pre .about-doc__sheet { opacity: 0; }
+  .about-pile.is-play .about-doc__sheet { animation: about-unpile 1.8s var(--ease-out) calc(0.1s + var(--i) * 0.09s) backwards; }
+}
+/* under the pointer: the row leans back, the one under it stands up and comes forward */
+@media (min-width: 861px) and (hover: hover) and (pointer: fine) {
+  .about-pile .about-docs:hover .about-doc__sheet { rotate: x 14deg; }
+  .about-pile .about-docs .about-doc__sheet:hover { rotate: x 0deg; translate: 0 -0.75rem; }
+}
+
+/* 3 · «Стопка при прокрутці»: wide documents held under the header one over another; --peek is how much of each one
+   before stays in sight (its number and step) */
+.about-sticky { --peek: 4.5rem; }
+main.about .about-sticky .about-docs { grid-template-columns: minmax(0, 1fr); gap: var(--rhythm-m); max-width: 56rem; margin-inline: auto; }
+.about-sticky .about-work__sign { max-width: 56rem; margin-inline: auto; }
+.about-sticky .about-doc { position: sticky; top: calc(var(--topbar-h) + 1.25rem + var(--i) * var(--peek)); overflow: visible; }
+.about-sticky .about-doc__sheet { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "n k" "h pic" "d pic"; column-gap: 2rem; align-items: start; min-height: 16rem; padding: 1.25rem 1.75rem 1.75rem; box-shadow: 0 -1rem 2.5rem -1.5rem var(--line-dark); }
+.about-sticky__n { grid-area: n; font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--ink-dark); }
+main.about .about-sticky .about-doc__k { grid-area: k; align-self: center; }
+.about-sticky .about-doc__k::after { display: none; }
+main.about .about-sticky .about-doc__pic { grid-area: pic; width: 11rem; max-width: none; margin: 1.75rem 0 0; }
+main.about .about-sticky .about-doc__h { grid-area: h; margin-top: 2.25rem; font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.08; letter-spacing: -0.03em; }
+main.about .about-sticky .about-doc__d { grid-area: d; max-width: 36ch; margin-top: 0.75rem; font-size: var(--fs-lead); }
+
+@media (max-width: 860px) {
+  /* 2: each document stands up from lying flat as it reaches the screen */
+  .about-pile .about-doc { perspective: 40rem; perspective-origin: 50% 100%; }
+  .about-pile .about-doc__sheet { transition: rotate 0.9s var(--ease-out) var(--d, 0s); }
+  main.about .about-pile .about-doc.is-pre .about-doc__sheet { rotate: x 70deg; transition: none; }
+  /* 3: the number and the step on top, the picture beside the words */
+  .about-sticky { --peek: 3.25rem; }
+  main.about .about-sticky .about-docs { gap: var(--rhythm-s); }
+  .about-sticky .about-doc { top: calc(var(--topbar-h) + 0.75rem + var(--i) * var(--peek)); }
+  .about-sticky .about-doc__sheet { grid-template-columns: minmax(0, 1fr) 5.5rem; column-gap: 1.25rem; min-height: 0; padding: 0.75rem 1.25rem 1.25rem; }
+  main.about .about-sticky .about-doc__pic { width: 100%; margin-top: 1.25rem; }
+  main.about .about-sticky .about-doc__h { margin-top: 1.25rem; font-size: var(--fs-lead); font-weight: 500; letter-spacing: -0.01em; }
+  main.about .about-sticky .about-doc__d { font-size: var(--fs-small); margin-top: 0.5rem; }
+  .about-pick span { display: none; }
+}
+@media (max-width: 600px) {
+  /* 1: the slip and the terminal inside the gutter */
+  .about-rcpt__slot { margin: -1rem -1rem 0; padding: 1rem 1rem 0; }
+  .about-rcpt__paper { padding: 1.5rem 1.25rem 1.25rem; }
+  .about-rcpt__term { margin: 0 -0.75rem; }
+}

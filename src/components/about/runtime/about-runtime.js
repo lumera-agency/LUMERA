@@ -27,6 +27,7 @@ export function startAbout() {
   initIn();
   initShuffle();
   initFolder();
+  initPlay();
   initChain();
   arrive();
 }
@@ -134,6 +135,24 @@ function initFolder() {
     el.classList.remove('is-pre');
   }, { rootMargin: '0px 0px -12% 0px' });
   io.observe(lip);
+}
+
+/* ---------- TEMPORARY · block 2's variants «Чек» and «3D-стопка» ([data-play], AboutWorkVariants): played once as
+   they come into view (.is-pre their start, .is-play the CSS animation from there to the CSS default, the final frame).
+   Already on the screen at load: left as it is ---------- */
+function initPlay() {
+  if (!motion) return;
+  $$('main.about [data-play]').forEach((el) => {
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.75) return;
+    el.classList.add('is-pre');
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      io.disconnect();
+      el.classList.remove('is-pre');
+      el.classList.add('is-play');
+    }, { threshold: 0.3 });
+    io.observe(el);
+  });
 }
 
 /* ---------- 3 · the broken-telephone demo (AboutDirect): plays once as its window comes into view. .is-pre holds the
