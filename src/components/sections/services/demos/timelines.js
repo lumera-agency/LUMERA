@@ -580,7 +580,7 @@ function ads(gsap, root) {
   const searchTok = q('.gs__search .gs__tok')[0];
   const typed = q('.gs__typed')[0];
   const promo = q('.gs__promo')[0];
-  const [site, title, desc] = [...promo.children];
+  const [, title, desc] = [...promo.children];
   const under = q('.gs-u')[0];
   const result = q('.gs__result')[0];
   const fly = q('.gs__fly')[0];

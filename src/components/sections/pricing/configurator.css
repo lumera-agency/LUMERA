@@ -71,7 +71,9 @@
   background: transparent;
   transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
 }
-.cfg-bundle:hover { border-color: var(--cfg-hover); }
+@media (hover: hover) {
+  .cfg-bundle:hover { border-color: var(--cfg-hover); }
+}
 .cfg-bundle[aria-checked='true'] { background: var(--cfg-ivory); color: var(--cfg-on-ivory); border-color: var(--cfg-ivory); }
 .cfg-bundle--alt { border-style: dashed; }
 .cfg-bundle--alt[aria-checked='true'] { border-style: solid; }
@@ -121,8 +123,10 @@
 .cfg-tune__sub { font-size: var(--fs-small); font-weight: 300; color: var(--ink-mute); }
 .cfg-tune__i { flex: none; width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid var(--border-strong); display: grid; place-items: center; transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease; }
 .cfg-tune__i .v { transform-origin: center; transition: transform 0.3s var(--ease-out); }
-.cfg-tune__btn:hover .cfg-tune__t { translate: 0.375rem 0; }
-.cfg-tune__btn:hover .cfg-tune__i { border-color: var(--ink); }
+@media (hover: hover) {
+  .cfg-tune__btn:hover .cfg-tune__t { translate: 0.375rem 0; }
+  .cfg-tune__btn:hover .cfg-tune__i { border-color: var(--ink); }
+}
 .cfg-tune__btn[aria-expanded='true'] .cfg-tune__i .v { transform: scaleY(0); }
 .cfg-tune__body { display: flex; flex-direction: column; gap: 2.25rem; padding: 0.25rem 0 0.5rem; }
 .cfg-tune__body[hidden] { display: none; }
@@ -154,7 +158,9 @@
   background: transparent;
   transition: border-color 0.25s ease, background-color 0.25s ease, opacity 0.25s ease;
 }
-.cfg-card:hover { border-color: var(--cfg-hover); }
+@media (hover: hover) {
+  .cfg-card:hover { border-color: var(--cfg-hover); }
+}
 .cfg-card[aria-checked='true'] { border-color: var(--ink); background: rgba(246, 246, 243, 0.05); }
 .cfg-card__t { display: flex; flex-direction: column; gap: 0.25rem; }
 .cfg-card__name { font-size: var(--fs-body); font-weight: 500; line-height: 1.2; letter-spacing: -0.01em; }
@@ -244,7 +250,9 @@
 .cfg-sum__cta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.625rem 1.375rem; margin-top: 0.375rem; }
 .cfg .cfg-cta { flex: none; }
 .cfg-link { min-height: 2.75rem; padding: 0; border: 0; background: none; font-size: var(--fs-body-s); color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, currentColor 38%, transparent); text-underline-offset: 0.3125rem; transition: color var(--dur-fast) ease, text-decoration-color var(--dur-fast) ease; }
-.cfg-link:hover { color: var(--ember-ink); }
+@media (hover: hover) {
+  .cfg-link:hover { color: var(--ember-ink); }
+}
 .cfg-sum__pnote { display: none; }
 .cfg-view { position: relative; }
 .cfg-break {
@@ -620,6 +628,8 @@
     position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none;
     margin: 0; padding: 0; border: 0;
     flex-direction: column; background: var(--bg); color: var(--ink);
+    /* (its ground on under Safari's floating bar, as the menu's columns: a shadow, the dialog clips what overflows) */
+    box-shadow: 0 var(--screen-under) 0 var(--bg);
     transform: translateY(100%); transition: transform 0.36s var(--ease-out);
   }
   .cfg-editor[open] { display: flex; }

@@ -324,6 +324,16 @@ export function SitesBubble() {
       popAt = clock;
       run();
     };
+    // (a tap is a finger that lifts where it went down; one that starts a scroll is cancelled by the browser first, so
+    // the bubble no longer bursts under a passing thumb: the owner, 6 Nov 2026)
+    let press: { x: number; y: number; at: number } | null = null;
+    const onPress = (e: PointerEvent) => { press = e.pointerType === "touch" ? { x: e.clientX, y: e.clientY, at: performance.now() } : null; };
+    const onRelease = (e: PointerEvent) => {
+      const start = press;
+      press = null;
+      if (start && Math.hypot(e.clientX - start.x, e.clientY - start.y) < 12 && performance.now() - start.at < 600) onTap(e);
+    };
+    const onCancel = () => { press = null; };
     if (hovers) {
       addEventListener("pointermove", onMove, { passive: true });
       addEventListener("scroll", aim, { passive: true });
@@ -331,7 +341,9 @@ export function SitesBubble() {
       addEventListener("blur", onFocus);
       addEventListener("focus", onFocus);
     } else {
-      addEventListener("pointerdown", onTap, { passive: true });
+      addEventListener("pointerdown", onPress, { passive: true });
+      addEventListener("pointerup", onRelease, { passive: true });
+      addEventListener("pointercancel", onCancel, { passive: true });
     }
     const stopCover = watchCover((c) => { covered = c; aim(); });
     const io = new IntersectionObserver(([entry]) => { onScreen = entry.isIntersecting; aim(); });
@@ -350,7 +362,9 @@ export function SitesBubble() {
       document.documentElement.removeEventListener("mouseleave", onLeave);
       removeEventListener("blur", onFocus);
       removeEventListener("focus", onFocus);
-      removeEventListener("pointerdown", onTap);
+      removeEventListener("pointerdown", onPress);
+      removeEventListener("pointerup", onRelease);
+      removeEventListener("pointercancel", onCancel);
       document.removeEventListener("visibilitychange", run);
       section.classList.remove("is-bubble");
     };

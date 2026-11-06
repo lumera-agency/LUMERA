@@ -249,7 +249,7 @@ export function createCube(host, o = {}) {
     if (st.state === s) return;
     st.state = s;
     host.dataset.cube = s;
-    try { o.onState?.(s); } catch (e) { /* the page's callback never breaks the cube */ }
+    try { o.onState?.(s); } catch { /* the page's callback never breaks the cube */ }
   };
   const fail = (s = 'fallback') => {
     stop();
@@ -502,7 +502,7 @@ export function createCube(host, o = {}) {
       if (!d.on) {
         if (Math.abs(dx) < 8 || Math.abs(dx) <= Math.abs(dy)) return;
         d.on = true;
-        try { canvas.setPointerCapture(e.pointerId); } catch (_) { /* the pointer may be gone */ }
+        try { canvas.setPointerCapture(e.pointerId); } catch { /* the pointer may be gone */ }
       }
       const w = (area || host).getBoundingClientRect().width || 300;
       const t = now(), da = ((e.clientX - d.lx) * Math.PI) / w;
@@ -597,7 +597,7 @@ export function createCube(host, o = {}) {
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
     if (gl) {
       canvas.dataset.released = '1';
-      try { gl.getExtension('WEBGL_lose_context')?.loseContext(); } catch (_) { /* already gone */ }
+      try { gl.getExtension('WEBGL_lose_context')?.loseContext(); } catch { /* already gone */ }
       gl = null; prog = null;
     }
     m.presented = 0;

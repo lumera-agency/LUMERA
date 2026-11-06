@@ -16,7 +16,11 @@ html {
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* no grey box over a tapped link on a phone: the buttons have their own press (button.css :active) */
+  -webkit-tap-highlight-color: transparent;
 }
+/* hover effects are for a mouse: every :hover rule of the site stands in @media (hover: hover), so a finger that
+   touches a button on its way down the page sets off nothing, and nothing stays lit after a tap (the owner, 6 Nov 2026) */
 
 body {
   margin: 0;
@@ -52,7 +56,9 @@ html { scrollbar-color: rgb(218 255 2 / 0.72) rgb(246 246 243 / 0.07); }
 ::-webkit-scrollbar { width: 0.75rem; height: 0.75rem; background: transparent; }
 ::-webkit-scrollbar-track { background: rgb(246 246 243 / 0.07); }
 ::-webkit-scrollbar-thumb { border: 0.1875rem solid transparent; border-radius: 999px; background: rgb(218 255 2 / 0.72) padding-box; }
-::-webkit-scrollbar-thumb:hover { background-color: var(--lime, #daff02); border-width: 0.125rem; }
+@media (hover: hover) {
+  ::-webkit-scrollbar-thumb:hover { background-color: var(--lime, #daff02); border-width: 0.125rem; }
+}
 ::-webkit-scrollbar-corner { background: transparent; }
 
 a { color: inherit; }

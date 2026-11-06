@@ -420,11 +420,20 @@ async function start(root, text, reducedMotion, run, atOnce) {
   };
   const off = new AbortController();
   const signal = off.signal;
-  root.addEventListener('pointermove', aim, { signal });
-  root.addEventListener('pointerdown', aim, { signal });
+  // a finger: the lens comes once it rests on the word (a thumb that starts a scroll there is cancelled before, so the
+  // lens no longer flashes under it: the owner, 6 Nov 2026), then follows it until it lifts
+  let rest = 0;
+  const settle = () => clearTimeout(rest);
+  signal.addEventListener('abort', settle);
+  root.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse' || inside) aim(e); }, { signal });
+  root.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return aim(e);
+    settle();
+    rest = setTimeout(() => aim(e), 160);
+  }, { signal });
   root.addEventListener('pointerleave', away, { signal });
-  root.addEventListener('pointercancel', away, { signal });
-  root.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') away(); }, { signal });
+  root.addEventListener('pointercancel', () => { settle(); away(); }, { signal });
+  root.addEventListener('pointerup', (e) => { settle(); if (e.pointerType !== 'mouse') away(); }, { signal });
 
   let time = 0;
   let last = 0;

@@ -365,7 +365,7 @@ export function enhance(site, ctx = {}) {
   const pvw = site.closest('.pvw');
   const disposers = [];
   const onDispose = (fn) => { disposers.push(fn); };
-  ctx.onDispose?.(() => disposers.splice(0).forEach((fn) => { try { fn(); } catch (err) { /* gone */ } }));
+  ctx.onDispose?.(() => disposers.splice(0).forEach((fn) => { try { fn(); } catch { /* gone */ } }));
   site.classList.toggle('fx-still', still);
   let dishPaper = null; // set once the 3D dish is in (ctx.three)
   let toured = false; // the halls' one walk-through (the tour, or the visitor's own pick, ends it)
@@ -526,7 +526,6 @@ export function enhance(site, ctx = {}) {
   /* ---------- PillNav: the pill slides to the current anchor and takes its block's paper ---------- */
   const navEl = site.querySelector('[data-nav]');
   const hdr = site.querySelector('[data-hdr]');
-  const pill = navEl?.querySelector('.fx-nav__pill');
   const items = navEl ? [...navEl.querySelectorAll('.fx-nav__i')] : [];
   let navOn = 0;
   function pillTo(i, paper) {
@@ -951,7 +950,7 @@ async function mountDish(site, holder, ctx, onDispose, api) {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
-  } catch (err) { return; }
+  } catch { return; }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;

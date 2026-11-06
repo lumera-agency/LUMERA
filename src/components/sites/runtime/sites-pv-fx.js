@@ -363,7 +363,6 @@ export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = 
   /* ---------- our additions: the tray (desktop), the notifications (phone) ---------- */
   // one card at a time: the next chosen card takes its turn (a lone card replays its own little story)
   const ripple = (el, delay = 0) => el?.animate([{ opacity: 0, scale: '0.4' }, { opacity: 1, scale: '1', offset: 0.35 }, { opacity: 0, scale: '1.5' }], { duration: 900, delay, easing: 'ease-out' });
-  const phoneMQ = matchMedia('(max-width: 700px)');
   const turns = () => st.notes; // the AI-асистент's card takes its turn on every screen
   function noteStep() {
     const list = turns();

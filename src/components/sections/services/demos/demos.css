@@ -92,8 +92,10 @@
   visibility: hidden;
   transition: color 0.2s;
 }
-.demo-replay:hover,
 .demo-replay:focus-visible { color: var(--ink); }
+@media (hover: hover) {
+  .demo-replay:hover { color: var(--ink); }
+}
 .demo-replay:focus-visible { outline: 2px solid var(--lime); outline-offset: -2px; }
 .demo-replay__icon { display: inline-block; font-size: 0.9375rem; }
 .demo.is-rest { cursor: pointer; }

@@ -71,8 +71,10 @@ html:not(.js) .check svg { stroke-dashoffset: 0; }
 .field textarea { resize: vertical; min-height: 6rem; }
 .field input::placeholder,
 .field textarea::placeholder { color: rgba(246, 246, 243, 0.32); }
-.field input:hover,
-.field textarea:hover { border-color: rgba(246, 246, 243, 0.2); }
+@media (hover: hover) {
+  .field input:hover,
+  .field textarea:hover { border-color: rgba(246, 246, 243, 0.2); }
+}
 .field input:focus,
 .field textarea:focus { outline: none; border-color: rgba(246, 246, 243, 0.55); background: rgba(255, 255, 255, 0.05); box-shadow: 0 0 0 0.1875rem rgba(246, 246, 243, 0.08); }
 .field input[aria-invalid="true"],
@@ -110,7 +112,9 @@ html:not(.js) .check svg { stroke-dashoffset: 0; }
   background: transparent;
   cursor: pointer;
 }
-.lead-form__plan-x:hover { color: var(--ink); background: rgba(246, 246, 243, 0.08); }
+@media (hover: hover) {
+  .lead-form__plan-x:hover { color: var(--ink); background: rgba(246, 246, 243, 0.08); }
+}
 .lead-form__errors {
   padding: 0.875rem 1rem;
   border-radius: 0.75rem;

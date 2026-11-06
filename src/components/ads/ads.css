@@ -476,7 +476,6 @@ main.ai .rk-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1
 .rk-pc__sum { display: flex; align-items: baseline; gap: 0.625rem; }
 .rk-pc__sum b { font-size: clamp(2.4rem, 3.4vw, 3.25rem); font-weight: 300; line-height: 1; letter-spacing: -0.035em; color: var(--ink); }
 .rk-pc__sum span { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.rk-pc__sum .rk-pc__talk { font-size: clamp(1.75rem, 2.4vw, 2.25rem); color: var(--ink-soft); letter-spacing: -0.02em; }
 .rk-pc__d { font-size: var(--fs-body); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
 .rk-pc__inc { display: grid; gap: 0.5rem; padding-top: 0.875rem; border-top: 1px solid var(--line); }
 .rk-pc__inc li { position: relative; padding-left: 1.625rem; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
@@ -487,7 +486,9 @@ main.ai .rk-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1
 .rk-pc__rest { justify-self: start; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.25rem; padding: 0; border: 0; font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); background: none; cursor: pointer; }
 .rk-pc__rest::after { content: "+"; content: "+" / ""; font-size: 0.875rem; color: var(--ink-mute); }
 .rk-pc__rest[aria-expanded="true"]::after { content: "−"; content: "−" / ""; }
-.rk-pc__rest:hover { color: var(--ink); }
+@media (hover: hover) {
+  .rk-pc__rest:hover { color: var(--ink); }
+}
 .rk-pc__inc:not(.is-open) .rk-pc__extra { display: none; }
 .rk-price__star { max-width: 72ch; margin-top: 0.875rem; font: 400 0.75rem/1.5 var(--font-mono); color: var(--ink-mute); text-wrap: pretty; }
 .rk-pc__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; align-self: end; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--line); }
@@ -505,7 +506,9 @@ main.ai .rk-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1
 .rk-addon__more > summary::-webkit-details-marker { display: none; }
 .rk-addon__more > summary::after { content: "+"; content: "+" / ""; font-size: 0.875rem; color: var(--ink-mute); }
 .rk-addon__more[open] > summary::after { content: "−"; content: "−" / ""; }
-.rk-addon__more > summary:hover { color: var(--ink); }
+@media (hover: hover) {
+  .rk-addon__more > summary:hover { color: var(--ink); }
+}
 .rk-addon__more .rk-pc__inc { padding-top: 0.25rem; border-top: 0; }
 .rk-addon__more .rk-pc__inc li::before { color: var(--ink-soft); background: none; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.32); }
 .rk-addon__sum { display: flex; align-items: baseline; gap: 0.5rem; white-space: nowrap; }
@@ -713,9 +716,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .rk-aud__chips li { font-size: 0.625rem; }
 }
 
-/* the rolled numbers' signs and spaces stand still (AdsAnalytics) */
-.rk-count__c { display: inline-block; white-space: pre; }
-
 /* ==========================================================================
    2 · Кейси (ivory; the owner's setting of 6 Nov 2026, AdsCases.tsx): on a computer the block is one screen under the
    bar. Its heading is the first row; under it the left column holds the cases as three small cards, the case's three
@@ -796,8 +796,10 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
 .rk-cs-win__site span { opacity: 0.7; }
 .rk-cs-win__site b { font-weight: 600; }
 .rk-cs-win__site svg { width: 0.9375rem; height: 0.9375rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.25s var(--ease-out); }
-.rk-cs-win__site:hover { box-shadow: 0 0 1.25rem rgb(218 255 2 / 0.45); }
-.rk-cs-win__site:hover svg { transform: translate(2px, -2px); }
+@media (hover: hover) {
+  .rk-cs-win__site:hover { box-shadow: 0 0 1.25rem rgb(218 255 2 / 0.45); }
+  .rk-cs-win__site:hover svg { transform: translate(2px, -2px); }
+}
 .rk-cs-win__site:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
 .rk-cs-win__body { flex: 1; display: flex; align-items: flex-start; min-height: 0; background: #fff; container-type: size; }
 .rk-cs-win__pan { display: contents; }
@@ -843,9 +845,10 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
   .rk-cs-win__in { width: max(100%, var(--w) * 0.8px); }
   .rk-cs-end .btn { width: 100%; justify-content: space-between; }
 }
-/* phones: every screenshot is wider than the window, the hint says it moves */
+/* phones: every screenshot is wider than the window, the hint says it moves (on the left: the page's «up» button
+   stands at the right foot of the screen and covered it) */
 @media (max-width: 600px) {
-  .rk-cs-win__hint { position: absolute; right: 0.625rem; bottom: 0.625rem; display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.4375rem 0.75rem 0.4375rem 0.625rem; border-radius: 99px; font: 400 0.6875rem/1 var(--font-mono); color: var(--ivory); background: rgb(15 14 13 / 0.85); pointer-events: none; transition: opacity 0.3s; }
+  .rk-cs-win__hint { position: absolute; left: 0.625rem; bottom: 0.625rem; display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.4375rem 0.75rem 0.4375rem 0.625rem; border-radius: 99px; font: 400 0.6875rem/1 var(--font-mono); color: var(--ivory); background: rgb(15 14 13 / 0.85); pointer-events: none; transition: opacity 0.3s; }
   .rk-cs-win__hint svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: var(--lime); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .rk-cs-win__body[data-panned] .rk-cs-win__hint { opacity: 0; }
 }
@@ -946,7 +949,10 @@ main[data-ai-page="ads"] .section--ivory .btn--primary .arrow { inset: 0.6875rem
 /* no hover fill (the owner, 6 Nov: the dark wave on the dark pill could not be seen): no wave, no lift, no glow; the
    arrow still slides through its disc */
 main[data-ai-page="ads"] .section--ivory .btn--primary::before { display: none; }
-main[data-ai-page="ads"] .section--ivory .btn--primary:is(:hover, :focus-visible) { transform: none; box-shadow: inset 0 0 0 1px var(--btn-line); }
+main[data-ai-page="ads"] .section--ivory .btn--primary:focus-visible { transform: none; box-shadow: inset 0 0 0 1px var(--btn-line); }
+@media (hover: hover) {
+  main[data-ai-page="ads"] .section--ivory .btn--primary:hover { transform: none; box-shadow: inset 0 0 0 1px var(--btn-line); }
+}
 /* a quick pick chosen in the form is the visitor's action too */
 main[data-ai-page="ads"] .ai-pick[aria-pressed="true"] { background: rgba(218, 255, 2, 0.1); box-shadow: inset 0 0 0 1px var(--lime); }
 main[data-ai-page="ads"] .ai-pick[aria-pressed="true"]::before { color: var(--lime); }
@@ -1076,8 +1082,6 @@ main[data-ai-page="ads"] #contact .s-head__title { font-size: clamp(2.6rem, 5.2v
 /* the request block: the black of the page (the owner, 26 Oct: no ember light behind the form), the form on a surface of
    its own in the lime frame of the page's actions */
 main[data-ai-page="ads"] #contact .lead-form { border-color: transparent; background: #0f0e0d; box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.45), 0 2.5rem 5rem -2.5rem rgba(0, 0, 0, 0.9); }
-/* the footer's request button sat right under the form and led back up to it: on this page the footer keeps its claim */
-main[data-ai-page="ads"] ~ .footer .footer__lead > .btn { display: none; }
 
 /* ==========================================================================
    5 · Сторінка: the bridge to the sites page, a short film (the owner's pick of 26 Oct, «Курсор»). A fixed artboard in u
@@ -1183,7 +1187,9 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
 .rk-paths__go { grid-column: 2; grid-row: 1 / span 3; align-self: end; }
 .rk-paths__sites { grid-column: 1 / -1; justify-self: end; display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; font-size: var(--fs-body); color: var(--ink); text-decoration: none; }
 .rk-paths__sites svg { box-sizing: content-box; flex: none; width: 0.875rem; height: 0.875rem; padding: 0.5rem; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.35); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
-.rk-paths__sites:hover svg { color: var(--on-ink); background: var(--ink); box-shadow: none; transform: translate(0.125rem, -0.125rem); }
+@media (hover: hover) {
+  .rk-paths__sites:hover svg { color: var(--on-ink); background: var(--ink); box-shadow: none; transform: translate(0.125rem, -0.125rem); }
+}
 
 /* phones: the portrait board, the windows stacked, their insides scaled as one; the ways stacked, full-width buttons */
 @media (max-width: 600px) {
@@ -1231,6 +1237,8 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
   .rk-pc--featured { order: -1; margin-bottom: 1.25rem; }
   .rk-pc:not(.rk-pc--featured) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "top sum" "more more" "foot foot"; align-items: start; row-gap: 0; column-gap: 1rem; padding: 1rem 0 0.25rem; border-radius: 0; background: none; box-shadow: none; border-top: 1px solid var(--line); }
   .rk-pc:not(.rk-pc--featured):last-child { border-bottom: 1px solid var(--line); }
+  /* (a row is no glass: the cards' frost blurred the aurora behind each row into a box of its own) */
+  .rk-pc:not(.rk-pc--featured) { -webkit-backdrop-filter: none; backdrop-filter: none; }
   .rk-pc:not(.rk-pc--featured) > .rk-pc__top { grid-area: top; flex-direction: column; align-items: flex-start; justify-content: start; gap: 0.375rem; }
   .rk-pc:not(.rk-pc--featured) .rk-pc__t { font-size: 1.125rem; }
   .rk-pc:not(.rk-pc--featured) > .rk-pc__sum { grid-area: sum; justify-self: end; gap: 0.375rem; }
@@ -1330,7 +1338,9 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
 }
 @media (prefers-reduced-motion: reduce) {
   .rk-card, .rk-pc, .rk-terms__item::before, .rk-terms__mark, .rk-terms__p, .rk-addon::before { transition: none; }
-  .rk-pc:hover { transform: none; }
+  @media (hover: hover) {
+    .rk-pc:hover { transform: none; }
+  }
 }
 
 /* 7 · the price cards as glass over an aurora (the owner's pick of 6 Nov 2026, for now): soft glows of the stream's
