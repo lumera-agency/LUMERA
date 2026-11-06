@@ -18,9 +18,10 @@ import "./header.css";
 const NAV_SHOWN = 1600;
 
 /**
- * The first screen's header: logo, «Послуги ⌄» and «Кейси ⌄» (their panels drop under the header: NavPanel), «Як
- * працюємо», «Ціни», «Про нас», UA · RU, the contact pill and the ghost CTA; on phones the burger opens the site menu
- * (MenuSheet).
+ * The first screen's header: logo, «Послуги ⌄» (its panel drops under the header: NavPanel), «Як працюємо», «Ціни»,
+ * «Про нас», UA · RU, the contact pill and the ghost CTA; on phones the burger opens the site menu (MenuSheet). The
+ * owner, 5 Nov 2026: no «Кейси ⌄» of its own; the cases panel opens from the services panel's «Кейси клієнтів →», as
+ * on the topbar.
  */
 export function Header() {
   const t = useTranslations();
@@ -62,22 +63,21 @@ export function Header() {
 
         <nav className="nav" aria-label={t("nav.label")}>
           <ul className="nav__list">
-            {(["services", "cases"] as const).map((id) => (
-              <li key={id}>
-                <button
-                  className="nav__link nav__trigger"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls={`navp-${id}`}
-                  data-navp-trigger={id}
-                  data-reveal="nav"
-                >
-                  <RollText>{nav.labels[id]}</RollText>
-                  <NavChevron />
-                </button>
-                <NavPanel kind={id} id={`navp-${id}`} />
-              </li>
-            ))}
+            <li>
+              <button
+                className="nav__link nav__trigger"
+                type="button"
+                aria-expanded="false"
+                aria-controls="navp-services"
+                data-navp-trigger="services"
+                data-reveal="nav"
+              >
+                <RollText>{nav.labels.services}</RollText>
+                <NavChevron />
+              </button>
+              <NavPanel kind="services" id="navp-services" />
+              <NavPanel kind="cases" id="navp-cases" />
+            </li>
             <li className="nav__item--how">
               <a className="nav__link" href="#approach" data-navp-plain="" data-reveal="nav">
                 <RollText>{nav.labels.how}</RollText>

@@ -362,12 +362,13 @@ export function TitleFx() {
     });
     ro.observe(host);
 
-    // after the words' entrance («САЙТОВ.» ends it), with the faces in: the plain letters, then the page's hide
-    const lastWord = host.querySelector(".st-h1__s > .tone");
-    const entranceLeft = lastWord?.getAnimations().reduce((left, a) => Math.max(left, Number(a.effect?.getComputedTiming().endTime ?? 0) - Number(a.currentTime ?? 0)), 0) ?? 0;
+    // after the words' entrance (every word's animation finished) and with the faces in: the plain letters, then the
+    // page's hide. Awaited, not timed: in a tab opened in the background the entrance waits until the tab shows, a timer
+    // would not, and the words would be drawn where they start (a line low)
+    const entrance = [...host.querySelectorAll(".st-h1__m > .tone")].flatMap((tone) => tone.getAnimations()).map((animation) => animation.finished);
     let timer = 0;
     let gone = false;
-    document.fonts.ready.then(() => {
+    Promise.all([document.fonts.ready, ...entrance]).catch(() => undefined).then(() => {
       if (gone) return;
       timer = window.setTimeout(() => {
         draw();
@@ -379,7 +380,7 @@ export function TitleFx() {
           host.classList.add("is-fx");
           run();
         });
-      }, Math.max(0, entranceLeft) + 150);
+      }, 150);
     });
 
     return () => {

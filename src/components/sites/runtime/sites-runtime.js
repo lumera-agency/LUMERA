@@ -121,7 +121,6 @@ async function boot() {
   initFaq();
   initSticky();
   initToTop();
-  initCover();
   initScenes();
   initDialogs();
   initCalc();
@@ -337,16 +336,6 @@ function initSticky() {
   });
   ends.forEach((el) => io.observe(el));
   phoneMQ.addEventListener('change', update);
-}
-
-/* ---------- 1 → 2 · the formats slide over the first screen (CSS: html.ai-stick, a first screen marked data-cover) ---------- */
-function initCover() {
-  const hero = $('.ai-hero[data-cover]');
-  if (!hero || OG || typeof ResizeObserver !== 'function') return;
-  const set = () => root.style.setProperty('--hero-h', `${hero.offsetHeight}px`);
-  set();
-  new ResizeObserver(set).observe(hero);
-  root.classList.add('ai-stick');
 }
 
 /* ==========================================================================

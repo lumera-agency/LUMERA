@@ -1,12 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import { FaqList } from "@/components/sections/faq/FaqList";
+import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich } from "./rich";
 import "@/components/sections/faq/faq.css";
 
 type Item = { q: string; a: React.ReactNode };
 
 /** An AI page's questions, on the main page's FAQ (native <details>, the answers open with an animated height). */
-export async function AiFaq({ index, items, intro, after }: { index: number; items: Item[]; intro?: React.ReactNode; after?: React.ReactNode }) {
+export async function AiFaq({ index, items, intro, write, after }: { index: number; items: Item[]; intro?: React.ReactNode; /** a button to the form under the intro, as the main page's «Написати нам» */ write?: string; after?: React.ReactNode }) {
   const c = await getTranslations("aiCommon");
   return (
     <section className="section ai-sec" id="faq" aria-labelledby="faq-title">
@@ -20,6 +21,13 @@ export async function AiFaq({ index, items, intro, after }: { index: number; ite
             <span className="tone">{c.rich("faq.title", aiRich)}</span>
           </h2>
           {intro && <p className="s-head__intro">{intro}</p>}
+          {write && (
+            <p className="faq__write">
+              <ButtonLink href="#contact" variant="primary" size="sm">
+                {write}
+              </ButtonLink>
+            </p>
+          )}
         </header>
         <FaqList>
           {items.map((item, i) => (

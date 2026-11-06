@@ -138,7 +138,7 @@ export async function AdsHow({ index, facts }: { index: number; facts: AdsFacts 
                   <span className="rk-track__pic" aria-hidden="true">{PICS[s.pic]}</span>
                   <div className="rk-track__txt">
                     <h3 className="rk-track__t">
-                      <span className="rk-track__n" aria-hidden="true">{String(k + 1).padStart(2, "0")}</span>
+                      <span className="rk-track__n" aria-hidden="true">{k + 1}</span>
                       {s.t}
                     </h3>
                     <p className="rk-track__p">{s.p}</p>

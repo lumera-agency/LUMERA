@@ -1,23 +1,20 @@
 "use client";
 /*
- * The AI page's first screen (the owner's pick, 26 Oct 2026: «Пульт»): whether its console may run now. True while the stage is in
- * view (IntersectionObserver 0.15), block 2 does not cover the pinned first screen (watchCover, "#case") and the tab
- * is visible; never with reduced motion. It also sets .is-on on the stage, and pauses / resumes the stage's own
- * WAAPI and CSS animations, so a conductor only has to stop scheduling its next step while it is false.
+ * Whether the AI page's console (LiveConsole, ConsoleFx) may run now: while it is in view (IntersectionObserver 0.15)
+ * and the tab is visible; never with reduced motion. It also sets .is-on on the stage, and pauses / resumes the stage's
+ * own WAAPI and CSS animations, so a conductor only has to stop scheduling its next step while it is false.
  */
 import { useEffect, useState, type RefObject } from "react";
-import { watchCover } from "@/components/sites/hero-fx/hero-cover";
 
-export function useHeroRun(stage: RefObject<HTMLElement | null>) {
+export function useConsoleRun(stage: RefObject<HTMLElement | null>) {
   const [running, setRunning] = useState(false);
   useEffect(() => {
     const el = stage.current;
     if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let seen = false;
-    let covered = false;
     let now = false;
     const sync = () => {
-      const next = seen && !covered && !document.hidden;
+      const next = seen && !document.hidden;
       if (next === now) return;
       now = next;
       el.classList.toggle("is-on", next);
@@ -33,14 +30,9 @@ export function useHeroRun(stage: RefObject<HTMLElement | null>) {
       sync();
     }, { threshold: 0.15 });
     io.observe(el);
-    const stop = watchCover((c) => {
-      covered = c;
-      sync();
-    }, "#case");
     document.addEventListener("visibilitychange", sync);
     return () => {
       io.disconnect();
-      stop();
       document.removeEventListener("visibilitychange", sync);
     };
   }, [stage]);

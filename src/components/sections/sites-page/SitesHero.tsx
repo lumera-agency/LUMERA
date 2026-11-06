@@ -10,32 +10,32 @@ import { TitleFx } from "@/components/sites/hero-fx/TitleFx";
 import { SitesBubble } from "@/components/sites/hero-fx/SitesBubble";
 
 /**
- * 1 · the first screen, «Плакат» (the owner's pick, 18 Oct 2026, after «текст залазил на объект»): one screen set as a
- * poster on a 12-column grid, so no word ever crosses the stone. The H1 top left, «Дизайн і код» (the owner's pick of
- * nine settings, 19 Oct: see Title); «01 Формати» and the lead top right
- * (set like the clinic sample's manifesto: a picture pill after each format, the end in Source Serif 4 italic); the
- * object large in the middle, the droplet of liquid metal (the owner, 20 Oct: in place of the stone; the still, then the
- * live droplet: SitesDropletSlot), in its own grid area; bottom left the lime
- * button over «02 Ціни» and the three prices (from the engine: data-fprice). (No «Формати й ціни ↓»: the topbar has
- * «Формати» and «Ціна»; the owner, 19 Oct.) Below:
- * the sample site «Ваш бренд» on a computer and a phone, assembled block by block once (scene «build»). It pins; block
- * 2 slides over it. Rules: sites-hero.css. (The earlier versions a–e, w1–w4 and g1/g2/g4 are kept outside the project.)
+ * 1 · the first screen, «Плакат». On a computer (the owner's pick of five settings, 5 Nov 2026) «ДИЗАЙН І РОЗРОБКА»
+ * across the top, «САЙТІВ.» large in ember at the foot, both in Sofia Sans Extra Condensed, the droplet of liquid metal
+ * between and in front of them (the still, then the live droplet: SitesDropletSlot), the three prices on the right
+ * (from the engine: data-fprice); no formats and no button there, the topbar has «Обговорити». Upright (a phone, a tablet
+ * held upright) the poster of 20 Oct as it was: the words round the droplet, the formats' lead (a tablet), the prices
+ * and the button. No numbers on the labels or the prices (the owner, 5 Nov). Below: the sample site «Ваш бренд» on a
+ * computer and a phone, assembled block by block once (scene «build»). No longer pinned: block 2 scrolls in after it,
+ * it does not slide over it (the owner, 5 Nov 2026). Rules: sites-hero.css.
  */
 const FORMATS = [
-  { key: "landing", n: "01", name: "hg.f1" },
-  { key: "corporate", n: "02", name: "hg.f2" },
-  { key: "ecommerce", n: "03", name: "hg.f3" },
+  { key: "landing", name: "hg.f1" },
+  { key: "corporate", name: "hg.f2" },
+  { key: "ecommerce", name: "hg.f3" },
 ] as const;
 
 export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
   // the lead's italic face is fetched with the page: the line never re-wraps when it arrives
   preload("/fonts/sites/source-serif-4-italic-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
-  const label = (text: string, n: string, area: string) => (
-    <p className={`st-hg__k st-hg__k--${area}`} aria-hidden="true"><span>{n}</span>{text}</p>
+  // the computer's words wait unseen for their face (font-display: block): it comes with the page
+  preload("/fonts/sofia-sans-xc-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  const label = (text: string, area: string) => (
+    <p className={`st-hg__k st-hg__k--${area}`} aria-hidden="true">{text}</p>
   );
   return (
-    <section className="ai-hero ai-hero--center st-hero st-hg" id="top" aria-labelledby="st-title" data-cover="">
+    <section className="ai-hero ai-hero--center st-hero st-hg" id="top" aria-labelledby="st-title">
       <div className="ai-hero__bg" aria-hidden="true"><HeroFlux tone="mono" still /></div>
       <div className="ai-hero__in">
         <div className="ai-hero__copy st-hg__grid">
@@ -45,7 +45,7 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
           </h1>
           {/* the poster's corners (sites-hero.css): on a computer each a block of its own, upright their parts join the column */}
           <div className="st-hg__corner st-hg__corner--tl">
-            {label(t("nav.formats"), "01", "lead")}
+            {label(t("nav.formats"), "lead")}
             <PillLead raw={t.raw("hg.lead") as string} />
           </div>
           {/* the droplet in its own box (decoration) */}
@@ -73,12 +73,11 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
             <ButtonLink href="#contact" variant="primary">{t("cta")}</ButtonLink>
           </div>
           <div className="st-hg__corner st-hg__corner--bl">
-          {label(t("hg.px"), "02", "px")}
-          {/* the three formats: number, name, «від», the sum (from the engine; the runtime refills data-fprice) */}
+          {label(t("hg.px"), "px")}
+          {/* the three formats: name, «від», the sum (from the engine; the runtime refills data-fprice) */}
           <ul className="st-hg__px">
             {FORMATS.map((f) => (
               <li className="st-hg__pi" key={f.key}>
-                <span className="st-hg__pn" aria-hidden="true">{f.n}</span>
                 <span className="st-hg__pt">{t(f.name)}</span>{" "}
                 <span className="st-hg__pp">
                   <span className="st-hg__from">{t("from")}</span> <b data-fprice={f.key}>{F[f.key]}</b>
@@ -101,31 +100,23 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
 }
 
 /*
- * The H1, «Дизайн і код» (t5 of the nine settings the owner compared, 19 Oct 2026): each word in the face of what it
- * means. «Дизайн» in Source Serif 4 italic (design), «розробка» in IBM Plex Mono lowercase (code: it types in once
- * behind an ember caret), «сайтів» in Geologica 800, ember (the result); the three faces matched on one x-height.
- * hero.title's words («<line>Дизайн і розробка</line> <line><hl>сайтів</hl></line>»): the screen reader gets the plain
- * sentence (.visually-hidden), the set words are aria-hidden. Rules and the entrance: sites-hero.css (.st-h1).
+ * The H1 (hero.title: «<line>Дизайн і розробка</line> <line><hl>сайтів</hl></line>»): its four words, each in a mask
+ * it rises out of, set per screen by sites-hero.css (.st-h1); «розробка» comes in letter by letter. The screen reader
+ * gets the plain sentence (.visually-hidden), the set words are aria-hidden.
  */
 function Title({ raw }: { raw: string }) {
-  const lines = [...raw.matchAll(/<line>(.*?)<\/line>/g)].map((m) => m[1]);
+  const lines = [...raw.matchAll(/<line>(.*?)<\/line>/g)].map((match) => match[1]);
   const [design, and, ...rest] = (lines[0] ?? "").split(/\s+/); // «Дизайн» «і» «розробка» (\s also takes a no-break space)
   const key = (lines[1] ?? "").replace(/<\/?hl>/g, "");
-  const code = [...rest.join(" ")]; // mono: every letter has the same width, so nothing moves as it types
+  // one word, not a span a letter: the face's kerning holds (the reveal steps a letter at a time instead, sites-hero.css)
+  const code = rest.join(" ");
   return (
     <>
       <span className="visually-hidden">{`${lines[0] ?? ""} ${key}`}</span>
-      <span className="st-h1" aria-hidden="true" style={{ "--n": code.length } as React.CSSProperties}>
+      <span className="st-h1" aria-hidden="true" style={{ "--n": [...code].length } as React.CSSProperties}>
         <span className="st-h1__m st-h1__a"><span className="tone">{design}</span></span>
         <span className="st-h1__m st-h1__i"><span className="tone">{and}</span></span>
-        <span className="st-h1__m st-h1__b">
-          <span className="tone st-h1__code">
-            {code.map((ch, i) => (
-              <span className="st-h1__k" key={i} style={{ "--i": i } as React.CSSProperties}>{ch}</span>
-            ))}
-            <i className="st-h1__caret" />
-          </span>
-        </span>
+        <span className="st-h1__m st-h1__b"><span className="tone st-h1__code">{code}</span></span>
         <span className="st-h1__m st-h1__s"><span className="tone"><em className="hl">{key}</em></span></span>
       </span>
     </>

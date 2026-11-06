@@ -58,7 +58,8 @@ main[data-ai-page="sites"] .field textarea { caret-color: var(--ember-ink); }
 main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clamp(24px, 3.6vh, 36px); }
 
 /* the sample site on a computer and a phone: one group of fixed proportions (CLS 0); the phone over the window's corner */
-.st-hero .ai-hero__visual { margin-top: clamp(48px, 7vh, 80px); padding-bottom: clamp(56px, 9vh, 104px); }
+/* (5 Nov 2026: more air between the first screen's poster and the sample site under it) */
+.st-hero .ai-hero__visual { margin-top: clamp(96px, 15vh, 176px); padding-bottom: clamp(56px, 9vh, 104px); }
 .st-show { position: relative; width: min(1100px, 100%); aspect-ratio: 1100 / 640; text-align: left; }
 .st-show .st-show__desk { position: absolute; left: 0; top: 0; width: 84%; }
 .st-show__phone { position: absolute; right: 0; bottom: 0; width: 21%; }
@@ -503,7 +504,7 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
   .st-stage__t { font-size: 1.6rem; }
   .st-stage__acts { row-gap: 8px; }
               .st-stage__acts .btn { flex: 1 1 100%; justify-content: space-between; }
-  .st-hero .ai-hero__visual { margin-top: 36px; padding-bottom: 48px; }
+  .st-hero .ai-hero__visual { margin-top: 56px; padding-bottom: 48px; }
   .st-show { aspect-ratio: 350 / 330; }
   .st-show .st-show__desk { width: 88%; }
   .st-show__phone { width: 36%; }

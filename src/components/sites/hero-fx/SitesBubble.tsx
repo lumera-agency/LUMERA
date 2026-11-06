@@ -119,7 +119,7 @@ export function SitesBubble() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
-    const section = canvas?.parentElement;
+    const section = canvas?.closest("section");
     if (!canvas || !section || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const gl = canvas.getContext("webgl2", { premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
     if (!gl) return;
@@ -355,5 +355,10 @@ export function SitesBubble() {
       section.classList.remove("is-bubble");
     };
   }, []);
-  return <canvas ref={ref} className="st-bubble" aria-hidden="true" />;
+  // a rail as tall as the hero, the canvas sticking to the screen's top on it (sites-hero.css)
+  return (
+    <div className="st-bubble-rail" aria-hidden="true">
+      <canvas ref={ref} className="st-bubble" />
+    </div>
+  );
 }
