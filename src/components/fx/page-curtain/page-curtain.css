@@ -1,0 +1,19 @@
+/* The black between the site's pages (PageCurtain.tsx), over everything but the preloader and the cursor. Hidden
+   unless it shows: the next page starts under it (html.is-curtain, before its first frame), the page being left fades
+   it in from script. */
+.page-curtain {
+  position: fixed;
+  /* (on under Safari's floating bar, as the menu's sheet) */
+  inset: 0 0 calc(-1 * var(--screen-under, 0px));
+  z-index: 9000;
+  background: #0a0a0a;
+  visibility: hidden;
+  pointer-events: none;
+}
+html.is-curtain .page-curtain { visibility: visible; pointer-events: auto; }
+/* a phone: the page's ground black under it, so Safari tints its bar black rather than the page's lime or ivory (as
+   the menu does: menu-sheet.css) */
+@media (hover: none) and (pointer: coarse) {
+  html:is(.is-curtain, .is-leaving),
+  html:is(.is-curtain, .is-leaving) body { background: #0a0a0a; }
+}

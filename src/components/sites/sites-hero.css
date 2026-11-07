@@ -162,10 +162,11 @@ html.motion main[data-ai-page="sites"] .st-hg .st-hg__pill { animation: st-hg-pi
    frame late is never seen to move */
 html.motion main[data-ai-page="sites"] .st-hg .st-h1__m > .tone:not(.st-h1__code) { animation: st-h1-in 0.8s var(--ease-out) 0.1s backwards; }
 html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__i > .tone { animation-delay: 0.16s; }
-/* (5 Nov) the word whole, so its kerning holds: it opens from the left a letter's step at a time */
-html.motion main[data-ai-page="sites"] .st-hg .st-h1__code { animation: st-h1-type calc(var(--n) * 0.055s) steps(var(--n), jump-start) 0.36s backwards; }
+/* (5 Nov) the word whole, so its kerning holds: it opens from the left a letter's step at a time, once «Дизайн» and «і»
+   have nearly risen (7 Nov: begun at 0.36 s its first letter stood alone while they still rose, and read as a stall) */
+html.motion main[data-ai-page="sites"] .st-hg .st-h1__code { animation: st-h1-type calc(var(--n) * 0.055s) steps(var(--n), jump-start) 0.5s backwards; }
 @keyframes st-h1-type { from { clip-path: inset(-0.3em 100% -0.3em -0.3em); } to { clip-path: inset(-0.3em -0.3em -0.3em -0.3em); } }
-html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { animation-duration: 0.85s; animation-delay: calc(0.3s + var(--n) * 0.055s); }
+html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { animation-duration: 0.85s; animation-delay: calc(0.44s + var(--n) * 0.055s); }
 /* (from 1%, unseen: from 0 the browser took the words for their Largest Contentful Paint only once risen) */
 @keyframes st-h1-in { from { opacity: 0.01; transform: translateY(104%); } 25% { opacity: 1; } }
 

@@ -78,6 +78,11 @@ html.motion:not(.is-ready) [data-rail-track] { visibility: hidden; }
    an element's first paint as its Largest Contentful Paint, and hidden, then first painted already cut by the
    intro's line masks, it never counted, so the page's LCP was the rail's last word, at 9.5 s on a phone */
 html.motion:not(.is-ready) [data-title] { opacity: 0.01; }
+/* under the page curtain (fx/page-curtain) the page's entrances wait at their first frame: they play as it lifts,
+   not behind it */
+html.is-curtain *,
+html.is-curtain *::before,
+html.is-curtain *::after { animation-play-state: paused !important; }
 
 @media (prefers-reduced-motion: reduce) {
   *,

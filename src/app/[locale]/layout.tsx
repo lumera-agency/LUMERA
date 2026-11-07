@@ -11,6 +11,7 @@ import { getSiteNav } from "@/content/site-nav";
 import "../globals.css";
 import "@/components/layout/page/page.css";
 import { RootKeep } from "@/components/layout/RootKeep";
+import { PageCurtain } from "@/components/fx/page-curtain/PageCurtain";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads"];
@@ -57,8 +58,15 @@ export const viewport: Viewport = {
 /* Runs before first paint: the intro's start states are hidden only when JS and motion are on
    (styles/base.css), and come back by themselves after 3.5 s should a script fail; while the preloader is still up
    they wait for it (up to 10 s): shown under it, the headline would be seen whole as the sheet fades, then hidden and
-   played in by the intro (23 Oct) */
-const EARLY = `(function(r){try{history.scrollRestoration='manual'}catch(e){}r.classList.add('js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');var t=Date.now();setTimeout(function f(){if(document.querySelector('[data-preloader]')&&Date.now()-t<10000)return setTimeout(f,250);r.classList.add('is-ready')},3500)})(document.documentElement)`;
+   played in by the intro (23 Oct). Reached through the page curtain (fx/page-curtain: a link from another page of the
+   site, just now) the page comes up under it, html.is-curtain; should no script lift it, it goes after 6 s */
+const EARLY = `(function(r){try{history.scrollRestoration='manual'}catch(e){}r.classList.add('js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');try{var c=+sessionStorage.getItem('eclo:curtain');sessionStorage.removeItem('eclo:curtain');var n=performance.getEntriesByType('navigation')[0];if(r.classList.contains('motion')&&Date.now()-c<8000&&(!n||n.type==='navigate')){r.classList.add('is-curtain');setTimeout(function(){r.classList.remove('is-curtain')},6000)}}catch(e){}var t=Date.now();setTimeout(function f(){if(document.querySelector('[data-preloader]')&&Date.now()-t<10000)return setTimeout(f,250);r.classList.add('is-ready')},3500)})(document.documentElement)`;
+
+/* Chrome fetches a page of the site while the pointer rests on its link, so the next page is in by the time the curtain
+   has covered this one (the studio's /lab left out) */
+const PREFETCH = JSON.stringify({
+  prefetch: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/lab*" } }, { not: { href_matches: "/ru/lab*" } }] }, eagerness: "moderate" }],
+});
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
@@ -76,7 +84,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <body>
         {/* EARLY as the body's first markup, not a React <script>: it runs as the page is parsed, before anything is
             drawn, and a render in the browser (a language switch) neither runs it again nor warns about a script tag */}
-        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY}</script>` }} />
+        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY}</script><script type="speculationrules">${PREFETCH}</script>` }} />
+        <PageCurtain />
         <RootKeep />
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>

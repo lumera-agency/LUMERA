@@ -127,6 +127,13 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     }
   }, [open, mounted, own]);
 
+  // left for another page from it: closed as the page goes, so the back button finds the page as it was
+  useEffect(() => {
+    const onHide = () => menu.set(false);
+    window.addEventListener("pagehide", onHide);
+    return () => window.removeEventListener("pagehide", onHide);
+  }, []);
+
   // Esc, Tab kept inside, a wide screen closes it
   useEffect(() => {
     if (!open) return;
@@ -167,7 +174,10 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
   /** A link: a block on this page — the page goes there under the sheet, then the sheet lifts; another page opens. */
   const go = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     const { here, hash } = split(href);
-    if (!here || !hash) return void menu.set(false);
+    // another page: the sheet stays, black, while the page curtain comes over it (fx/page-curtain), and closes as the
+    // page is left (below); closed now, its fade and the curtain's let the page show through between them
+    if (!here) return;
+    if (!hash) return void menu.set(false);
     e.preventDefault();
     menu.set(false);
     let target = document.querySelector<HTMLElement>(hash);
