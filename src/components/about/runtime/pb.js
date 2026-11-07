@@ -1,5 +1,6 @@
 /*
- * TEMPORARY · whole-page variant B's own scenes (?p=b), started after the page's shared runtime (about-runtime.js).
+ * «Про нас»'s own scenes («Робочий стіл», sections/about-page/pb/), started after the page's shared runtime
+ * (about-runtime.js).
  * Motion rules as the page's: transform and opacity only, once each, nothing at rest, reduced motion = the final frame.
  *
  * The scenes, each on the page's chain pattern (pb.css: the CSS default is the final frame, .is-pre holds the start,
@@ -14,7 +15,7 @@
  * A touched key tag swings on its own (a mouse only), never while a swing is playing.
  */
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-const ROOT = 'main.about[data-about-p="b"]';
+const ROOT = 'main.about[data-ai-page="about"]';
 const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let started = false;

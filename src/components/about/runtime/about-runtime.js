@@ -1,13 +1,12 @@
 /*
- * «Про нас»'s behaviour, an island as on the sibling pages (React owns the markup, this module the motion): the parts
- * coming in as they reach the screen, the labels' shuffle, the folder (block 2), the broken-telephone demo (block 3),
- * and where the visitor lands.
+ * «Про нас»'s shared behaviour, an island as on the sibling pages (React owns the markup, this module the motion): the
+ * parts coming in as they reach the screen, the labels' shuffle, and where the visitor lands. The blocks' own scenes
+ * (the desk, the notes) are in pb.js.
  * The section titles and the [data-sr] blocks are the main page's own reveals (PageShell → ScrollReveals).
  *
  * Ported ideas, rebuilt here on CSS and WAAPI (React Bits, reactbits.dev, MIT + Commons Clause; 21st.dev): Animated
  * Content and Animated List (a part or a row rises in once), Text Generate Effect (a text's words come up one after
- * another), Shuffle (a label's letters shuffle and settle). In about.css only: Bounce Cards (the first screen's fan on
- * wide screens), Vertical Cut Reveal (the title's words), Glare Hover (the team cards).
+ * another), Shuffle (a label's letters shuffle and settle). In about.css only: Vertical Cut Reveal (the title's words).
  *
  * Motion rules (the owner's): transform and opacity only, once each, nothing runs at rest; with reduced motion the page
  * shows every part's final frame. The CSS default of each part IS its final frame: `.is-pre` holds its start until it
@@ -15,7 +14,6 @@
  */
 import { restorePlace, restoreScroll } from '@/lib/boot';
 
-const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -26,9 +24,6 @@ export function startAbout() {
   started = true;
   initIn();
   initShuffle();
-  initFolder();
-  initPlay();
-  initChain();
   arrive();
 }
 
@@ -118,58 +113,6 @@ function initShuffle() {
     }
   }, { rootMargin: '0px 0px -10% 0px' });
   $$('main.about .s-head__meta > span:last-child').forEach((label) => io.observe(label));
-}
-
-/* ---------- 2 · the folder (AboutWork), wide screens: its documents rise out of it once, one after another, as the
-   folder's front comes into view (about.css: .is-pre holds them down in it; phones take each document's own [data-in]).
-   Already on the screen at load: left as it is ---------- */
-function initFolder() {
-  const el = $('[data-folder]');
-  const lip = el && $('.about-folder__lip', el);
-  if (!lip || !motion) return;
-  if (el.getBoundingClientRect().top < window.innerHeight * 0.75) return;
-  el.classList.add('is-pre');
-  const io = new IntersectionObserver((entries) => {
-    if (!entries.some((entry) => entry.isIntersecting)) return;
-    io.disconnect();
-    el.classList.remove('is-pre');
-  }, { rootMargin: '0px 0px -12% 0px' });
-  io.observe(lip);
-}
-
-/* ---------- TEMPORARY · block 2's variants «Чек» and «3D-стопка» ([data-play], AboutWorkVariants): played once as
-   they come into view (.is-pre their start, .is-play the CSS animation from there to the CSS default, the final frame).
-   Already on the screen at load: left as it is ---------- */
-function initPlay() {
-  if (!motion) return;
-  $$('main.about [data-play]').forEach((el) => {
-    if (el.getBoundingClientRect().top < window.innerHeight * 0.75) return;
-    el.classList.add('is-pre');
-    const io = new IntersectionObserver((entries) => {
-      if (!entries.some((entry) => entry.isIntersecting)) return;
-      io.disconnect();
-      el.classList.remove('is-pre');
-      el.classList.add('is-play');
-    }, { threshold: 0.3 });
-    io.observe(el);
-  });
-}
-
-/* ---------- 3 · the broken-telephone demo (AboutDirect): plays once as its window comes into view. .is-pre holds the
-   start (no stop lit, the lines empty, no message yet); .is-play runs the CSS animations, each from its own start frame
-   (fill backwards), so the window's CSS default stays its final frame. Already on the screen at load: left as it is ---------- */
-function initChain() {
-  const el = $('[data-chain]');
-  if (!el || !motion) return;
-  if (el.getBoundingClientRect().top < window.innerHeight * 0.75) return;
-  el.classList.add('is-pre');
-  const io = new IntersectionObserver((entries) => {
-    if (!entries.some((entry) => entry.isIntersecting)) return;
-    io.disconnect();
-    el.classList.remove('is-pre');
-    el.classList.add('is-play');
-  }, { threshold: 0.35 });
-  io.observe(el);
 }
 
 /* ---------- where the visitor lands: back where they were after a language switch or a reload, else at the #block ---------- */
