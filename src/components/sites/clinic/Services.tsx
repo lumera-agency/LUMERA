@@ -1,5 +1,5 @@
 /*
- * Послуги: the page head (mirror.jpg as a letterbox), three popular visits side by side (the middle one in petrol), all
+ * Послуги: the page head (mirror.webp as a letterbox), three popular visits side by side (the middle one in petrol), all
  * the prices (categories over a ruled table whose rows open; on a desktop a small photo follows the pointer down the
  * rows), the treatment's four steps on one hairline, the closing band.
  * Rebuilt from the public demos (behaviour only, no code taken):
@@ -134,7 +134,7 @@ function Prices() {
     const i = Number(row.dataset.i);
     if (i !== shown.current) {
       shown.current = i;
-      img.current.src = `${PH}${SERVICES[i].photo}.jpg`;
+      img.current.src = `${PH}${SERVICES[i].photo}.webp`;
     }
     const r = box.current.getBoundingClientRect();
     thumb.current.style.transform = `translate(${e.clientX - r.left + 18}px, ${e.clientY - r.top - 40}px)`;

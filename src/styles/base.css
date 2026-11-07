@@ -72,9 +72,12 @@ h1, p { margin: 0; }
 }
 [data-link-target]:focus { outline: none; } /* a block a link went to holds the keyboard's place, no ring (lib/scroll) */
 html.motion:not(.is-ready) [data-reveal],
-html.motion:not(.is-ready) [data-title],
 html.motion:not(.is-ready) [data-rule],
 html.motion:not(.is-ready) [data-rail-track] { visibility: hidden; }
+/* the headline is painted from the first frame, at 1% (unseen on the black, under the preloader): the browser takes
+   an element's first paint as its Largest Contentful Paint, and hidden, then first painted already cut by the
+   intro's line masks, it never counted, so the page's LCP was the rail's last word, at 9.5 s on a phone */
+html.motion:not(.is-ready) [data-title] { opacity: 0.01; }
 
 @media (prefers-reduced-motion: reduce) {
   *,

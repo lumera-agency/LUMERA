@@ -25,6 +25,10 @@ const GAIN = 0.36;
 const MAX_PUSH = 11;
 /** The canvas' pixels at most (device px): a large Retina screen draws a little below its own density. */
 const MAX_PIXELS = 9e6;
+/** Seconds over which the slow waves and their shade grow in once the canvas has taken the words over: from nothing,
+ *  so the take-over itself shows no change (at full strength the letters jumped a pixel or two and darkened the moment
+ *  the canvas came: the owner, 6 Nov 2026, «странно перегружаются»). */
+const WAKE = 1.2;
 
 const VERT = `#version 300 es
 in vec2 aPos;
@@ -59,7 +63,7 @@ const DRAW = `#version 300 es
 precision highp float;
 uniform sampler2D uMask, uField;
 uniform vec2 uRes, uSize;
-uniform float uDpr, uOn, uTime;
+uniform float uDpr, uOn, uTime, uWake;
 uniform vec3 uAccent;
 out vec4 outColor;
 const float RANGE = ${RANGE.toFixed(1)};
@@ -75,8 +79,8 @@ vec4 liquid(vec2 p) {
   vec2 v = p / uDpr;
   vec2 slope = vec2(sin(v.y * 0.045 + uTime * 1.3) + 0.6 * sin(v.y * 0.11 - v.x * 0.02 + uTime * 2.1),
                     sin(v.x * 0.032 - uTime * 1.05) + 0.6 * sin(v.x * 0.09 + v.y * 0.03 - uTime * 1.7));
-  vec4 c = words(p + slope * 1.1 * uDpr);
-  c.rgb *= 0.9 + 0.08 * dot(slope, vec2(-0.6, -0.8));
+  vec4 c = words(p + slope * 1.1 * uDpr * uWake);
+  c.rgb *= mix(1.0, 0.9 + 0.08 * dot(slope, vec2(-0.6, -0.8)), uWake);
   return c;
 }
 
@@ -240,6 +244,8 @@ export function TitleFx() {
       gl.uniform1f(paint.uniform("uDpr"), dpr);
       gl.uniform1f(paint.uniform("uOn"), flow ? 1 : 0);
       gl.uniform1f(paint.uniform("uTime"), clock);
+      const wake = Math.min(1, clock / WAKE);
+      gl.uniform1f(paint.uniform("uWake"), wake * wake * (3 - 2 * wake));
       gl.uniform3f(paint.uniform("uAccent"), accent[0], accent[1], accent[2]);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);

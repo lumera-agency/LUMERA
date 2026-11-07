@@ -1,9 +1,8 @@
 "use client";
 /*
  * «Дизайн і сайти»: the first screen's object, the droplet of liquid metal (three/droplet, the owner's VarianteMain of
- * 12 Oct 2026), in place of the stone (the owner, 20 Oct). The still under it is a frame of the droplet at the canvas'
- * size (img/droplet/droplet-*.webp); the live one dissolves in over it, in that same pose, once the still's entrance has
- * ended and the body has been drawn (sites-hero.css), and then comes to life. It renders only while it can be seen: it rests once less than ~20 px of the first
+ * 12 Oct 2026), in place of the stone (the owner, 20 Oct). It comes in once its body has been drawn, with the still's own
+ * entrance (sites-hero.css; the still itself waits unseen: the owner, 6 Nov 2026), and then comes to life. It renders only while it can be seen: it rests once less than ~20 px of the first
  * screen shows under the topbar (the block sliding over the pinned first screen), and in a hidden tab.
  */
 import { useEffect, useRef, useState } from "react";
@@ -61,15 +60,10 @@ export default function SitesDroplet({ host }: { host: HTMLElement }) {
     };
   }, [host]);
 
-  // the live droplet takes over once the still's entrance (CSS st-stone-in) has ended, never in the middle of it; it holds
-  // the still's pose until the still has gone (sites-hero.css: 0.4 s), then comes to life
+  // drawn: it comes in (sites-hero.css), holding its pose through the first of its entrance, then comes to life
   const takeOver = () => {
-    const still = host.querySelector<HTMLImageElement>(".ai-hero__stone");
-    const running = still?.getAnimations().filter((a) => a.playState === "running") ?? [];
-    Promise.all(running.map((a) => a.finished.catch(() => {}))).then(() => {
-      host.classList.add("is-live");
-      setTimeout(() => setAwake(true), 450);
-    });
+    host.classList.add("is-live");
+    setTimeout(() => setAwake(true), 450);
   };
 
   return (

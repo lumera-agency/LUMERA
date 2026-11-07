@@ -412,7 +412,7 @@ export function build(H, c, data, e, opts = {}) {
         <p class="pn-sub" data-in>${lx(t('sub'), e ? T.suben : null)}</p>
         <div class="pn-ctas" data-in>${pbtn(lx(s.btn, e?.btn), '', ' data-btn data-go="10"')}<span class="pn-link" data-go="2">${lx(s.btn2, e?.btn2)}</span></div>
         <div class="pn-sw" data-in data-sw><span class="pn-sw__k">${esc(t('bg'))}</span><span class="pn-sw__row">${SWATCH.map((col, i) => `<i class="pn-sw__i${i ? '' : ' is-on'}" data-s="${i}" style="--c:${col}"></i>`).join('')}</span><span class="pn-sw__n">${t('sw').map((n, i) => `<span${i ? '' : ' class="is-on"'}>${esc(n)}</span>`).join('')}</span></div>
-        <figure class="pn-hero__ph" data-in>${dimLine(`180 м²`)}<div class="pn-ph"><picture><source media="(max-width: 700px)" srcset="${PH}hero-m.jpg"><img src="${PH}hero.jpg" alt="" decoding="async"></picture></div><figcaption>${up(t('photo'))}</figcaption></figure>
+        <figure class="pn-hero__ph" data-in>${dimLine(`180 м²`)}<div class="pn-ph"><picture><source media="(max-width: 700px)" srcset="${PH}hero-m.webp"><img src="${PH}hero.webp" alt="" decoding="async"></picture></div><figcaption>${up(t('photo'))}</figcaption></figure>
       </div>
       <div class="pn-plan" data-plan>${planSVG(model)}${lens}<i class="pn-xh pn-xh--h" aria-hidden="true"></i><i class="pn-xh pn-xh--v" aria-hidden="true"></i><span class="pn-xh__t" aria-hidden="true"></span></div>
     </section>`;
@@ -433,7 +433,7 @@ export function build(H, c, data, e, opts = {}) {
           ${pbtn(esc(t('hallBtn')), ' pn-btn--line', ' data-book-hall')}
         </div>
         <figure class="pn-halls__view" data-in>
-          <div class="pn-halls__ph">${hallImg.map((im, i) => `<img class="${i ? '' : 'is-on'}" data-h="${i}" src="${PH}${im}.jpg" alt="" decoding="async">`).join('')}<div class="pn-px" aria-hidden="true">${'<i></i>'.repeat(PXC * PXR)}</div></div>
+          <div class="pn-halls__ph">${hallImg.map((im, i) => `<img class="${i ? '' : 'is-on'}" data-h="${i}" src="${PH}${im}.webp" alt="" decoding="async">`).join('')}<div class="pn-px" aria-hidden="true">${'<i></i>'.repeat(PXC * PXR)}</div></div>
           <figcaption class="pn-halls__cap">${s.services.slice(0, 3).map(([, d, p], i) => `<span class="pn-cap${i ? '' : ' is-on'}" data-h="${i}"><b>${up(`${t('hall')} ${LET[i]} · ${names[i]} · ${s.halls[i][1]} · ${p}`)}</b><span>${esc(H.noArea ? H.noArea(d) : d)}</span></span>`).join('')}</figcaption>
           <div class="pn-scrub" data-scrub style="--at:0"><div class="pn-scrub__t">${ticks}</div><i class="pn-scrub__head"></i><div class="pn-scrub__k">${names.map((n, i) => `<span data-h="${i}"${i ? '' : ' class="is-on"'}>${LET[i]} · ${esc(n)}</span>`).join('')}</div></div>
         </figure>
@@ -443,8 +443,8 @@ export function build(H, c, data, e, opts = {}) {
   /* ---------- 03 + what the rent includes: a vertical tab list, a photo or a drawing ---------- */
   const items = [...s.logos, t('assist')];
   const panels = [
-    `<img src="${PH}kit-backdrops.jpg" alt="" decoding="async"><span class="pn-tab__sw">${SWATCH.map((col) => `<i style="--c:${col}"></i>`).join('')}</span>`,
-    `<img src="${PH}kit-light.jpg" alt="" decoding="async">`,
+    `<img src="${PH}kit-backdrops.webp" alt="" decoding="async"><span class="pn-tab__sw">${SWATCH.map((col) => `<i style="--c:${col}"></i>`).join('')}</span>`,
+    `<img src="${PH}kit-light.webp" alt="" decoding="async">`,
     svg('0 0 400 300', DRAWINGS.makeup(L), 'pd'),
     svg('0 0 400 300', DRAWINGS.steam(L), 'pd'),
     svg('0 0 400 300', DRAWINGS.park(L), 'pd'),
@@ -483,7 +483,7 @@ export function build(H, c, data, e, opts = {}) {
       ${head(5, s.worksKicker)}
       <div class="pn-works__top"><h2 class="pn-h2">${key(s.worksTitle)}</h2>
         <div class="pn-chips" data-in>${[t('all'), ...names].map((x, k) => `<span class="pn-chip${k ? '' : ' is-on'}" data-f="${k - 1}">${esc(x)}</span>`).join('')}</div></div>
-      <div class="pn-strip" data-strip><div class="pn-strip__row">${t('sets').map((x, i) => `<figure class="pn-shot" data-h="${setHall[i]}"><div class="pn-shot__ph"><img src="${PH}set-${i + 1}.jpg" alt="" decoding="async" draggable="false"></div><figcaption><b>${up(`${names[setHall[i]]} · ${pad(i + 1)}`)}</b><span>${esc(x)}</span></figcaption></figure>`).join('')}</div></div>
+      <div class="pn-strip" data-strip><div class="pn-strip__row">${t('sets').map((x, i) => `<figure class="pn-shot" data-h="${setHall[i]}"><div class="pn-shot__ph"><img src="${PH}set-${i + 1}.webp" alt="" decoding="async" draggable="false"></div><figcaption><b>${up(`${names[setHall[i]]} · ${pad(i + 1)}`)}</b><span>${esc(x)}</span></figcaption></figure>`).join('')}</div></div>
     </section>`;
 
   /* ---------- 06 · how to book: four steps on the dashed rail ---------- */
@@ -514,7 +514,7 @@ export function build(H, c, data, e, opts = {}) {
   const meet = `<section class="pn-sec pn-meet" data-blk="8" data-plus data-meet>
       ${head(8, t('meetK'))}
       <div class="pn-meet__grid">
-        <figure class="pn-meet__ph" data-in><div class="pn-ph"><img src="${PH}meet.jpg" alt="" decoding="async"></div></figure>
+        <figure class="pn-meet__ph" data-in><div class="pn-ph"><img src="${PH}meet.webp" alt="" decoding="async"></div></figure>
         <div class="pn-meet__t">
           <h2 class="pn-h2">${key(t('meetT'), 2)}</h2>
           <p class="pn-p" data-in>${esc(t('meetP'))}</p>

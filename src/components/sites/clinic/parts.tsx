@@ -147,7 +147,7 @@ export function Photo({ k, focus, className = "", eager = false }: { k: PhotoKey
   return (
     <figure className={`cl-ph ${className}`}>
       <img
-        src={`${PH}${phone ? "m/" : ""}${k}.jpg`}
+        src={`${PH}${phone ? "m/" : ""}${k}.webp`}
         alt=""
         decoding="async"
         loading={phone && !eager ? "lazy" : undefined}

@@ -1,30 +1,46 @@
 "use client";
 /*
- * «Дизайн і сайти»: where the live droplet goes (SitesDroplet.tsx): only once the page has loaded and the browser is
- * idle, so the first screen never waits for three.js; on a phone too (the owner, 20 Oct: it flows there, the finger
- * doesn't pull it); never with reduced motion, Save-Data or without WebGL: then the still under it simply stays.
+ * «Дизайн і сайти»: where the live droplet goes (SitesDroplet.tsx): asked for as soon as the browser has a moment, not
+ * after the whole page has loaded (it comes once, whole: the sooner the better; the words are painted before it anyway);
+ * never with reduced motion, Save-Data or without WebGL: then the still under it simply stays (.is-still). A phone plays
+ * the droplet as a film instead, from the first moment (SitesDropletFilm, the owner, 6 Nov 2026); if it can't, the live
+ * droplet comes.
  */
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { WebGLGate } from "@/components/three/lib/WebGLGate";
+import { SitesDropletFilm } from "./SitesDropletFilm";
 
 const SitesDroplet = dynamic(() => import("./SitesDroplet"), { ssr: false });
+
+/** the screens the film is for: a finger (the droplet doesn't follow one, so the film is all it does) */
+const TOUCH = "(hover: none) and (pointer: coarse)";
+const FILM = "/img/droplet/droplet-film.mp4";
 
 export function SitesDropletSlot() {
   const mark = useRef<HTMLSpanElement>(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
+  const [mode, setMode] = useState<"film" | "live" | null>(null);
   useEffect(() => {
+    const rock = mark.current?.parentElement ?? null;
     const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    if (saveData || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let idle = 0;
-    const go = () => setHost(mark.current?.parentElement ?? null);
-    const later = () => {
-      idle = typeof requestIdleCallback === "function" ? requestIdleCallback(go, { timeout: 1500 }) : window.setTimeout(go, 200);
+    if (saveData || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      rock?.classList.add("is-still");
+      return;
+    }
+    if (matchMedia(TOUCH).matches) {
+      const frame = requestAnimationFrame(() => {
+        setHost(rock);
+        setMode("film");
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+    const go = () => {
+      setHost(rock);
+      setMode("live");
     };
-    if (document.readyState === "complete") later();
-    else window.addEventListener("load", later, { once: true });
+    const idle = typeof requestIdleCallback === "function" ? requestIdleCallback(go, { timeout: 300 }) : window.setTimeout(go, 100);
     return () => {
-      window.removeEventListener("load", later);
       if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
       clearTimeout(idle);
     };
@@ -32,8 +48,9 @@ export function SitesDropletSlot() {
   return (
     <>
       <span ref={mark} hidden />
-      {host && (
-        <WebGLGate>
+      {host && mode === "film" && <SitesDropletFilm host={host} src={FILM} onFail={() => setMode("live")} />}
+      {host && mode === "live" && (
+        <WebGLGate onSkip={() => host.classList.add("is-still")}>
           <SitesDroplet host={host} />
         </WebGLGate>
       )}

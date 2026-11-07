@@ -1,3 +1,4 @@
+import { preload } from "react-dom";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import { aiRich } from "@/components/ai/rich";
@@ -7,6 +8,8 @@ import { aiHref } from "@/components/ai/links";
 export async function CaseHero() {
   const t = await getTranslations();
   const locale = await getLocale();
+  // the film's poster is the screen's largest picture: asked for with the page, not once the video tag is read
+  preload(t("case.film.poster"), { as: "image", fetchPriority: "high" });
   return (
     <section className="ai-hero ai-hero--film" id="top" aria-labelledby="ai-title" data-cover="">
       <div className="ai-hero__in">

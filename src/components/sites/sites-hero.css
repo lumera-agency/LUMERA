@@ -166,7 +166,8 @@ html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__i > .tone { anima
 html.motion main[data-ai-page="sites"] .st-hg .st-h1__code { animation: st-h1-type calc(var(--n) * 0.055s) steps(var(--n), jump-start) 0.36s backwards; }
 @keyframes st-h1-type { from { clip-path: inset(-0.3em 100% -0.3em -0.3em); } to { clip-path: inset(-0.3em -0.3em -0.3em -0.3em); } }
 html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { animation-duration: 0.85s; animation-delay: calc(0.3s + var(--n) * 0.055s); }
-@keyframes st-h1-in { from { opacity: 0; transform: translateY(104%); } 25% { opacity: 1; } }
+/* (from 1%, unseen: from 0 the browser took the words for their Largest Contentful Paint only once risen) */
+@keyframes st-h1-in { from { opacity: 0.01; transform: translateY(104%); } 25% { opacity: 1; } }
 
 /* ==========================================================================
    A phone (and a narrow tablet)
@@ -237,11 +238,11 @@ main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }
 @media (min-width: 761px) {
   .st-hg .ai-hero__rock { top: calc(50% - 1.4em); }
 }
-/* the live droplet dissolves in over the still in a third of a second (it lies on top of it), then the still goes: any
-   small difference between the two never shows as a jump, and there is never a frame without it */
-.st-hg .ai-hero__canvas { transition: opacity 0.35s ease-out; }
-.st-hg .ai-hero__rock.is-live .ai-hero__stone { transition: opacity 0s linear 0.4s; }
-.st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 1; }
+/* the droplet comes once, whole and moving (the owner, 6 Nov 2026: never the still first and the live one over it): the
+   still waits unseen and shows only where nothing will move (.is-still: reduced motion, Save-Data, no WebGL); the live
+   droplet (a computer) or its film (a phone, SitesDropletSlot) comes in with the still's own entrance once drawn */
+html.motion .st-hg .ai-hero__rock:not(.is-still) .ai-hero__stone { visibility: hidden; }
+.st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 1; animation: st-stone-in 0.9s var(--ease-out) both; }
 /* its entrance: a fade with a short rise, no scale (an object that grows on arrival reads as «it grows») */
 @keyframes st-stone-in { from { opacity: 0; transform: translateY(0.4em); } }
 html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: st-stone-in; }

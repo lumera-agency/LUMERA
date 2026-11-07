@@ -63,7 +63,7 @@ export function Footer() {
           {FOOT_PICS.map((d, i) => (
             <div key={d.k} className={`cl-ftr__pic cl-ftr__pic--${i + 1}`} data-dir={FOOT_DIR[i]} style={{ "--k": i } as Css}>
               {/* eslint-disable-next-line @next/next/no-img-element -- the sample's own photo */}
-              <img src={`${PH}${phone ? "m/" : ""}${d.k}.jpg`} alt="" decoding="async" loading={phone ? "lazy" : undefined} style={{ objectPosition: d.f }} />
+              <img src={`${PH}${phone ? "m/" : ""}${d.k}.webp`} alt="" decoding="async" loading={phone ? "lazy" : undefined} style={{ objectPosition: d.f }} />
               <i className="cl-ph__cur" />
             </div>
           ))}

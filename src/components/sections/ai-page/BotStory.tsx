@@ -6,7 +6,7 @@
  * starts (no WebGL, reduced motion: never) nothing changes: the server's still stays, every request booked.
  */
 import { useEffect, useRef } from "react";
-import { botStage } from "@/components/three/ai-robot/shared";
+import { botStage } from "@/components/three/ai-robot/stage";
 
 export function BotStory({ children }: { children: React.ReactNode }) {
   const box = useRef<HTMLDivElement>(null);
@@ -21,15 +21,23 @@ export function BotStory({ children }: { children: React.ReactNode }) {
     if (!rows.length || !head || !bubble) return;
     let timers: number[] = [];
 
+    // the round over: the booked rows fade before they empty into slots (cut at once, it read as the seam of the
+    // phone's looped film: the owner, 6 Nov 2026); the first round empties the server's still at once
+    const CLEAR = 450;
     botStage.reset = () => {
       timers.forEach(clearTimeout);
       timers = [];
       stage.classList.add("is-playing");
-      rows.forEach((row) => {
-        row.classList.remove("is-on", "is-done");
-        row.querySelectorAll<HTMLElement>("td").forEach((cell) => ((cell.querySelector<HTMLElement>(".bot-crm__state") ?? cell).textContent = ""));
-      });
       bubble.classList.remove("is-on");
+      const booked = rows.filter((row) => row.classList.contains("is-on"));
+      booked.forEach((row) => row.classList.add("is-clearing"));
+      const empty = () =>
+        rows.forEach((row) => {
+          row.classList.remove("is-on", "is-done", "is-clearing");
+          row.querySelectorAll<HTMLElement>("td").forEach((cell) => ((cell.querySelector<HTMLElement>(".bot-crm__state") ?? cell).textContent = ""));
+        });
+      if (booked.length) timers.push(window.setTimeout(empty, CLEAR));
+      else empty();
     };
     botStage.rowFor = (index) => rows[index] ?? null;
     botStage.say = (index, under = false) => {

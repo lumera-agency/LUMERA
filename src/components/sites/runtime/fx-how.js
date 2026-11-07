@@ -44,7 +44,7 @@ export function mountHow({ motion }) {
   const imgs = [...vp.querySelectorAll('img')];
   if (matchMedia('(max-width: 600px)').matches) {
     const d = q('.st-bd__img');
-    if (d) d.src = d.getAttribute('src').replace(/(-s)?\.jpg$/, '-s.jpg');
+    if (d) d.src = d.getAttribute('src').replace(/(-s)?\.webp$/, '-s.webp');
   }
   const near = new IntersectionObserver((es) => {
     if (!es.some((e) => e.isIntersecting)) return;

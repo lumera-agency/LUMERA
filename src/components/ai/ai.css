@@ -787,7 +787,9 @@ html.ai-modal { overflow: hidden; }
 /* the first screen's words come in once, from CSS on the first paint: no script to wait for, so the title is there as
    soon as its font (the owner's mask rise). The service cards' scenes hold their start until they play */
 @keyframes ai-line-in { from { transform: translateY(104%); } }
-@keyframes ai-rise-in { from { opacity: 0; transform: translateY(0.875rem); } }
+/* (from 1%, unseen: the browser takes a text's first paint at an opacity above 0 as its Largest Contentful Paint, and
+   the first screens' titles rise in with this; from 0 they counted only once risen, 4 to 5 s on Lighthouse's phone) */
+@keyframes ai-rise-in { from { opacity: 0.01; transform: translateY(0.875rem); } }
 @keyframes ai-stone-in { from { opacity: 0; transform: scale(0.92) rotate(-5deg); } }
 html.motion main[data-ai-page="ai"] .ai-hero--center .ai-l > .tone { animation: ai-line-in 0.8s var(--ease-out) 0.05s backwards; }
 html.motion main[data-ai-page="ai"] .ai-hero--center .ai-l + .ai-l > .tone { animation-delay: 0.16s; }

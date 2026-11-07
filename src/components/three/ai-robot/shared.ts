@@ -22,20 +22,7 @@ export type BotWords = { tag: string; leads: BotLead[] };
  *  moves), pleased (^^ and a wide smile) */
 export type FaceMood = "idle" | "read" | "talk" | "happy";
 
-/** The scene's word to the page (BotStory fills these in): the row a card goes into, the answer to show by the mouth
- *  (null: none), a card recorded as its row, the round starting over. */
-export const botStage: {
-  rowFor: (index: number) => Element | null;
-  /** `under`: the card is held under the head's left (a phone), so the answer goes toward the head's right */
-  say: (index: number | null, under?: boolean) => void;
-  insert: (index: number) => void;
-  reset: () => void;
-} = {
-  rowFor: () => null,
-  say: () => {},
-  insert: () => {},
-  reset: () => {},
-};
+export { botStage } from "./stage";
 
 /** Where the pointer is (window pixels) and when it last moved: the head turns to it for a moment, then back to work. */
 export const robotPointer = { x: 0, y: 0, movedAt: -1e9 };

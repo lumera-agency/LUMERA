@@ -892,14 +892,14 @@ function initTabs() {
   if (!room) return;
   const buttons = $$('.st-rail__t', room);
   const stageOf = (f) => $(`.st-stage[data-fmt="${f}"]`, room);
-  // (15 Oct) phones take the 600-px copies of the page-long stills (…-s.jpg). The stills carry their address in
+  // (15 Oct) phones take the 600-px copies of the page-long stills (…-s.webp). The stills carry their address in
   // data-src (the dictionary's, per language) and get it here, so a phone never starts the big copy first (the phone
   // audit: the first still came twice, 0.5 MB more, 1.3 MB in Russian). (QA 19 Oct, S-20) So do narrow tablets and
   // phones on their side, up to 860 px: the same copies, the open format's first, another's as its tab is pressed
   const phone = narrowMQ.matches;
   for (const img of $$('.st-dev__img[data-src]', room)) {
     const desk = img.closest('.st-dev__desk');
-    img.src = phone && desk ? img.dataset.src.replace(/\.jpg$/, '-s.jpg') : img.dataset.src;
+    img.src = phone && desk ? img.dataset.src.replace(/\.webp$/, '-s.webp') : img.dataset.src;
   }
   // on a computer every still starts loading once block 2 is within a screen, so a tab never opens on an empty window;
   // on a phone only the open format's (the phone audit: all ten, 2.2 MB, came at the page's load), and another
