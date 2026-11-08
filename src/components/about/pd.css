@@ -1,0 +1,492 @@
+/* ==========================================================================
+   TEMPORARY · «Про нас», whole-page variant D (?p=d), «Конвеєр» (sections/about-page/pd/). Every rule is scoped to
+   main.about[data-about-p="d"]; the page's shared parts (the title's cut, the lead's words, the parts coming in, the
+   labels' shuffle, the way down, the form's sizes and its lime) are in about.css
+   ========================================================================== */
+/*
+ * The project as a build pipeline (21st.dev's Build Pipeline by @ibrandify; motionsites' NexaCore Process and Technical
+ * Specifications; 21st.dev's Comparison Section by @mohammadshehadeh), rebuilt in CSS and SVG: a calm control room.
+ * The grid: the container's 12 columns, drawn as hairlines behind every block (.pd-grid, on the column gaps' middles);
+ * the panels' cells and dividers sit on those lines; registration crosses mark the panels' corners (.pd-frame). Cards:
+ * --radius-lg, a --border-strong hairline (the ads page's). Mono only in the labels. Every colour is a token; five
+ * sizes (label, small, lead, h3, display).
+ * Motion: transform and opacity only (translate / scale / rotate, opacity), each scene once. The CSS default of every
+ * part is its final frame; .is-pre holds its start (set by runtime/pd.js only on what is still below the screen),
+ * .is-play runs it (each part at its own moment: a delay, fill backwards). The first screen's panel plays in CSS from
+ * the first paint. Reduced motion: the final frame. Hover: a mouse only.
+ */
+
+/* ---------- the variant's frame: the pipeline's rhythm, the grid's and the crosses' ink ---------- */
+main.about[data-about-p="d"] {
+  --pd-t0: 250ms;   /* the first stage passes */
+  --pd-step: 700ms; /* then a stage every step */
+  --pd-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --pd-grid-c: color-mix(in srgb, var(--ink) 5%, transparent);
+  --pd-cross: color-mix(in srgb, var(--ink) 34%, transparent);
+}
+main.about[data-about-p="d"] .pd-c { container-type: inline-size; }
+main.about[data-about-p="d"] :is(.pd-hero, .pd-work, .pd-direct, .pd-lead) { overflow-x: clip; }
+main.about[data-about-p="d"] .pd-work {
+  --pd-grid-c: color-mix(in srgb, var(--ink-dark) 6%, transparent);
+  --pd-cross: color-mix(in srgb, var(--ink-dark) 36%, transparent);
+}
+
+/* the 12 columns as hairlines: a line in the middle of each gap, the content's two edges; they fade out at the block's
+   top and foot */
+main.about[data-about-p="d"] .pd-grid {
+  position: absolute;
+  inset: 0 var(--gutter);
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--pd-grid-c) 0 1px, transparent 1px) calc(var(--col-gap) / -2 - 0.5px) 0 / calc((100% + var(--col-gap)) / 12) 100% repeat-x;
+  box-shadow: inset 1px 0 var(--pd-grid-c), inset -1px 0 var(--pd-grid-c);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 min(30%, 14rem), #000 calc(100% - min(20%, 10rem)), transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 min(30%, 14rem), #000 calc(100% - min(20%, 10rem)), transparent);
+}
+/* phones: every third line (four columns of three), so the hairlines stay calm on a narrow screen */
+@media (max-width: 600px) {
+  main.about[data-about-p="d"] .pd-grid { background-size: calc((100% + var(--col-gap)) / 4) 100%; }
+}
+
+/* registration crosses on a panel's four corners (drawn just outside its box) */
+main.about[data-about-p="d"] .pd-frame { position: relative; }
+main.about[data-about-p="d"] .pd-frame::before {
+  --x: var(--pd-cross);
+  content: "";
+  position: absolute;
+  inset: -0.375rem;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--x), var(--x)) 0 0.34375rem / 0.75rem 1px no-repeat,
+    linear-gradient(var(--x), var(--x)) 0.34375rem 0 / 1px 0.75rem no-repeat,
+    linear-gradient(var(--x), var(--x)) 100% 0.34375rem / 0.75rem 1px no-repeat,
+    linear-gradient(var(--x), var(--x)) calc(100% - 0.34375rem) 0 / 1px 0.75rem no-repeat,
+    linear-gradient(var(--x), var(--x)) 0 calc(100% - 0.34375rem) / 0.75rem 1px no-repeat,
+    linear-gradient(var(--x), var(--x)) 0.34375rem 100% / 1px 0.75rem no-repeat,
+    linear-gradient(var(--x), var(--x)) 100% calc(100% - 0.34375rem) / 0.75rem 1px no-repeat,
+    linear-gradient(var(--x), var(--x)) calc(100% - 0.34375rem) 100% / 1px 0.75rem no-repeat;
+}
+
+/* a mono label, as the sibling pages' */
+main.about[data-about-p="d"] :is(.pd-sum__bar, .pd-pipe__bar, .pd-stage__k, .pd-log__k, .pd-cmp__k, .pd-cmp__cap, .pd-next__k, .pd-card__k) {
+  font: 400 var(--fs-label) / 1.4 var(--font-mono);
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+}
+
+/* ---------- the cube (PdCube): three faces, hairline edges at any size ---------- */
+main.about[data-about-p="d"] .pd-cube {
+  --c-t: var(--bg);
+  --c-l: color-mix(in srgb, var(--ink) 4%, var(--bg));
+  --c-r: color-mix(in srgb, var(--ink) 9%, var(--bg));
+  --c-e: var(--ink-mute);
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+main.about[data-about-p="d"] .pd-cube :is(polygon, path) { vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+main.about[data-about-p="d"] .pd-cube polygon { stroke: var(--c-e); stroke-width: 1; }
+main.about[data-about-p="d"] .pd-cube__t { fill: var(--c-t); }
+main.about[data-about-p="d"] .pd-cube__l { fill: var(--c-l); }
+main.about[data-about-p="d"] .pd-cube__r { fill: var(--c-r); }
+main.about[data-about-p="d"] .pd-cube polygon.pd-cube__base { fill: var(--c-t); stroke: none; }
+main.about[data-about-p="d"] .pd-cube__done { fill: color-mix(in srgb, var(--signal) 38%, var(--c-t)); }
+main.about[data-about-p="d"] .pd-cube__ico { fill: none; stroke: var(--c-i, var(--ink)); stroke-width: 1.25; }
+main.about[data-about-p="d"] .pd-cube--hollow polygon { fill: none; }
+/* on the light block: white faces, ink edges */
+main.about[data-about-p="d"] .pd-work .pd-cube {
+  --c-t: var(--card-ivory);
+  --c-l: color-mix(in srgb, var(--ink-dark) 5%, var(--card-ivory));
+  --c-r: color-mix(in srgb, var(--ink-dark) 12%, var(--card-ivory));
+  --c-e: color-mix(in srgb, var(--ink-dark) 58%, transparent);
+  --c-i: var(--ink-dark);
+}
+
+/* a tick: a passed stage (lime, the system's result). On the light block an ink disc with the lime tick; in the dark
+   log and the dark blocks a lime disc with the ink tick (the ads page's) */
+main.about[data-about-p="d"] .pd-ok { display: inline-grid; place-items: center; flex: none; width: 1.125rem; height: 1.125rem; border-radius: 50%; background: var(--signal); }
+main.about[data-about-p="d"] .pd-ok svg { width: 0.75rem; height: 0.75rem; fill: none; stroke: var(--on-ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="d"] .pd-work :is(.pd-stage__k, .pd-col) .pd-ok { background: var(--ink-dark); }
+main.about[data-about-p="d"] .pd-work :is(.pd-stage__k, .pd-col) .pd-ok svg { stroke: var(--signal); }
+
+/* a lamp: a person (ember) */
+main.about[data-about-p="d"] .pd-lamp { position: relative; display: block; flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ember); box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--ember) 20%, transparent); }
+main.about[data-about-p="d"] .pd-lamp::after { content: ""; position: absolute; inset: -0.5rem; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--ember); opacity: 0; }
+
+@keyframes pd-rise { from { opacity: 0; translate: 0 0.75rem; } }
+@keyframes pd-in { from { opacity: 0; translate: 0 0.5rem; } }
+@keyframes pd-fade { from { opacity: 0; } }
+@keyframes pd-dim { from { opacity: 0.4; } }
+@keyframes pd-pop { from { scale: 0; } }
+@keyframes pd-draw-x { from { scale: 0 1; } }
+@keyframes pd-draw-y { from { scale: 1 0; } }
+@keyframes pd-light { 0% { opacity: 0.3; scale: 0.5; } 55% { opacity: 1; scale: 1.25; } 100% { opacity: 1; scale: 1; } }
+@keyframes pd-ring { 0% { opacity: 0.9; scale: 0.4; } 100% { opacity: 0; scale: 1.6; } }
+
+/* ==========================================================================
+   1 · Команда, the first screen: the title over the run summary
+   ========================================================================== */
+main.about[data-about-p="d"] .pd-hero { padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); padding-bottom: var(--rhythm-l); }
+main.about[data-about-p="d"] .pd-hero__grid { align-items: start; margin-bottom: 0; }
+main.about[data-about-p="d"] .pd-hero__grid > * { grid-column: 1 / -1; }
+main.about[data-about-p="d"] .pd-hero__lead { max-width: 40ch; margin-top: 1.25rem; }
+main.about[data-about-p="d"] .pd-hero__down { justify-self: start; }
+
+/* the summary panel: a dark card, its label row, the three cells on the grid's columns */
+main.about[data-about-p="d"] .pd-sum {
+  margin-top: clamp(2.25rem, 7vh, 4.5rem);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 4.5%, transparent), color-mix(in srgb, var(--ink) 1.5%, transparent)), var(--bg);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+main.about[data-about-p="d"] .pd-sum__bar { position: relative; display: flex; align-items: center; gap: 0.75rem; min-height: 3.25rem; padding: 0 1.5rem; color: var(--ink-mute); }
+main.about[data-about-p="d"] .pd-sum__bar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--border-strong); transform-origin: 0 50%; }
+main.about[data-about-p="d"] .pd-sum__mark { width: 0.875rem; --c-e: var(--ink-soft); }
+main.about[data-about-p="d"] .pd-sum__hatch { flex: 0 1 9rem; height: 0.625rem; margin-left: auto; border-radius: 0.125rem; background: var(--hatch); }
+main.about[data-about-p="d"] .pd-sum__cells { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); }
+main.about[data-about-p="d"] .pd-cell { position: relative; grid-column: span 4; display: grid; align-content: start; padding: 1.5rem 1.5rem 1.75rem; }
+/* a divider on the grid's line, in the gap's middle */
+main.about[data-about-p="d"] .pd-cell + .pd-cell::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--col-gap) / -2); width: 1px; background: var(--border-strong); transform-origin: 50% 0; }
+main.about[data-about-p="d"] .pd-cell__role { margin-top: clamp(1.5rem, 4.5vh, 2.75rem); font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
+main.about[data-about-p="d"] .pd-cell__d { margin-top: 0.5rem; max-width: 30ch; font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+
+/* 861–1199: the title on cols 1–8, the lead and the way down on 9–12, the panel across under them (each cell four
+   columns) */
+@media (min-width: 861px) and (max-width: 1199px) {
+  main.about[data-about-p="d"] .pd-hero__grid > .pd-hero__title { grid-column: 1 / span 8; grid-row: 2 / span 2; }
+  main.about[data-about-p="d"] .pd-hero__grid > .pd-hero__lead { grid-column: 9 / -1; grid-row: 2; margin-top: calc(var(--fs-display) * 0.16); }
+  main.about[data-about-p="d"] .pd-hero__grid > .pd-hero__down { grid-column: 9 / -1; grid-row: 3; }
+  main.about[data-about-p="d"] .pd-hero__grid > .pd-sum { grid-row: 4; }
+}
+/* 1200 and wider: the title, the lead and the way down on cols 1–6, the panel beside them on 7–12; its cells are rows
+   there (the lamp, the role, its duty), so the longest role (RU «Сопровождение») keeps its lead size on one line */
+@media (min-width: 1200px) {
+  main.about[data-about-p="d"] .pd-hero__grid { grid-template-rows: auto auto auto 1fr; }
+  main.about[data-about-p="d"] .pd-hero__grid > .pd-hero__title { grid-column: 1 / span 6; grid-row: 2; }
+  main.about[data-about-p="d"] .pd-hero__grid > .pd-hero__lead { grid-column: 1 / span 5; grid-row: 3; }
+  main.about[data-about-p="d"] .pd-hero__grid > .pd-hero__down { grid-column: 1 / span 5; grid-row: 4; align-self: start; }
+  main.about[data-about-p="d"] .pd-hero__grid > .pd-sum { grid-column: 7 / -1; grid-row: 2 / -1; align-self: start; margin-top: calc(var(--fs-display) * 0.14); }
+}
+@media (max-width: 600px), (min-width: 1200px) {
+  main.about[data-about-p="d"] .pd-sum__cells { grid-template-columns: minmax(0, 1fr); }
+  main.about[data-about-p="d"] .pd-cell { grid-column: 1; grid-template-columns: 0.5rem minmax(0, 1fr); column-gap: 1rem; }
+  main.about[data-about-p="d"] .pd-cell .pd-lamp { grid-row: 1 / span 2; margin-top: 0.45em; }
+  main.about[data-about-p="d"] .pd-cell__role { margin-top: 0; }
+  main.about[data-about-p="d"] .pd-cell + .pd-cell::before { top: 0; bottom: auto; width: auto; height: 1px; transform-origin: 0 50%; }
+}
+@media (min-width: 1200px) {
+  main.about[data-about-p="d"] .pd-cell { grid-template-columns: 0.5rem minmax(0, 1fr) minmax(0, 1.25fr); column-gap: 1.25rem; padding: 1.375rem 1.5rem 1.5rem; }
+  main.about[data-about-p="d"] .pd-cell .pd-lamp { grid-row: 1; }
+  main.about[data-about-p="d"] .pd-cell__d { margin-top: 0; padding-top: 0.125em; }
+  main.about[data-about-p="d"] .pd-cell + .pd-cell::before { left: 1.5rem; right: 1.5rem; }
+}
+/* phones: the cells as rows, each lamp beside its role */
+@media (max-width: 600px) {
+  main.about[data-about-p="d"] .pd-hero__down { margin-top: 1rem; }
+  main.about[data-about-p="d"] .pd-sum { margin-top: 1.75rem; }
+  main.about[data-about-p="d"] .pd-sum__bar { min-height: 2.875rem; padding: 0 1.25rem; }
+  main.about[data-about-p="d"] .pd-cell { padding: 1rem 1.25rem 1.125rem; }
+  main.about[data-about-p="d"] .pd-cell__d { margin-top: 0.25rem; }
+  main.about[data-about-p="d"] .pd-cell + .pd-cell::before { left: 1.25rem; right: 1.25rem; }
+}
+
+/* from the first paint (CSS): the panel rises, its hairline draws, the cells come in one after another, each lamp
+   lighting once */
+html.motion main.about[data-about-p="d"] .pd-sum { animation: pd-rise 0.8s var(--ease-out) 0.35s backwards; }
+html.motion main.about[data-about-p="d"] .pd-sum__bar::after { animation: pd-draw-x 0.7s var(--ease-in-out) 0.6s backwards; }
+html.motion main.about[data-about-p="d"] .pd-cell > p { animation: pd-rise 0.7s var(--ease-out) calc(0.8s + var(--i) * 0.16s) backwards; }
+html.motion main.about[data-about-p="d"] .pd-cell .pd-lamp { animation: pd-light 0.5s var(--ease-out) calc(0.9s + var(--i) * 0.16s) backwards; }
+html.motion main.about[data-about-p="d"] .pd-cell .pd-lamp::after { animation: pd-ring 0.9s var(--ease-out) calc(1s + var(--i) * 0.16s) backwards; }
+@media (min-width: 601px) and (max-width: 1199px) {
+  html.motion main.about[data-about-p="d"] .pd-cell + .pd-cell::before { animation: pd-draw-y 0.6s var(--ease-in-out) calc(0.7s + var(--i) * 0.16s) backwards; }
+}
+@media (max-width: 600px), (min-width: 1200px) {
+  html.motion main.about[data-about-p="d"] .pd-cell + .pd-cell::before { animation: pd-draw-x 0.6s var(--ease-in-out) calc(0.7s + var(--i) * 0.16s) backwards; }
+}
+
+/* ==========================================================================
+   2 · Як ми працюємо: the pipeline (the page's one light block)
+   ========================================================================== */
+main.about[data-about-p="d"] .pd-pipe {
+  border-radius: var(--radius-lg);
+  background: var(--card-ivory);
+  box-shadow: inset 0 0 0 1px var(--line-dark), 0 2.5rem 5rem -3.125rem color-mix(in srgb, var(--ink-dark) 30%, transparent);
+}
+/* the run's bar: what it is, and a segment per stage */
+main.about[data-about-p="d"] .pd-pipe__bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 3.25rem; padding: 0 clamp(1.25rem, 2.2vw, 2rem); border-bottom: 1px solid var(--line-dark); color: var(--ink-dark-mute); }
+main.about[data-about-p="d"] .pd-segs { display: flex; flex: none; gap: 0.25rem; }
+main.about[data-about-p="d"] .pd-segs i { position: relative; width: 1.125rem; height: 0.375rem; border-radius: 0.0625rem; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink-dark) 30%, transparent); }
+main.about[data-about-p="d"] .pd-segs i::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--signal); box-shadow: inset 0 0 0 1px var(--ink-dark); }
+
+/* from 601: the line of cubes and the log under it */
+main.about[data-about-p="d"] .pd-run { --cube: clamp(3.25rem, 6.6cqw, 5.5rem); padding: clamp(2rem, 4.5vw, 3.5rem) clamp(0.75rem, 2.2vw, 2rem) clamp(0.75rem, 2.2vw, 2rem); }
+main.about[data-about-p="d"] .pd-run__row { position: relative; }
+/* the line: from the first cube's middle to the last's, an arrow head before each cube after the first */
+main.about[data-about-p="d"] .pd-line { position: absolute; left: 10%; right: 10%; top: calc(var(--cube) * 0.576); height: 1px; background: color-mix(in srgb, var(--ink-dark) 32%, transparent); }
+main.about[data-about-p="d"] .pd-line__arrows { position: absolute; inset: 0; }
+main.about[data-about-p="d"] .pd-line__arrows i { position: absolute; top: 0; left: calc(var(--k) * 25% - var(--cube) * 0.5 - 0.875rem); width: 0.4375rem; height: 0.4375rem; border-top: 1px solid color-mix(in srgb, var(--ink-dark) 55%, transparent); border-right: 1px solid color-mix(in srgb, var(--ink-dark) 55%, transparent); translate: 0 -50%; rotate: 45deg; }
+/* the pulse (at rest: gone) */
+main.about[data-about-p="d"] .pd-pulse { position: absolute; inset: 0; opacity: 0; }
+main.about[data-about-p="d"] .pd-pulse > span { position: absolute; left: 0; top: 0; width: 100%; height: 0; }
+main.about[data-about-p="d"] .pd-pulse > span::before { content: ""; position: absolute; left: -0.3125rem; top: -0.3125rem; width: 0.625rem; height: 0.625rem; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 1.5px var(--ink-dark), 0 0 0.75rem 0.125rem var(--signal-glow); }
+
+/* the stages: the tabs */
+main.about[data-about-p="d"] .pd-stages { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+main.about[data-about-p="d"] .pd-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem 0.375rem 1.25rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+main.about[data-about-p="d"] .pd-stage__lift { position: relative; display: block; width: var(--cube); transition: translate 0.4s var(--ease-out); }
+/* the cube's shade on the floor: it stays down as the cube lifts */
+main.about[data-about-p="d"] .pd-stage__floor { position: absolute; left: -14%; right: -14%; bottom: -16%; height: 34%; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--ink-dark) 15%, transparent), transparent); transition: translate 0.4s var(--ease-out), scale 0.4s var(--ease-out); }
+main.about[data-about-p="d"] .pd-stage .pd-cube { position: relative; }
+main.about[data-about-p="d"] .pd-stage__k { display: inline-flex; align-items: center; gap: 0.4375rem; margin-top: 1.375rem; color: var(--ink-dark-mute); transition: color var(--dur-fast); }
+main.about[data-about-p="d"] .pd-stage__h { margin-top: 0.375rem; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink-dark); text-wrap: balance; overflow-wrap: anywhere; }
+/* the chosen stage: its cube lifted, its word in ink */
+main.about[data-about-p="d"] .pd-stage[aria-selected="true"] .pd-stage__lift { translate: 0 -0.5rem; }
+main.about[data-about-p="d"] .pd-stage[aria-selected="true"] .pd-stage__floor { translate: 0 0.5rem; scale: 0.82; }
+main.about[data-about-p="d"] .pd-stage[aria-selected="true"] .pd-stage__k { color: var(--ink-dark); }
+@media (hover: hover) and (pointer: fine) {
+  main.about[data-about-p="d"] .pd-stage:hover .pd-stage__k { color: var(--ink-dark); }
+  main.about[data-about-p="d"] .pd-stage:not([aria-selected="true"]):hover .pd-stage__lift { translate: 0 -0.25rem; }
+}
+
+/* the log: a dark box under the line; its caret under the chosen stage; the five panels in one cell, so the box keeps
+   the tallest one's height whichever is shown (nothing below moves) */
+main.about[data-about-p="d"] .pd-log { position: relative; display: grid; margin-top: clamp(1.25rem, 2.6vw, 2rem); border-radius: var(--radius-md); background: var(--color-ink-dark); color: var(--ink); }
+main.about[data-about-p="d"] .pd-log__caret { position: absolute; left: 0; top: 0; width: 20%; height: 0; translate: 400% 0; transition: translate 0.45s var(--ease-out); }
+main.about[data-about-p="d"] .pd-log__caret::before { content: ""; position: absolute; left: 50%; top: 0; width: 0.875rem; height: 0.875rem; border-radius: 0.125rem; background: var(--color-ink-dark); translate: -50% -50%; rotate: 45deg; }
+main.about[data-about-p="d"] .pd-run:has(.pd-stage:nth-child(1)[aria-selected="true"]) .pd-log__caret { translate: 0 0; }
+main.about[data-about-p="d"] .pd-run:has(.pd-stage:nth-child(2)[aria-selected="true"]) .pd-log__caret { translate: 100% 0; }
+main.about[data-about-p="d"] .pd-run:has(.pd-stage:nth-child(3)[aria-selected="true"]) .pd-log__caret { translate: 200% 0; }
+main.about[data-about-p="d"] .pd-run:has(.pd-stage:nth-child(4)[aria-selected="true"]) .pd-log__caret { translate: 300% 0; }
+main.about[data-about-p="d"] .pd-log__panel { grid-area: 1 / 1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: start; align-content: start; padding: clamp(1.5rem, 2.8vw, 2.5rem); border-radius: inherit; }
+main.about[data-about-p="d"] .pd-log__panel:not([data-on]) { visibility: hidden; }
+main.about[data-about-p="d"] .pd-log__head { grid-column: 1 / span 5; }
+main.about[data-about-p="d"] .pd-log__k { display: flex; align-items: center; gap: 0.5rem; color: var(--ink-mute); }
+main.about[data-about-p="d"] .pd-log__h { margin-top: 1rem; font-size: var(--fs-h3); font-weight: 400; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
+main.about[data-about-p="d"] .pd-log__d { margin-top: 1rem; max-width: 38ch; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+main.about[data-about-p="d"] .pd-log .pd-lines { grid-column: 7 / -1; }
+
+/* a log's lines: a tick each (an ember lamp on the client's own part), the check's name over its line */
+main.about[data-about-p="d"] .pd-lines { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px dashed var(--border-strong); }
+main.about[data-about-p="d"] .pd-ln { display: grid; grid-template-columns: 1.125rem minmax(0, 1fr); column-gap: 0.875rem; align-items: start; padding: 0.8125rem 0; border-bottom: 1px dashed var(--border-strong); }
+main.about[data-about-p="d"] .pd-ln .pd-ok { margin-top: 0.0625rem; }
+main.about[data-about-p="d"] .pd-ln--you .pd-lamp { justify-self: center; margin-top: 0.3125rem; }
+main.about[data-about-p="d"] .pd-ln__t { display: grid; gap: 0.125rem; font-size: var(--fs-small); line-height: 1.45; }
+main.about[data-about-p="d"] .pd-ln__t b { font-weight: 500; color: var(--ink); }
+main.about[data-about-p="d"] .pd-ln__t > span:last-child { font-weight: 300; color: var(--ink-soft); }
+main.about[data-about-p="d"] .pd-ln--you .pd-ln__t > span:last-child { font-weight: 400; color: var(--ink); }
+
+/* the log's panel as a stage is chosen (by the run or the visitor): its words come up, its lines one after another */
+main.about[data-about-p="d"] .pd-pipe.is-live .pd-log__panel[data-on] .pd-log__head { animation: pd-in 0.4s var(--ease-out) backwards; }
+main.about[data-about-p="d"] .pd-pipe.is-live .pd-log__panel[data-on] .pd-ln { animation: pd-in 0.4s var(--ease-out) calc(0.08s + var(--k) * 60ms) backwards; }
+
+/* 601–860: the stages' things smaller, the log's head over its lines */
+@media (min-width: 601px) and (max-width: 860px) {
+  main.about[data-about-p="d"] .pd-stage__h { font-size: var(--fs-small); }
+  main.about[data-about-p="d"] .pd-log__head, main.about[data-about-p="d"] .pd-log .pd-lines { grid-column: 1 / -1; }
+  main.about[data-about-p="d"] .pd-log .pd-lines { margin-top: 1.5rem; }
+}
+
+/* scene «pipeline» (runtime/pd.js): before it, the stages wait (dim cubes, no ticks, empty segments); then the pulse
+   runs the line and each stage passes as it reaches it: its cube lifts, its top turns pale lime, its tick pops, its
+   segment fills */
+main.about[data-about-p="d"] .pd-pipe.is-pre .pd-stage .pd-cube__faces { opacity: 0.35; }
+main.about[data-about-p="d"] .pd-pipe.is-pre .pd-stage .pd-cube__done,
+main.about[data-about-p="d"] .pd-pipe.is-pre .pd-segs i::after { opacity: 0; }
+main.about[data-about-p="d"] .pd-pipe.is-pre .pd-stage .pd-ok { scale: 0; }
+main.about[data-about-p="d"] .pd-pipe.is-pre .pd-stage__h { opacity: 0.4; }
+@keyframes pd-pass { 0% { translate: 0 0; } 35% { translate: 0 -0.75rem; } 72% { translate: 0 0.0625rem; } 100% { translate: 0 0; } }
+@keyframes pd-lit { 0% { opacity: 0.35; } 35%, 100% { opacity: 1; } }
+@keyframes pd-run { 0%, 6% { translate: 0 0; } 25%, 31% { translate: 25% 0; } 50%, 56% { translate: 50% 0; } 75%, 81% { translate: 75% 0; } 100% { translate: 100% 0; } }
+@keyframes pd-show { 0% { opacity: 0; } 4%, 96% { opacity: 1; } 100% { opacity: 0; } }
+main.about[data-about-p="d"] .pd-pipe.is-play .pd-pulse { animation: pd-show calc(var(--pd-step) * 4) linear var(--pd-t0) backwards; }
+main.about[data-about-p="d"] .pd-pipe.is-play .pd-pulse > span { animation: pd-run calc(var(--pd-step) * 4) var(--ease-in-out) var(--pd-t0) backwards; }
+main.about[data-about-p="d"] .pd-pipe.is-play .pd-stage .pd-cube { animation: pd-pass 0.7s var(--ease-out) calc(var(--pd-t0) + var(--i) * var(--pd-step)) backwards; }
+main.about[data-about-p="d"] .pd-pipe.is-play .pd-stage .pd-cube__faces { animation: pd-lit 0.7s var(--ease-out) calc(var(--pd-t0) + var(--i) * var(--pd-step)) backwards; }
+main.about[data-about-p="d"] .pd-pipe.is-play .pd-stage .pd-cube__done { animation: pd-fade 0.35s var(--ease-out) calc(var(--pd-t0) + var(--i) * var(--pd-step) + 0.12s) backwards; }
+main.about[data-about-p="d"] .pd-pipe.is-play .pd-stage .pd-ok { animation: pd-pop 0.4s var(--pd-back) calc(var(--pd-t0) + var(--i) * var(--pd-step) + 0.2s) backwards; }
+main.about[data-about-p="d"] .pd-pipe.is-play .pd-stage__h { animation: pd-dim 0.4s var(--ease-out) calc(var(--pd-t0) + var(--i) * var(--pd-step)) backwards; }
+main.about[data-about-p="d"] .pd-pipe.is-play .pd-segs i::after { animation: pd-fade 0.3s var(--ease-out) calc(var(--pd-t0) + var(--i) * var(--pd-step) + 0.2s) backwards; }
+
+/* phones (≤600): the pipeline stands up: the cubes in a column, a vertical line with arrow heads between them, each
+   stage's thing, line and log beside its cube */
+main.about[data-about-p="d"] .pd-col { display: none; }
+@media (max-width: 600px) {
+  main.about[data-about-p="d"] .pd-pipe__bar { padding: 0 1.25rem; }
+  main.about[data-about-p="d"] .pd-run { display: none; }
+  main.about[data-about-p="d"] .pd-col { display: grid; margin: 0; padding: 1.75rem 1.25rem 0.5rem; list-style: none; }
+  main.about[data-about-p="d"] .pd-col__item { --cw: 2.75rem; position: relative; display: grid; grid-template-columns: var(--cw) minmax(0, 1fr); column-gap: 1rem; align-items: start; padding-bottom: 2rem; }
+  main.about[data-about-p="d"] .pd-col__item:last-child { padding-bottom: 1rem; }
+  main.about[data-about-p="d"] .pd-col__cube { position: relative; display: block; width: var(--cw); }
+  main.about[data-about-p="d"] .pd-col__item:not(:last-child)::before { content: ""; position: absolute; left: calc(var(--cw) / 2); top: calc(var(--cw) * 1.151 + 0.625rem); bottom: 0.5rem; width: 1px; background: color-mix(in srgb, var(--ink-dark) 32%, transparent); transform-origin: 50% 0; }
+  main.about[data-about-p="d"] .pd-col__item:not(:last-child)::after { content: ""; position: absolute; left: calc(var(--cw) / 2); bottom: 0.5rem; width: 0.4375rem; height: 0.4375rem; border-right: 1px solid color-mix(in srgb, var(--ink-dark) 55%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--ink-dark) 55%, transparent); translate: -50% 0; rotate: 45deg; }
+  main.about[data-about-p="d"] .pd-col .pd-log__k { color: var(--ink-dark-mute); }
+  main.about[data-about-p="d"] .pd-col__h { margin-top: 0.5rem; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; color: var(--ink-dark); }
+  main.about[data-about-p="d"] .pd-col__d { margin-top: 0.375rem; font-size: var(--fs-small); font-weight: 300; line-height: 1.5; color: var(--ink-dark-soft); }
+  main.about[data-about-p="d"] .pd-col .pd-lines { margin-top: 0.875rem; border-top-color: var(--line-dark); }
+  main.about[data-about-p="d"] .pd-col .pd-ln { padding: 0.625rem 0; border-bottom-color: var(--line-dark); }
+  main.about[data-about-p="d"] .pd-col .pd-ln__t b, main.about[data-about-p="d"] .pd-col .pd-ln--you .pd-ln__t > span:last-child { color: var(--ink-dark); }
+  main.about[data-about-p="d"] .pd-col .pd-ln__t > span:last-child { color: var(--ink-dark-soft); }
+}
+/* each stage as it reaches the screen: its cube lifts and turns, its tick pops, its lines come in, the line to the
+   next one draws */
+main.about[data-about-p="d"] .pd-col__item.is-pre .pd-cube__faces { opacity: 0.35; }
+main.about[data-about-p="d"] .pd-col__item.is-pre :is(.pd-cube__done, .pd-ln) { opacity: 0; }
+main.about[data-about-p="d"] .pd-col__item.is-pre .pd-ok { scale: 0; }
+main.about[data-about-p="d"] .pd-col__item.is-pre::before { scale: 1 0; }
+main.about[data-about-p="d"] .pd-col__item.is-pre::after { opacity: 0; }
+main.about[data-about-p="d"] .pd-col__item.is-play .pd-cube { animation: pd-pass 0.7s var(--ease-out) 0.05s backwards; }
+main.about[data-about-p="d"] .pd-col__item.is-play .pd-cube__faces { animation: pd-lit 0.7s var(--ease-out) 0.05s backwards; }
+main.about[data-about-p="d"] .pd-col__item.is-play .pd-cube__done { animation: pd-fade 0.35s var(--ease-out) 0.17s backwards; }
+main.about[data-about-p="d"] .pd-col__item.is-play .pd-ok { animation: pd-pop 0.4s var(--pd-back) 0.25s backwards; }
+main.about[data-about-p="d"] .pd-col__item.is-play .pd-ln { animation: pd-in 0.45s var(--ease-out) calc(0.35s + var(--k) * 90ms) backwards; }
+main.about[data-about-p="d"] .pd-col__item.is-play::before { animation: pd-draw-y 0.5s var(--ease-in-out) 0.7s backwards; }
+main.about[data-about-p="d"] .pd-col__item.is-play::after { animation: pd-fade 0.25s var(--ease-out) 1.1s backwards; }
+
+/* ==========================================================================
+   3 · Напряму: two runs side by side
+   ========================================================================== */
+main.about[data-about-p="d"] .pd-cmp__runs { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); }
+main.about[data-about-p="d"] .pd-cmp__run { grid-column: span 6; display: grid; grid-template-rows: auto auto 1fr; margin: 0; padding: clamp(1.25rem, 2.4vw, 2rem); border-radius: var(--radius-lg); }
+/* the usual way: muted, a dashed edge */
+main.about[data-about-p="d"] .pd-cmp__run--usual { --o: 0ms; border: 1px dashed var(--border-strong); color: var(--ink-mute); }
+/* ECLO's: the cards' hairline and light */
+main.about[data-about-p="d"] .pd-cmp__run--us { --o: 2500ms; background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 4.5%, transparent), color-mix(in srgb, var(--ink) 1.5%, transparent)), var(--bg); box-shadow: inset 0 0 0 1px var(--border-strong); }
+main.about[data-about-p="d"] .pd-cmp__k { display: flex; align-items: center; gap: 0.625rem; color: var(--ink-mute); }
+main.about[data-about-p="d"] .pd-cmp__run--us .pd-cmp__k { color: var(--ink); }
+main.about[data-about-p="d"] .pd-cmp__mk { display: inline-grid; place-items: center; flex: none; width: 1.125rem; height: 1.125rem; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--border-strong); }
+main.about[data-about-p="d"] .pd-cmp__mk svg { width: 0.75rem; height: 0.75rem; fill: none; stroke: var(--ink-mute); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="d"] .pd-cmp__run--us .pd-cmp__mk { background: var(--signal); box-shadow: none; }
+main.about[data-about-p="d"] .pd-cmp__run--us .pd-cmp__mk svg { stroke: var(--on-ink); stroke-width: 2.5; }
+
+/* a run's stops on three columns (ECLO's skips the middle one: no one stands there), the line between them */
+main.about[data-about-p="d"] .pd-stops { position: relative; margin-top: clamp(1.75rem, 3.5vw, 2.75rem); }
+main.about[data-about-p="d"] .pd-stops__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+main.about[data-about-p="d"] .pd-stop { grid-column: var(--col); grid-row: 1; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; min-width: 0; padding: 0 0.25rem; text-align: center; }
+main.about[data-about-p="d"] .pd-stop__lamp { position: relative; display: block; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 1px var(--border-strong); }
+main.about[data-about-p="d"] .pd-stop__lamp::after { content: ""; position: absolute; inset: 0; width: 0.5rem; height: 0.5rem; margin: auto; border-radius: 50%; background: var(--ember); box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--ember) 20%, transparent); }
+main.about[data-about-p="d"] .pd-cmp__run--usual .pd-stop__lamp::after { background: var(--ink-mute); box-shadow: none; }
+main.about[data-about-p="d"] .pd-stop__t { font-size: var(--fs-small); line-height: 1.35; color: var(--ink-soft); overflow-wrap: anywhere; }
+main.about[data-about-p="d"] .pd-cmp__run--usual .pd-stop__t { color: var(--ink-mute); }
+main.about[data-about-p="d"] .pd-stops__line { position: absolute; left: calc(100% / 6); right: calc(100% / 6); top: 0.875rem; height: 1px; background: var(--border-strong); }
+main.about[data-about-p="d"] .pd-cmp__run--usual .pd-stops__line { background: repeating-linear-gradient(90deg, var(--border-strong) 0 0.375rem, transparent 0.375rem 0.75rem); }
+main.about[data-about-p="d"] .pd-stops__line > i { position: absolute; top: 0; left: calc((var(--c) - 1) * 50% - 1.625rem); width: 0.4375rem; height: 0.4375rem; border-top: 1px solid var(--ink-mute); border-right: 1px solid var(--ink-mute); translate: 0 -50%; rotate: 45deg; }
+main.about[data-about-p="d"] .pd-stops__pulse { position: absolute; inset: 0; opacity: 0; }
+main.about[data-about-p="d"] .pd-stops__pulse > span { position: absolute; left: 0; top: 0; width: 100%; height: 0; }
+main.about[data-about-p="d"] .pd-stops__pulse > span::before { content: ""; position: absolute; left: -0.25rem; top: -0.25rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0.625rem 0.125rem color-mix(in srgb, var(--ink) 35%, transparent); }
+main.about[data-about-p="d"] .pd-cmp__run--usual .pd-stops__pulse > span::before { background: var(--ink-mute); box-shadow: none; }
+
+/* a run's log, as a diff: − the client's sentence struck out word by word, + the line that reached the doer; ECLO's:
+   the sentence as it was, ticked */
+main.about[data-about-p="d"] .pd-diff { align-self: start; margin-top: clamp(1.5rem, 3vw, 2.25rem); border-top: 1px solid var(--line); }
+main.about[data-about-p="d"] .pd-diff__l { display: grid; grid-template-columns: 1.125rem minmax(0, 1fr); column-gap: 0.875rem; align-items: start; padding: 0.875rem 0; border-bottom: 1px dashed var(--border); font-size: var(--fs-lead); line-height: 1.4; }
+main.about[data-about-p="d"] .pd-diff__l:last-child { border-bottom: 0; padding-bottom: 0; }
+main.about[data-about-p="d"] .pd-diff__g { font-family: var(--font-mono); line-height: 1.4; color: var(--ink-mute); text-align: center; }
+main.about[data-about-p="d"] .pd-diff__l :is(del, ins) { text-decoration: none; }
+main.about[data-about-p="d"] .pd-diff__l--del { color: var(--ink-mute); }
+main.about[data-about-p="d"] .pd-diff__l--ins { color: var(--ink-soft); }
+main.about[data-about-p="d"] .pd-sw { position: relative; }
+main.about[data-about-p="d"] .pd-sw::after { content: ""; position: absolute; left: -0.05em; right: -0.3em; top: 56%; height: 1px; background: currentColor; transform-origin: 0 50%; }
+main.about[data-about-p="d"] .pd-sw:last-child::after { right: -0.05em; }
+main.about[data-about-p="d"] .pd-diff__l--ok { color: var(--ink); }
+main.about[data-about-p="d"] .pd-diff__ok { display: grid; place-items: center; width: 1.125rem; height: 1.125rem; margin-top: 0.1875rem; border-radius: 50%; background: var(--signal); }
+main.about[data-about-p="d"] .pd-diff__ok svg { width: 0.75rem; height: 0.75rem; fill: none; stroke: var(--on-ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="d"] .pd-cmp__cap { margin-top: 1rem; color: var(--ink-mute); }
+
+/* the switch (phones only) */
+main.about[data-about-p="d"] .pd-switch { display: none; }
+
+/* scene «runs» (runtime/pd.js): the usual run (the pulse on its dashed line, the sentence struck at the manager, the
+   other line arriving), then ECLO's (straight across, the sentence arriving, its tick); --o: the run's start */
+main.about[data-about-p="d"] .pd-cmp.is-pre :is(.pd-diff__l, .pd-diff__ok) { opacity: 0; }
+main.about[data-about-p="d"] .pd-cmp.is-pre .pd-stop__lamp::after { opacity: 0.3; }
+main.about[data-about-p="d"] .pd-cmp.is-pre .pd-sw::after { scale: 0 1; }
+main.about[data-about-p="d"] .pd-cmp__run--usual .pd-stop:nth-child(1) { --lt: 0.2s; }
+main.about[data-about-p="d"] .pd-cmp__run--usual .pd-stop:nth-child(2) { --lt: 0.9s; }
+main.about[data-about-p="d"] .pd-cmp__run--usual .pd-stop:nth-child(3) { --lt: 2.1s; }
+main.about[data-about-p="d"] .pd-cmp__run--us .pd-stop:nth-child(1) { --lt: 0s; }
+main.about[data-about-p="d"] .pd-cmp__run--us .pd-stop:nth-child(2) { --lt: 0.7s; }
+@keyframes pd-u-run { 0% { translate: 0 0; } 35%, 65% { translate: 50% 0; } 95%, 100% { translate: 100% 0; } }
+@keyframes pd-e-run { 0% { translate: 0 0; } 85%, 100% { translate: 100% 0; } }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-stop__lamp::after { animation: pd-light 0.45s var(--ease-out) calc(var(--o) + var(--lt)) backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-cmp__run--usual .pd-stops__pulse { animation: pd-show 2s linear 0.2s backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-cmp__run--usual .pd-stops__pulse > span { animation: pd-u-run 2s var(--ease-in-out) 0.2s backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-diff__l--del { animation: pd-in 0.4s var(--ease-out) 0.9s backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-sw::after { animation: pd-draw-x 0.25s var(--ease-out) calc(1.15s + var(--w) * 60ms) backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-diff__l--ins { animation: pd-in 0.4s var(--ease-out) 2.1s backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-cmp__run--us .pd-stops__pulse { animation: pd-show 0.8s linear var(--o) backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-cmp__run--us .pd-stops__pulse > span { animation: pd-e-run 0.8s var(--ease-in-out) var(--o) backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-diff__l--ok { animation: pd-in 0.4s var(--ease-out) calc(var(--o) + 0.7s) backwards; }
+main.about[data-about-p="d"] .pd-cmp.is-play .pd-diff__ok { animation: pd-pop 0.4s var(--pd-back) calc(var(--o) + 0.95s) backwards; }
+
+/* phones (≤600): one run at a time, the switch over them; both runs in one cell, so the block keeps its height */
+@media (max-width: 600px) {
+  main.about[data-about-p="d"] .pd-switch { display: flex; gap: 0.25rem; width: max-content; max-width: 100%; margin-bottom: 1rem; padding: 0.25rem; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px var(--border-strong); }
+  main.about[data-about-p="d"] .pd-switch__b { min-height: 2.75rem; padding: 0 1.125rem; border: 0; border-radius: 62.4375rem; background: none; color: var(--ink-soft); font: 500 var(--fs-small) / 1 var(--font-sans); cursor: pointer; transition: color var(--dur-fast), background-color var(--dur-fast); }
+  main.about[data-about-p="d"] .pd-switch__b[aria-pressed="true"] { color: var(--on-ink); background: var(--ink); }
+  main.about[data-about-p="d"] .pd-cmp__runs { grid-template-columns: minmax(0, 1fr); }
+  main.about[data-about-p="d"] .pd-cmp__run { grid-column: 1; grid-row: 1; transition: opacity 0.35s var(--ease-out), translate 0.35s var(--ease-out), visibility 0s; }
+  main.about[data-about-p="d"] :is(.pd-cmp[data-show="us"] .pd-cmp__run--usual, .pd-cmp[data-show="usual"] .pd-cmp__run--us) { visibility: hidden; opacity: 0; translate: 0 0.5rem; transition-delay: 0s, 0s, 0.35s; }
+  main.about[data-about-p="d"] .pd-diff__l { font-size: var(--fs-lead); }
+}
+
+/* ==========================================================================
+   4 · Заявка: the head, the form (the page's one lime), the next run queued and the contacts card
+   ========================================================================== */
+main.about[data-about-p="d"] .pd-lead__grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+main.about[data-about-p="d"] .pd-lead .pd-lead__form { grid-column: 1 / -1; order: 0; margin-top: var(--rhythm-m); border-radius: var(--radius-lg); }
+main.about[data-about-p="d"] .pd-lead__aside { display: grid; gap: var(--card-gap); align-items: start; margin-top: var(--rhythm-l); }
+main.about[data-about-p="d"] :is(.pd-next, .pd-card) { padding: 1.25rem 1.5rem 1.375rem; border-radius: var(--radius-lg); background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 4.5%, transparent), color-mix(in srgb, var(--ink) 1.5%, transparent)), var(--bg); box-shadow: inset 0 0 0 1px var(--border-strong); }
+main.about[data-about-p="d"] :is(.pd-next__k, .pd-card__k) { margin: 0 0 0.75rem; color: var(--ink-mute); }
+
+/* «Що буде далі»: the next run, queued: hollow cubes on a dashed line, a tick on each step */
+main.about[data-about-p="d"] .pd-next__list { margin: 0; padding: 0; list-style: none; }
+main.about[data-about-p="d"] .pd-next__list li { position: relative; display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) 1rem; column-gap: 1rem; align-items: start; padding: 0.75rem 0; }
+main.about[data-about-p="d"] .pd-next__list li:not(:last-child)::before { content: ""; position: absolute; left: 0.75rem; top: calc(0.75rem + 1.5rem * 1.151 + 0.375rem); bottom: -0.375rem; width: 1px; background: repeating-linear-gradient(180deg, var(--border-strong) 0 0.25rem, transparent 0.25rem 0.5rem); }
+main.about[data-about-p="d"] .pd-next__node { display: block; width: 1.5rem; margin-top: 0.125rem; }
+main.about[data-about-p="d"] .pd-next__node .pd-cube polygon { stroke: var(--ink-mute); stroke-dasharray: 3 2.5; }
+main.about[data-about-p="d"] .pd-next__list b { display: block; margin-bottom: 0.2rem; font-size: var(--fs-lead); font-weight: 500; line-height: 1.35; color: var(--ink); }
+main.about[data-about-p="d"] .pd-next__list span { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); }
+main.about[data-about-p="d"] .pd-next__ok svg { display: block; width: 1rem; height: 1rem; margin-top: 0.2em; fill: none; stroke: var(--ink-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* the contacts card */
+main.about[data-about-p="d"] .pd-card { display: flex; flex-direction: column; }
+main.about[data-about-p="d"] .pd-card__tel { display: grid; margin: 0; padding: 0; list-style: none; }
+main.about[data-about-p="d"] .pd-card__tel a { display: inline-flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; font-size: var(--fs-lead); font-variant-numeric: tabular-nums; color: var(--ink); text-decoration: none; }
+main.about[data-about-p="d"] .pd-card__tel svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="d"] .pd-card__chats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin: 0; padding-top: 1rem; }
+main.about[data-about-p="d"] .pd-card__chats a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.75rem; border-radius: 62.4375rem; font-size: var(--fs-small); color: var(--ink); text-decoration: none; box-shadow: inset 0 0 0 1px var(--border-strong); transition: background-color var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast); }
+main.about[data-about-p="d"] .pd-card__chats svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="d"] .pd-card__chats a:focus-visible { color: var(--on-ink); background: var(--ember); box-shadow: none; }
+@media (hover: hover) {
+  main.about[data-about-p="d"] .pd-card__tel a:hover span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25em; }
+  main.about[data-about-p="d"] .pd-card__chats a:hover { color: var(--on-ink); background: var(--ember); box-shadow: none; }
+}
+
+@media (min-width: 601px) and (max-width: 1199px) {
+  main.about[data-about-p="d"] .pd-lead__aside { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1200px) {
+  main.about[data-about-p="d"] .pd-lead__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: auto 1fr; column-gap: var(--col-gap); }
+  main.about[data-about-p="d"] .pd-lead__head { grid-column: 1 / span 5; grid-row: 1; }
+  /* the form rides along while the queue and the card go by (as B's) */
+  main.about[data-about-p="d"] .pd-lead .pd-lead__form { position: sticky; top: calc(var(--topbar-h) + 1.5rem); grid-column: 7 / -1; grid-row: 1 / span 2; margin-top: 0; }
+  main.about[data-about-p="d"] .pd-lead__aside { grid-column: 1 / span 5; grid-row: 2; margin-top: var(--rhythm-s); }
+}
+@media (max-width: 600px) {
+  main.about[data-about-p="d"] .pd-lead .pd-lead__form { padding: 1.25rem; }
+  main.about[data-about-p="d"] :is(.pd-next, .pd-card) { padding: 1.125rem 1.25rem 1.25rem; }
+}
