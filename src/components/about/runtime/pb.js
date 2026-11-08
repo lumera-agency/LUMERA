@@ -23,11 +23,26 @@ let started = false;
 export function start() {
   if (started || !document.querySelector(ROOT)) return;
   started = true;
+  initCrew();
   if (!motion) return;
   const queue = makeQueue();
   initDesk(queue);
   initNotes(queue);
   initTagHover();
+}
+
+/* ---------- 1 · the passes: on phones and small tablets (≤860) their row slides sideways, so it takes the keyboard's
+   focus there (the arrow keys scroll it); wider, it is a plain list ---------- */
+function initCrew() {
+  const list = document.querySelector(`${ROOT} .pb-crew__list`);
+  if (!list) return;
+  const narrow = window.matchMedia('(max-width: 860px)');
+  const sync = () => {
+    if (narrow.matches) list.setAttribute('tabindex', '0');
+    else list.removeAttribute('tabindex');
+  };
+  sync();
+  narrow.addEventListener('change', sync);
 }
 
 /* ---------- one scene at a time: a scene waits for the one before it to end (all its animations, the pseudo parts' and

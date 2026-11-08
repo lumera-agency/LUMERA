@@ -13,8 +13,9 @@
  * Every colour is a token (the ivory block's own from page.css); five sizes (label, small, lead, h3, display).
  * Motion: transform and opacity only (translate / rotate / scale, opacity), once each. The CSS default of every part
  * is its final frame; .is-pre holds its start (runtime/pf.js sets it only on what is still below the screen), .is-play
- * runs it. The first screen's member list pops in from the first paint (html.motion, CSS only). Reduced motion: the
- * final frame.
+ * runs it. The first screen's profile cards pop in from the first paint (html.motion, CSS only). Reduced motion: the
+ * final frame. The one part that moves at rest (the owner, 8 Nov): the first screen's light (pf-bg/fold.js, a canvas
+ * fading in over .pf-hero__bg's CSS poster), only while the first screen is in view; reduced motion: one still frame.
  */
 
 /* ---------- the chat's surfaces (dark by default; the ivory block and the panes set their own) ---------- */
@@ -109,50 +110,129 @@ main.about[data-about-p="f"] .pf-typing {
 }
 main.about[data-about-p="f"] .pf-typing i { display: block; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: var(--pf-mute); }
 
-/* the system's notice: a pill between hairlines, its tick lime */
-main.about[data-about-p="f"] .pf-sys { display: flex; align-items: center; gap: 0.875rem; }
-main.about[data-about-p="f"] .pf-sys::before,
-main.about[data-about-p="f"] .pf-sys::after { content: ""; flex: 1; height: 1px; background: var(--pf-line); }
-main.about[data-about-p="f"] .pf-sys::before { transform-origin: 100% 50%; }
-main.about[data-about-p="f"] .pf-sys::after { transform-origin: 0 50%; }
-main.about[data-about-p="f"] .pf-sys__in { display: inline-flex; align-items: center; gap: 0.625rem; padding: 0.375rem 1rem 0.375rem 0.375rem; border-radius: 62.4375rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ivory); background: var(--ink-dark); }
-main.about[data-about-p="f"] .pf-sys__ok,
+/* the system's ticks (lime: the system's «готово», never a button) */
 main.about[data-about-p="f"] .pf-dm__ok { display: grid; place-items: center; flex: none; width: 1.5rem; height: 1.5rem; border-radius: 50%; color: var(--on-accent); background: var(--signal); }
-main.about[data-about-p="f"] :is(.pf-sys__ok, .pf-dm__ok, .pf-files__ok, .pf-next__ok) svg { display: block; width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] :is(.pf-dm__ok, .pf-files__ok, .pf-next__ok) svg { display: block; width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 
 /* «Приклад» under a thread */
 main.about[data-about-p="f"] .pf-sample { margin: 1.75rem 0 0; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--pf-mute); }
 main.about[data-about-p="f"] .pf-work .pf-sample { padding-left: calc(var(--pf-ava) + var(--pf-gap)); }
 
 /* ==========================================================================
-   1 · Команда: the title, and the chat's window with its members
+   1 · Команда: the title, and the chat's window with its members' profile cards, over the slow light
    ========================================================================== */
-main.about[data-about-p="f"] .pf-hero { padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); padding-bottom: var(--rhythm-l); }
-main.about[data-about-p="f"] .pf-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; }
-main.about[data-about-p="f"] .pf-hero__meta { grid-column: 1 / -1; }
+main.about[data-about-p="f"] .pf-hero { isolation: isolate; padding-top: calc(var(--topbar-h) + clamp(1.75rem, 5vh, 3.25rem)); padding-bottom: var(--rhythm-l); }
+/* the light: the CSS poster from the first paint (the shader's look, still: two folds of ember light rising to the
+   right, the words' corner kept dark), the shader's canvas fading in over it once the page is in (pf-bg/fold.js) */
+main.about[data-about-p="f"] .pf-hero__bg {
+  position: absolute; inset: 0; z-index: -1; overflow: clip; pointer-events: none;
+  background:
+    radial-gradient(36% 42% at 16% 24%, color-mix(in srgb, var(--bg) 88%, transparent), transparent),
+    linear-gradient(160deg, transparent 18%, color-mix(in srgb, var(--ember) 24%, transparent) 18.5%, color-mix(in srgb, var(--ember-deep) 12%, transparent) 21%, transparent 33%),
+    linear-gradient(154deg, transparent 41%, color-mix(in srgb, var(--ember) 32%, transparent) 41.5%, color-mix(in srgb, var(--ember-deep) 16%, transparent) 44%, transparent 58%),
+    linear-gradient(163deg, transparent 62%, color-mix(in srgb, var(--ember) 22%, transparent) 62.5%, color-mix(in srgb, var(--ember-deep) 10%, transparent) 65%, transparent 77%),
+    radial-gradient(50% 40% at 92% 12%, color-mix(in srgb, var(--ember) 14%, transparent), transparent 72%),
+    var(--bg);
+}
+/* phones: the same folds, steeper */
+@media (max-width: 860px) {
+  main.about[data-about-p="f"] .pf-hero__bg {
+    background:
+      radial-gradient(70% 24% at 24% 14%, color-mix(in srgb, var(--bg) 90%, transparent), transparent),
+      linear-gradient(146deg, transparent 30%, color-mix(in srgb, var(--ember) 26%, transparent) 30.4%, color-mix(in srgb, var(--ember-deep) 13%, transparent) 33%, transparent 44%),
+      linear-gradient(140deg, transparent 52%, color-mix(in srgb, var(--ember) 30%, transparent) 52.4%, color-mix(in srgb, var(--ember-deep) 15%, transparent) 55%, transparent 67%),
+      linear-gradient(150deg, transparent 72%, color-mix(in srgb, var(--ember) 20%, transparent) 72.4%, color-mix(in srgb, var(--ember-deep) 10%, transparent) 75%, transparent 86%),
+      var(--bg);
+  }
+}
+main.about[data-about-p="f"] .pf-hero__bg::after { content: ""; position: absolute; inset: auto 0 0; height: 30%; background: linear-gradient(transparent, var(--bg)); }
+main.about[data-about-p="f"] .pf-bg__gl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 1.6s var(--ease-out); }
+main.about[data-about-p="f"] .pf-bg__gl.is-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  main.about[data-about-p="f"] .pf-bg__gl { transition: none; }
+}
+
+main.about[data-about-p="f"] .pf-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+main.about[data-about-p="f"] .pf-hero__head { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+main.about[data-about-p="f"] .pf-hero__meta { align-self: stretch; }
 main.about[data-about-p="f"] .pf-hero__title { max-width: 12ch; }
 main.about[data-about-p="f"] .pf-hero__lead { max-width: 30ch; margin-top: 1.25rem; }
 main.about[data-about-p="f"] .pf-hero__down { margin-top: 1.5rem; }
-/* the window: the page's black under a faint light and its hairline */
+
+/* the window: dark glass (the light shows faintly through it), its hairline, its header */
 main.about[data-about-p="f"] .pf-win {
   position: relative; display: flex; flex-direction: column; min-width: 0; overflow: clip;
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 5%, transparent), color-mix(in srgb, var(--ink) 1.5%, transparent)), var(--bg);
-  box-shadow: inset 0 0 0 1px var(--border-strong), 0 2.5rem 4rem -2rem var(--color-ink-dark);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 5%, transparent), transparent 40%), color-mix(in srgb, var(--bg) 74%, transparent);
+  box-shadow: inset 0 0 0 1px var(--border-strong), 0 3rem 5rem -2.5rem var(--color-ink-dark);
 }
-main.about[data-about-p="f"] .pf-win__bar { display: flex; align-items: center; gap: 0.875rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); }
+main.about[data-about-p="f"] .pf-win__bar { display: flex; align-items: center; gap: 0.875rem; padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--line); }
 main.about[data-about-p="f"] .pf-win__name { margin: 0; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; color: var(--ink); }
-main.about[data-about-p="f"] .pf-crew { margin: 0; padding: 0.375rem 0; list-style: none; }
-/* a member's row: the badge, the role, its duty as the status line; hairlines from the words' edge, as a messenger's */
-main.about[data-about-p="f"] .pf-mem { position: relative; display: grid; grid-template-columns: var(--pf-ava) minmax(0, 1fr); column-gap: 0.875rem; align-items: center; padding: 0.875rem 1.25rem; transform-origin: 0 50%; }
-main.about[data-about-p="f"] .pf-mem + .pf-mem::before { content: ""; position: absolute; left: calc(1.25rem + var(--pf-ava) + 0.875rem); right: 0; top: 0; height: 1px; background: var(--border); }
-main.about[data-about-p="f"] .pf-mem > .pf-badge { grid-row: 1 / span 2; }
-main.about[data-about-p="f"] .pf-mem__role { margin: 0; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
-main.about[data-about-p="f"] .pf-mem__d { margin: 0.125rem 0 0; font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); text-wrap: pretty; }
+
+/* the members: one messenger profile card each (their rows line up across the three: photo, name, what they do) */
+main.about[data-about-p="f"] .pf-crew { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.625rem; margin: 0; padding: 0.625rem; list-style: none; }
+main.about[data-about-p="f"] .pf-prof {
+  display: grid; grid-template-rows: subgrid; grid-row: span 3; row-gap: 0; min-width: 0;
+  border-radius: calc(var(--radius-lg) - 0.375rem);
+  background: color-mix(in srgb, var(--ink) 5%, var(--bg));
+  box-shadow: inset 0 0 0 1px var(--border), 0 1.25rem 2.5rem -1.75rem var(--color-ink-dark);
+  transform-origin: 50% 100%;
+}
+/* the photo's frame, 4:5: the photo when there is one (PfTeam's PHOTOS), cropped to cover */
+main.about[data-about-p="f"] .pf-photo { position: relative; aspect-ratio: 4 / 5; margin: 0.375rem 0.375rem 0; overflow: clip; border-radius: calc(var(--radius-lg) - 0.75rem); background: var(--bg); }
+main.about[data-about-p="f"] .pf-photo__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+/* its empty state: an ember duotone, a fine halftone fading downward, the role's glyph, the viewfinder's corners and
+   «Фото»; no face, no figure */
+main.about[data-about-p="f"] .pf-photo[data-empty] {
+  background:
+    radial-gradient(110% 70% at 78% 0%, color-mix(in srgb, var(--ember) 30%, transparent), transparent 64%),
+    radial-gradient(90% 60% at 10% 100%, color-mix(in srgb, var(--ember-deep) 18%, transparent), transparent 70%),
+    linear-gradient(170deg, color-mix(in srgb, var(--ember-deep) 22%, var(--bg)), var(--bg) 82%);
+}
+main.about[data-about-p="f"] .pf-photo__empty { position: absolute; inset: 0; display: grid; place-items: center; }
+main.about[data-about-p="f"] .pf-photo__empty::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ink) 20%, transparent) 0.7px, transparent 1.15px) 0 0 / 0.375rem 0.375rem;
+  -webkit-mask-image: linear-gradient(200deg, var(--bg) 10%, transparent 78%);
+  mask-image: linear-gradient(200deg, var(--bg) 10%, transparent 78%);
+}
+main.about[data-about-p="f"] .pf-photo__empty::after {
+  --c: color-mix(in srgb, var(--ink) 42%, transparent);
+  content: ""; position: absolute; inset: 0.875rem;
+  background:
+    linear-gradient(var(--c), var(--c)) 0 0 / 1rem 1px no-repeat, linear-gradient(var(--c), var(--c)) 0 0 / 1px 1rem no-repeat,
+    linear-gradient(var(--c), var(--c)) 100% 0 / 1rem 1px no-repeat, linear-gradient(var(--c), var(--c)) 100% 0 / 1px 1rem no-repeat,
+    linear-gradient(var(--c), var(--c)) 0 100% / 1rem 1px no-repeat, linear-gradient(var(--c), var(--c)) 0 100% / 1px 1rem no-repeat,
+    linear-gradient(var(--c), var(--c)) 100% 100% / 1rem 1px no-repeat, linear-gradient(var(--c), var(--c)) 100% 100% / 1px 1rem no-repeat;
+}
+main.about[data-about-p="f"] .pf-glyph {
+  position: relative; width: 46%; height: auto; translate: 0 -6%;
+  fill: none; stroke: color-mix(in srgb, var(--ink) 74%, transparent); stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round;
+  filter: drop-shadow(0 0 1.5rem color-mix(in srgb, var(--ember) 50%, transparent));
+  transition: scale 0.6s var(--ease-out);
+}
+main.about[data-about-p="f"] .pf-glyph .pf-glyph__soft { stroke: color-mix(in srgb, var(--ink) 36%, transparent); }
+main.about[data-about-p="f"] .pf-glyph .pf-glyph__em { fill: var(--ember); stroke: none; }
+main.about[data-about-p="f"] .pf-photo__k { position: absolute; left: 1.375rem; bottom: 1.25rem; display: inline-flex; align-items: center; gap: 0.4375rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.about[data-about-p="f"] .pf-photo__k svg { flex: none; width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+/* the name line (the role), the status line (its duty), then what the role does for the client */
+main.about[data-about-p="f"] .pf-prof__id { padding: 1rem 1.125rem 0; }
+main.about[data-about-p="f"] .pf-prof__name { margin: 0; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
+main.about[data-about-p="f"] .pf-prof__status { margin: 0.25rem 0 0; font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); text-wrap: pretty; }
+main.about[data-about-p="f"] .pf-prof__more { display: grid; align-content: start; gap: 0.5rem; margin: 0.875rem 1.125rem 1.125rem; padding: 0.875rem 0 0; list-style: none; border-top: 1px solid var(--line); }
+main.about[data-about-p="f"] .pf-prof__more li { position: relative; padding-left: 1.125rem; font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
+main.about[data-about-p="f"] .pf-prof__more li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ember); }
+@media (hover: hover) and (pointer: fine) {
+  main.about[data-about-p="f"] .pf-prof { transition: translate 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out); }
+  main.about[data-about-p="f"] .pf-prof:hover { translate: 0 -0.25rem; box-shadow: inset 0 0 0 1px var(--border-strong), 0 1.5rem 3rem -1.75rem var(--color-ink-dark); }
+  main.about[data-about-p="f"] .pf-prof:hover .pf-glyph { scale: 1.05; }
+}
+
 /* the composer at the window's foot (a picture of one: its click goes down to the form) */
 main.about[data-about-p="f"] .pf-win__compose {
-  display: flex; align-items: center; gap: 0.75rem; margin: 0.25rem 0.75rem 0.75rem; padding: 0.375rem 0.375rem 0.375rem 1.125rem;
+  display: flex; align-items: center; gap: 0.75rem; margin: 0 0.625rem 0.625rem; padding: 0.375rem 0.375rem 0.375rem 1.125rem;
   border-radius: 1.5rem; font-size: var(--fs-small); font-weight: 300; line-height: 1.4; color: var(--ink-mute); text-decoration: none;
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
   box-shadow: inset 0 0 0 1px var(--border-strong); transition: box-shadow var(--dur-fast);
 }
 main.about[data-about-p="f"] .pf-win__compose > span:first-child { flex: 1; min-width: 0; }
@@ -162,26 +242,45 @@ main.about[data-about-p="f"] .pf-win__send svg { width: 1rem; height: 1rem; fill
   main.about[data-about-p="f"] .pf-win__compose:hover { box-shadow: inset 0 0 0 1px var(--ink-mute); }
 }
 
-/* phones and small tablets: the window under the words */
+/* phones and tablets: the window under the words; the cards a row to swipe (one in view and the next one's edge),
+   snapping card by card; the row's own scrollbar hidden (the next card's edge says it scrolls) */
 @media (max-width: 860px) {
-  main.about[data-about-p="f"] .pf-win { width: 100%; max-width: 34rem; margin-top: 2rem; }
+  main.about[data-about-p="f"] .pf-win { margin-top: 2rem; }
   main.about[data-about-p="f"] .pf-hero__down { margin-top: 1rem; }
+  main.about[data-about-p="f"] .pf-crew {
+    display: flex; gap: 0.625rem; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory; scroll-padding-inline: 0.625rem; scrollbar-width: none;
+  }
+  main.about[data-about-p="f"] .pf-crew::-webkit-scrollbar { display: none; }
+  main.about[data-about-p="f"] .pf-crew:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  main.about[data-about-p="f"] .pf-prof { display: flex; flex-direction: column; flex: none; width: min(42%, 19rem); scroll-snap-align: start; }
 }
 @media (max-width: 600px) {
   main.about[data-about-p="f"] .pf-hero { padding-bottom: var(--rhythm-section); }
   main.about[data-about-p="f"] .pf-win { margin-top: 1.5rem; }
-  main.about[data-about-p="f"] .pf-win__bar { padding: 0.875rem 1rem; }
-  main.about[data-about-p="f"] .pf-mem { padding: 0.75rem 1rem; column-gap: 0.75rem; }
-  main.about[data-about-p="f"] .pf-mem + .pf-mem::before { left: calc(1rem + var(--pf-ava) + 0.75rem); }
+  main.about[data-about-p="f"] .pf-win__bar { padding: 0.75rem 1rem; }
+  main.about[data-about-p="f"] .pf-prof { width: 80%; }
+  main.about[data-about-p="f"] .pf-prof__id { padding: 0.875rem 1rem 0; }
+  main.about[data-about-p="f"] .pf-prof__more { margin: 0.75rem 1rem 1rem; padding-top: 0.75rem; }
 }
-/* beside the words from 861: the head on cols 1–6, the window on 7–12 (8–12 from 1200), their feet on one line */
+/* 861–1199: the head across the top (the title on the left, the lead and the way down on the right), the window
+   under it, its three cards in a row */
 @media (min-width: 861px) {
-  main.about[data-about-p="f"] .pf-hero__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); }
-  main.about[data-about-p="f"] .pf-hero__head { grid-column: 1 / span 6; padding-bottom: 0.5rem; }
-  main.about[data-about-p="f"] .pf-win { grid-column: 7 / -1; }
+  main.about[data-about-p="f"] .pf-hero__head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: end; }
+  main.about[data-about-p="f"] .pf-hero__meta { grid-column: 1 / -1; }
+  main.about[data-about-p="f"] .pf-hero__title { grid-column: 1 / span 7; max-width: none; }
+  main.about[data-about-p="f"] .pf-hero__lead { grid-column: 8 / -1; margin-top: 0; }
+  main.about[data-about-p="f"] .pf-hero__down { grid-column: 8 / -1; margin-top: 0.75rem; }
+  main.about[data-about-p="f"] .pf-win { margin-top: var(--rhythm-s); }
 }
+/* from 1200: the head on cols 1–4 (the title, the lead, the way down), the window on 5–12 */
 @media (min-width: 1200px) {
-  main.about[data-about-p="f"] .pf-win { grid-column: 8 / -1; }
+  main.about[data-about-p="f"] .pf-hero__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); }
+  main.about[data-about-p="f"] .pf-hero__head { display: flex; align-items: flex-start; grid-column: 1 / span 4; }
+  main.about[data-about-p="f"] .pf-hero__title { max-width: 12ch; }
+  main.about[data-about-p="f"] .pf-hero__lead { margin-top: 1.25rem; }
+  main.about[data-about-p="f"] .pf-hero__down { margin-top: 1.5rem; }
+  main.about[data-about-p="f"] .pf-win { grid-column: 5 / -1; margin-top: 0; }
 }
 
 /* the window comes up, then its members pop in one after another (21st.dev's Animated List), from the first paint */
@@ -190,8 +289,8 @@ main.about[data-about-p="f"] .pf-win__send svg { width: 1rem; height: 1rem; fill
 @keyframes pf-fade { from { opacity: 0; } }
 html.motion main.about[data-about-p="f"] .pf-win { animation: pf-rise 0.8s var(--ease-out) 0.3s backwards; }
 html.motion main.about[data-about-p="f"] .pf-win__bar { animation: pf-fade 0.5s var(--ease-out) 0.55s backwards; }
-html.motion main.about[data-about-p="f"] .pf-mem { animation: pf-pop 0.6s var(--pf-back) calc(0.8s + var(--i) * 0.18s) backwards; }
-html.motion main.about[data-about-p="f"] .pf-win__compose { animation: pf-pop 0.5s var(--ease-out) 1.45s backwards; }
+html.motion main.about[data-about-p="f"] .pf-prof { animation: pf-pop 0.7s var(--pf-back) calc(0.7s + var(--i) * 0.16s) backwards; }
+html.motion main.about[data-about-p="f"] .pf-win__compose { animation: pf-pop 0.5s var(--ease-out) 1.35s backwards; }
 
 /* ==========================================================================
    2 · Як ми працюємо: the thread (the page's one light block)
@@ -216,46 +315,137 @@ main.about[data-about-p="f"] .pf-thread { display: grid; gap: 1.5rem; margin: 0;
 main.about[data-about-p="f"] .pf-work .pf-bub { box-shadow: inset 0 0 0 1px var(--pf-bub-line), 0 0.875rem 1.75rem -1.25rem color-mix(in srgb, var(--ink-dark) 45%, transparent); }
 main.about[data-about-p="f"] .pf-work .pf-msg--you .pf-bub { box-shadow: none; }
 
-/* an attachment inside a bubble */
+/* an attachment inside a bubble: a message that carries one takes the bubble's full width */
+main.about[data-about-p="f"] .pf-msg--wide :is(.pf-msg__body, .pf-bub) { width: 100%; }
 main.about[data-about-p="f"] .pf-att { margin: 0 0 0.875rem; }
 main.about[data-about-p="f"] .pf-att svg { display: block; }
-main.about[data-about-p="f"] .pf-att svg :is(path, rect, circle) { fill: none; stroke: color-mix(in srgb, var(--ink-dark) 45%, transparent); stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-main.about[data-about-p="f"] .pf-att svg .pf-fill { fill: var(--card-ivory); }
-main.about[data-about-p="f"] .pf-att svg .pf-ink { fill: var(--ink-dark); stroke: none; }
-main.about[data-about-p="f"] .pf-att svg .pf-ember { fill: var(--ember); stroke: none; }
-/* «План робіт»: a document */
-main.about[data-about-p="f"] .pf-doc { display: flex; align-items: center; gap: 0.875rem; padding: 0.75rem 1rem 0.75rem 0.75rem; border-radius: var(--radius-md); background: var(--pf-att); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
-main.about[data-about-p="f"] .pf-doc__ico { display: grid; place-items: center; flex: none; width: 2.75rem; height: 3.25rem; border-radius: 0.5rem; background: var(--card-ivory); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
-main.about[data-about-p="f"] .pf-doc__ico svg { width: 1.5rem; height: auto; }
-main.about[data-about-p="f"] .pf-doc__ico svg path { stroke: var(--ink-dark); stroke-width: 1.5; }
-main.about[data-about-p="f"] .pf-doc__ico svg path:last-child { stroke: var(--ember); }
-main.about[data-about-p="f"] .pf-doc__txt { min-width: 0; }
-/* «Макет і тексти»: two pictures side by side (their heights about equal at 2.6 : 1) */
-main.about[data-about-p="f"] .pf-thumbs { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr); gap: 0.5rem; padding: 0; list-style: none; }
-main.about[data-about-p="f"] .pf-thumb { display: grid; grid-template-rows: minmax(0, 1fr) auto; align-items: start; gap: 0.5rem; min-width: 0; padding: 0.625rem; border-radius: var(--radius-md); background: var(--pf-att); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
-main.about[data-about-p="f"] .pf-thumb svg { width: 100%; height: auto; }
-main.about[data-about-p="f"] .pf-thumb > span { font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--pf-mute); }
-/* «Тестова адреса»: the address, then its preview (a bar on the left, as a messenger's) */
-main.about[data-about-p="f"] .pf-url { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.625rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.4; color: var(--pf-ink); }
-main.about[data-about-p="f"] .pf-url svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: var(--ember-deep); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-main.about[data-about-p="f"] .pf-prev { overflow: clip; border-radius: var(--radius-md); background: var(--pf-att); box-shadow: inset 3px 0 0 var(--ember), inset 0 0 0 1px var(--pf-bub-line); }
-main.about[data-about-p="f"] .pf-prev__pic { margin: 0.375rem 0.375rem 0 0.5625rem; border-radius: 0.5625rem; background: var(--ink-dark); }
-main.about[data-about-p="f"] .pf-prev__pic svg { width: 100%; height: auto; aspect-ratio: 200 / 84; }
-main.about[data-about-p="f"] .pf-prev__pic svg :is(path, rect, circle) { stroke: color-mix(in srgb, var(--ivory) 45%, transparent); }
-main.about[data-about-p="f"] .pf-prev__pic svg .pf-ink { fill: var(--ivory); }
-main.about[data-about-p="f"] .pf-prev__txt { padding: 0.75rem 1rem 0.875rem 1.25rem; }
-main.about[data-about-p="f"] .pf-prev__txt .pf-att__k { margin: 0 0 0.25rem; }
-/* «Реклама в Google»: a report card, its bars a picture (no numbers) */
-main.about[data-about-p="f"] .pf-rep { padding: 0.875rem 1rem 1rem; border-radius: var(--radius-md); background: var(--pf-att); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
-main.about[data-about-p="f"] .pf-rep__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0 0 0.875rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.4; color: var(--pf-ink); }
-main.about[data-about-p="f"] .pf-rep__tag { padding: 0.125rem 0.5rem; border-radius: 0.25rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--pf-mute); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
-main.about[data-about-p="f"] .pf-rep__bars { display: grid; gap: 0.4375rem; }
-main.about[data-about-p="f"] .pf-rep__bar { display: block; width: calc(var(--b) * 100%); height: 0.5rem; border-radius: 0.25rem; background: color-mix(in srgb, var(--ink-dark) 22%, transparent); transform-origin: 0 50%; }
-main.about[data-about-p="f"] .pf-rep__bar:first-child { background: var(--ink-dark); }
-/* «Усе на вас»: the four key tags, a ring on each (an ember one: in the client's name) */
-main.about[data-about-p="f"] .pf-keys { display: flex; flex-wrap: wrap; gap: 0.375rem; margin: 0.625rem 0 0.75rem; padding: 0; list-style: none; }
-main.about[data-about-p="f"] .pf-keys li { display: inline-flex; align-items: center; gap: 0.4375rem; padding: 0.3125rem 0.75rem 0.3125rem 0.5625rem; border-radius: 62.4375rem; font-size: var(--fs-small); font-weight: 400; line-height: 1.35; color: var(--pf-ink); background: var(--pf-att); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
-main.about[data-about-p="f"] .pf-keys li::before { content: ""; flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--ember-deep); }
+/* the client's mark, «Ваш бренд»'s: an ember ring round a dot */
+main.about[data-about-p="f"] .pf-brand { display: inline-block; flex: none; width: 0.875rem; height: 0.875rem; border-radius: 50%; background: radial-gradient(circle, var(--ember) 0 32%, transparent 36%); box-shadow: inset 0 0 0 1.5px var(--ember); }
+
+/* «План робіт»: the document, one page on its own sheet (a second sheet under it), the letterhead's ember rule */
+main.about[data-about-p="f"] .pf-plan {
+  position: relative; padding: 1.125rem 1.25rem 1rem;
+  border-radius: 0.375rem; background: var(--card-ivory);
+  box-shadow: inset 0 3px 0 var(--ember), inset 0 0 0 1px var(--pf-bub-line), 0 0.25rem 0 -0.125rem var(--card-ivory), 0 0.25rem 0 -0.0625rem var(--pf-bub-line), 0 1.5rem 2rem -1.5rem color-mix(in srgb, var(--ink-dark) 45%, transparent);
+}
+main.about[data-about-p="f"] .pf-plan__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; padding-top: 0.25rem; }
+main.about[data-about-p="f"] .pf-plan__kind { display: inline-flex; align-items: center; gap: 0.375rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--pf-mute); }
+main.about[data-about-p="f"] .pf-plan__kind svg { width: 0.9375rem; height: 0.9375rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-plan__to { display: inline-flex; align-items: center; gap: 0.4375rem; padding: 0.25rem 0.625rem 0.25rem 0.375rem; border-radius: 62.4375rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.3; color: var(--pf-ink); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
+main.about[data-about-p="f"] .pf-plan__h { margin: 0.875rem 0 1rem; font-size: var(--fs-h3); font-weight: 500; line-height: 1.05; letter-spacing: -0.03em; color: var(--pf-ink); }
+main.about[data-about-p="f"] .pf-plan__sec { margin: 0; padding-bottom: 0.5rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--pf-mute); border-bottom: 1px solid var(--pf-ink); }
+main.about[data-about-p="f"] .pf-plan__list { margin: 0; padding: 0; list-style: none; }
+main.about[data-about-p="f"] .pf-plan__list li { display: grid; grid-template-columns: 1.125rem minmax(0, 1fr); column-gap: 0.75rem; padding: 0.625rem 0; border-bottom: 1px solid var(--pf-line); }
+main.about[data-about-p="f"] .pf-plan__box { grid-row: 1 / span 2; display: grid; place-items: center; width: 1.125rem; height: 1.125rem; margin-top: 0.0625rem; border-radius: 0.3125rem; color: var(--ivory); background: var(--ink-dark); }
+main.about[data-about-p="f"] .pf-plan__box svg { width: 0.75rem; height: 0.75rem; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-plan__b { font-size: var(--fs-small); font-weight: 500; line-height: 1.35; color: var(--pf-ink); }
+main.about[data-about-p="f"] .pf-plan__s { grid-column: 2; font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--pf-soft); text-wrap: pretty; }
+main.about[data-about-p="f"] .pf-plan__sign { display: flex; flex-direction: column; align-items: flex-end; gap: 0.125rem; margin-top: 0.75rem; }
+main.about[data-about-p="f"] .pf-plan__scrawl { width: 6.5rem; height: auto; fill: none; stroke: var(--ember-deep); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-plan__sign > span { min-width: 9rem; padding-top: 0.375rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; text-align: right; color: var(--pf-mute); border-top: 1px solid var(--pf-line); }
+
+/* «Макет і тексти»: the design canvas (its dot grid), the site's two artboards by their names, the phone's selected */
+main.about[data-about-p="f"] .pf-art {
+  display: grid; grid-template-columns: minmax(0, 3.1fr) minmax(0, 1fr); align-items: end; gap: 1rem;
+  padding: 1.125rem 1.125rem 1.25rem; border-radius: var(--radius-md);
+  background: radial-gradient(circle, color-mix(in srgb, var(--ink-dark) 16%, transparent) 0.75px, transparent 1.15px) 0.25rem 0.25rem / 0.75rem 0.75rem, var(--pf-att);
+  box-shadow: inset 0 0 0 1px var(--pf-bub-line);
+}
+main.about[data-about-p="f"] .pf-art__board { min-width: 0; margin: 0; transform-origin: 50% 100%; }
+main.about[data-about-p="f"] .pf-art__board figcaption { margin: 0 0 0.375rem; overflow: hidden; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; text-overflow: ellipsis; color: var(--pf-mute); }
+main.about[data-about-p="f"] .pf-art__frame { position: relative; border-radius: 0.1875rem; background: var(--card-ivory); box-shadow: 0 0 0 1px var(--pf-bub-line), 0 0.875rem 1.5rem -0.875rem color-mix(in srgb, var(--ink-dark) 45%, transparent); }
+main.about[data-about-p="f"] .pf-art__frame img { display: block; width: 100%; height: auto; border-radius: inherit; }
+main.about[data-about-p="f"] .pf-art__sel { position: absolute; inset: -0.1875rem; border-radius: 0.25rem; box-shadow: 0 0 0 1.5px var(--ember); pointer-events: none; }
+main.about[data-about-p="f"] .pf-art__sel i { position: absolute; width: 0.4375rem; height: 0.4375rem; margin: -0.21875rem; background: var(--card-ivory); box-shadow: inset 0 0 0 1.5px var(--ember); }
+main.about[data-about-p="f"] .pf-art__sel i:nth-child(1) { left: 0; top: 0; }
+main.about[data-about-p="f"] .pf-art__sel i:nth-child(2) { right: 0; top: 0; }
+main.about[data-about-p="f"] .pf-art__sel i:nth-child(3) { left: 0; bottom: 0; }
+main.about[data-about-p="f"] .pf-art__sel i:nth-child(4) { right: 0; bottom: 0; }
+main.about[data-about-p="f"] .pf-art__board--ph figcaption { color: var(--ember-deep); }
+
+/* «Тестова адреса»: the link, then its preview (an ember bar on its left, as a messenger's): the site live in a
+   browser window (its chrome, the padlock and the address), the preview's words */
+main.about[data-about-p="f"] .pf-url { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.625rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.4; color: var(--ember-deep); }
+main.about[data-about-p="f"] .pf-url svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-web { overflow: clip; padding: 0.5rem 0.5rem 0 0.8125rem; border-radius: var(--radius-md); background: var(--pf-att); box-shadow: inset 3px 0 0 var(--ember), inset 0 0 0 1px var(--pf-bub-line); }
+main.about[data-about-p="f"] .pf-web__bar { position: relative; display: flex; align-items: center; gap: 0.75rem; padding: 0.4375rem 0.625rem; border-radius: 0.5rem 0.5rem 0 0; background: color-mix(in srgb, var(--ink-dark) 8%, var(--card-ivory)); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
+main.about[data-about-p="f"] .pf-web__dots { display: inline-flex; flex: none; gap: 0.3125rem; }
+main.about[data-about-p="f"] .pf-web__dots i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: color-mix(in srgb, var(--ink-dark) 22%, transparent); }
+main.about[data-about-p="f"] .pf-web__addr { display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 0.3125rem; min-width: 0; margin-right: 1.5rem; padding: 0.1875rem 0.625rem; border-radius: 0.375rem; font-size: var(--fs-small); line-height: 1.3; color: var(--pf-soft); background: var(--card-ivory); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
+main.about[data-about-p="f"] .pf-web__addr svg { flex: none; width: 0.75rem; height: 0.75rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-web__view { overflow: clip; aspect-ratio: 16 / 9; background: var(--ink-dark); box-shadow: 0 0 0 1px var(--pf-bub-line); }
+main.about[data-about-p="f"] .pf-web__view img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+main.about[data-about-p="f"] .pf-web__txt { padding: 0.75rem 0.5rem 0.875rem 0.375rem; }
+main.about[data-about-p="f"] .pf-web__txt .pf-att__k { margin: 0 0 0.25rem; }
+
+/* the test request: a Telegram notification in the thread (dark, as a phone's banner over the light block) */
+main.about[data-about-p="f"] .pf-push { display: flex; justify-content: center; padding-left: calc(var(--pf-ava) + var(--pf-gap)); }
+main.about[data-about-p="f"] .pf-push__card {
+  width: min(100%, 24rem); padding: 0.875rem 1rem 1rem; border-radius: 1.25rem; color: var(--ivory);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ivory) 9%, var(--ink-dark)), var(--ink-dark));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ivory) 10%, transparent), 0 1.5rem 2.5rem -1.25rem color-mix(in srgb, var(--ink-dark) 65%, transparent);
+  transform-origin: 50% 0;
+}
+main.about[data-about-p="f"] .pf-push__app { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.625rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: color-mix(in srgb, var(--ivory) 66%, transparent); }
+main.about[data-about-p="f"] .pf-push__ico { display: grid; place-items: center; flex: none; width: 1.375rem; height: 1.375rem; border-radius: 0.375rem; color: var(--ink-dark); background: var(--ivory); }
+main.about[data-about-p="f"] .pf-push__ico svg { width: 0.875rem; height: 0.875rem; fill: currentColor; }
+main.about[data-about-p="f"] .pf-push__h { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; }
+main.about[data-about-p="f"] .pf-push__ok { display: grid; place-items: center; flex: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; color: var(--on-accent); background: var(--signal); }
+main.about[data-about-p="f"] .pf-push__ok svg { width: 0.75rem; height: 0.75rem; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-push__from { margin: 0.125rem 0 0.75rem; font-size: var(--fs-small); line-height: 1.4; color: color-mix(in srgb, var(--ivory) 66%, transparent); }
+main.about[data-about-p="f"] .pf-push__f { display: grid; gap: 0.3125rem; margin: 0 0 0.75rem; }
+main.about[data-about-p="f"] .pf-push__f > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.5rem 0.75rem; border-radius: 0.625rem; background: color-mix(in srgb, var(--ivory) 7%, transparent); }
+main.about[data-about-p="f"] .pf-push__f dt { min-width: 0; font-size: var(--fs-small); line-height: 1.4; color: color-mix(in srgb, var(--ivory) 78%, transparent); }
+main.about[data-about-p="f"] .pf-push__f dd { flex: none; margin: 0; font-size: var(--fs-small); letter-spacing: 0.12em; color: color-mix(in srgb, var(--ivory) 45%, transparent); }
+main.about[data-about-p="f"] .pf-push__chip { display: inline-flex; align-items: center; min-height: 1.75rem; padding: 0 0.75rem; border-radius: 62.4375rem 62.4375rem var(--pf-r-s) 62.4375rem; font-size: var(--fs-small); line-height: 1.3; color: var(--ink-dark); background: var(--ivory); }
+
+/* «Реклама в Google»: the report (its curve of the requests, its campaigns table with lamps and bars: no numbers) */
+main.about[data-about-p="f"] .pf-ads { padding: 0.875rem 1rem 0.5rem; border-radius: var(--radius-md); background: var(--card-ivory); box-shadow: inset 0 0 0 1px var(--pf-bub-line), 0 0.75rem 1.5rem -1.25rem color-mix(in srgb, var(--ink-dark) 40%, transparent); }
+main.about[data-about-p="f"] .pf-ads__top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0 0 0.75rem; }
+main.about[data-about-p="f"] .pf-ads__logo { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.3; color: var(--pf-ink); }
+/* the account's mark: a peak and a dot (the shape of an «A»; the page's colours) */
+main.about[data-about-p="f"] .pf-ads__mark { flex: none; width: 1.125rem; height: 1.125rem; }
+main.about[data-about-p="f"] .pf-ads__mark path { fill: none; stroke: var(--ink-dark); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-ads__mark circle { fill: var(--ember); }
+main.about[data-about-p="f"] .pf-ads__tag { padding: 0.125rem 0.5rem; border-radius: 0.25rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--pf-mute); box-shadow: inset 0 0 0 1px var(--pf-bub-line); }
+main.about[data-about-p="f"] .pf-ads__chart { position: relative; height: 5.5rem; margin: 0 0 0.75rem; padding-top: 1.25rem; }
+main.about[data-about-p="f"] .pf-ads__k { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 0.375rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--pf-mute); }
+main.about[data-about-p="f"] .pf-ads__k::before { content: ""; width: 0.625rem; height: 2px; border-radius: 1px; background: var(--ember-deep); }
+main.about[data-about-p="f"] .pf-ads__chart svg { width: 100%; height: 100%; overflow: visible; }
+main.about[data-about-p="f"] .pf-ads__area { fill: color-mix(in srgb, var(--ember) 14%, transparent); transform-box: fill-box; transform-origin: 50% 100%; }
+main.about[data-about-p="f"] .pf-ads__line { fill: none; stroke: var(--ember-deep); stroke-width: 2; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+main.about[data-about-p="f"] .pf-ads__grid { fill: none; stroke: var(--pf-line); stroke-width: 1; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
+main.about[data-about-p="f"] .pf-ads__t { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr); column-gap: 0.75rem; }
+main.about[data-about-p="f"] .pf-ads__th { padding: 0 0 0.4375rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--pf-mute); border-bottom: 1px solid var(--pf-line); }
+main.about[data-about-p="f"] .pf-ads__row { display: contents; }
+main.about[data-about-p="f"] :is(.pf-ads__name, .pf-ads__cell) { display: flex; align-items: center; min-width: 0; padding: 0.625rem 0; border-bottom: 1px solid var(--pf-line); }
+main.about[data-about-p="f"] .pf-ads__row:last-child > * { border-bottom: 0; }
+main.about[data-about-p="f"] .pf-ads__name { gap: 0.5rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.35; color: var(--pf-ink); }
+main.about[data-about-p="f"] .pf-ads__name > span { min-width: 0; text-wrap: balance; }
+/* «running»: a lime lamp (the system), ringed so it reads on white */
+main.about[data-about-p="f"] .pf-ads__lamp { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink-dark) 30%, transparent); }
+main.about[data-about-p="f"] .pf-ads__bar { display: block; width: calc(var(--b) * 100%); height: 0.5rem; border-radius: 0.25rem; background: var(--ink-dark); transform-origin: 0 50%; }
+main.about[data-about-p="f"] .pf-ads__bar--soft { background: color-mix(in srgb, var(--ink-dark) 26%, transparent); }
+
+/* «Усе на вас»: the four keys as access cards (dark, a sheen across them), each «Ваш бренд»'s, a lime tick on each */
+main.about[data-about-p="f"] .pf-keys__k { margin: 0.375rem 0 0.625rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--pf-mute); }
+main.about[data-about-p="f"] .pf-keys { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin: 0 0 0.875rem; padding: 0; list-style: none; }
+main.about[data-about-p="f"] .pf-key {
+  position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 8.25rem; padding: 0.75rem 0.875rem 0.875rem;
+  border-radius: 0.875rem; color: var(--ivory); overflow: clip;
+  background:
+    linear-gradient(115deg, transparent 30%, color-mix(in srgb, var(--ivory) 9%, transparent) 46%, transparent 60%),
+    linear-gradient(150deg, color-mix(in srgb, var(--ivory) 10%, var(--ink-dark)), var(--ink-dark) 60%, color-mix(in srgb, var(--ember-deep) 20%, var(--ink-dark)));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--ivory) 16%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--ivory) 8%, transparent), 0 0.875rem 1.5rem -1rem color-mix(in srgb, var(--ink-dark) 70%, transparent);
+  transform-origin: 50% 100%;
+}
+main.about[data-about-p="f"] .pf-key__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.875rem; }
+main.about[data-about-p="f"] .pf-key__ico { width: 1.25rem; height: 1.25rem; fill: none; stroke: color-mix(in srgb, var(--ivory) 82%, transparent); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-key__ok { display: grid; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 50%; color: var(--on-accent); background: var(--signal); }
+main.about[data-about-p="f"] .pf-key__ok svg { width: 0.75rem; height: 0.75rem; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-about-p="f"] .pf-key__name { font-size: var(--fs-lead); font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; text-wrap: balance; }
+main.about[data-about-p="f"] .pf-key__val { margin-top: 0.125rem; overflow: hidden; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: 0.04em; white-space: nowrap; text-overflow: ellipsis; color: color-mix(in srgb, var(--ivory) 66%, transparent); }
+main.about[data-about-p="f"] .pf-key__own { display: flex; align-items: center; gap: 0.4375rem; margin-top: auto; padding-top: 0.75rem; font-size: var(--fs-small); line-height: 1.3; color: color-mix(in srgb, var(--ivory) 74%, transparent); }
 
 /* wide screens: the head (and the files) on the left, sticky; the thread on the right under its own sticky header */
 @media (min-width: 861px) {
@@ -280,16 +470,30 @@ main.about[data-about-p="f"] .pf-keys li::before { content: ""; flex: none; widt
   main.about[data-about-p="f"] .pf-bub { padding: 0.75rem 1rem 0.875rem; }
   main.about[data-about-p="f"] .pf-thread { gap: 1.25rem; }
   main.about[data-about-p="f"] .pf-msg--you { padding-left: 2.5rem; }
-  /* the phone's picture a little wider, so its caption keeps to one line */
-  main.about[data-about-p="f"] .pf-thumbs { grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: 0.375rem; }
-  main.about[data-about-p="f"] .pf-thumb { padding: 0.5rem; }
-  main.about[data-about-p="f"] .pf-thumb > span { letter-spacing: 0.06em; }
+  /* the attachments a little tighter, so the words keep their room */
+  main.about[data-about-p="f"] .pf-plan { padding: 1rem 1rem 0.875rem; }
+  main.about[data-about-p="f"] .pf-art { grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr); gap: 0.625rem; padding: 0.875rem 0.75rem 1rem; }
+  main.about[data-about-p="f"] .pf-art__board figcaption { letter-spacing: 0.02em; }
+  main.about[data-about-p="f"] .pf-web { padding: 0.375rem 0.375rem 0 0.625rem; }
+  main.about[data-about-p="f"] .pf-web__addr { margin-right: 0; }
+  main.about[data-about-p="f"] .pf-push { padding-left: 0; }
+  main.about[data-about-p="f"] .pf-ads { padding: 0.75rem 0.75rem 0.375rem; }
+  /* the table in two columns: each campaign's name across the row, its two bars under their heads */
+  main.about[data-about-p="f"] .pf-ads__t { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 0.75rem; }
+  main.about[data-about-p="f"] .pf-ads__th:first-child { display: none; }
+  main.about[data-about-p="f"] .pf-ads__th { white-space: normal; }
+  main.about[data-about-p="f"] .pf-ads__name { grid-column: 1 / -1; padding-bottom: 0.25rem; border-bottom: 0; }
+  main.about[data-about-p="f"] .pf-ads__cell { padding-top: 0.375rem; }
+  main.about[data-about-p="f"] .pf-key { min-height: 7.75rem; padding: 0.625rem 0.75rem 0.75rem; }
 }
 
 /* the thread's scene (runtime/pf.js, «thread»): each message once as it reaches the screen, one at a time. A team
    message: its badge and sender come, the role types (the dots move only now), the bubble rises in where the dots
-   were, then the attachment's own parts; with others waiting (a fast scroll), no typing (.is-fast) */
+   were, then the attachment's own parts (the plan's ticks and signature, the artboards and the selection, the site in
+   the browser, the report's curve and bars, the key cards); the notification drops in and is ticked. With others
+   waiting (a fast scroll), no typing (.is-fast) */
 @keyframes pf-bub { from { opacity: 0; translate: 0 0.75rem; scale: 0.97; } }
+@keyframes pf-drop { from { opacity: 0; translate: 0 -0.875rem; scale: 0.96; } }
 @keyframes pf-typing {
   0% { opacity: 0; scale: 0.7; }
   14% { opacity: 1; scale: 1; }
@@ -301,12 +505,11 @@ main.about[data-about-p="f"] .pf-keys li::before { content: ""; flex: none; widt
   50% { translate: 0 -0.25rem; opacity: 1; }
 }
 @keyframes pf-grow { from { scale: 0 1; } }
+@keyframes pf-grow-up { from { opacity: 0; scale: 1 0; } }
 @keyframes pf-tick { from { opacity: 0; scale: 0.5; } }
 main.about[data-about-p="f"] .pf-msg.is-pre :is(.pf-badge, .pf-stack, .pf-msg__who) { opacity: 0; }
 main.about[data-about-p="f"] .pf-msg.is-pre .pf-bub { opacity: 0; translate: 0 0.75rem; scale: 0.97; }
-main.about[data-about-p="f"] .pf-sys.is-pre .pf-sys__in { opacity: 0; scale: 0.9; }
-main.about[data-about-p="f"] .pf-sys.is-pre::before,
-main.about[data-about-p="f"] .pf-sys.is-pre::after { scale: 0 1; }
+main.about[data-about-p="f"] .pf-push.is-pre .pf-push__card { opacity: 0; translate: 0 -0.875rem; scale: 0.96; }
 main.about[data-about-p="f"] .pf-msg.is-play { --t: 0.82s; }
 main.about[data-about-p="f"] .pf-msg--you.is-play,
 main.about[data-about-p="f"] .pf-msg.is-play.is-fast { --t: 0.05s; }
@@ -316,15 +519,27 @@ main.about[data-about-p="f"] .pf-msg--team.is-play:not(.is-fast) .pf-typing i { 
 main.about[data-about-p="f"] .pf-typing i:nth-child(2) { --k: 1; }
 main.about[data-about-p="f"] .pf-typing i:nth-child(3) { --k: 2; }
 main.about[data-about-p="f"] .pf-msg.is-play .pf-bub { animation: pf-bub 0.5s var(--ease-out) var(--t) backwards; }
-main.about[data-about-p="f"] .pf-msg.is-play .pf-thumb { animation: pf-pop 0.45s var(--ease-out) calc(var(--t) + 0.15s) backwards; }
-main.about[data-about-p="f"] .pf-msg.is-play .pf-thumb + .pf-thumb { animation-delay: calc(var(--t) + 0.27s); }
-main.about[data-about-p="f"] .pf-msg.is-play .pf-prev__pic { animation: pf-fade 0.5s var(--ease-out) calc(var(--t) + 0.2s) backwards; }
-main.about[data-about-p="f"] .pf-msg.is-play .pf-rep__bar { animation: pf-grow 0.7s var(--ease-out) calc(var(--t) + 0.2s + var(--k) * 0.09s) backwards; }
-main.about[data-about-p="f"] .pf-msg.is-play .pf-keys li { animation: pf-pop 0.4s var(--pf-back) calc(var(--t) + 0.2s + var(--k) * 0.08s) backwards; }
-main.about[data-about-p="f"] .pf-sys.is-play .pf-sys__in { animation: pf-pop 0.45s var(--pf-back) 0.15s backwards; }
-main.about[data-about-p="f"] .pf-sys.is-play .pf-sys__ok { animation: pf-tick 0.3s var(--pf-back) 0.4s backwards; }
-main.about[data-about-p="f"] .pf-sys.is-play::before,
-main.about[data-about-p="f"] .pf-sys.is-play::after { animation: pf-grow 0.5s var(--ease-out) backwards; }
+/* the plan: its boxes ticked one by one, then the signature */
+main.about[data-about-p="f"] .pf-msg.is-play .pf-plan__box { animation: pf-tick 0.35s var(--pf-back) calc(var(--t) + 0.3s + var(--k) * 0.12s) backwards; }
+main.about[data-about-p="f"] .pf-msg.is-play .pf-plan__scrawl { animation: pf-fade 0.6s var(--ease-out) calc(var(--t) + 0.85s) backwards; }
+/* the artboards, then the phone's selection */
+main.about[data-about-p="f"] .pf-msg.is-play .pf-art__board { animation: pf-pop 0.5s var(--ease-out) calc(var(--t) + 0.15s) backwards; }
+main.about[data-about-p="f"] .pf-msg.is-play .pf-art__board + .pf-art__board { animation-delay: calc(var(--t) + 0.28s); }
+main.about[data-about-p="f"] .pf-msg.is-play .pf-art__sel { animation: pf-fade 0.3s var(--ease-out) calc(var(--t) + 0.7s) backwards; }
+/* the site comes up in the browser */
+main.about[data-about-p="f"] .pf-msg.is-play .pf-web__view img { animation: pf-fade 0.6s var(--ease-out) calc(var(--t) + 0.2s) backwards; }
+/* the notification */
+main.about[data-about-p="f"] .pf-push.is-play .pf-push__card { animation: pf-drop 0.55s var(--pf-back) 0.1s backwards; }
+main.about[data-about-p="f"] .pf-push.is-play .pf-push__ok { animation: pf-tick 0.3s var(--pf-back) 0.55s backwards; }
+main.about[data-about-p="f"] .pf-push.is-play .pf-push__f > div { animation: pf-fade 0.4s var(--ease-out) 0.35s backwards; }
+main.about[data-about-p="f"] .pf-push.is-play .pf-push__f > div + div { animation-delay: 0.45s; }
+/* the report: the curve rises, the bars grow */
+main.about[data-about-p="f"] .pf-msg.is-play .pf-ads__area { animation: pf-grow-up 0.8s var(--ease-out) calc(var(--t) + 0.15s) backwards; }
+main.about[data-about-p="f"] .pf-msg.is-play .pf-ads__line { animation: pf-fade 0.6s var(--ease-out) calc(var(--t) + 0.2s) backwards; }
+main.about[data-about-p="f"] .pf-msg.is-play .pf-ads__bar { animation: pf-grow 0.7s var(--ease-out) calc(var(--t) + 0.35s + var(--k, 0) * 0.1s) backwards; }
+/* the keys: the cards one by one, each ticked */
+main.about[data-about-p="f"] .pf-msg.is-play .pf-key { animation: pf-pop 0.45s var(--pf-back) calc(var(--t) + 0.2s + var(--k) * 0.09s) backwards; }
+main.about[data-about-p="f"] .pf-msg.is-play .pf-key__ok { animation: pf-tick 0.3s var(--pf-back) calc(var(--t) + 0.5s + var(--k) * 0.09s) backwards; }
 /* the files' ticks: waiting until their message comes, then ticked (--d: when its bubble is in) */
 main.about[data-about-p="f"] .pf-files__list li.is-pre .pf-files__ok::before,
 main.about[data-about-p="f"] .pf-files__list li.is-pre .pf-files__ok svg { opacity: 0; scale: 0.5; }

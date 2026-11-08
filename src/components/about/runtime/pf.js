@@ -11,8 +11,13 @@
  * · «direct» (block 3): from 861 one timeline at 40% in view (the usual pane, then ours); narrower, each pane as it
  *   comes in.
  * · «next» (block 4): the three system messages, once at half in view.
- * On phones everything shares the one queue: one scene at a time. (The first screen's member list plays in CSS from
+ * On phones everything shares the one queue: one scene at a time. (The first screen's profile cards play in CSS from
  * the first paint, pf.css.)
+ * And two parts of the first screen that are not scenes:
+ * · the background (pf-bg/fold.js): the slow ember light, fetched once the browser has a moment after the page is in,
+ *   over the CSS poster that is there from the first paint; it moves only while the first screen is in view and the
+ *   tab is shown, one still frame with reduced motion, none with Save-Data (the poster stays);
+ * · the profile cards' row on phones: a row to swipe, in the tab order only while it scrolls.
  */
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const ROOT = 'main.about[data-about-p="f"]';
@@ -23,6 +28,8 @@ let started = false;
 export function start() {
   if (started || !document.querySelector(ROOT)) return;
   started = true;
+  initCrew();
+  initBackground();
   if (!motion) return;
   const queue = makeQueue();
   initThread(queue);
@@ -85,6 +92,32 @@ const play = (el) => {
   el.classList.remove('is-pre');
   el.classList.add('is-play');
 };
+
+/* ---------- 1 · the first screen's light (pf-bg/fold.js) ---------- */
+function initBackground() {
+  const host = document.querySelector(`${ROOT} [data-pf-bg]`);
+  if (!host || navigator.connection?.saveData) return;
+  const text = document.querySelector(`${ROOT} .pf-hero__head`);
+  const go = () => {
+    import('../pf-bg/fold.js')
+      .then(({ mountFold }) => mountFold(host, { still: !motion, text }))
+      .catch(() => {});
+  };
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(go, { timeout: 1200 });
+  else setTimeout(go, 300);
+}
+
+/* ---------- 1 · the profile cards' row: a scroller on phones, focusable (keyboard) only while it scrolls ---------- */
+function initCrew() {
+  const crew = document.querySelector(`${ROOT} [data-pf-crew]`);
+  if (!crew) return;
+  const check = () => {
+    if (crew.scrollWidth > crew.clientWidth + 1) crew.setAttribute('tabindex', '0');
+    else crew.removeAttribute('tabindex');
+  };
+  check();
+  new ResizeObserver(check).observe(crew);
+}
 
 /* ---------- 2 · the thread ---------- */
 function initThread(queue) {

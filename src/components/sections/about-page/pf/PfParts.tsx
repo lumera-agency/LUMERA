@@ -1,8 +1,9 @@
 /**
- * TEMPORARY · variant F «Розмова»: the chat's small parts, shared by its blocks. No faces, no initials, no photos: each
- * role has a round ember badge with an abstract CSS glyph of its own (pf.css: the lines of a message for «Супровід», a
- * rising route for «Сайти, реклама, автоматизація», a window for «Дизайн і розробка»); the team as a whole is the
- * three badges stacked (a group chat's picture, motionsites' Social Hangouts).
+ * TEMPORARY · variant F «Розмова»: the chat's small parts, shared by its blocks. No faces, no initials: each role has a
+ * round ember badge with an abstract CSS glyph of its own (pf.css: the lines of a message for «Супровід», a rising
+ * route for «Сайти, реклама, автоматизація», a window for «Дизайн і розробка»); the team as a whole is the three badges
+ * stacked (a group chat's picture, motionsites' Social Hangouts). The first screen's profile cards take the real photos
+ * once the owner sends them (PfTeam's PHOTOS); until then their frames show the role's glyph (RoleGlyph).
  */
 
 export type Role = 1 | 2 | 3;
@@ -18,6 +19,44 @@ export const Stack = () => (
     <span className="pf-badge" data-role={2} />
     <span className="pf-badge" data-role={3} />
   </span>
+);
+
+/**
+ * A role's glyph at the size of a picture: the photo frame's empty state while there is no photo (line art, never a
+ * person). The same three ideas as the badges: a message for «Супровід», a route rising to its launch for «Сайти,
+ * реклама, автоматизація», a window for «Дизайн і розробка»; the ember part is the role's own mark
+ */
+export const RoleGlyph = ({ role }: { role: Role }) => (
+  <svg className="pf-glyph" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    {role === 1 && (
+      <>
+        <path d="M30 30h60a12 12 0 0 1 12 12v28a12 12 0 0 1-12 12H56l-16 13V82H30a12 12 0 0 1-12-12V42a12 12 0 0 1 12-12Z" />
+        <path d="M34 50h44M34 62h28" />
+        <circle className="pf-glyph__em" cx="90" cy="30" r="7" />
+      </>
+    )}
+    {role === 2 && (
+      <>
+        <path d="M18 92h84" className="pf-glyph__soft" />
+        <path d="M24 84 48 60l18 12 30-38" />
+        <circle cx="24" cy="84" r="5" />
+        <circle cx="48" cy="60" r="5" />
+        <circle cx="66" cy="72" r="5" />
+        <circle className="pf-glyph__em" cx="96" cy="34" r="7" />
+      </>
+    )}
+    {role === 3 && (
+      <>
+        <rect x="16" y="24" width="88" height="72" rx="10" />
+        <path d="M16 40h88" />
+        <path d="M28 56h40M28 66h28" className="pf-glyph__soft" />
+        <circle cx="26" cy="32" r="1.6" />
+        <circle cx="33" cy="32" r="1.6" />
+        <circle cx="40" cy="32" r="1.6" />
+        <rect className="pf-glyph__em" x="28" y="76" width="26" height="9" rx="4.5" />
+      </>
+    )}
+  </svg>
 );
 
 /** a tick (the system's «готово»: lime on the page, never a button) */
