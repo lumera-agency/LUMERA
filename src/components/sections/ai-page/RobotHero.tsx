@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { BotStory } from "./BotStory";
 import { RobotSlot } from "./RobotSlot";
 import "./robot-hero.css";
@@ -30,6 +30,7 @@ const RAIN = [
  */
 export async function RobotHero() {
   const t = await getTranslations("ai");
+  const locale = await getLocale();
   const leads = LEADS.map((n) => ({
     who: t(`bot.leads.${n}.who`),
     via: t(`bot.leads.${n}.via`),
@@ -132,7 +133,7 @@ export async function RobotHero() {
           </BotStory>
           {/* the head's place in the layout: the canvas sizes the head to it */}
           <div className="ai-bot__head" aria-hidden="true">
-            <RobotSlot words={{ tag: t("bot.tag"), leads }} />
+            <RobotSlot words={{ tag: t("bot.tag"), leads }} film={`/img/ai/robot-film-${locale}.mp4`} />
           </div>
         </div>
 

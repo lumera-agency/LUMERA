@@ -1,5 +1,5 @@
 /*
- * Контакти: the page head (reception.jpg), the booking (a white card on a hairline grid: the steps across its top, the
+ * Контакти: the page head (reception.webp), the booking (a white card on a hairline grid: the steps across its top, the
  * services, the next five working days and a 3 × 2 time grid with one slot taken, a petrol summary that follows the
  * choice; «Записатися» draws a tick and says the request is sent), the contacts (a details list, the week's hours with
  * today in bone) beside our own drawn map with its pin.

@@ -1,5 +1,5 @@
 /*
- * Про нас: the page head (room-white.jpg), the four rooms as spines (one open; a click opens another, GSAP grows it once),
+ * Про нас: the page head (room-white.webp), the four rooms as spines (one open; a click opens another, GSAP grows it once),
  * three principles in ruled columns, four doctors as initials on bone cards with their working days, the review
  * placeholders («Тут буде відгук вашого пацієнта», signed «Ваш пацієнт»), the closing band.
  * Rebuilt from the public demos (behaviour only, no code taken):

@@ -23,7 +23,7 @@ type Css = CSSProperties & Record<`--${string}`, string | number>;
 
 function Pic({ k, f, eager = false }: { k: string; f: string; eager?: boolean }) {
   const { phone } = useEnv();
-  return <img src={`${PH}${phone ? "m/" : ""}${k}.jpg`} alt="" decoding="async" loading={phone && !eager ? "lazy" : undefined} style={{ objectPosition: f }} />;
+  return <img src={`${PH}${phone ? "m/" : ""}${k}.webp`} alt="" decoding="async" loading={phone && !eager ? "lazy" : undefined} style={{ objectPosition: f }} />;
 }
 
 /** the bottom of the sample's header as it stands now (the info bar folds away) */

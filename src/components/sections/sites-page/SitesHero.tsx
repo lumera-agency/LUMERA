@@ -52,9 +52,9 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
           <div className="st-hg__stone" aria-hidden="true">
             <div className="ai-hero__rock">
               <i className="ai-hero__glow" />
-              {/* the still: the droplet at rest, at the canvas' size and framing (square, centred on the body: 720 and 1072 px),
-                  so the live droplet dissolving in over it changes nothing; sizes ≈ the canvas' width (11.6 em of --hg-st,
-                  sites-hero.css), never below 0 on a low screen. Phones keep the still (SitesDropletSlot) */}
+              {/* the still: the droplet at rest, at the canvas' size and framing (square, centred on the body: 720 and 1072 px);
+                  shown only where nothing moves (reduced motion, Save-Data, no WebGL: sites-hero.css, .is-still), so it
+                  is asked for last; sizes ≈ the canvas' width (11.6 em of --hg-st), never below 0 on a low screen */}
               <img
                 className="ai-hero__stone"
                 src="/img/droplet/droplet-1072.webp"
@@ -64,7 +64,7 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
                 height={1072}
                 alt=""
                 decoding="async"
-                fetchPriority="high"
+                fetchPriority="low"
               />
               <SitesDropletSlot />
             </div>
@@ -129,7 +129,7 @@ function Title({ raw }: { raw: string }) {
  * manifesto does (clinic.css .cl-mani__pill). Each pill is glued to its word and its comma (no break inside), so it
  * never starts or ends a line alone. The pills are decoration (aria-hidden): the sentence reads as hero.lead.
  */
-const PILLS = ["/img/sites/hg-pill-landing.jpg", "/img/sites/hg-pill-corp.jpg", "/img/sites/hg-pill-shop.jpg"];
+const PILLS = ["/img/sites/hg-pill-landing.webp", "/img/sites/hg-pill-corp.webp", "/img/sites/hg-pill-shop.webp"];
 function PillLead({ raw }: { raw: string }) {
   const parts = raw.split(/(\S+ \[\d\][,:.;]?|\*[^*]+\*)/).filter(Boolean);
   return (

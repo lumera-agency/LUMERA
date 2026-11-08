@@ -59,8 +59,8 @@
  *   environment; the chrome reflects the site's own paper colours), a CSS light pool on the headline.
  *
  * Photos: KOBU Agency's production studio (Unsplash, Unsplash License), img/sites/photos/landing/CREDITS.md:
- *   hero.jpg uekNxBHpUU8 · hall-south.jpg uKKNmPBsaiI · hall-graphite.jpg O8AtzoQcnY4 · hall-attic.jpg 8lqd7vpkxzE ·
- *   leaf.jpg MqwaHPimeBI (https://unsplash.com/photos/<id>).
+ *   hero.webp uekNxBHpUU8 · hall-south.webp uKKNmPBsaiI · hall-graphite.webp O8AtzoQcnY4 · hall-attic.webp 8lqd7vpkxzE ·
+ *   leaf.webp MqwaHPimeBI (https://unsplash.com/photos/<id>).
  *
  * build(H, c, data, e, opts) → the inner HTML of .pv-site (css/sites-pv-n-landing.css, all under .pv-site--n.pv-n-landing)
  * enhance(site, ctx): the sheets and the folds (once per block as it enters the frame), the pill, the rack, the halls
@@ -115,9 +115,9 @@ const ROLLS = [
 ];
 // the halls' papers (Південь, Графіт, Мансарда) and their photos
 const HALL = [
-  { p: 'fx', img: 'hall-south.jpg' },
-  { p: 'ch', img: 'hall-graphite.jpg' },
-  { p: 'mg', img: 'hall-attic.jpg' },
+  { p: 'fx', img: 'hall-south.webp' },
+  { p: 'ch', img: 'hall-graphite.webp' },
+  { p: 'mg', img: 'hall-attic.webp' },
 ];
 // the steps' paper tabs
 const TABS = ['fx', 'mg', 'pw', 'ch'];
@@ -236,7 +236,7 @@ export function build(H, c, data, e, opts = {}) {
         <p class="fx-sub">${sub}</p>
         <div class="fx-ctas">${fb(lx(s.btn, e?.btn), 'fx-btn', 'data-cta data-to="5"', STARFX)}${fb(lx(s.btn2, e?.btn2), 'fx-btn2', 'data-to="1"')}</div>
       </div>
-      <figure class="fx-hang"><i class="fx-hang__roll" aria-hidden="true"></i><div class="fx-hang__ph" data-to="1" data-loupe><img src="${IMG}hero.jpg" alt="" decoding="async"></div><i class="fx-loupe" aria-hidden="true"><img src="${IMG}hero.jpg" alt="" decoding="async"></i></figure>
+      <figure class="fx-hang"><i class="fx-hang__roll" aria-hidden="true"></i><div class="fx-hang__ph" data-to="1" data-loupe><img src="${IMG}hero.webp" alt="" decoding="async"></div><i class="fx-loupe" aria-hidden="true"><img src="${IMG}hero.webp" alt="" decoding="async"></i></figure>
     </section>`;
 
   /* ---------- 02 · the halls and prices: AccordionGallery ---------- */
@@ -273,7 +273,7 @@ export function build(H, c, data, e, opts = {}) {
         <span class="fx-cond">${esc(t('cond'))}</span></div>
       <div class="fx-revs"><span class="fx-revs__l"><span class="fx-stars">${STAR.repeat(5)}</span>${esc(t('revs'))}</span>
         <div class="fx-stack" data-stack>${cards}</div></div>
-      <figure class="fx-leaf"><img src="${IMG}leaf.jpg" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="fx-leaf"><img src="${IMG}leaf.webp" alt="" loading="lazy" decoding="async"></figure>
     </section>`;
 
   /* ---------- 04 · how to book: the timeline of four paper tabs ---------- */

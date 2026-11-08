@@ -31,7 +31,7 @@ export type LbState = { set: Shot[]; i: number; items: () => HTMLElement[] } | n
 type Open = (set: Shot[], i: number, items: () => HTMLElement[]) => void;
 export const LbCtx = createContext<Open>(() => {});
 
-const src = (k: string, phone: boolean) => `${PH}${phone ? "m/" : ""}${k}.jpg`;
+const src = (k: string, phone: boolean) => `${PH}${phone ? "m/" : ""}${k}.webp`;
 
 /** the drift: images move ±4cqw inside their frames as the frame's page moves (loop.ts: only while it moves) */
 function useDrift(ref: RefObject<HTMLElement | null>) {

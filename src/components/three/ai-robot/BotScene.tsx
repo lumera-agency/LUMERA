@@ -53,6 +53,10 @@ const CARD = { width: 1.5, height: 0.86, depth: 0.02 };
 const TURN = 5.6;
 const PAUSE = 2.4;
 const AT = { reach: 0.45, catch: 1.05, raise: 1.7, talk: 2.8, carry: 4, fade: 4.55, land: 4.85, thumbs: 5.5 };
+/** when it blinks within a round (seconds): set, not random, and every idle motion turns a whole number of times in a
+ *  round, so a round ends in the very pose it began with (a phone plays the scene as a film looped on one round: the
+ *  owner, 6 Nov 2026, saw the seam where they did not) */
+const BLINKS = [1.9, 6.3, 10.2, 13.6, 17.4];
 
 function roundedRect(width: number, height: number, radius: number) {
   const shape = new THREE.Shape();
@@ -159,8 +163,6 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
     pitch: 0,
     lookX: 0,
     lookY: 0,
-    blinkAt: 2,
-    blinked: -9,
     painted: 0,
     sway: 0,
     swaySpeed: 0,
@@ -265,6 +267,8 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
     // the round: three turns, then a pause; still (reduced motion): the round's end, every card recorded
     const round = TURN * cards.length + PAUSE;
     const clock = still ? round - 0.01 : memory.time % round;
+    /** an idle motion's angle: `turns` whole turns a round */
+    const wave = (turns: number) => (clock / round) * Math.PI * 2 * turns;
     const turn = Math.min(cards.length - 1, Math.floor(clock / TURN));
     const at = clock - turn * TURN;
     const working = clock < TURN * cards.length;
@@ -402,7 +406,7 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
     const right = hands.right;
     poseHand(right, rightPose, dt, !memory.placed);
     const rightAt =
-      rightGoal ?? scratch.right.set(Math.min(headAt.x + HEAD_SIDE + 0.18, edge - 0.65), headAt.y - 0.7 + Math.sin(memory.time * 1.5 + 2) * 0.05, HAND_Z);
+      rightGoal ?? scratch.right.set(Math.min(headAt.x + HEAD_SIDE + 0.18, edge - 0.65), headAt.y - 0.7 + Math.sin(wave(5) + 2) * 0.05, HAND_Z);
     if (!memory.placed) right.group.position.copy(rightAt);
     right.group.position.x = damp(right.group.position.x, rightAt.x, 7, dt);
     right.group.position.y = damp(right.group.position.y, rightAt.y, 7, dt);
@@ -410,7 +414,7 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
     memory.placed = true;
 
     // where the head looks: its work; the pointer only a little and hardly to its right; else round by itself
-    if (!lookTarget) lookTarget = scratch.look.set(headAt.x - 1 + Math.sin(memory.time * 0.4) * 0.8, headAt.y + Math.sin(memory.time * 0.27) * 0.4, 2);
+    if (!lookTarget) lookTarget = scratch.look.set(headAt.x - 1 + Math.sin(wave(1)) * 0.8, headAt.y + Math.sin(wave(1) + 1.6) * 0.4, 2);
     let offsetX = lookTarget.x - headAt.x;
     let offsetY = lookTarget.y - headAt.y;
     if (now - robotPointer.movedAt < 1600) {
@@ -423,8 +427,8 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
     const pitch = THREE.MathUtils.clamp(-Math.atan2(offsetY, Math.hypot(offsetX, depth)), -0.3, 0.28);
     memory.yaw = damp(memory.yaw, yaw, 4.5, dt);
     memory.pitch = damp(memory.pitch, pitch, 4.5, dt);
-    head.current.position.set(headAt.x, headAt.y + Math.sin(memory.time * 1.1) * 0.035, 0);
-    head.current.rotation.set(memory.pitch, memory.yaw, Math.sin(memory.time * 0.6) * 0.02);
+    head.current.position.set(headAt.x, headAt.y + Math.sin(wave(3)) * 0.035, 0);
+    head.current.rotation.set(memory.pitch, memory.yaw, Math.sin(wave(2)) * 0.02);
     // the eyes go further than the head (the pointer's right too, by the eyes alone)
     memory.lookX = damp(memory.lookX, THREE.MathUtils.clamp(offsetX / 3, -1, 1), 9, dt);
     memory.lookY = damp(memory.lookY, THREE.MathUtils.clamp(-offsetY / 2.2, -1, 1), 9, dt);
@@ -435,30 +439,29 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
     memory.swaySpeed += (-swing * 0.06 - memory.sway * 60 - memory.swaySpeed * 7) * dt;
     memory.sway += memory.swaySpeed * dt;
     antennas.sways.forEach((pivot, index) => {
-      pivot.rotation.z = (pivot.userData.lean as number) + memory.sway + Math.sin(memory.time * 1.7 + index) * 0.025;
+      pivot.rotation.z = (pivot.userData.lean as number) + memory.sway + Math.sin(wave(5) + index) * 0.025;
     });
 
-    if (!still && memory.time > memory.blinkAt) {
-      memory.blinked = memory.time;
-      memory.blinkAt = memory.time + 2.5 + Math.random() * 2.5;
-    }
-    const sinceBlink = memory.time - memory.blinked;
+    const lastBlink = BLINKS.filter((at) => at <= clock).pop() ?? BLINKS[BLINKS.length - 1] - round;
+    const sinceBlink = still ? 9 : clock - lastBlink;
     const blink = mood === "idle" || mood === "read" ? (sinceBlink < 0.16 ? 1 - Math.abs((sinceBlink / 0.16) * 2 - 1) : 0) : 0;
     // the face at 30 frames a second is enough for a screen, and spares phones a texture upload each frame
-    if (still || memory.time - memory.painted > 1 / 30) {
+    // (a little under 1/30: at exactly 30 frames a second, as the phone's film is recorded, a frame's rounding must not
+    // skip the face's update at random)
+    if (still || memory.time - memory.painted > 1 / 30 - 0.002) {
       memory.painted = memory.time;
-      paintFace(face.context, { mood, time: memory.time, lookX: memory.lookX, lookY: memory.lookY, blink });
+      paintFace(face.context, { mood, time: clock, lookX: memory.lookX, lookY: memory.lookY, blink });
       face.texture.needsUpdate = true;
     }
 
     // the antennas' lime flashes as a card is recorded, and breathes otherwise
     const flash = Math.max(0, 1 - (now - memory.flash) / 900);
-    antennas.lime.emissiveIntensity = 0.16 + 0.08 * Math.sin(memory.time * 2) + flash * 1.2;
+    antennas.lime.emissiveIntensity = 0.16 + 0.08 * Math.sin(wave(6)) + flash * 1.2;
     lime.color.copy(LIME).multiplyScalar(0.8 + flash * 0.5);
     // the hands' marks breathe like a sleeping laptop's, and flash with the antennas
-    handLogo.material.color.setScalar(0.85 + 0.15 * Math.sin(memory.time * 1.6) + flash * 0.6);
+    handLogo.material.color.setScalar(0.85 + 0.15 * Math.sin(wave(5)) + flash * 0.6);
     chinLogo.material.color.copy(handLogo.material.color);
-    scene.environmentRotation.y = Math.sin(memory.time * 0.12) * 0.3 + memory.yaw * 0.5;
+    scene.environmentRotation.y = Math.sin(wave(1)) * 0.12 + memory.yaw * 0.5;
   });
 
   return (

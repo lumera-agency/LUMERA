@@ -77,6 +77,9 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
   }
   // the page holds still under it (base.css; SmoothScroll stops Lenis); let go as it opens the page
   root.classList.add("is-loading");
+  // come here through the page curtain (fx/page-curtain), the sheet covers the page itself: under the curtain its
+  // roll would wait (base.css)
+  root.classList.remove("is-curtain");
   const release = () => root.classList.remove("is-loading");
   setTimeout(release, 14000); // with the sheet's own fallback (preloader.css)
   const motion = root.classList.contains("motion") && !!el.animate;

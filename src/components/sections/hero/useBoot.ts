@@ -7,6 +7,7 @@
  */
 import { useEffect, type RefObject } from "react";
 import { boot, jumpToHash, loader, pageLetGo, restorePlace, restoreScroll, sceneRun } from "@/lib/boot";
+import { CURTAIN, holdCurtain } from "@/lib/curtain";
 import { settleHero } from "@/components/three/hero/state";
 import { wait } from "@/lib/hooks";
 import { playIntro } from "./useHeroIntro";
@@ -21,6 +22,11 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
     started = true;
     const root = document.documentElement;
     const clock = loader();
+    // reached through the page curtain: it lifts as the intro starts, the stone and the headline coming in together.
+    // It does not wait for the shaders there (the owner, 7 Nov: «на главной слишком долго ждем при переходах»): they
+    // finish while the page comes out of the black, its fade on the compositor
+    const viaCurtain = root.classList.contains(CURTAIN);
+    const releaseCurtain = holdCurtain();
     const introDone = () => {
       root.classList.add("intro-done");
       boot.introDone.resolve();
@@ -37,7 +43,7 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
       clock?.step(0.3, 1);
       await Promise.race([boot.sceneLoaded.promise, wait(4000)]);
       clock?.step(0.55, 2);
-      await Promise.race([boot.sceneReady.promise, wait(4000)]);
+      await Promise.race([boot.sceneReady.promise, wait(viaCurtain ? 0 : 4000)]);
       clock?.step(0.8, 3);
       clock?.step(0.95, 3);
 
@@ -48,6 +54,7 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
         settleHero();
         sceneRun.set(true);
         await clock?.finish();
+        releaseCurtain();
         arrive();
         root.classList.add("is-ready");
         introDone();
@@ -58,6 +65,7 @@ export function useBoot(heroRef: RefObject<HTMLElement | null>, reducedMotion: b
       await Promise.race([clock?.finish() ?? Promise.resolve(), wait(9000)]);
       arrive();
       sceneRun.set(true);
+      releaseCurtain();
       const intro = playIntro(hero);
       intro.timeline.then(introDone);
     })();

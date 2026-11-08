@@ -134,7 +134,7 @@ export function Swatch({ c, on = false, onClick, onEnter, className = "", title 
   );
 }
 
-export const srcOf = (k: string, phone: boolean) => `${PH}${phone ? "m/" : ""}${k}.jpg`;
+export const srcOf = (k: string, phone: boolean) => `${PH}${phone ? "m/" : ""}${k}.webp`;
 
 /** a photo as a <img> with its focus and zoom */
 export function Pic({ shot, className = "", eager = false }: { shot: Shot; className?: string; eager?: boolean }) {

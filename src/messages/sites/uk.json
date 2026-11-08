@@ -296,24 +296,24 @@
     },
     "img": {
       "how": {
-        "d": "/img/sites/how-landing-d.jpg",
-        "m": "/img/sites/how-landing-m.jpg"
+        "d": "/img/sites/how-landing-d.webp",
+        "m": "/img/sites/how-landing-m.webp"
       },
       "landing": {
-        "_": "/img/sites/pv-landing.jpg",
-        "m": "/img/sites/pv-landing-m.jpg"
+        "_": "/img/sites/pv-landing.webp",
+        "m": "/img/sites/pv-landing-m.webp"
       },
       "landingPlus": {
-        "_": "/img/sites/pv-landingPlus.jpg",
-        "m": "/img/sites/pv-landingPlus-m.jpg"
+        "_": "/img/sites/pv-landingPlus.webp",
+        "m": "/img/sites/pv-landingPlus-m.webp"
       },
       "shop": {
-        "_": "/img/sites/pv-shop.jpg",
-        "m": "/img/sites/pv-shop-m.jpg"
+        "_": "/img/sites/pv-shop.webp",
+        "m": "/img/sites/pv-shop-m.webp"
       },
       "corp": {
-        "_": "/img/sites/pv-corp.jpg",
-        "m": "/img/sites/pv-corp-m.jpg"
+        "_": "/img/sites/pv-corp.webp",
+        "m": "/img/sites/pv-corp-m.webp"
       }
     },
     "inc": {

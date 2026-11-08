@@ -165,6 +165,16 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 .ai-bot__head { aspect-ratio: 0.92; width: 82%; justify-self: end; margin-right: clamp(1rem, 5vw, 5rem); }
 .ai-bot__canvas { position: absolute; inset: 0; z-index: 3; opacity: 0; pointer-events: none; transition: opacity 1.2s ease-out; }
 .ai-bot.is-live .ai-bot__canvas { opacity: 1; }
+/* a phone's film (RobotFilm), or the robot's picture where nothing can move (RobotPicture): its frame laid where the
+   live scene would draw */
+.ai-bot__film { position: absolute; display: block; }
+.ai-bot__picture { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.ai-bot__picture img { position: absolute; display: block; max-width: none; }
+/* a phone: the table and the answer are in the film, so the page's own wait unseen until the film is drawn; they show
+   only for the live scene (.is-3d, the film refused) or the still (.is-still) */
+@media (max-width: 599px) and (hover: none) and (pointer: coarse) {
+  html.motion .ai-bot:not(.is-still):not(.is-3d) :is(.bot-stage, .bot-say) { visibility: hidden; }
+}
 
 /* ---------- the table ---------- */
 .bot-stage {
@@ -203,7 +213,11 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 .bot-crm tr > :last-child { width: 8rem; }
 .bot-crm__state { display: inline-block; padding: 0.3125rem 0.75rem; border-radius: 62rem; font-size: 0.875rem; color: var(--ink-soft); box-shadow: inset 0 0 0 1px var(--hair); }
 .bot-crm__state:empty { display: none; }
-.bot-crm__new td { color: var(--ink); transition: background-color 0.5s ease, box-shadow 0.5s ease; }
+.bot-crm__new td { color: var(--ink); transition: background-color 0.5s ease, box-shadow 0.5s ease, color 0.4s ease; }
+/* the round over: a booked row's words and status fade out, its lime goes, before it empties into a slot (BotStory) */
+.bot-crm__new .bot-crm__state { transition: opacity 0.4s ease, background-color 0.4s ease, color 0.4s ease; }
+.bot-stage.is-playing .bot-crm__new.is-clearing td { color: transparent; background: rgb(var(--lime-rgb) / 0.025); box-shadow: none; }
+.bot-stage.is-playing .bot-crm__new.is-clearing .bot-crm__state { opacity: 0; }
 /* with motion the robot will play: its rows wait as slots from the first paint, the server's still (every request
    booked) never flashing before the robot empties them (the owner, 5 Nov 2026); without the robot (no WebGL, a scene
    that failed: .is-still, RobotSlot) the still stays */
