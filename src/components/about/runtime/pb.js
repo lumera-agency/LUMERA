@@ -5,12 +5,15 @@
  *
  * The scenes, each on the page's chain pattern (pb.css: the CSS default is the final frame, .is-pre holds the start,
  * .is-play runs the CSS animations, each part at its own moment; what is on the screen at load is left as it is):
+ * · «crew» (block 1, phones and small tablets ≤860, where the passes hang one under another from the standing rail):
+ *   a pass still below the screen at load waits, then its strap runs out and it slides in, at 40% in view. Wider, the
+ *   passes are all on the first screen and drop from the first paint (CSS only).
  * · «desk» (block 2): the five objects land, the markers sweep the plan's two findings, the same findings drop as pins
  *   on the layout and the ad, the test request arrives, the key tags swing, the stamp presses; the objects' key tabs
  *   shuffle as they land (React Bits' Shuffle, as the page's labels). Wide screens: one timeline at 30% in view.
  *   Phones (≤600): each object plays its own part at 40% in view.
- * · «notes» (block 3): the manager's pen and the kept sentence. From 900: one timeline at 40% in view; narrower (the
- *   notes stacked): each note at 40% in view.
+ * · «word» (block 3): the selection comes on round the quote, the marker runs behind its key phrases one after
+ *   another, the signature's roles come up; at 50% in view.
  * On phones and wherever the parts play one by one, they share one queue: one scene at a time.
  * A touched key tag swings on its own (a mouse only), never while a swing is playing.
  */
@@ -23,26 +26,13 @@ let started = false;
 export function start() {
   if (started || !document.querySelector(ROOT)) return;
   started = true;
-  initCrew();
+  initLineEnds();
   if (!motion) return;
   const queue = makeQueue();
+  initCrew(queue);
   initDesk(queue);
-  initNotes(queue);
+  initWord(queue);
   initTagHover();
-}
-
-/* ---------- 1 · the passes: on phones and small tablets (≤860) their row slides sideways, so it takes the keyboard's
-   focus there (the arrow keys scroll it); wider, it is a plain list ---------- */
-function initCrew() {
-  const list = document.querySelector(`${ROOT} .pb-crew__list`);
-  if (!list) return;
-  const narrow = window.matchMedia('(max-width: 860px)');
-  const sync = () => {
-    if (narrow.matches) list.setAttribute('tabindex', '0');
-    else list.removeAttribute('tabindex');
-  };
-  sync();
-  narrow.addEventListener('change', sync);
 }
 
 /* ---------- one scene at a time: a scene waits for the one before it to end (all its animations, the pseudo parts' and
@@ -101,6 +91,13 @@ const play = (el) => {
   el.classList.add('is-play');
 };
 
+/* ---------- 1 · the passes on phones and small tablets (one under another): each one still below the screen at load
+   plays as it comes into view ---------- */
+function initCrew(queue) {
+  if (!window.matchMedia('(max-width: 860px)').matches) return;
+  $$(`${ROOT} .pb-pass`).forEach((pass) => whenSeen(pass, 0.4, () => queue(pass, play)));
+}
+
 /* ---------- 2 · the desk ---------- */
 function initDesk(queue) {
   const desk = document.querySelector(`${ROOT} [data-pb-desk]`);
@@ -126,15 +123,34 @@ function initDesk(queue) {
   });
 }
 
-/* ---------- 3 · the notes ---------- */
-function initNotes(queue) {
-  const mat = document.querySelector(`${ROOT} [data-pb-notes]`);
+/* ---------- 3 · the quote's marker reaches over the space after each word of a key phrase (pb.css), except where a
+   word ends its line: those words are marked, again whenever the quote's width changes (layout only, so with reduced
+   motion too) ---------- */
+function initLineEnds() {
+  const quote = document.querySelector(`${ROOT} .pb-q`);
+  if (!quote) return;
+  const words = $$('.pb-q__w', quote);
+  const mark = () => {
+    words.forEach((word, i) => {
+      const next = words[i + 1];
+      word.classList.toggle('is-eol', Boolean(next) && next.offsetTop > word.offsetTop + word.offsetHeight / 2);
+    });
+  };
+  let width = 0;
+  new ResizeObserver(([entry]) => {
+    const w = Math.round(entry.contentRect.width);
+    if (w === width) return;
+    width = w;
+    mark();
+  }).observe(quote);
+  document.fonts?.ready.then(mark);
+}
+
+/* ---------- 3 · the word ---------- */
+function initWord(queue) {
+  const mat = document.querySelector(`${ROOT} [data-pb-word]`);
   if (!mat) return;
-  if (window.matchMedia('(max-width: 899px)').matches) {
-    $$('.pb-note', mat).forEach((note) => whenSeen(note, 0.4, () => queue(note, play)));
-    return;
-  }
-  whenSeen(mat, 0.4, play);
+  whenSeen(mat, 0.5, () => queue(mat, play));
 }
 
 /* ---------- (React Bits' Shuffle, as the page's labels in about-runtime.js) a key tab's letters shuffle once and settle:

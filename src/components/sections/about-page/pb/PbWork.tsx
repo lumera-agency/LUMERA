@@ -65,14 +65,9 @@ const EXCLUDED = ["services.ads.neg.1", "services.ads.neg.2"] as const;
 /** the report's requests by week, as column heights (no axis, no numbers) */
 const WEEKS = [0.28, 0.36, 0.3, 0.48, 0.42, 0.55, 0.5, 0.66, 0.6, 0.74, 0.7, 0.86];
 
-/** the four access cards on the key ring: the caption's own words (about.pb.tag.*), each hanging at its own angle
- *  (fanning out from the middle); their glyphs: a page, the address, a server, an ad */
-const TAGS = [
-  { n: 1, a: "4deg" },
-  { n: 2, a: "1.5deg" },
-  { n: 3, a: "-3deg" },
-  { n: 4, a: "-1deg" },
-] as const;
+/** the four access cards on the key ring: the caption's own words (about.pb.tag.*), hanging straight; their glyphs: a
+ *  page, the address, a server, an ad */
+const TAGS = [1, 2, 3, 4] as const;
 const TAG_GLYPH: Record<1 | 2 | 3 | 4, React.ReactNode> = {
   1: <path d="M4 5.5h16v13H4zM4 9h16M7 7.25h.01M9.5 7.25h.01" />,
   2: (
@@ -160,7 +155,7 @@ function Plan({ t, tm }: { t: T; tm: TM }) {
 }
 
 /**
- * TEMPORARY · variant B, 2 · Як ми працюємо: the studio's desk, the page's one light block. A square-module mat (dots
+ * Variant B, 2 · Як ми працюємо: the studio's desk, the page's one light block. A square-module mat (dots
  * at the modules' corners, a ruler on its top edge) with the five things the client gets lying on it as the real things,
  * each with its key tab (Розбір, Макет, Сайт, Реклама, Ключі): A the plan, a signed document on a clipboard; B the layout,
  * the example site's real renders on a design board (public/img/about/pb-lay-*, cut from public/img/sites/how-landing-*
@@ -195,8 +190,8 @@ export async function PbWork({ index }: { index: number }) {
         <div className="pb-mat pb-mat--desk" data-pb-desk="">
           <span className="pb-ruler" aria-hidden="true" />
           <ul className="pb-desk" aria-labelledby="work-rcpt">
-            {/* A · Розбір: the plan of works, a signed document on a clipboard (a reading sheet: no tilt) */}
-            <li className="pb-obj pb-obj--plan" style={{ "--i": 0, "--tilt": "0deg" } as CSSVars}>
+            {/* A · Розбір: the plan of works, a signed document on a clipboard */}
+            <li className="pb-obj pb-obj--plan" style={{ "--i": 0 } as CSSVars}>
               <div className="pb-obj__card">
                 <p className="pb-tab">{t("work.1.k")}</p>
                 <span className="pb-clip" aria-hidden="true" />
@@ -205,12 +200,12 @@ export async function PbWork({ index }: { index: number }) {
             </li>
 
             {/* B · Макет: the example site's layouts on a design board, the computer's and the phone's over its right
-                edge (the phone selected, as in a design tool); the two findings pinned on them */}
-            <li className="pb-obj pb-obj--layout" style={{ "--i": 1, "--tilt": "-0.4deg" } as CSSVars}>
+                edge (the phone selected, as in a design tool), both straight; the two findings pinned on them */}
+            <li className="pb-obj pb-obj--layout" style={{ "--i": 1 } as CSSVars}>
               <div className="pb-obj__card">
                 <p className="pb-tab">{t("work.2.k")}</p>
                 <div className="pb-pic pb-lay" aria-hidden="true">
-                  <div className="pb-lay__tilt">
+                  <div className="pb-lay__set">
                     <div className="pb-lay__pc">
                       <p className="pb-lay__k">{t("pb.pc")}</p>
                       <div className="pb-lay__frame">
@@ -237,7 +232,7 @@ export async function PbWork({ index }: { index: number }) {
             {/* C · Сайт: the test address, the one dark object; the site live in a browser, the test request arriving
                 as a Telegram notification (the main page's why.sys.3: the request comes to Telegram or a CRM) with the
                 form's own fields (contact.field.label.*, a task chip), no one's data */}
-            <li className="pb-obj pb-obj--test pb-obj--none" style={{ "--i": 2, "--tilt": "0.8deg" } as CSSVars}>
+            <li className="pb-obj pb-obj--test pb-obj--none" style={{ "--i": 2 } as CSSVars}>
               <div className="pb-obj__card">
                 <p className="pb-tab">{t("work.3.k")}</p>
                 <div className="pb-pic pb-win" aria-hidden="true">
@@ -283,7 +278,7 @@ export async function PbWork({ index }: { index: number }) {
             {/* D · Реклама: the Google Ads report (the main page's ads demo words: services.ads.*, why.link.1): the
                 campaign, its tabs with «Звіт» open, the requests by week as columns, the queries with their bars and
                 the words it never shows on; no digits anywhere. The findings pinned on the ads' tab and the queries */}
-            <li className="pb-obj pb-obj--ads" style={{ "--i": 3, "--tilt": "-0.6deg" } as CSSVars}>
+            <li className="pb-obj pb-obj--ads" style={{ "--i": 3 } as CSSVars}>
               <div className="pb-obj__card">
                 <p className="pb-tab">{t("work.4.k")}</p>
                 <div className="pb-pic pb-ad" aria-hidden="true">
@@ -336,7 +331,7 @@ export async function PbWork({ index }: { index: number }) {
             </li>
 
             {/* E · Ключі: everything in the client's name, a ring on a pin with the ember key and four access cards */}
-            <li className="pb-obj pb-obj--keys pb-obj--none" style={{ "--i": 4, "--tilt": "0.5deg" } as CSSVars}>
+            <li className="pb-obj pb-obj--keys pb-obj--none" style={{ "--i": 4 } as CSSVars}>
               <div className="pb-obj__card">
                 <p className="pb-tab">{t("work.5.k")}</p>
                 <div className="pb-pic pb-keys" aria-hidden="true">
@@ -352,8 +347,8 @@ export async function PbWork({ index }: { index: number }) {
                     </span>
                   </span>
                   <span className="pb-keys__tags">
-                    {TAGS.map(({ n, a }, k) => (
-                      <span className="pb-tag" key={n} style={{ "--a": a, "--k": k } as CSSVars}>
+                    {TAGS.map((n, k) => (
+                      <span className="pb-tag" key={n} style={{ "--k": k } as CSSVars}>
                         <span className="pb-tag__sw">
                           <span className="pb-tag__in">
                             <span className="pb-tag__top">

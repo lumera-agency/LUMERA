@@ -6,8 +6,6 @@ import { getSiteNav } from "@/content/site-nav";
 import { aiRich as R } from "@/components/ai/rich";
 import "@/components/sections/contact/contact.css";
 
-type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
-
 /** The task chips of the main page's form, with the values /api/lead receives (as AboutContact has them) */
 const TASKS = ["Новий сайт", "Оновлення сайту", "Реклама", "Аналітика", "Автоматизація", "Ще не знаю"] as const;
 
@@ -17,12 +15,12 @@ const TICK = (
 );
 
 /**
- * TEMPORARY · variant B, 4 · Заявка: B's own copy of AboutContact, the same form (its ids, lead-form.js through
+ * Variant B, 4 · Заявка: B's own copy of AboutContact, the same form (its ids, lead-form.js through
  * ContactClient, /api/lead, the honeypot, the plan from the calculator, the done state), in the reading order head →
  * form → what happens next and the direct contacts, so the focus order is the order on the screen on every width.
  * Wide screens: the head, the slip «Що буде далі» (dark paper with the receipt's torn foot, a tick on each step) and the
  * contacts card (a business card: the phones, Telegram, Viber; config/contacts through getSiteNav, as the header and
- * footer have them) on the left, the form on the right, untilted. The page's one lime button: «Надіслати заявку».
+ * footer have them) on the left, both straight, the form on the right. The page's one lime button: «Надіслати заявку».
  */
 export async function PbContact({ index }: { index: number }) {
   const t = await getTranslations();
@@ -117,7 +115,7 @@ export async function PbContact({ index }: { index: number }) {
 
           <div className="pb-lead__aside">
             {/* what happens after the request: the main page's three steps, on a slip (no numerals) */}
-            <div className="pb-next" data-in="" style={{ "--tilt": "-0.8deg" } as CSSVars}>
+            <div className="pb-next" data-in="">
               <p className="pb-next__k" id="pb-next-k">{t("contact.next.label")}</p>
               <ol className="pb-next__list" aria-labelledby="pb-next-k">
                 {steps.map(({ b, s }) => (
@@ -132,7 +130,7 @@ export async function PbContact({ index }: { index: number }) {
               </ol>
             </div>
             {/* the direct ways, on a business card: the phones to call, Telegram, Viber */}
-            <div className="pb-card" data-in="" style={{ "--tilt": "0.8deg" } as CSSVars}>
+            <div className="pb-card" data-in="">
               <p className="pb-card__k">{t("footer.map.contacts")}</p>
               <ul className="pb-card__tel">
                 {nav.contacts.phones.map((p) => (
