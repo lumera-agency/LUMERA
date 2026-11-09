@@ -57,8 +57,10 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   const ref = (n) => el.querySelector(`[data-ref="${n}"]`);
   const all = (sel) => [...el.querySelectorAll(sel)];
   // the samples as on «Дизайн і сайти» (the owner, 9 Nov 2026), «На весь екран» included: the page holds still under it
-  // (no tray cards: the ads and the automation have schemes of their own in the frame, the owner, 9 Nov 2026)
-  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto, full: t.preview.full, close: t.preview.close }, full: true, tray: false, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
+  // (no tray cards: the ads and the automation have schemes of their own in the frame, the owner, 9 Nov 2026; the wheel
+  // over the sample scrolls the sample alone, never the page under it: ownWheel. «Що входить у ціну» scrolls by the
+  // wheel too: data-lenis-prevent, the page's smooth scroll leaves it its own)
+  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto, full: t.preview.full, close: t.preview.close }, full: true, tray: false, ownWheel: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
   const sheet = ref('sheet');
   const bar = ref('bar');
   const editor = ref('editor');
@@ -121,6 +123,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   el.addEventListener('click', onClick);
   el.addEventListener('keydown', onKey);
   sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); }); // the backdrop
+  ref('break').addEventListener('toggle', () => breakWheel(), true); // a line opened or shut: the list's length changed
   sheet.addEventListener('cancel', (e) => { e.preventDefault(); closeSheet(); }); // Esc
   editor.addEventListener('cancel', (e) => { e.preventDefault(); closeEditor(); });
   // pd8 4.4: across 1100 px neither the sheet nor the face stays open on the wrong side; the button says what it opens
@@ -167,6 +170,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     ref('break-btn').setAttribute('aria-expanded', String(on));
     ref('break-btn').querySelector('span').textContent = on ? t.summary.breakdownClose : t.summary.breakdownOpen;
     ref('break').toggleAttribute('inert', !on);
+    if (on) breakWheel();
     syncView();
     syncPause();
     if (on) ref('break').querySelector('h3').focus({ preventScroll: true });
@@ -191,6 +195,14 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     const done = () => { sheet.close(); syncPause(); syncBar(); state.opener?.focus({ preventScroll: true }); };
     if (reducedMotion) done();
     else sheetTimer = setTimeout(done, 280);
+  }
+
+  /** «Що входить у ціну» keeps the wheel while it has more to show (the page's smooth scroll and paging leave what is
+   *  marked data-lenis-prevent alone; at its ends overscroll-behavior keeps the page still); a short one lets the page
+   *  glide as anywhere else */
+  function breakWheel() {
+    const b = ref('break');
+    b.toggleAttribute('data-lenis-prevent', b.scrollHeight > b.clientHeight + 1);
   }
 
   /** the cube and the silk rest while nothing shows them: the face or the robot's console over them, the sheet over
@@ -445,6 +457,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
       host.innerHTML = html;
       host.querySelectorAll('.cfg-line').forEach((d) => { if (open.has(d.dataset.id)) d.open = true; });
     }
+    if (state.face === 'break') breakWheel();
 
     // preview
     preview.update(cfg);

@@ -53,7 +53,7 @@
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const GLIDE = 'cubic-bezier(0.45, 0, 0.25, 1)';
 
-export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = {}, full = null } = {}) {
+export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = {}, full = null, ownWheel = false } = {}) {
   const vp = pvw.querySelector('.pv-vp');
   const site = () => vp.querySelector('.pv-site:not(.pv-site--old)');
   const still = reducedMotion || navigator.connection?.saveData === true;
@@ -122,6 +122,7 @@ export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = 
     put();
     pvw.dataset.user = 'on';
     // (Next) the main page's smooth scroll (Lenis) leaves the wheel over the sample to it while the visitor has it
+    // (with ownWheel it always does: set at the start, below)
     vp.setAttribute('data-lenis-prevent', '');
     pill();
     pvw.dispatchEvent(new CustomEvent('pv:user'));
@@ -132,7 +133,7 @@ export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = 
     st.user = false;
     cancelAnimationFrame(st.raf); st.raf = 0;
     delete pvw.dataset.user;
-    vp.removeAttribute('data-lenis-prevent');
+    if (!ownWheel) vp.removeAttribute('data-lenis-prevent');
     const s = scroller();
     if (s) s.style.translate = '';
     pill();
@@ -180,11 +181,22 @@ export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = 
     if (steady) takeover();
   }, { passive: true });
   vp.addEventListener('pointercancel', () => { tap = null; }, { passive: true });
+  // (ownWheel, the main page's configurator, the owner, 9 Nov 2026: «наводишься на этот экран — скроллить он должен
+  // именно в этом экране, а не весь калькулятор») the wheel over the sample is the sample's at once and at its ends
+  // too: it takes the sample over, and the page never moves under the pointer. Elsewhere the page keeps it until the
+  // visitor has taken the sample, and gets it back at either end.
+  // (the page's smooth scroll and its paging skip what is marked so: the very first wheel over the sample is its own)
+  if (ownWheel) vp.setAttribute('data-lenis-prevent', '');
   vp.addEventListener('wheel', (e) => {
-    if (!st.user) return; // the page's own scroll until the visitor has taken the sample
+    if (e.ctrlKey) return; // a pinch: the browser's zoom
+    if (!st.user) {
+      if (!ownWheel) return; // the page's own scroll until the visitor has taken the sample
+      takeover(); // (its data-lenis-prevent is set in time: the page's smooth scroll leaves this very wheel alone)
+      if (!st.user) return;
+    }
     const dy = e.deltaMode === 1 ? e.deltaY * 18 : e.deltaMode === 2 ? e.deltaY * vp.clientHeight : e.deltaY;
     const next = clampY(st.ty + dy);
-    if (next === st.ty) return; // an end of the sample: the page takes the wheel
+    if (next === st.ty) { if (ownWheel) e.preventDefault(); return; } // an end of the sample: the page takes the wheel (not with ownWheel)
     e.preventDefault();
     scrollTo(next, Math.abs(dy) < 40); // a trackpad's fine steps 1:1, a mouse wheel's notches glide
   }, { passive: false });

@@ -753,7 +753,7 @@ function storySteps(C, cfg) {
    (rb-anim.js), «Друга мова» (.pv-lx), the 3D slot ([data-obj]) and the tour work on them unchanged */
 const H = { esc, ICO, I, lx, lxh, wds, nums, words, shine, STAR, header, footer, form, objSlot, cubeImg, CUBELINE, ROOMS, DESK, soft, initials, stars, concept, noArea, cards3, steps4 };
 
-export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = false, phone = false, labels = {}, onFull = null, full = false, tray: trayOn = true }) {
+export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = false, phone = false, labels = {}, onFull = null, full = false, tray: trayOn = true, ownWheel = false }) {
   const P = t.preview;
   const C = SITE[lang] || SITE.uk;
   const EN = SITE.en;
@@ -782,7 +782,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   let markT = 0;
   // «На весь екран» is the sample sites' alone (the owner, 9 Nov 2026): not while the frame tells their own site's story
   let fullOk = true;
-  const fx = createFx(el, { reducedMotion, onLive: () => syncCube(), onPage: (i) => showPage(i), labels, full: full ? Object.assign(() => openFull(), { ok: () => fullOk }) : null });
+  const fx = createFx(el, { reducedMotion, onLive: () => syncCube(), onPage: (i) => showPage(i), labels, ownWheel, full: full ? Object.assign(() => openFull(), { ok: () => fullOk }) : null });
 
   /* ---------- the whole screen (owner, 18 Oct: on a phone the sample is small to scroll in its frame). The frame's bar
      has «На весь екран» (on a phone the pill offers it too). The frame moves to <body> for the time (the page's blocks
