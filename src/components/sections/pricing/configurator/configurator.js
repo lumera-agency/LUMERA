@@ -32,8 +32,9 @@ const ARROW = '<span class="btn__icon" aria-hidden="true"><svg class="arrow arro
 const PLUSI = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path class="v" d="M7 2v10"/><path d="M2 7h10"/></svg>';
 const GO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const CLOSE = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
-const BOOL = ['advancedMotion', 'threeDHero', 'secondLanguage', 'adsManagement'];
-const CHIPS = ['format', 'look', 'growth', 'leads']; // the editor's groups (their heads: #cfg-l-…)
+const BOOL = ['threeDHero', 'secondLanguage', 'adsManagement'];
+// the editor's groups (their heads: #cfg-l-…); «Заявки» is out since 9 Nov (the requests in Telegram are in every site's price)
+const CHIPS = ['format', 'look', 'growth'];
 const phoneMQ = window.matchMedia('(max-width: 700px)');
 // pd8 4.4: up to 1100 px «Що входить у ціну» opens the bottom sheet (≥1101: the card flips to the face)
 const sheetMQ = window.matchMedia('(max-width: 1100px)');
@@ -67,7 +68,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
       const g = opt.dataset.group;
       const next = { ...state.cfg, [g]: BOOL.includes(g) ? !state.cfg[g] : opt.dataset.value };
       // «Вже є сайт» from the format cards lands where its bundle does (ads on), so both ways cost the same
-      if (g === 'format' && next.format === 'existing' && state.cfg.format !== 'existing' && next.growth === 'none' && next.automation === 'none') next.growth = 'googleAds';
+      if (g === 'format' && next.format === 'existing' && state.cfg.format !== 'existing' && next.growth === 'none') next.growth = 'googleAds';
       commit(next, opt);
       return;
     }
@@ -324,11 +325,9 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     }
     // the add-ons that grow with the site show their price for the chosen format
     ref('price-secondLanguage').textContent = addonTag(optionPrice('secondLanguage', null, cfg));
-    ref('price-advancedMotion').textContent = addonTag(optionPrice('advancedMotion', null, cfg));
     for (const g of all('[data-new-only]')) g.classList.toggle('is-off', cfg.format === 'existing');
-    // the existing-site path: its two notes (the bundles' note cell, the leads group's fine print)
+    // the existing-site path: its note (the bundles' note cell)
     ref('notes').dataset.state = cfg.format === 'existing' ? 'existing' : 'site';
-    ref('leads-note').hidden = cfg.format !== 'existing';
 
     // summary, bar
     const once = money(p.once);
@@ -366,11 +365,9 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     preview.update(cfg);
     ref('preview').setAttribute('aria-label', t.preview.aria([
       cfg.format === 'existing' ? t.preview.theirs : t.options.format[cfg.format][0],
-      cfg.format !== 'existing' && cfg.advancedMotion && t.options.advancedMotion[0],
       cfg.format !== 'existing' && cfg.threeDHero && t.options.threeDHero[0],
       cfg.format !== 'existing' && cfg.secondLanguage && t.options.secondLanguage[0],
       cfg.growth !== 'none' && t.options.growth[cfg.growth][0],
-      cfg.automation !== 'none' && t.options.automation[cfg.automation][0],
     ].filter(Boolean).join(', ')));
 
     // one calm announcement after the taps settle (the big numbers are not live regions)
@@ -462,7 +459,7 @@ function template(t) {
     '<button type="button" class="cfg-row" role="' + kind + '" aria-checked="false" data-group="' + group + '"' + (value ? ' data-value="' + value + '"' : '') + '>'
     + '<span class="' + (kind === 'switch' ? 'cfg-switch' : 'cfg-radio') + '" aria-hidden="true"></span>'
     + '<span class="cfg-row__t"><span class="cfg-row__name">' + escU(name) + (reason ? '<span class="cfg-tag cfg-row__why">' + escU(reason) + '</span>' : '') + '</span><span class="cfg-row__sub">' + escU(sub) + '</span></span>'
-    + '<span class="cfg-price"' + (['secondLanguage', 'advancedMotion'].includes(group) ? ' data-ref="price-' + group + '"' : '') + '>' + escU(tag) + '</span></button>';
+    + '<span class="cfg-price"' + (group === 'secondLanguage' ? ' data-ref="price-' + group + '"' : '') + '>' + escU(tag) + '</span></button>';
   const head = (id, label, newOnly) => '<p class="cfg-label" id="' + id + '"><span>' + escU(label) + '</span>' + (newOnly ? '<span class="cfg-tag">' + escU(t.newSiteOnly) + '</span>' : '') + '</p>';
   const breakPanel = (id, titleTag) => '<' + titleTag + ' class="cfg-mono cfg-break__t" id="' + id + '" tabindex="-1">' + escU(t.breakdown.title) + '</' + titleTag + '><div data-break-list></div>';
 
@@ -503,24 +500,15 @@ function template(t) {
         </div>
         <div class="cfg__group cfg__group--list" data-new-only role="group" aria-labelledby="cfg-l-look">
           ${head('cfg-l-look', t.groups.look, true)}
-          ${row('switch', 'advancedMotion', '', o.advancedMotion, addonTag(optionPrice('advancedMotion')))}
           ${row('switch', 'threeDHero', '', o.threeDHero, addonTag(optionPrice('threeDHero')))}
           ${row('switch', 'secondLanguage', '', o.secondLanguage, '')}
         </div>
         <div class="cfg__group cfg__group--list">
           ${head('cfg-l-growth', t.groups.growth)}
           <div role="radiogroup" aria-labelledby="cfg-l-growth">
-            ${Object.keys(PRICING.growth).map((v) => row('radio', 'growth', v, o.growth[v], v === 'none' ? '' : addonTag(optionPrice('growth', v)))).join('')}
+            ${Object.keys(PRICING.growth).map((v) => row('radio', 'growth', v, o.growth[v], v === 'none' ? '' : addonTag(optionPrice('growth', v)), v === 'none' ? t.newSiteOnly : '')).join('')}
           </div>
           ${row('switch', 'adsManagement', '', o.adsManagement, '+' + '\u00a0' + money(optionPrice('adsManagement')) + t.perMonth, o.adsManagementOff)}
-        </div>
-        <div class="cfg__group cfg__group--list">
-          ${head('cfg-l-leads', t.groups.leads)}
-          <div role="radiogroup" aria-labelledby="cfg-l-leads">
-            ${['none', 'lead', 'crmAi'].map((v) => row('radio', 'automation', v, o.automation[v], v === 'none' ? t.included : addonTag(optionPrice('automation', v)), v === 'none' ? o.mailOff : '')).join('')}
-          </div>
-          <p class="cfg__fine">${escU(t.leadsFine)}</p>
-          <p class="cfg__fine" data-ref="leads-note" hidden>${escU(t.leadsOnlyNote)}</p>
         </div>
       </div>
     </div>

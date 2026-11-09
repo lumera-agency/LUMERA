@@ -68,7 +68,8 @@ function readEngine(e) {
         price: n(P.formats[f].price),
         weeks: [n(P.formats[f].weeks[0]), n(P.formats[f].weeks[1])],
         design: [n(per(P.design.custom.price, f)), n(per(P.design.custom.weeks, f))],
-        motion: [n(per(P.advancedMotion.price, f)), n(per(P.advancedMotion.weeks, f))],
+        // animation is in every format's price (14 Oct here, 9 Nov in the engine too): nothing to add
+        motion: [0, 0],
         lang: [n(per(P.secondLanguage.price, f)), n(per(P.secondLanguage.weeks, f))],
       };
     } catch { /* this format keeps its fallback */ }

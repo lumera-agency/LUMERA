@@ -26,6 +26,11 @@
  * open the monthly management. Analytics counts as a purchase: an existing site with analytics alone
  * keeps «Лише пошта». It is set up in parallel (no extra weeks). Its preset 'analytics' (existing site +
  * analytics, $150) is the target of 2 · Старт's «Налаштувати аналітику» and the second «або» card in 6.
+ * The owner, 9 Nov 2026 (one price list on every page): animation is in every site's price (as on «Дизайн і сайти»
+ * since 14 Oct), and so are the requests in Telegram; the «Заявки» group (Telegram $100, CRM і AI-асистент $500) is
+ * out of the configurator, automation has its own page and prices (ai-page/prices.ts). So a built site always has
+ * advancedMotion and automation 'lead' (normalize sets them, the preview shows them, nothing is charged), an existing
+ * site neither; an existing site buys ads or analytics (no «Без реклами» there).
  */
 
 /**
@@ -42,12 +47,12 @@
 export const DEFAULT_CONFIG = Object.freeze({
   format: 'landing',
   design: 'essential',
-  advancedMotion: false,
+  advancedMotion: true, // in every site's price (9 Nov): set by normalize, not a choice
   threeDHero: false,
   secondLanguage: false,
   growth: 'none',
   adsManagement: false, // NEW · monthly, only with ads
-  automation: 'none',
+  automation: 'lead', // the requests in Telegram, in every site's price (9 Nov): set by normalize, not a choice
 });
 
 export const PRICING = {
@@ -71,7 +76,6 @@ export const PRICING = {
     essential: { price: 0, weeks: 0 }, // built on a template
     custom:    { price: { landing: 200, landingPlus: 300, corporate: 400, ecommerce: 600 }, weeks: { landing: 1, landingPlus: 1, corporate: 1.5, ecommerce: 2 } }, // individual (not offered on the main page since 17 Oct)
   },
-  advancedMotion: { price: { landing: 150, landingPlus: 200, corporate: 250, ecommerce: 300 }, weeks: { landing: 0.5, landingPlus: 0.5, corporate: 1, ecommerce: 1 } },
   threeDHero:     { price: 400, weeks: 1 },
 
   // more pages → more to translate
@@ -91,12 +95,6 @@ export const PRICING = {
 
   // NEW · optional, per month, only with ads (hasAds: googleAds / googleAdsAi; not with analytics alone)
   adsManagement: { monthly: 150 },
-
-  automation: {
-    none:  { price: 0,   weeks: 0 },
-    lead:  { price: 100, weeks: 0 },
-    crmAi: { price: 500, weeks: 1 },
-  },
 };
 
 /** Ads in this configuration: a Google Ads setup (analytics alone is not ads). */
@@ -109,36 +107,41 @@ const perFormat = (v, format) => (typeof v === 'object' && v !== null ? v[format
  * NEW · one-tap presets, in display order. A preset sets every field except adsManagement
  * (monthly, the visitor's own choice); normalize() then drops it if the preset has no ads.
  * The sums are not stored: the UI shows calculateProject(bundle.config).
+ * (9 Nov: the requests in Telegram are in every site's price, the CRM is out: siteAds 850 → 750, full 1 650 → 1 150)
  *   site      landing                                 = 500
- *   siteAds   landing + googleAds + lead              = 500 + 250 + 100 = 850
- *   full      corporate + googleAds + crmAi           = 900 + 250 + 500 = 1 650
+ *   siteAds   landing + googleAds                     = 500 + 250 = 750
+ *   full      corporate + googleAds                   = 900 + 250 = 1 150
  *   existing  existing site + googleAds               = 250
  *   analytics existing site + analytics               = 150 (alt, like existing)
  */
-const SITE_BASE = { design: 'essential', advancedMotion: false, threeDHero: false, secondLanguage: false };
+const SITE_BASE = { design: 'essential', threeDHero: false, secondLanguage: false };
 export const BUNDLES = [
-  { id: 'site',     config: { format: 'landing',   ...SITE_BASE, growth: 'none',      automation: 'none' } },
-  { id: 'siteAds',  config: { format: 'landing',   ...SITE_BASE, growth: 'googleAds', automation: 'lead' } },
-  { id: 'full',     config: { format: 'corporate', ...SITE_BASE, growth: 'googleAds', automation: 'crmAi' } },
-  { id: 'existing', config: { format: 'existing',  ...SITE_BASE, growth: 'googleAds', automation: 'none' }, alt: true },
-  { id: 'analytics', config: { format: 'existing', ...SITE_BASE, growth: 'analytics', automation: 'none' }, alt: true },
+  { id: 'site',     config: { format: 'landing',   ...SITE_BASE, growth: 'none' } },
+  { id: 'siteAds',  config: { format: 'landing',   ...SITE_BASE, growth: 'googleAds' } },
+  { id: 'full',     config: { format: 'corporate', ...SITE_BASE, growth: 'googleAds' } },
+  { id: 'existing', config: { format: 'existing',  ...SITE_BASE, growth: 'googleAds' }, alt: true },
+  { id: 'analytics', config: { format: 'existing', ...SITE_BASE, growth: 'analytics' }, alt: true },
 ];
 
 /* ---------- consistency rules ---------- */
 
 /**
  * The one place that keeps a configuration valid. The UI calls it after every change.
- *  - an existing site has no site options; with neither ads nor analytics it takes at least «Заявки в Telegram»;
+ *  - a built site has its animation and its requests in Telegram (in its price); an existing site has no site
+ *    options, and buys ads or analytics (with neither, it takes the ads setup, its bundle's choice);
  *  - ads management exists only with ads (not with analytics alone).
  * @param {ProjectConfig} cfg
  * @returns {ProjectConfig}
  */
 export function normalize(cfg) {
   const c = { ...DEFAULT_CONFIG, ...cfg };
-  if (c.format === 'existing') {
+  const site = c.format !== 'existing';
+  c.advancedMotion = site;
+  c.automation = site ? 'lead' : 'none';
+  if (!site) {
     Object.assign(c, SITE_BASE);
-    // something is always bought for an existing site: without ads, the requests go to Telegram at least
-    if (c.growth === 'none' && c.automation === 'none') c.automation = 'lead';
+    // something is always bought for an existing site: without ads or analytics, the ads setup
+    if (c.growth === 'none') c.growth = 'googleAds';
   }
   if (!hasAds(c)) c.adsManagement = false;
   return c;
@@ -147,14 +150,14 @@ export function normalize(cfg) {
 /** Is this option usable in this configuration? (the UI dims and skips what isn't) */
 export function isAvailable(group, value, cfg) {
   const existing = cfg.format === 'existing';
-  if (existing && ['design', 'advancedMotion', 'threeDHero', 'secondLanguage'].includes(group)) return false;
-  // an existing site without ads or analytics buys request handling: «Лише пошта» rests until one is on
-  if (existing && group === 'automation' && value === 'none') return cfg.growth !== 'none';
+  if (existing && ['design', 'threeDHero', 'secondLanguage'].includes(group)) return false;
+  // an existing site buys ads or analytics: «Без реклами» rests while it is chosen
+  if (existing && group === 'growth' && value === 'none') return false;
   if (group === 'adsManagement') return hasAds(cfg);
   return true;
 }
 
-const PRESET_KEYS = ['format', 'design', 'advancedMotion', 'threeDHero', 'secondLanguage', 'growth', 'automation'];
+const PRESET_KEYS = ['format', 'design', 'threeDHero', 'secondLanguage', 'growth'];
 
 /** The bundle this configuration is exactly, or null (adsManagement is ignored). */
 export function matchBundle(cfg) {
@@ -176,12 +179,10 @@ export function optionPrice(group, value, cfg = DEFAULT_CONFIG) {
   switch (group) {
     case 'format': return PRICING.formats[value].price;
     case 'design': return perFormat(PRICING.design[value].price, cfg.format);
-    case 'advancedMotion': return perFormat(PRICING.advancedMotion.price, cfg.format);
     case 'threeDHero': return PRICING.threeDHero.price;
     case 'secondLanguage': return PRICING.secondLanguage.price[cfg.format] ?? PRICING.secondLanguage.price.landing;
     case 'growth': return PRICING.growth[value].price;
     case 'adsManagement': return PRICING.adsManagement.monthly;
-    case 'automation': return PRICING.automation[value].price;
     default: throw new Error('Unknown option group: ' + group);
   }
 }
@@ -200,12 +201,10 @@ export function lineItems(cfg) {
     lines.push(once('format.' + cfg.format, PRICING.formats[cfg.format].price));
     // one design level since 17 Oct (the owner): the samples are the design the price buys, so no design line
     if (cfg.design !== 'essential') lines.push(once('design.' + cfg.design, perFormat(PRICING.design[cfg.design].price, cfg.format)));
-    if (cfg.advancedMotion) lines.push(once('advancedMotion', perFormat(PRICING.advancedMotion.price, cfg.format)));
     if (cfg.threeDHero) lines.push(once('threeDHero', PRICING.threeDHero.price));
     if (cfg.secondLanguage) lines.push(once('secondLanguage', PRICING.secondLanguage.price[cfg.format]));
   }
   if (cfg.growth !== 'none') lines.push(once('growth.' + cfg.growth, PRICING.growth[cfg.growth].price));
-  if (cfg.automation !== 'none') lines.push(once('automation.' + cfg.automation, PRICING.automation[cfg.automation].price));
   if (cfg.adsManagement && hasAds(cfg)) lines.push({ id: 'adsManagement', price: PRICING.adsManagement.monthly, period: 'month' });
   return lines;
 }
@@ -213,26 +212,24 @@ export function lineItems(cfg) {
 /* ---------- timeline ---------- */
 
 /**
- * Not a plain sum. Design-side work (custom design, motion, 3D) overlaps, so the longest
- * item counts in full and the rest at half. Translation and the CRM/AI integration come
- * after the build. Ads, analytics and Telegram run in parallel. An existing site: a week, two with the CRM.
+ * Not a plain sum. Design-side work (custom design, 3D) overlaps, so the longest item counts
+ * in full and the rest at half. Translation comes after the build. Ads, analytics and Telegram run
+ * in parallel (animation and Telegram are in the format's own weeks). An existing site: a week.
  * @param {ProjectConfig} cfg
  * @returns {{min:number, max:number} | null} weeks
  */
 export function calculateTimeline(cfg) {
-  // an existing site: nothing is built; ads, analytics or Telegram take about a week to set up, the CRM about one more
-  if (cfg.format === 'existing') return { min: 1, max: cfg.automation === 'crmAi' ? 2 : 1 };
+  // an existing site: nothing is built; ads or analytics take about a week to set up
+  if (cfg.format === 'existing') return { min: 1, max: 1 };
   const base = PRICING.formats[cfg.format].weeks;
   if (!base) return null;
   const [baseMin, baseMax] = base;
   const overlapping = [
     perFormat(PRICING.design[cfg.design].weeks, cfg.format),
-    cfg.advancedMotion ? perFormat(PRICING.advancedMotion.weeks, cfg.format) : 0,
     cfg.threeDHero ? PRICING.threeDHero.weeks : 0,
   ].filter(Boolean).sort((a, b) => b - a);
   let extra = overlapping.length ? overlapping[0] + overlapping.slice(1).reduce((s, w) => s + w, 0) * 0.5 : 0;
   if (cfg.secondLanguage) extra += PRICING.secondLanguage.weeks[cfg.format];
-  extra += PRICING.automation[cfg.automation].weeks;
   return { min: baseMin + Math.floor(extra), max: baseMax + Math.max(0, Math.ceil(extra - 0.25)) };
 }
 
@@ -248,7 +245,6 @@ export function nameParts(cfg) {
     format: cfg.format,
     ads: hasAds(cfg),
     stats: cfg.growth === 'analytics', // analytics alone (with ads it is part of the setup)
-    leads: cfg.automation, // 'none' | 'lead' | 'crmAi'
   };
 }
 
@@ -320,7 +316,7 @@ export function buildLeadPayload(cfg, form, lang = 'uk', label = '') {
       secondLanguage: c.secondLanguage,
       growth: c.growth, // 'none' | 'analytics' | 'googleAds' | 'googleAdsAi'
       adsManagement: c.adsManagement, // NEW
-      automation: c.automation,
+      automation: c.automation, // 'lead' with every built site (in its price), 'none' for an existing one
       label,
     },
     estimate: {
