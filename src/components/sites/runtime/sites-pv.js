@@ -790,7 +790,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   const fullBtn = document.createElement('button');
   fullBtn.type = 'button';
   fullBtn.className = 'pvw__full';
-  // only where the page asks for it (full: true, the sites page); the main page's configurator keeps its frame in place
+  // only where the page asks for it (full: true): the sites page and, since 9 Nov 2026, the main page's configurator
   if (full) el.querySelector('.pvw__chrome').append(fullBtn);
   const ICO_FULL = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg>';
   const ICO_X = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>';

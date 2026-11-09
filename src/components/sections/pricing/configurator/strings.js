@@ -142,6 +142,8 @@ const uk = {
     hint3d: 'Обертайте пальцем', // touch devices, first live 3D per session (spec 2.2)
     take: 'Гортайте й натискайте самі', // the visitor takes the sample over (the «Дизайн і сайти» page's words)
     auto: 'Автопрокрутка',
+    full: 'На весь екран',
+    close: 'Закрити',
   },
 };
 
@@ -269,6 +271,8 @@ const ru = {
     hint3d: 'Вращайте пальцем',
     take: 'Листайте и нажимайте сами',
     auto: 'Автопрокрутка',
+    full: 'На весь экран',
+    close: 'Закрыть',
   },
 };
 

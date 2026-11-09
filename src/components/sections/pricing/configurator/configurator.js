@@ -21,6 +21,7 @@ import { BUNDLES, PRICING, DEFAULT_CONFIG, normalize, isAvailable, applyBundle, 
 import { STRINGS } from './strings.js';
 // the preview: the «Дизайн і сайти» page's sample sites (owner, 17 Oct 2026: the same four examples here; one design level)
 import { mountPreview } from '@/components/sites/runtime/sites-pv.js';
+import { getLenis } from '@/lib/scroll';
 import '@/components/sites/sites-pv.css';
 import '@/components/sites/clinic/clinic.css';
 import '@/components/sites/shop/shop.css';
@@ -46,7 +47,8 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   el.innerHTML = template(t);
   const ref = (n) => el.querySelector(`[data-ref="${n}"]`);
   const all = (sel) => [...el.querySelectorAll(sel)];
-  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto } });
+  // the samples as on «Дизайн і сайти» (the owner, 9 Nov 2026), «На весь екран» included: the page holds still under it
+  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto, full: t.preview.full, close: t.preview.close }, full: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
   const sheet = ref('sheet');
   const bar = ref('bar');
   const editor = ref('editor');
