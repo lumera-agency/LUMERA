@@ -1155,9 +1155,10 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
       page,
       // «3D-об'єкт» just went on, or the sample was rebuilt around it: bring the object into view first
       // (a phone layout has it under the text)
-      // (this page) Лендінг+ just chosen: the sample glides to its first extra block, so the difference shows at once
+      // (Лендінг+ no longer glides to its first extra block and back first: the owner, 9 Nov 2026, saw it jump to the
+      // middle and then to the top; it starts from its first screen like the others)
       focus: !firstRun && site && cfg.threeDHero && (!before.threeDHero || reshape) ? '[data-obj]'
-        : !firstRun && cfg.plus && !before.plus ? (cfg.design === 'custom' && !v2Of(cfg) ? '[data-c="rent"]' : '[data-plus]') : null,
+        : null,
     });
 
     // the mark: only what was just turned on (nothing on format/design changes, nothing for their site)
