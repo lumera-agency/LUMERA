@@ -753,7 +753,7 @@ function storySteps(C, cfg) {
    (rb-anim.js), «Друга мова» (.pv-lx), the 3D slot ([data-obj]) and the tour work on them unchanged */
 const H = { esc, ICO, I, lx, lxh, wds, nums, words, shine, STAR, header, footer, form, objSlot, cubeImg, CUBELINE, ROOMS, DESK, soft, initials, stars, concept, noArea, cards3, steps4 };
 
-export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = false, phone = false, labels = {}, onFull = null, full = false }) {
+export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = false, phone = false, labels = {}, onFull = null, full = false, tray: trayOn = true, ownWheel = false }) {
   const P = t.preview;
   const C = SITE[lang] || SITE.uk;
   const EN = SITE.en;
@@ -780,7 +780,9 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   let prev = null;
   let page = 0;
   let markT = 0;
-  const fx = createFx(el, { reducedMotion, onLive: () => syncCube(), onPage: (i) => showPage(i), labels, full: full ? () => openFull() : null });
+  // «На весь екран» is the sample sites' alone (the owner, 9 Nov 2026): not while the frame tells their own site's story
+  let fullOk = true;
+  const fx = createFx(el, { reducedMotion, onLive: () => syncCube(), onPage: (i) => showPage(i), labels, ownWheel, full: full ? Object.assign(() => openFull(), { ok: () => fullOk }) : null });
 
   /* ---------- the whole screen (owner, 18 Oct: on a phone the sample is small to scroll in its frame). The frame's bar
      has «На весь екран» (on a phone the pill offers it too). The frame moves to <body> for the time (the page's blocks
@@ -790,7 +792,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   const fullBtn = document.createElement('button');
   fullBtn.type = 'button';
   fullBtn.className = 'pvw__full';
-  // only where the page asks for it (full: true, the sites page); the main page's configurator keeps its frame in place
+  // only where the page asks for it (full: true): the sites page and, since 9 Nov 2026, the main page's configurator
   if (full) el.querySelector('.pvw__chrome').append(fullBtn);
   const ICO_FULL = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg>';
   const ICO_X = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>';
@@ -807,7 +809,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   fullLabel();
   const onFullKey = (e) => { if (e.key === 'Escape') closeFull(); };
   function openFull() {
-    if (ph) return;
+    if (ph || !fullOk) return;
     fullAnim?.cancel();
     ph = document.createElement('div');
     ph.className = 'pvw-ph';
@@ -1087,6 +1089,13 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
     const before = prev;
     const firstRun = !before;
     const site = cfg.format !== 'existing';
+    if (full && fullOk !== site) {
+      fullOk = site;
+      fullBtn.hidden = !site;
+      if (!site) closeFull();
+      fullLabel();
+      fx.pill();
+    }
     const reshape = firstRun || before.format !== cfg.format || before.plus !== cfg.plus || before.design !== cfg.design || before.variant !== cfg.variant || before.secondLanguage !== cfg.secondLanguage
       || (ownObj(cfg) && before.threeDHero !== cfg.threeDHero); // a module with its own 3D object draws it in build()
     if (reshape) {
@@ -1109,7 +1118,8 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
     d.mgmt = mgmt ? 'on' : 'off';
     d.leads = cfg.automation;
     // the add-ons' cards for this configuration, in the lead's order (the tray; the phone's notifications)
-    const notes = site ? [ads && 'ads', cfg.automation === 'lead' && 'lead', cfg.automation === 'crmAi' && 'chat', cfg.automation === 'crmAi' && 'crm', mgmt && 'mgmt', stats && 'stats'].filter(Boolean) : [];
+    // (tray: false, the main page's configurator since 9 Nov 2026: no cards, the frame shows schemes of their own)
+    const notes = site && trayOn ? [ads && 'ads', cfg.automation === 'lead' && 'lead', cfg.automation === 'crmAi' && 'chat', cfg.automation === 'crmAi' && 'crm', mgmt && 'mgmt', stats && 'stats'].filter(Boolean) : [];
     d.tray = notes.length ? 'on' : 'off';
     d.notes = notes.length;
     const shop = cfg.format === 'ecommerce';
@@ -1146,9 +1156,10 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
       page,
       // «3D-об'єкт» just went on, or the sample was rebuilt around it: bring the object into view first
       // (a phone layout has it under the text)
-      // (this page) Лендінг+ just chosen: the sample glides to its first extra block, so the difference shows at once
+      // (Лендінг+ no longer glides to its first extra block and back first: the owner, 9 Nov 2026, saw it jump to the
+      // middle and then to the top; it starts from its first screen like the others)
       focus: !firstRun && site && cfg.threeDHero && (!before.threeDHero || reshape) ? '[data-obj]'
-        : !firstRun && cfg.plus && !before.plus ? (cfg.design === 'custom' && !v2Of(cfg) ? '[data-c="rent"]' : '[data-plus]') : null,
+        : null,
     });
 
     // the mark: only what was just turned on (nothing on format/design changes, nothing for their site)

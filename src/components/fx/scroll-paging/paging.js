@@ -56,6 +56,9 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
 
   const onWheel = (e) => {
     if (e.ctrlKey || e.lenisStopPropagation) return; // pinch zoom, or another paging took it
+    // something that scrolls by itself has the wheel (a dialog, a list, the prices' sample: data-lenis-prevent, as for
+    // Lenis); the owner, 9 Nov 2026: a wheel up over the sample at the prices' top took the page back to «Підхід»
+    if (e.target instanceof Element && e.target.closest('dialog, [data-lenis-prevent]')) return;
     const list = stops();
     if (!list || list.length < 2) return;
     const first = list[0];

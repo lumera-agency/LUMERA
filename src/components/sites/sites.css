@@ -403,9 +403,6 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 /* the kit styles every span in the price line as its small label: not the digits */
 .st-sum .ai-calc__price b span { font: inherit; letter-spacing: inherit; text-transform: none; color: inherit; }
 .st-num { font-variant-numeric: tabular-nums; }
-.st-d { position: relative; display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: top; }
-.st-d > span { display: grid; }
-.st-d > span > i { display: block; height: 1em; font-style: normal; text-align: center; }
 .st-sum__more { margin: 14px 0 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-mute); }
 .st-sum .ai-calc__inc .ai-calc__note { margin: 0 0 16px; }
 
@@ -583,25 +580,6 @@ html:not(.motion) .st-build { display: none; }
 .st-pv .st-stage__end { align-items: flex-start; }
 .st-pv .st-stage__note { max-width: 52ch; }
 
-.pv-lp__incl { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.2cqw; }
-.pv-lp__tile { display: grid; align-content: start; gap: 1cqw; padding: 1.6cqw; border-radius: 1.2cqw; background: var(--pv-surface); box-shadow: 0 0.5cqw 1.6cqw rgba(20, 20, 20, 0.05), inset 0 0 0 1px var(--pv-line); }
-.pv-lp__tile b { font-size: 1.15cqw; font-weight: 600; line-height: 1.3; }
-.pv-lp__ico { display: grid; place-items: center; width: 3cqw; height: 3cqw; border-radius: 50%; background: var(--pv-soft); color: var(--pv-ink); }
-.pv-lp__ico svg { width: 1.6cqw; height: 1.6cqw; }
-.pv-lp__work { padding: 0.9cqw 0.9cqw 1.6cqw; }
-.pv-lp__shot { aspect-ratio: 4 / 3; border-radius: 0.9cqw; overflow: hidden; }
-.pv-lp__shot > .pv-room { width: 100%; height: 100%; }
-.pv-lp__work > b,
-.pv-lp__work > span { padding-inline: 0.7cqw; }
-.pv-lp__qs { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--pv-line); }
-.pv-lp__q { position: relative; display: grid; gap: 0.6cqw; padding: 1.5cqw 4cqw 1.5cqw 0; border-bottom: 1px solid var(--pv-line); }
-.pv-lp__q b { font-size: 1.4cqw; font-weight: 500; line-height: 1.3; }
-.pv-lp__q span { font-size: 1.12cqw; line-height: 1.5; color: var(--pv-muted); }
-.pv-lp__x { position: absolute; right: 0.6cqw; top: 1.7cqw; width: 1.3cqw; height: 1.3cqw; }
-.pv-lp__x::before,
-.pv-lp__x::after { content: ""; position: absolute; left: 0; top: 50%; width: 100%; height: 1.5px; margin-top: -0.75px; background: currentColor; }
-.pv-lp__q:not(.is-on) .pv-lp__x::after { rotate: 90deg; }
-.pv-lp--map .pv-h2 { margin-bottom: 0.6cqw; }
 /* under the sample: its blocks as a row of names; Лендінг+'s extra ones in ember with a + */
 .st-pv__map { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 16px; row-gap: 8px; padding: 2px 0 4px; }
 .st-pv__k { margin: 0; font: 400 var(--fs-label)/1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; white-space: nowrap; color: var(--ink-mute); }
@@ -621,10 +599,6 @@ html:not(.motion) .st-build { display: none; }
 }
 
 /* the two Авторський samples: a small switch over the frame (only with Авторський) */
-/* StarBorder («Анімація») on the samples' main button: its light is drawn by children positioned absolutely; without a
-   positioned button it spread over the whole block on «Тиша після підпису». The button holds it now */
-.pv-btn.rb-star { position: relative; isolation: isolate; }
-
 /* ==========================================================================
    the sample in the visitor's hands (js/sites-pv-fx.js): the pill over the frame's bottom edge. Before the click it
    says what the visitor can do (on a pointer: while the pointer is over the frame; on touch: always); after it, it
@@ -633,34 +607,6 @@ html:not(.motion) .st-build { display: none; }
 .st-pvw { position: relative; }
 /* (the pill's own rules: sites-pv.css, which the main page's configurator loads too) */
 
-/* ==========================================================================
-   the whole screen (owner, 18 Oct: on a phone the sample is small to scroll in its frame; js/sites-pv.js). The frame's
-   bar carries «На весь екран» (on a phone the pill offers it too); the frame then covers the screen, moved to <body>,
-   the page under it still; «Закрити» or Esc put it back
-   ========================================================================== */
-.pvw__full { position: relative; flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 1.5rem; padding: 0 0.625rem 0 0.5rem; border: 0; border-radius: 999px; background: rgba(246, 246, 243, 0.1); color: #f6f6f3; font: 400 0.6563rem/1 var(--pv-mono); white-space: nowrap; cursor: pointer; transition: background-color 0.2s ease; }
-.pvw__full::after { content: ""; position: absolute; inset: -8px -4px; }
-.pvw__full svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.pvw__full:focus-visible { outline: 2px solid #f6f6f3; outline-offset: 2px; }
-@media (hover: hover) and (pointer: fine) { .pvw__full:hover { background: rgba(246, 246, 243, 0.2); } }
-.pvw__mark { right: calc(var(--full-w, 0px) + 1.25rem); }
-@media (max-width: 600px) {
-  .pvw__chrome { justify-content: space-between; }
-  .pvw__url { display: none; }
-  .pvw__full { height: 1.375rem; font-size: 0.625rem; }
-  /* in the frame only the corners: the pill under the sample says it in words */
-  .pvw:not(.is-full) .pvw__full { width: 1.75rem; padding: 0; justify-content: center; }
-  .pvw:not(.is-full) .pvw__full span { display: none; }
-}
-/* on a phone the pill's offer: the same corners as the bar's button */
-.pvw__you.is-full-ask::before { width: 12px; height: 12px; border-radius: 0; box-shadow: none; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10'/%3E%3C/svg%3E") center / contain no-repeat; }
-html.pv-full, html.pv-full body { overflow: hidden; }
-html.pv-full :is(.to-top, .ai-sticky, .st-sumbar) { visibility: hidden; }
-.pvw.is-full { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; max-width: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; overscroll-behavior: none; }
-.pvw.is-full .pvw__chrome { flex: none; height: calc(2.75rem + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); touch-action: none; }
-.pvw.is-full .pvw__full { height: 1.875rem; padding: 0 0.875rem 0 0.75rem; font-size: 0.75rem; background: rgba(246, 246, 243, 0.14); }
-.pvw.is-full .pv-vp { flex: 1 1 auto; min-height: 0; height: auto; }
-.pvw.is-full .pvw__you { bottom: calc(14px + env(safe-area-inset-bottom)); }
 
 /* iOS 26 Safari: a fixed bar docked to the bottom edge makes Safari fill the strip under its own toolbar with the bar's
    colour (the owner saw an ember band under the iPhone's toolbar, 15 Oct: the kit's .ai-sticky sits at bottom: 0 with
@@ -1181,10 +1127,8 @@ main[data-ai-page="sites"] .faq__item[id] { scroll-margin-top: calc(var(--topbar
 
 /* S-12: every control on the page is at least 44 px to a finger (the hit area, where the drawn control is smaller: a
    transparent ::after centred on it) */
-.pvw__full::after { inset: calc(50% - 22px) min(-4px, calc(50% - 22px)); }
 /* (the frame clips its bar: on a touch screen the bar itself is 44 px, so «На весь екран» gets its whole height) */
 @media (pointer: coarse) { .pvw.st-pvw:not(.is-full) .pvw__chrome { height: 44px; } }
-.pvw__you::after { inset: calc(50% - 22px) 0; }
 main[data-ai-page="sites"] .ai-pick::after { inset: calc(50% - 22px) 0; }
 .st-show__replay { min-height: 44px; }
 .st-hseg__o::after { content: ""; position: absolute; inset: calc(50% - 22px) 0; }
@@ -1201,8 +1145,7 @@ main[data-ai-page="sites"] .ai-pick::after { inset: calc(50% - 22px) 0; }
   .st-hw__h,
   .st-hw-time__calc,
   .st-bd__sl,
-  main[data-ai-page="sites"] .ai-pick,
-  .pvw__full { font-size: 12px; }
+  main[data-ai-page="sites"] .ai-pick { font-size: 12px; }
   .st-hw-list[data-fold] .st-hw__more { font-size: 12px; }
 }
 
