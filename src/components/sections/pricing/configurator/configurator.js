@@ -20,12 +20,16 @@
  * the frame shows the AI page's robot console (RobotConsole, rendered by React into [data-ref="robot-slot"] by
  * PricingClient) instead of the sample; «Сайт · Автоматизація» under the frame switch between them, and any site
  * option brings the sample back. «На весь екран» is the samples' alone: the console covers it.
+ * Later that day: ads or analytics chosen, the frame shows the «Реклама й аналітика» page's way of a request
+ * (AdsScheme in [data-ref="ads-slot"], played by ads-flow.js) the same way, so the switch reads «Сайт · Реклама ·
+ * Автоматизація» with what is chosen; the sample's tray cards (Telegram, the ad) are gone from the frame.
  */
 import { BUNDLES, PRICING, DEFAULT_CONFIG, normalize, isAvailable, applyBundle, optionPrice, calculateProject, money, addonTag, hasAds } from './engine.js';
 import { STRINGS } from './strings.js';
 // the preview: the «Дизайн і сайти» page's sample sites (owner, 17 Oct 2026: the same four examples here; one design level)
 import { mountPreview } from '@/components/sites/runtime/sites-pv.js';
 import { getLenis } from '@/lib/scroll';
+import { mountAdsFlow } from './ads-flow.js';
 import '@/components/sites/sites-pv.css';
 import '@/components/sites/clinic/clinic.css';
 import '@/components/sites/shop/shop.css';
@@ -53,7 +57,8 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   const ref = (n) => el.querySelector(`[data-ref="${n}"]`);
   const all = (sel) => [...el.querySelectorAll(sel)];
   // the samples as on «Дизайн і сайти» (the owner, 9 Nov 2026), «На весь екран» included: the page holds still under it
-  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto, full: t.preview.full, close: t.preview.close }, full: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
+  // (no tray cards: the ads and the automation have schemes of their own in the frame, the owner, 9 Nov 2026)
+  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto, full: t.preview.full, close: t.preview.close }, full: true, tray: false, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
   const sheet = ref('sheet');
   const bar = ref('bar');
   const editor = ref('editor');
@@ -69,7 +74,9 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     const b = e.target.closest('[data-bundle]');
     if (b) {
       state.lastBundle = b.dataset.bundle;
-      commit(applyBundle(b.dataset.bundle, state.cfg), b, 'site');
+      const next = applyBundle(b.dataset.bundle, state.cfg);
+      // their own site with ads or analytics: the way of a request; a new site: the sample
+      commit(next, b, next.format === 'existing' ? 'ads' : 'site');
       return;
     }
     const opt = e.target.closest('[data-group]');
@@ -79,8 +86,11 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
       const next = { ...state.cfg, [g]: BOOL.includes(g) ? !state.cfg[g] : opt.dataset.value };
       // «Вже є сайт» from the format cards lands where its bundle does (ads on), so both ways cost the same
       if (g === 'format' && next.format === 'existing' && state.cfg.format !== 'existing' && next.growth === 'none') next.growth = 'googleAds';
-      // the automation chosen: its scheme in the frame; anything else: the sample site
-      commit(next, opt, g === 'aiProduct' ? (next.aiProduct === 'none' ? 'site' : 'robot') : 'site');
+      // the automation chosen: its scheme in the frame; ads or analytics: theirs; anything else: the sample site
+      const view = g === 'aiProduct' ? (next.aiProduct === 'none' ? 'site' : 'robot')
+        : ['growth', 'adsManagement'].includes(g) || (g === 'format' && next.format === 'existing') ? (next.growth === 'none' ? 'site' : 'ads')
+          : 'site';
+      commit(next, opt, view);
       return;
     }
     const v = e.target.closest('[data-view]');
@@ -186,31 +196,40 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   /** the cube and the silk rest while nothing shows them: the face or the robot's console over them, the sheet over
    *  all, or (≤700) the editor shut */
   function syncPause() {
-    preview.pause(state.face === 'break' || state.view === 'robot' || sheet.open || (phoneMQ.matches && !editor.open));
+    preview.pause(state.face === 'break' || state.view !== 'site' || sheet.open || (phoneMQ.matches && !editor.open));
   }
 
-  /* ---------- the sample or the robot's console (the automation chosen) ---------- */
+  /* ---------- the sample, the way of a request (ads, analytics) or the robot's console (the automation) ---------- */
+  // which views this configuration has: the switch shows them, a view it no longer has falls back to the sample
+  const views = (cfg) => ['site', cfg.growth !== 'none' && 'ads', cfg.aiProduct !== 'none' && 'robot'].filter(Boolean);
   function setView(v) {
-    state.view = v === 'robot' && state.cfg.aiProduct !== 'none' ? 'robot' : 'site';
+    state.view = views(state.cfg).includes(v) ? v : 'site';
     update();
   }
-  let robotShown = false;
+  let shown = 'site';
   function syncView() {
-    const robot = state.view === 'robot';
-    const layer = ref('robot');
-    ref('view').dataset.show = state.view;
-    // (the console waits while hidden: its own observer sees it off the screen; it hides under the breakdown too)
-    layer.hidden = !robot || state.face === 'break';
-    ref('preview').toggleAttribute('inert', robot || state.face === 'break');
-    for (const b of all('[data-view]')) b.setAttribute('aria-pressed', String(b.dataset.view === state.view));
-    if (robot && !robotShown && !reducedMotion) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' });
-    robotShown = robot;
-    fitRobot();
+    if (!views(state.cfg).includes(state.view)) state.view = 'site';
+    const v = state.view;
+    ref('view').dataset.show = v;
+    // (the schemes wait while hidden: their observers see them off the screen; they hide under the breakdown too)
+    for (const [name, layer] of [['ads', ref('ads')], ['robot', ref('robot')]]) {
+      layer.hidden = v !== name || state.face === 'break';
+      if (v === name && shown !== name && !reducedMotion) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' });
+    }
+    shown = v;
+    ref('preview').toggleAttribute('inert', v !== 'site' || state.face === 'break');
+    for (const b of all('[data-view]')) {
+      b.hidden = !views(state.cfg).includes(b.dataset.view);
+      b.setAttribute('aria-pressed', String(b.dataset.view === v));
+    }
+    // the ads' button says what was bought: «Аналітика» alone, or «Реклама»
+    const adsBtn = el.querySelector('[data-view="ads"]');
+    if (adsBtn) adsBtn.textContent = state.cfg.growth === 'analytics' ? t.view.stats : t.view.ads;
+    fitLayer(ref('ads'), ref('ads-slot'));
+    fitLayer(ref('robot'), ref('robot-slot'));
   }
-  // the console keeps its own layout (its container queries by its width) and is scaled to the frame's height
-  function fitRobot() {
-    const layer = ref('robot');
-    const slot = ref('robot-slot');
+  // a scheme keeps its own layout (by its width) and is scaled to the frame's height
+  function fitLayer(layer, slot) {
     if (layer.hidden || !slot.firstElementChild) return;
     const pad = parseFloat(getComputedStyle(layer).paddingTop) || 0;
     const w = layer.clientWidth - 2 * pad;
@@ -224,8 +243,10 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     }
     slot.style.setProperty('--s', String(s));
   }
-  const robotRo = new ResizeObserver(() => fitRobot());
-  robotRo.observe(ref('robot'));
+  const layerRo = new ResizeObserver(() => { fitLayer(ref('ads'), ref('ads-slot')); fitLayer(ref('robot'), ref('robot-slot')); });
+  layerRo.observe(ref('ads'));
+  layerRo.observe(ref('robot'));
+  let adsFlow = null;
 
   /* ---------- ≤700: the editor ---------- */
   function openEditor() {
@@ -379,9 +400,8 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     }
     // the add-ons that grow with the site show their price for the chosen format
     ref('price-secondLanguage').textContent = addonTag(optionPrice('secondLanguage', null, cfg));
-    // the automation: «Сайт · Автоматизація» under the frame while one is chosen
-    if (cfg.aiProduct === 'none') state.view = 'site';
-    ref('views').hidden = cfg.aiProduct === 'none';
+    // «Сайт · Реклама · Автоматизація» under the frame while ads, analytics or the automation are chosen
+    ref('views').hidden = views(cfg).length < 2;
     syncView();
     syncPause();
     for (const g of all('[data-new-only]')) g.classList.toggle('is-off', cfg.format === 'existing');
@@ -416,7 +436,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     ref('build').classList.toggle('is-mine', mine);
     ref('build-name').textContent = mine ? t.buildMine + ' · ' + once : t.build[0];
     ref('build-sub').textContent = mine ? name : t.build[1];
-    ref('pnote-t').textContent = cfg.aiProduct !== 'none' ? t.previewNote.both : t.previewNote[cfg.format !== 'existing' ? 'site' : cfg.growth === 'analytics' ? 'existingStats' : 'existing'];
+    ref('pnote-t').textContent = views(cfg).length > 1 ? t.previewNote.both : t.previewNote[cfg.format !== 'existing' ? 'site' : cfg.growth === 'analytics' ? 'existingStats' : 'existing'];
 
     // breakdown: the same list in both hosts (face ≥701, sheet ≤700)
     const html = breakdown(t, p, lineText, sumText);
@@ -456,9 +476,14 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     sheet: (on) => (on ? openSheet(ref('bar-open')) : closeSheet()),
     project: () => calculateProject(state.cfg),
     fx: () => preview.fx, // checks and filmstrips (?debug)
-    robotReady: () => fitRobot(), // PricingClient: the console is in its slot
+    // PricingClient: the schemes are in their slots (the way of a request starts playing whenever it shows)
+    schemesReady: () => {
+      if (!adsFlow && ref('ads-slot').firstElementChild) adsFlow = mountAdsFlow(ref('ads-slot'), { reducedMotion });
+      syncView();
+    },
     destroy() {
-      robotRo.disconnect();
+      layerRo.disconnect();
+      adsFlow?.destroy();
       el.removeEventListener('click', onClick);
       el.removeEventListener('keydown', onKey);
       ioMain.disconnect();
@@ -614,13 +639,14 @@ function template(t) {
     </div>
     <div class="cfg-view" data-ref="view" data-face="preview" data-show="site">
       <div class="pvw" role="img" data-ref="preview"></div>
-      <div class="cfg-robot" data-ref="robot" hidden><div class="cfg-robot__slot" data-ref="robot-slot"></div></div>
+      <div class="cfg-layer" data-ref="ads" hidden><div class="cfg-layer__slot" data-ref="ads-slot"></div></div>
+      <div class="cfg-layer cfg-layer--robot" data-ref="robot" hidden><div class="cfg-layer__slot" data-ref="robot-slot"></div></div>
       <section class="cfg-break" id="cfg-break" data-ref="break" aria-labelledby="cfg-break-t" inert>
         <div class="cfg-break__head">${breakPanel('cfg-break-t', 'h3')}</div>
       </section>
     </div>
     <div class="cfg__note" data-ref="pnote">
-      <span class="cfg-views" role="group" aria-label="${escU(t.view.label)}" data-ref="views" hidden><button type="button" class="cfg-views__b" data-view="site" aria-pressed="true">${escU(t.view.site)}</button><button type="button" class="cfg-views__b" data-view="robot" aria-pressed="false">${escU(t.view.robot)}</button></span>
+      <span class="cfg-views" role="group" aria-label="${escU(t.view.label)}" data-ref="views" hidden><button type="button" class="cfg-views__b" data-view="site" aria-pressed="true">${escU(t.view.site)}</button><button type="button" class="cfg-views__b" data-view="ads" aria-pressed="false" hidden>${escU(t.view.ads)}</button><button type="button" class="cfg-views__b" data-view="robot" aria-pressed="false" hidden>${escU(t.view.robot)}</button></span>
       <span class="cfg__note-t" data-ref="pnote-t"></span>
     </div>
   </div>

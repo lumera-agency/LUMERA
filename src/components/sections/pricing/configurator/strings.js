@@ -93,8 +93,8 @@ const uk = {
     existingStats: 'Ваш сайт залишається як є. Ми налаштовуємо аналітику: видно, звідки приходять заявки.',
     both: 'Бізнеси й дані в прикладах вигадані.', // the automation chosen: the line beside «Сайт · Автоматизація»
   },
-  // with the automation chosen: the sample site or the robot's scheme (the AI page's console) in the frame
-  view: { label: 'Що показати', site: 'Сайт', robot: 'Автоматизація' },
+  // with ads, analytics or the automation chosen: the sample site, the ads page's way of a request or the robot's console
+  view: { label: 'Що показати', site: 'Сайт', ads: 'Реклама', stats: 'Аналітика', robot: 'Автоматизація' },
   summary: {
     kicker: 'Ваш проєкт',
     cta: 'Обговорити проєкт',
@@ -247,7 +247,7 @@ const ru = {
     existingStats: 'Ваш сайт остаётся как есть. Мы настраиваем аналитику: видно, откуда приходят заявки.',
     both: 'Бизнесы и данные в примерах вымышленные.',
   },
-  view: { label: 'Что показать', site: 'Сайт', robot: 'Автоматизация' },
+  view: { label: 'Что показать', site: 'Сайт', ads: 'Реклама', stats: 'Аналитика', robot: 'Автоматизация' },
   summary: {
     kicker: 'Ваш проект',
     cta: 'Обсудить проект',

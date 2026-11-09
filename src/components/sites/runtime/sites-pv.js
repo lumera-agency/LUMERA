@@ -753,7 +753,7 @@ function storySteps(C, cfg) {
    (rb-anim.js), «Друга мова» (.pv-lx), the 3D slot ([data-obj]) and the tour work on them unchanged */
 const H = { esc, ICO, I, lx, lxh, wds, nums, words, shine, STAR, header, footer, form, objSlot, cubeImg, CUBELINE, ROOMS, DESK, soft, initials, stars, concept, noArea, cards3, steps4 };
 
-export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = false, phone = false, labels = {}, onFull = null, full = false }) {
+export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = false, phone = false, labels = {}, onFull = null, full = false, tray: trayOn = true }) {
   const P = t.preview;
   const C = SITE[lang] || SITE.uk;
   const EN = SITE.en;
@@ -1118,7 +1118,8 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
     d.mgmt = mgmt ? 'on' : 'off';
     d.leads = cfg.automation;
     // the add-ons' cards for this configuration, in the lead's order (the tray; the phone's notifications)
-    const notes = site ? [ads && 'ads', cfg.automation === 'lead' && 'lead', cfg.automation === 'crmAi' && 'chat', cfg.automation === 'crmAi' && 'crm', mgmt && 'mgmt', stats && 'stats'].filter(Boolean) : [];
+    // (tray: false, the main page's configurator since 9 Nov 2026: no cards, the frame shows schemes of their own)
+    const notes = site && trayOn ? [ads && 'ads', cfg.automation === 'lead' && 'lead', cfg.automation === 'crmAi' && 'chat', cfg.automation === 'crmAi' && 'crm', mgmt && 'mgmt', stats && 'stats'].filter(Boolean) : [];
     d.tray = notes.length ? 'on' : 'off';
     d.notes = notes.length;
     const shop = cfg.format === 'ecommerce';
