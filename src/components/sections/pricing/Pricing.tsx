@@ -1,12 +1,14 @@
 import { getTranslations } from "next-intl/server";
 import { rich } from "@/lib/rich";
+import { RobotConsole } from "@/components/sections/ai-page/RobotConsole";
 import { PricingClient } from "./PricingClient";
 import "./configurator.css";
 
 /**
  * 6 · Ціни: «Зберіть свій проєкт» — the configurator (presets, options, the live preview of the
  * site being configured, the sum). The configurator is a framework-free island (configurator/*.js,
- * ported 1:1), mounted into [data-cfg] by PricingClient.
+ * ported 1:1), mounted into [data-cfg] by PricingClient. With the automation chosen (9 Nov 2026) its frame shows the AI
+ * page's robot console, rendered here and handed to PricingClient.
  */
 export async function Pricing() {
   const t = await getTranslations();
@@ -23,7 +25,7 @@ export async function Pricing() {
           </h2>
           <p className="s-head__intro" data-sr="">{t("pricing.intro")}</p>
         </header>
-        <PricingClient />
+        <PricingClient robot={<RobotConsole />} />
       </div>
     </section>
   );

@@ -780,7 +780,9 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   let prev = null;
   let page = 0;
   let markT = 0;
-  const fx = createFx(el, { reducedMotion, onLive: () => syncCube(), onPage: (i) => showPage(i), labels, full: full ? () => openFull() : null });
+  // «На весь екран» is the sample sites' alone (the owner, 9 Nov 2026): not while the frame tells their own site's story
+  let fullOk = true;
+  const fx = createFx(el, { reducedMotion, onLive: () => syncCube(), onPage: (i) => showPage(i), labels, full: full ? Object.assign(() => openFull(), { ok: () => fullOk }) : null });
 
   /* ---------- the whole screen (owner, 18 Oct: on a phone the sample is small to scroll in its frame). The frame's bar
      has «На весь екран» (on a phone the pill offers it too). The frame moves to <body> for the time (the page's blocks
@@ -807,7 +809,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
   fullLabel();
   const onFullKey = (e) => { if (e.key === 'Escape') closeFull(); };
   function openFull() {
-    if (ph) return;
+    if (ph || !fullOk) return;
     fullAnim?.cancel();
     ph = document.createElement('div');
     ph.className = 'pvw-ph';
@@ -1087,6 +1089,13 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
     const before = prev;
     const firstRun = !before;
     const site = cfg.format !== 'existing';
+    if (full && fullOk !== site) {
+      fullOk = site;
+      fullBtn.hidden = !site;
+      if (!site) closeFull();
+      fullLabel();
+      fx.pill();
+    }
     const reshape = firstRun || before.format !== cfg.format || before.plus !== cfg.plus || before.design !== cfg.design || before.variant !== cfg.variant || before.secondLanguage !== cfg.secondLanguage
       || (ownObj(cfg) && before.threeDHero !== cfg.threeDHero); // a module with its own 3D object draws it in build()
     if (reshape) {

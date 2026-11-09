@@ -153,7 +153,7 @@ export function createFx(pvw, { reducedMotion = false, onLive, onPage, labels = 
   pvw.append(you);
   // (owner, 18 Oct: on a phone the sample is small to scroll in its frame) on a phone, before the tap, the pill offers
   // the whole screen (sites-pv.js: the frame over the page); a tap on the sample itself still takes it in place
-  const fullAsk = () => !st.user && !!full && restMQ.matches && !pvw.classList.contains('is-full');
+  const fullAsk = () => !st.user && !!full && (full.ok?.() ?? true) && restMQ.matches && !pvw.classList.contains('is-full');
   function pill() {
     const user = st.user;
     const ask = fullAsk();

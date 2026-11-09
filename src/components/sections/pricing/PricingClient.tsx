@@ -1,5 +1,6 @@
 "use client";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useLocale } from "next-intl";
 import { ScrollTrigger } from "@/lib/gsap";
 import { dpx, topbarHeight } from "@/lib/css";
@@ -21,10 +22,14 @@ const ASSETS = {
  * are now (22 Oct: after «−» the questions stayed hidden for 1300 px).
  * A layout effect: after a language switch the modules are in already and resolve before the page is painted, so the
  * block never shows empty first. Leaving (a switch renders the page anew) takes it all down again.
+ * `robot` (the owner, 9 Nov 2026): the AI page's robot console, rendered on the server (Pricing.tsx); it goes into the
+ * configurator's frame (its slot) for when the automation is chosen.
  */
-export function PricingClient() {
+export function PricingClient({ robot }: { robot?: ReactNode }) {
   const host = useRef<HTMLDivElement>(null);
   const lang = useLocale();
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const api = useRef<{ robotReady?(): void } | null>(null);
   useLayoutEffect(() => {
     const el = host.current;
     if (!el) return;
@@ -62,7 +67,7 @@ export function PricingClient() {
     window.addEventListener("resize", fit);
     let alive = true;
     let stopPresets: (() => void) | undefined;
-    let api: { destroy(): void } | undefined;
+    let mounted: { destroy(): void; robotReady?(): void } | undefined;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const abs = (p: string) => new URL(p, document.baseURI).href;
     (async () => {
@@ -74,8 +79,8 @@ export function PricingClient() {
       if (!alive) return; // left before the modules were in
       stopPresets = initPresets(reducedMotion);
       // the island's own API (configurator.js, JSDoc-typed loosely)
-      const mount = mountConfigurator as unknown as (host: HTMLElement, options: Record<string, unknown>) => { destroy(): void };
-      api = mount(el, {
+      const mount = mountConfigurator as unknown as (host: HTMLElement, options: Record<string, unknown>) => { destroy(): void; robotReady?(): void };
+      mounted = mount(el, {
         lang,
         reducedMotion,
         assets: {
@@ -90,7 +95,9 @@ export function PricingClient() {
           form.goToForm(reducedMotion);
         },
       });
-      (presetReady as (api: unknown) => void)(api);
+      (presetReady as (api: unknown) => void)(mounted);
+      api.current = mounted;
+      setSlot(el.querySelector<HTMLElement>('[data-ref="robot-slot"]'));
       const sum = el.querySelector(".cfg-sum");
       if (sum) fitRo.observe(sum);
       fit();
@@ -105,8 +112,19 @@ export function PricingClient() {
       el.style.removeProperty("--sum-h");
       clearTimeout(timer);
       stopPresets?.();
-      api?.destroy();
+      api.current = null;
+      setSlot(null);
+      mounted?.destroy();
     };
   }, [lang]);
-  return <div data-cfg="" ref={host} />;
+  // the console is in its slot: the configurator sizes it to the frame
+  useEffect(() => {
+    if (slot) api.current?.robotReady?.();
+  }, [slot]);
+  return (
+    <>
+      <div data-cfg="" ref={host} />
+      {slot && robot ? createPortal(robot, slot) : null}
+    </>
+  );
 }

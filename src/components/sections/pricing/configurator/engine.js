@@ -31,6 +31,12 @@
  * out of the configurator, automation has its own page and prices (ai-page/prices.ts). So a built site always has
  * advancedMotion and automation 'lead' (normalize sets them, the preview shows them, nothing is charged), an existing
  * site neither; an existing site buys ads or analytics (no «Без реклами» there).
+ * The owner, 9 Nov 2026 (later that day): the automation is back in the configurator, with the AI page's lineup and
+ * prices (PRICING.ai, which ai-page/prices.ts now reads: one source): one of «Пошук замовлень» (від $800), «Усі заявки
+ * разом» (від $500), «AI-асистент» ($450 + $90/міс support, the first 3 months in its price) or «Інша рутина» (its
+ * price after the audit), as on the AI page's calculator. Its weeks come after the site's (the AI page adds them so);
+ * an existing site may buy it alone (then no ads are needed). It is the visitor's own choice, like adsManagement: a
+ * bundle tap keeps it and the bundles match without it.
  */
 
 /**
@@ -38,9 +44,10 @@
  * @typedef {'essential'|'custom'} DesignLevel
  * @typedef {'none'|'analytics'|'googleAds'|'googleAdsAi'} GrowthOption
  * @typedef {'none'|'lead'|'crmAi'} AutomationOption
+ * @typedef {'none'|'search'|'sources'|'assistant'|'custom'} AiProduct
  * @typedef {{format:SiteFormat, design:DesignLevel, advancedMotion:boolean, threeDHero:boolean,
  *            secondLanguage:boolean, growth:GrowthOption, adsManagement:boolean,
- *            automation:AutomationOption}} ProjectConfig
+ *            automation:AutomationOption, aiProduct:AiProduct}} ProjectConfig
  */
 
 /** @type {ProjectConfig} */
@@ -53,6 +60,7 @@ export const DEFAULT_CONFIG = Object.freeze({
   growth: 'none',
   adsManagement: false, // NEW · monthly, only with ads
   automation: 'lead', // the requests in Telegram, in every site's price (9 Nov): set by normalize, not a choice
+  aiProduct: 'none', // the AI page's automation (9 Nov): one product or none
 });
 
 export const PRICING = {
@@ -95,6 +103,18 @@ export const PRICING = {
 
   // NEW · optional, per month, only with ads (hasAds: googleAds / googleAdsAi; not with analytics alone)
   adsManagement: { monthly: 150 },
+
+  // the automation, the AI page's lineup (the owner, 21 Oct 2026; on the main page too since 9 Nov), in the UI's order.
+  // price null = «ціна після аудиту»; from = shown as «від $…» (the volume differs from business to business);
+  // weeks come after the site's; the assistant's support is monthly, its first months in its price
+  ai: {
+    search:    { price: 800,  from: true,  weeks: [2, 3] },
+    sources:   { price: 500,  from: true,  weeks: [1, 2] },
+    assistant: { price: 450,  from: false, weeks: [1, 2], monthly: 90, freeMonths: 3 },
+    custom:    { price: null, from: false, weeks: null },
+  },
+  // the process audit: any automation task can start here; its price goes into the works if they are ordered
+  audit: { price: 150, days: [2, 3] },
 };
 
 /** Ads in this configuration: a Google Ads setup (analytics alone is not ads). */
@@ -138,10 +158,11 @@ export function normalize(cfg) {
   const site = c.format !== 'existing';
   c.advancedMotion = site;
   c.automation = site ? 'lead' : 'none';
+  if (!PRICING.ai[c.aiProduct]) c.aiProduct = 'none';
   if (!site) {
     Object.assign(c, SITE_BASE);
-    // something is always bought for an existing site: without ads or analytics, the ads setup
-    if (c.growth === 'none') c.growth = 'googleAds';
+    // something is always bought for an existing site: without ads, analytics or automation, the ads setup
+    if (c.growth === 'none' && c.aiProduct === 'none') c.growth = 'googleAds';
   }
   if (!hasAds(c)) c.adsManagement = false;
   return c;
@@ -151,8 +172,8 @@ export function normalize(cfg) {
 export function isAvailable(group, value, cfg) {
   const existing = cfg.format === 'existing';
   if (existing && ['design', 'threeDHero', 'secondLanguage'].includes(group)) return false;
-  // an existing site buys ads or analytics: «Без реклами» rests while it is chosen
-  if (existing && group === 'growth' && value === 'none') return false;
+  // an existing site buys ads, analytics or automation: «Без реклами» rests unless the automation is chosen
+  if (existing && group === 'growth' && value === 'none') return cfg.aiProduct !== 'none';
   if (group === 'adsManagement') return hasAds(cfg);
   return true;
 }
@@ -165,11 +186,11 @@ export function matchBundle(cfg) {
   return b ? b.id : null;
 }
 
-/** The configuration a bundle tap produces: the preset, the visitor's monthly choice kept. */
+/** The configuration a bundle tap produces: the preset, the visitor's monthly choice and automation kept. */
 export function applyBundle(id, cfg = DEFAULT_CONFIG) {
   const b = BUNDLES.find((x) => x.id === id);
   if (!b) throw new Error('Unknown bundle: ' + id);
-  return normalize({ ...b.config, adsManagement: cfg.adsManagement });
+  return normalize({ ...b.config, adsManagement: cfg.adsManagement, aiProduct: cfg.aiProduct });
 }
 
 /* ---------- prices of single options (for the tags next to controls) ---------- */
@@ -183,6 +204,7 @@ export function optionPrice(group, value, cfg = DEFAULT_CONFIG) {
     case 'secondLanguage': return PRICING.secondLanguage.price[cfg.format] ?? PRICING.secondLanguage.price.landing;
     case 'growth': return PRICING.growth[value].price;
     case 'adsManagement': return PRICING.adsManagement.monthly;
+    case 'aiProduct': return PRICING.ai[value]?.price ?? 0;
     default: throw new Error('Unknown option group: ' + group);
   }
 }
@@ -190,9 +212,10 @@ export function optionPrice(group, value, cfg = DEFAULT_CONFIG) {
 /* ---------- breakdown ---------- */
 
 /**
- * Line items of the estimate, in display order. `id` is the strings key under `items`.
+ * Line items of the estimate, in display order. `id` is the strings key under `items`. The automation's line may
+ * be «від» (`from`) or priced after the audit (price null).
  * @param {ProjectConfig} cfg
- * @returns {{id:string, price:number, period:'once'|'month'}[]}
+ * @returns {{id:string, price:number|null, period:'once'|'month', from?:boolean}[]}
  */
 export function lineItems(cfg) {
   const once = (id, price) => ({ id, price, period: 'once' });
@@ -205,6 +228,8 @@ export function lineItems(cfg) {
     if (cfg.secondLanguage) lines.push(once('secondLanguage', PRICING.secondLanguage.price[cfg.format]));
   }
   if (cfg.growth !== 'none') lines.push(once('growth.' + cfg.growth, PRICING.growth[cfg.growth].price));
+  const ai = PRICING.ai[cfg.aiProduct];
+  if (ai) lines.push({ id: 'ai.' + cfg.aiProduct, price: ai.price, period: 'once', from: ai.from });
   if (cfg.adsManagement && hasAds(cfg)) lines.push({ id: 'adsManagement', price: PRICING.adsManagement.monthly, period: 'month' });
   return lines;
 }
@@ -215,12 +240,15 @@ export function lineItems(cfg) {
  * Not a plain sum. Design-side work (custom design, 3D) overlaps, so the longest item counts
  * in full and the rest at half. Translation comes after the build. Ads, analytics and Telegram run
  * in parallel (animation and Telegram are in the format's own weeks). An existing site: a week.
+ * The automation comes after the site (its weeks are added, as on the AI page); «Інша рутина» has its weeks after the
+ * audit, so it adds none.
  * @param {ProjectConfig} cfg
  * @returns {{min:number, max:number} | null} weeks
  */
 export function calculateTimeline(cfg) {
-  // an existing site: nothing is built; ads or analytics take about a week to set up
-  if (cfg.format === 'existing') return { min: 1, max: 1 };
+  const ai = PRICING.ai[cfg.aiProduct]?.weeks;
+  // an existing site: nothing is built; ads or analytics take about a week to set up (alongside the automation)
+  if (cfg.format === 'existing') return ai ? { min: ai[0], max: ai[1] } : cfg.growth !== 'none' ? { min: 1, max: 1 } : null;
   const base = PRICING.formats[cfg.format].weeks;
   if (!base) return null;
   const [baseMin, baseMax] = base;
@@ -230,7 +258,7 @@ export function calculateTimeline(cfg) {
   ].filter(Boolean).sort((a, b) => b - a);
   let extra = overlapping.length ? overlapping[0] + overlapping.slice(1).reduce((s, w) => s + w, 0) * 0.5 : 0;
   if (cfg.secondLanguage) extra += PRICING.secondLanguage.weeks[cfg.format];
-  return { min: baseMin + Math.floor(extra), max: baseMax + Math.max(0, Math.ceil(extra - 0.25)) };
+  return { min: baseMin + Math.floor(extra) + (ai ? ai[0] : 0), max: baseMax + Math.max(0, Math.ceil(extra - 0.25)) + (ai ? ai[1] : 0) };
 }
 
 /* ---------- name ---------- */
@@ -245,6 +273,7 @@ export function nameParts(cfg) {
     format: cfg.format,
     ads: hasAds(cfg),
     stats: cfg.growth === 'analytics', // analytics alone (with ads it is part of the setup)
+    ai: cfg.aiProduct !== 'none' ? cfg.aiProduct : null,
   };
 }
 
@@ -254,12 +283,17 @@ export function nameParts(cfg) {
 export function calculateProject(cfg) {
   const c = normalize(cfg);
   const lines = lineItems(c);
-  const once = lines.filter((l) => l.period === 'once').reduce((s, l) => s + l.price, 0);
+  const once = lines.filter((l) => l.period === 'once').reduce((s, l) => s + (l.price ?? 0), 0);
   const monthly = lines.filter((l) => l.period === 'month').reduce((s, l) => s + l.price, 0);
   const weeks = calculateTimeline(c);
+  const ai = PRICING.ai[c.aiProduct];
   return {
     price: once, // kept: the one-time total (old callers read `price`)
     once,
+    from: lines.some((l) => l.from), // the sum is «від» (the automation's volume varies)
+    after: !!ai && ai.price === null, // a part is priced after the audit («Інша рутина»)
+    aiMonthly: ai?.monthly ?? 0, // the assistant's support, per month (its first months in its price)
+    aiFreeMonths: ai?.freeMonths ?? 0,
     monthly, // 0 or PRICING.adsManagement.monthly
     monthlyOffer: hasAds(c) && !c.adsManagement ? PRICING.adsManagement.monthly : 0,
     priceMin: once,
@@ -317,12 +351,14 @@ export function buildLeadPayload(cfg, form, lang = 'uk', label = '') {
       growth: c.growth, // 'none' | 'analytics' | 'googleAds' | 'googleAdsAi'
       adsManagement: c.adsManagement, // NEW
       automation: c.automation, // 'lead' with every built site (in its price), 'none' for an existing one
+      aiProduct: c.aiProduct, // 'none' | 'search' | 'sources' | 'assistant' | 'custom'
       label,
     },
     estimate: {
       currency: PRICING.currency,
       price: p.once,
       once: p.once, // NEW
+      from: p.from, // the sum is «від»
       monthly: p.monthly, // NEW
       priceMin: p.priceMin,
       priceMax: p.priceMax,

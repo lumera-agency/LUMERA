@@ -3576,6 +3576,7 @@
    ========================================================================== */
 .pvw__full { position: relative; flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 1.5rem; padding: 0 0.625rem 0 0.5rem; border: 0; border-radius: 999px; background: rgba(246, 246, 243, 0.1); color: #f6f6f3; font: 400 0.6563rem/1 var(--pv-mono); white-space: nowrap; cursor: pointer; transition: background-color 0.2s ease; }
 .pvw__full::after { content: ""; position: absolute; inset: -8px -4px; }
+.pvw__full[hidden] { display: none; } /* not while the frame tells their own site's story (sites-pv.js) */
 .pvw__full svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .pvw__full:focus-visible { outline: 2px solid #f6f6f3; outline-offset: 2px; }
 @media (hover: hover) and (pointer: fine) { .pvw__full:hover { background: rgba(246, 246, 243, 0.2); } }

@@ -716,3 +716,64 @@
   }
   .cfg__side { top: var(--cfg-top, calc(var(--topbar-h) + 1rem)); }
 }
+
+/* ==========================================================================
+   The automation (the owner, 9 Nov 2026): the AI page's robot console in the frame instead of the sample, the
+   «Сайт · Автоматизація» switch under it, the assistant's support under the sum. The console is the AI page's own
+   (RobotConsole, robot-console.css); its palette, which the AI page sets on its <main>, is set here for the block.
+   ========================================================================== */
+.cfg .ai-console {
+  --glass: #0b0b0b;
+  --glass-top: linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0) 2.5rem);
+  --hair: rgb(246 246 243 / 0.1);
+  --hair-2: rgb(246 246 243 / 0.16);
+  --rule: rgb(246 246 243 / 0.07);
+  --hi: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  --drop: 0 1.5rem 3rem -1rem rgb(0 0 0 / 0.9);
+  --warm: 255 246 232;
+  --lime-rgb: 218 255 2;
+  --ember-rgb: 240 98 0;
+}
+/* the layer over the sample, the frame's size; the console centred in it, scaled to its height (configurator.js). The
+   sample keeps its own layers to itself (its tray's cards, its pill), so nothing of it shows over the console */
+.cfg-view .pvw { isolation: isolate; }
+.cfg-robot { position: absolute; inset: 0; z-index: 1; overflow: hidden; padding: 1rem; border: 1px solid var(--line); border-radius: 1.125rem; background: radial-gradient(120% 80% at 50% 0%, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 60%), #050505; }
+.cfg-robot[hidden] { display: none; }
+.cfg-robot__slot { --s: 1; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(var(--s)); }
+.cfg-robot .ai-console__fig { width: 100%; }
+.cfg-robot .ai-console__stage { justify-items: stretch; }
+@media (min-width: 701px) {
+  .cfg-robot { border-radius: var(--radius-lg); }
+}
+/* a phone's frame is low: the console's head and its scheme (the queue, the steps, where each request goes), large
+   enough to read; its log and counters are the AI page's */
+@media (max-width: 700px) {
+  .cfg-robot { padding: 0.5rem; }
+  .cfg-robot :is(.ai-console__log, .ai-console__met) { display: none; }
+}
+
+/* «Сайт · Автоматизація»: a small segmented switch at the head of the note line */
+.cfg__note { display: flex; align-items: center; gap: 0.75rem; }
+.cfg__note-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.cfg-views { flex: none; display: inline-flex; padding: 2px; border: 1px solid var(--line); border-radius: 999px; }
+.cfg-views[hidden] { display: none; }
+.cfg-views__b { position: relative; min-height: 1.375rem; padding: 0 0.625rem; border: 0; border-radius: 999px; background: none; font: 400 var(--fs-label) / 1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-mute); white-space: nowrap; transition: background-color 0.25s ease, color 0.25s ease; }
+.cfg-views__b::before { content: ""; position: absolute; inset: -0.5rem 0; } /* a taller hit area than the line it sits in */
+.cfg-views__b[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
+@media (hover: hover) {
+  .cfg-views__b[aria-pressed='false']:hover { color: var(--ink); }
+}
+@media (max-width: 700px) {
+  .cfg__note { flex-wrap: wrap; row-gap: 0.625rem; }
+  .cfg__note-t { white-space: normal; }
+  .cfg-views__b { min-height: 2.25rem; padding: 0 0.875rem; }
+  .cfg-views__b::before { content: none; }
+}
+
+/* under the sum, in its cell: the assistant's support, or the part priced after the audit */
+.cfg-sum__once { flex-wrap: wrap; row-gap: 0.375rem; }
+.cfg-sum__x { flex-basis: 100%; color: var(--ink-soft); }
+.cfg-sum__x[hidden] { display: none; }
+/* nothing priced yet («Інша рутина» alone, for an existing site): «після аудиту», smaller, without «разово» */
+.cfg.is-talk .cfg-sum__num { font-size: var(--fs-h4); letter-spacing: -0.02em; }
+.cfg.is-talk :is(.cfg-sum__once .cfg-mono, .cfg-bar__once, .cfg-editor__once) { display: none; }

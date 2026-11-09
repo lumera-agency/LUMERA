@@ -16,6 +16,10 @@
  * Nothing here changes the height of anything above or beside what was tapped: rows show a reason
  * tag instead of swapping their sub-line; the two bundle notes share one cell (the taller one sets it).
  * Event: 'eclo:configurator-change' as before.
+ * The owner, 9 Nov 2026: «Автоматизація», the AI page's lineup, is a group of its own (one product or none). Chosen,
+ * the frame shows the AI page's robot console (RobotConsole, rendered by React into [data-ref="robot-slot"] by
+ * PricingClient) instead of the sample; «Сайт · Автоматизація» under the frame switch between them, and any site
+ * option brings the sample back. «На весь екран» is the samples' alone: the console covers it.
  */
 import { BUNDLES, PRICING, DEFAULT_CONFIG, normalize, isAvailable, applyBundle, optionPrice, calculateProject, money, addonTag, hasAds } from './engine.js';
 import { STRINGS } from './strings.js';
@@ -35,14 +39,15 @@ const GO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6
 const CLOSE = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
 const BOOL = ['threeDHero', 'secondLanguage', 'adsManagement'];
 // the editor's groups (their heads: #cfg-l-…); «Заявки» is out since 9 Nov (the requests in Telegram are in every site's price)
-const CHIPS = ['format', 'look', 'growth'];
+const CHIPS = ['format', 'look', 'growth', 'ai'];
+const AI_ORDER = ['none', ...Object.keys(PRICING.ai)];
 const phoneMQ = window.matchMedia('(max-width: 700px)');
 // pd8 4.4: up to 1100 px «Що входить у ціну» opens the bottom sheet (≥1101: the card flips to the face)
 const sheetMQ = window.matchMedia('(max-width: 1100px)');
 
 export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion = false, onDiscuss, tuneOpen } = {}) {
   const t = STRINGS[lang];
-  const state = { cfg: normalize(DEFAULT_CONFIG), lastBundle: null, face: 'preview', tune: tuneOpen ?? !phoneMQ.matches };
+  const state = { cfg: normalize(DEFAULT_CONFIG), lastBundle: null, face: 'preview', view: 'site', tune: tuneOpen ?? !phoneMQ.matches };
   el.classList.add('cfg');
   el.innerHTML = template(t);
   const ref = (n) => el.querySelector(`[data-ref="${n}"]`);
@@ -55,13 +60,16 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   const edScroll = ref('ed-scroll');
   const chips = [...editor.querySelectorAll('[data-chip]')];
   const root = document.documentElement;
+  // the sum as the AI page says it: «від $1 300» when the automation's volume varies, «після аудиту» when nothing is priced yet
+  const sumText = (p) => (p.once === 0 && p.after ? t.after : (p.from ? t.from + '\u00a0' : '') + money(p.once));
+  const lineText = (l) => (l.price == null ? t.after : l.price === 0 ? t.included : (l.from ? t.from + '\u00a0' : '') + money(l.price) + (l.period === 'month' ? t.perMonth : ''));
 
   /* ---------- input ---------- */
   const onClick = (e) => {
     const b = e.target.closest('[data-bundle]');
     if (b) {
       state.lastBundle = b.dataset.bundle;
-      commit(applyBundle(b.dataset.bundle, state.cfg), b);
+      commit(applyBundle(b.dataset.bundle, state.cfg), b, 'site');
       return;
     }
     const opt = e.target.closest('[data-group]');
@@ -71,9 +79,12 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
       const next = { ...state.cfg, [g]: BOOL.includes(g) ? !state.cfg[g] : opt.dataset.value };
       // «Вже є сайт» from the format cards lands where its bundle does (ads on), so both ways cost the same
       if (g === 'format' && next.format === 'existing' && state.cfg.format !== 'existing' && next.growth === 'none') next.growth = 'googleAds';
-      commit(next, opt);
+      // the automation chosen: its scheme in the frame; anything else: the sample site
+      commit(next, opt, g === 'aiProduct' ? (next.aiProduct === 'none' ? 'site' : 'robot') : 'site');
       return;
     }
+    const v = e.target.closest('[data-view]');
+    if (v) { setView(v.dataset.view); return; }
     const chip = e.target.closest('[data-chip]');
     if (chip) { toGroup(chip.dataset.chip); return; }
     const act = e.target.closest('[data-act]')?.dataset.act;
@@ -118,9 +129,10 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   sheetMQ.addEventListener('change', syncSheetMQ);
 
   /* ---------- state ---------- */
-  function commit(next, source) {
+  function commit(next, source, view) {
     const before = calculateProject(state.cfg);
     state.cfg = normalize(next);
+    if (view) state.view = view;
     update();
     const after = calculateProject(state.cfg);
     if (before.once !== after.once || before.monthly !== after.monthly) bump();
@@ -145,7 +157,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     ref('break-btn').setAttribute('aria-expanded', String(on));
     ref('break-btn').querySelector('span').textContent = on ? t.summary.breakdownClose : t.summary.breakdownOpen;
     ref('break').toggleAttribute('inert', !on);
-    ref('preview').toggleAttribute('inert', on);
+    syncView();
     syncPause();
     if (on) ref('break').querySelector('h3').focus({ preventScroll: true });
   }
@@ -156,7 +168,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     state.opener = opener;
     const p = calculateProject(state.cfg);
     ref('sheet-name').textContent = t.name(p.nameParts);
-    ref('sheet-price').textContent = money(p.once) + ' ' + t.once + (p.monthly ? ' · +' + money(p.monthly) + t.perMonth : '');
+    ref('sheet-price').textContent = sumText(p) + (p.once ? ' ' + t.once : '') + (p.monthly ? ' · +' + money(p.monthly) + t.perMonth : '');
     sheet.showModal();
     syncPause();
     bar.classList.add('is-hidden');
@@ -171,10 +183,49 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     else sheetTimer = setTimeout(done, 280);
   }
 
-  /** the cube and the silk rest while nothing shows them: the face over them, the sheet over all, or (≤700) the editor shut */
+  /** the cube and the silk rest while nothing shows them: the face or the robot's console over them, the sheet over
+   *  all, or (≤700) the editor shut */
   function syncPause() {
-    preview.pause(state.face === 'break' || sheet.open || (phoneMQ.matches && !editor.open));
+    preview.pause(state.face === 'break' || state.view === 'robot' || sheet.open || (phoneMQ.matches && !editor.open));
   }
+
+  /* ---------- the sample or the robot's console (the automation chosen) ---------- */
+  function setView(v) {
+    state.view = v === 'robot' && state.cfg.aiProduct !== 'none' ? 'robot' : 'site';
+    update();
+  }
+  let robotShown = false;
+  function syncView() {
+    const robot = state.view === 'robot';
+    const layer = ref('robot');
+    ref('view').dataset.show = state.view;
+    // (the console waits while hidden: its own observer sees it off the screen; it hides under the breakdown too)
+    layer.hidden = !robot || state.face === 'break';
+    ref('preview').toggleAttribute('inert', robot || state.face === 'break');
+    for (const b of all('[data-view]')) b.setAttribute('aria-pressed', String(b.dataset.view === state.view));
+    if (robot && !robotShown && !reducedMotion) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' });
+    robotShown = robot;
+    fitRobot();
+  }
+  // the console keeps its own layout (its container queries by its width) and is scaled to the frame's height
+  function fitRobot() {
+    const layer = ref('robot');
+    const slot = ref('robot-slot');
+    if (layer.hidden || !slot.firstElementChild) return;
+    const pad = parseFloat(getComputedStyle(layer).paddingTop) || 0;
+    const w = layer.clientWidth - 2 * pad;
+    const h = layer.clientHeight - 2 * pad;
+    if (w <= 0 || h <= 0) return;
+    slot.style.width = w + 'px';
+    let s = Math.min(1, h / slot.offsetHeight);
+    if (s < 1) {
+      slot.style.width = w / s + 'px';
+      s = Math.min(1, h / slot.offsetHeight, w / slot.offsetWidth);
+    }
+    slot.style.setProperty('--s', String(s));
+  }
+  const robotRo = new ResizeObserver(() => fitRobot());
+  robotRo.observe(ref('robot'));
 
   /* ---------- ≤700: the editor ---------- */
   function openEditor() {
@@ -254,11 +305,12 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     const p = calculateProject(state.cfg);
     const name = t.name(p.nameParts);
     // what sections.js puts into the contact form's plan box (each part unbreakable)
-    const parts = [name, money(p.once) + ' ' + t.once];
+    const parts = [name, sumText(p) + (p.once ? ' ' + t.once : '')];
     if (p.monthly) parts.push('+' + money(p.monthly) + t.perMonth);
     if (p.estimatedWeeksMin != null) parts.push(t.weeks(p.estimatedWeeksMin, p.estimatedWeeksMax));
     // and what the sum is made of, item by item, so whoever answers the request sees the whole project
-    const details = p.lines.map((l) => t.items[l.id][0] + ' — ' + (l.price === 0 ? t.included : money(l.price) + (l.period === 'month' ? t.perMonth : '')));
+    const details = p.lines.map((l) => t.items[l.id][0] + ' — ' + lineText(l));
+    if (p.aiMonthly) details.push(t.aiMonthly);
     onDiscuss?.(parts.join(' · '), { config: { ...state.cfg }, estimate: p, name, details });
   }
 
@@ -327,16 +379,27 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     }
     // the add-ons that grow with the site show their price for the chosen format
     ref('price-secondLanguage').textContent = addonTag(optionPrice('secondLanguage', null, cfg));
+    // the automation: «Сайт · Автоматизація» under the frame while one is chosen
+    if (cfg.aiProduct === 'none') state.view = 'site';
+    ref('views').hidden = cfg.aiProduct === 'none';
+    syncView();
+    syncPause();
     for (const g of all('[data-new-only]')) g.classList.toggle('is-off', cfg.format === 'existing');
     // the existing-site path: its note (the bundles' note cell)
     ref('notes').dataset.state = cfg.format === 'existing' ? 'existing' : 'site';
 
     // summary, bar
-    const once = money(p.once);
+    const once = sumText(p);
+    const talk = p.once === 0 && p.after;
     ref('name').textContent = name;
     ref('name').title = name;
     ref('weeks').textContent = p.estimatedWeeksMin == null ? '' : t.weeks(p.estimatedWeeksMin, p.estimatedWeeksMax);
     ref('once').textContent = once;
+    el.classList.toggle('is-talk', talk); // nothing priced yet: «після аудиту» without «разово»
+    // the assistant's support, or the part priced after the audit, under the sum
+    const x = [p.aiMonthly && t.aiMonthly, p.after && !talk && t.aiAfter(t.options.ai.custom[0].toLocaleLowerCase(lang))].filter(Boolean).join(' · ');
+    ref('x').textContent = x;
+    ref('x').hidden = !x;
     const month = ref('month');
     // the monthly management comes with ads only (analytics alone: none)
     month.dataset.state = !hasAds(cfg) ? 'none' : cfg.adsManagement ? 'on' : 'offer';
@@ -353,10 +416,10 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     ref('build').classList.toggle('is-mine', mine);
     ref('build-name').textContent = mine ? t.buildMine + ' · ' + once : t.build[0];
     ref('build-sub').textContent = mine ? name : t.build[1];
-    ref('pnote').textContent = t.previewNote[cfg.format !== 'existing' ? 'site' : cfg.growth === 'analytics' ? 'existingStats' : 'existing'];
+    ref('pnote-t').textContent = cfg.aiProduct !== 'none' ? t.previewNote.both : t.previewNote[cfg.format !== 'existing' ? 'site' : cfg.growth === 'analytics' ? 'existingStats' : 'existing'];
 
     // breakdown: the same list in both hosts (face ≥701, sheet ≤700)
-    const html = breakdown(t, p);
+    const html = breakdown(t, p, lineText, sumText);
     for (const host of all('[data-break-list]')) {
       const open = new Set([...host.querySelectorAll('.cfg-line[open]')].map((d) => d.dataset.id));
       host.innerHTML = html;
@@ -374,7 +437,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
 
     // one calm announcement after the taps settle (the big numbers are not live regions)
     clearTimeout(liveTimer);
-    liveTimer = setTimeout(() => { ref('live').textContent = t.live(name, once, p.monthly ? money(p.monthly) : ''); }, 600);
+    liveTimer = setTimeout(() => { ref('live').textContent = talk ? name + ': ' + once : t.live(name, once, p.monthly ? money(p.monthly) : ''); }, 600);
 
     el.dispatchEvent(new CustomEvent('eclo:configurator-change', { bubbles: true, detail: { config: { ...cfg }, estimate: p } }));
   }
@@ -393,7 +456,9 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     sheet: (on) => (on ? openSheet(ref('bar-open')) : closeSheet()),
     project: () => calculateProject(state.cfg),
     fx: () => preview.fx, // checks and filmstrips (?debug)
+    robotReady: () => fitRobot(), // PricingClient: the console is in its slot
     destroy() {
+      robotRo.disconnect();
       el.removeEventListener('click', onClick);
       el.removeEventListener('keydown', onKey);
       ioMain.disconnect();
@@ -416,7 +481,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
       }));
       el.querySelector('.pv-obj')?.cube?.destroy();
       el.innerHTML = '';
-      el.classList.remove('cfg', 'is-tuned');
+      el.classList.remove('cfg', 'is-tuned', 'is-talk');
       delete el.dataset.format;
     },
   };
@@ -425,17 +490,17 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
 /* ---------------------------------------------------------------------------
    Breakdown rows (shared by the face and the sheet)
    --------------------------------------------------------------------------- */
-function breakdown(t, p) {
+function breakdown(t, p, lineText, sumText) {
   const row = (l) => {
     const [name, includes, note] = t.items[l.id];
-    const price = l.price === 0 ? t.included : money(l.price) + (l.period === 'month' ? t.perMonth : '');
+    const price = lineText(l);
     return '<li><details class="cfg-line" data-id="' + l.id + '"><summary><span class="cfg-line__chev">' + CHEV + '</span><span class="cfg-line__name">' + escU(name) + '</span><span class="cfg-line__price">' + price + '</span></summary>'
       + '<ul class="cfg-line__inc">' + includes.map((x) => '<li>' + escU(x) + '</li>').join('') + '</ul>' + (note ? '<p class="cfg-line__note">' + escU(note) + '</p>' : '') + '</details></li>';
   };
   const once = p.lines.filter((l) => l.period === 'once');
   const month = p.lines.filter((l) => l.period === 'month');
   return '<ul class="cfg-break__list">' + once.map(row).join('') + '</ul>'
-    + '<div class="cfg-total"><span>' + escU(t.breakdown.once) + '</span><span class="cfg-total__price">' + money(p.once) + '</span></div>'
+    + '<div class="cfg-total"><span>' + escU(t.breakdown.once) + '</span><span class="cfg-total__price">' + escU(sumText(p)) + '</span></div>'
     + (month.length ? '<ul class="cfg-break__list">' + month.map(row).join('') + '</ul><div class="cfg-total"><span>' + escU(t.breakdown.monthly) + '</span><span class="cfg-total__price">' + money(p.monthly) + t.perMonth + '</span></div>' : '')
     + '<div class="cfg-extras"><span class="cfg-mono">' + escU(t.breakdown.extras) + '</span><ul>' + t.breakdown.extrasList.map(([a, b]) => '<li>' + escU(a) + '<span>' + escU(b) + '</span></li>').join('') + '</ul></div>'
     + '<p class="cfg-small cfg-break__note">' + escU(t.priceNote) + '</p>';
@@ -462,6 +527,12 @@ function template(t) {
     + '<span class="' + (kind === 'switch' ? 'cfg-switch' : 'cfg-radio') + '" aria-hidden="true"></span>'
     + '<span class="cfg-row__t"><span class="cfg-row__name">' + escU(name) + (reason ? '<span class="cfg-tag cfg-row__why">' + escU(reason) + '</span>' : '') + '</span><span class="cfg-row__sub">' + escU(sub) + '</span></span>'
     + '<span class="cfg-price"' + (group === 'secondLanguage' ? ' data-ref="price-' + group + '"' : '') + '>' + escU(tag) + '</span></button>';
+  // the automation's tag: «+ від $800», «+ $450», «після аудиту»
+  const aiTag = (v) => {
+    const a = PRICING.ai[v];
+    if (!a) return '';
+    return a.price == null ? t.after : '+\u00a0' + (a.from ? t.from + '\u00a0' : '') + money(a.price);
+  };
   const head = (id, label, newOnly) => '<p class="cfg-label" id="' + id + '"><span>' + escU(label) + '</span>' + (newOnly ? '<span class="cfg-tag">' + escU(t.newSiteOnly) + '</span>' : '') + '</p>';
   const breakPanel = (id, titleTag) => '<' + titleTag + ' class="cfg-mono cfg-break__t" id="' + id + '" tabindex="-1">' + escU(t.breakdown.title) + '</' + titleTag + '><div data-break-list></div>';
 
@@ -512,6 +583,12 @@ function template(t) {
           </div>
           ${row('switch', 'adsManagement', '', o.adsManagement, '+' + '\u00a0' + money(optionPrice('adsManagement')) + t.perMonth, o.adsManagementOff)}
         </div>
+        <div class="cfg__group cfg__group--list">
+          ${head('cfg-l-ai', t.groups.ai)}
+          <div role="radiogroup" aria-labelledby="cfg-l-ai">
+            ${AI_ORDER.map((v) => row('radio', 'aiProduct', v, o.ai[v], aiTag(v))).join('')}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -521,7 +598,7 @@ function template(t) {
       <div class="cfg-sum__top"><span class="cfg-mono">${escU(t.summary.kicker)}</span><span class="cfg-mono cfg-sum__weeks" data-ref="weeks"></span></div>
       <p class="cfg-sum__name" data-ref="name"></p>
       <div class="cfg-sum__price">
-        <div class="cfg-sum__once"><span class="cfg-sum__num" data-ref="once"></span><span class="cfg-mono">${escU(t.once)}</span></div>
+        <div class="cfg-sum__once"><span class="cfg-sum__num" data-ref="once"></span><span class="cfg-mono">${escU(t.once)}</span><span class="cfg-small cfg-sum__x" data-ref="x" hidden></span></div>
         <div class="cfg-sum__month" data-ref="month" data-state="none">
           <span class="cfg-sum__mnum" data-ref="mnum"></span>
           <span class="cfg-sum__mlabel cfg-mono">${escU(t.monthly)}</span>
@@ -535,13 +612,17 @@ function template(t) {
       <p class="cfg-small">${escU(t.summary.ctaNote)}</p>
       <p class="cfg-small cfg-sum__pnote">${escU(t.priceNote)}</p>
     </div>
-    <div class="cfg-view" data-ref="view" data-face="preview">
+    <div class="cfg-view" data-ref="view" data-face="preview" data-show="site">
       <div class="pvw" role="img" data-ref="preview"></div>
+      <div class="cfg-robot" data-ref="robot" hidden><div class="cfg-robot__slot" data-ref="robot-slot"></div></div>
       <section class="cfg-break" id="cfg-break" data-ref="break" aria-labelledby="cfg-break-t" inert>
         <div class="cfg-break__head">${breakPanel('cfg-break-t', 'h3')}</div>
       </section>
     </div>
-    <p class="cfg__note" data-ref="pnote"></p>
+    <div class="cfg__note" data-ref="pnote">
+      <span class="cfg-views" role="group" aria-label="${escU(t.view.label)}" data-ref="views" hidden><button type="button" class="cfg-views__b" data-view="site" aria-pressed="true">${escU(t.view.site)}</button><button type="button" class="cfg-views__b" data-view="robot" aria-pressed="false">${escU(t.view.robot)}</button></span>
+      <span class="cfg__note-t" data-ref="pnote-t"></span>
+    </div>
   </div>
 </div>
 
