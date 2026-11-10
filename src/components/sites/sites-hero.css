@@ -413,10 +413,11 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   /* a phone: the first screen is the words and the droplet, and at its foot the prices, then the button; the formats'
      line waits for block 2 (it says the same) */
   /* (room above «ДИЗАЙН»: «Й»'s breve rises above the caps, it must not reach the topbar) */
-  /* (the first screen in the small screen; the strip under it, under the browser's floating bar, stays empty, so the
-     sample site never shows there) */
+  /* (the first screen in the small screen; the sample site follows the button at its own margin, so its top may show
+     under the browser's floating bar on the first screen: the owner, 10 Nov 2026, a gap of about 110 pt rather than an
+     empty strip under the bar, «110 давай») */
   main[data-ai-page="sites"] .st-hg { --hg-h: calc(var(--screen-s) - var(--topbar-h) - 2.25rem); padding-top: calc(var(--topbar-h) + 1.5rem); }
-  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); margin-bottom: var(--screen-under); }
+  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
   /* the words and the droplet at the top, under the topbar */
   .st-hg .st-hg__title,
   .st-hg .st-hg__stone { grid-row: 1; align-self: start; }
@@ -427,9 +428,11 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-hg .st-hg__pi { padding: 0.4rem 0; }
   /* (the phone's old rule zeroes the actions' margins: this one is as strong) */
   main[data-ai-page="sites"] .st-hg .ai-hero__actions.st-hg__acts { grid-row: 5; margin: 2rem 0 0; }
-  /* the sample site right after the strip under the browser's bar, that strip is room enough; 3.5 rem where there is
-     none (the owner, 10 Nov 2026: «большой отступ после hero») */
-  main[data-ai-page="sites"] .st-hero .ai-hero__visual { margin-top: max(0px, calc(3.5rem - var(--screen-under))); }
+  /* (about 110 pt from the button to the sample site, more on an iPhone: there the sample starts below the screen's
+     foot, under Safari's floating bar, not seen on the first screen; the owner, 10 Nov 2026, «чтоб не видно было».
+     --screen-under counts the status bar too, which the page is not told: 2 rem off it still clears an iPhone with a
+     notch, the shortest status bar) */
+  main[data-ai-page="sites"] .st-hero .ai-hero__visual { margin-top: max(5.75rem, calc(var(--screen-under) - 2rem)); }
 }
 
 /* the words as a liquid (TitleFx.tsx): the canvas over the words, shown once it draws the same letters; the page's words
