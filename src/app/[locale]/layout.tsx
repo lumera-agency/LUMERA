@@ -13,7 +13,6 @@ import "@/components/layout/page/page.css";
 import { RootKeep } from "@/components/layout/RootKeep";
 import { PageCurtain } from "@/components/fx/page-curtain/PageCurtain";
 import { PerfProbe } from "@/components/fx/lite/PerfProbe";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads"];
@@ -98,8 +97,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <NextIntlClientProvider messages={clientMessages}>
           <SiteNavProvider value={siteNav}>{children}</SiteNavProvider>
         </NextIntlClientProvider>
-        {/* the visitors' real speed (Vercel Speed Insights: no cookies; switched on in the Vercel project) */}
-        <SpeedInsights />
       </body>
     </html>
   );
