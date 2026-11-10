@@ -116,19 +116,34 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     const el = hero.current;
     if (!el || reducedMotion || matchMedia("(hover: none) and (pointer: coarse)").matches) return;
     let queued = 0;
+    // (the hero's height from a resize observer, not read each frame: a read after the page's other writes in the same
+    // frame had the browser lay the page out again on every frame of a scroll; past the hero nothing is written)
+    let height = el.offsetHeight || 1;
+    let shown = -1;
     const apply = () => {
       queued = 0;
-      const h = el.offsetHeight || 1;
-      const y = Math.min(Math.max(window.scrollY, 0), h);
+      const y = Math.min(Math.max(window.scrollY, 0), height);
+      if (y === shown) return;
+      shown = y;
       el.style.setProperty("--lift", `${(y * HOLD).toFixed(1)}px`);
-      el.style.setProperty("--lift-dim", (0.55 * (y / h)).toFixed(3));
+      el.style.setProperty("--lift-dim", (0.55 * (y / height)).toFixed(3));
     };
     const onScroll = () => {
       if (!queued) queued = requestAnimationFrame(apply);
     };
+    const sized = new ResizeObserver(() => {
+      height = el.offsetHeight || 1;
+      shown = -1;
+      onScroll();
+    });
+    sized.observe(el);
     window.addEventListener("scroll", onScroll, { passive: true });
     apply();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      cancelAnimationFrame(queued);
+      sized.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [reducedMotion]);
 
   const running = started && visible;

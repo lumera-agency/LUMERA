@@ -40,47 +40,72 @@ export function BackToTop({ label, after = 1, quiet = "footer", phoneQuiet }: Pr
     const el = button.current;
     if (!el) return;
     let queued = 0;
+    // (every scroll frame: all the reads first, then only the writes that change something. A write between reads, or
+    // the same value written again each frame, had the browser recompute the page's styles on every frame of a scroll)
+    const phone = matchMedia(PHONE);
+    let rest = { right: 0, bottom: 0, size: 0 };
+    const measure = () => {
+      // where the button rests without a lift (its own transitions and translate aside): from its CSS, per size
+      const look = getComputedStyle(el);
+      rest = { right: window.innerWidth - parseFloat(look.right), bottom: window.innerHeight - parseFloat(look.bottom), size: el.offsetWidth };
+    };
+    measure();
+    let shownRing = "";
+    let shownLift = -1;
+    let shownOn: boolean | null = null;
     const check = () => {
       queued = 0;
       const de = document.documentElement;
       const max = de.scrollHeight - window.innerHeight;
       const y = window.scrollY;
-      ring.current?.style.setProperty("stroke-dashoffset", (RING * (1 - Math.min(1, Math.max(0, max > 0 ? y / max : 0)))).toFixed(1));
-      // where the button rests without a lift (its own transitions and translate aside)
-      const look = getComputedStyle(el);
-      const size = el.offsetWidth;
-      const right = window.innerWidth - parseFloat(look.right);
-      const bottom = window.innerHeight - parseFloat(look.bottom);
+      const { right, bottom, size } = rest;
       let lift = 0;
       for (const bar of document.querySelectorAll<HTMLElement>(BARS)) {
         const r = bar.getBoundingClientRect();
         const pinned = r.width > 0 && r.bottom > window.innerHeight - 64 && r.left < right && r.right > right - size;
         if (pinned) lift = Math.max(lift, bottom - r.top + BAR_GAP);
       }
-      el.style.setProperty("--to-top-lift", `${Math.round(lift)}px`);
+      lift = Math.round(lift);
       const box = { left: right - size, right, top: bottom - lift - size, bottom: bottom - lift };
       const pad = 12;
-      const where = phoneQuiet && matchMedia(PHONE).matches ? phoneQuiet : quiet;
-      const blocked = [...document.querySelectorAll<HTMLElement>(where)].some((q) => {
+      const where = phoneQuiet && phone.matches ? phoneQuiet : quiet;
+      const early = y <= window.innerHeight * after; // (still on the first screen: nothing to look for)
+      const blocked = !early && [...document.querySelectorAll<HTMLElement>(where)].some((q) => {
         if (!q.offsetParent && getComputedStyle(q).position !== "fixed") return false; // not shown
         const r = q.getBoundingClientRect();
         return r.width > 0 && r.left < box.right + pad && r.right > box.left - pad && r.top < box.bottom + pad && r.bottom > box.top - pad;
       });
-      const on = y > window.innerHeight * after && !blocked;
-      el.classList.toggle("is-on", on);
-      el.tabIndex = on ? 0 : -1;
-      el.setAttribute("aria-hidden", String(!on));
+      const on = !early && !blocked;
+      const ringOffset = (RING * (1 - Math.min(1, Math.max(0, max > 0 ? y / max : 0)))).toFixed(1);
+      if (ringOffset !== shownRing) {
+        shownRing = ringOffset;
+        ring.current?.style.setProperty("stroke-dashoffset", ringOffset);
+      }
+      if (lift !== shownLift) {
+        shownLift = lift;
+        el.style.setProperty("--to-top-lift", `${lift}px`);
+      }
+      if (on !== shownOn) {
+        shownOn = on;
+        el.classList.toggle("is-on", on);
+        el.tabIndex = on ? 0 : -1;
+        el.setAttribute("aria-hidden", String(!on));
+      }
     };
     const queue = () => {
       if (!queued) queued = requestAnimationFrame(check);
     };
+    const resized = () => {
+      measure();
+      queue();
+    };
     queue();
     window.addEventListener("scroll", queue, { passive: true });
-    window.addEventListener("resize", queue);
+    window.addEventListener("resize", resized);
     return () => {
       cancelAnimationFrame(queued);
       window.removeEventListener("scroll", queue);
-      window.removeEventListener("resize", queue);
+      window.removeEventListener("resize", resized);
     };
   }, [after, quiet, phoneQuiet]);
 

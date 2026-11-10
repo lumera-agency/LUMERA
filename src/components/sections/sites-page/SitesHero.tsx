@@ -11,13 +11,14 @@ import { SitesBubble } from "@/components/sites/hero-fx/SitesBubble";
 
 /**
  * 1 · the first screen, «Плакат». On a computer (the owner's pick of five settings, 5 Nov 2026) «ДИЗАЙН І РОЗРОБКА»
- * across the top, «САЙТІВ.» large in ember at the foot, both in Sofia Sans Extra Condensed, the droplet of liquid metal
- * between and in front of them (the still, then the live droplet: SitesDropletSlot), the three prices on the right
- * (from the engine: data-fprice); no formats and no button there, the topbar has «Обговорити». Upright (a phone, a tablet
- * held upright) the poster of 20 Oct as it was: the words round the droplet, the formats' lead (a tablet), the prices
- * and the button. No numbers on the labels or the prices (the owner, 5 Nov). Below: the sample site «Ваш бренд» on a
- * computer and a phone, assembled block by block once (scene «build»). No longer pinned: block 2 scrolls in after it,
- * it does not slide over it (the owner, 5 Nov 2026). Rules: sites-hero.css.
+ * across the top, «САЙТІВ.» in ember on the right under it, both in Sofia Sans Extra Condensed, the droplet of liquid
+ * metal in front of everything (the still, then the live droplet: SitesDropletSlot), the sample site «Ваш бренд» bottom
+ * left and the three prices bottom right (from the engine: data-fprice); no formats and no button there, the topbar has
+ * «Обговорити». Upright (a phone, a tablet held upright) the poster of 20 Oct as it was: the words round the droplet,
+ * the formats' lead (a tablet), the prices and the button, the sample site under them. No numbers on the labels or the
+ * prices (the owner, 5 Nov). The sample site is assembled block by block once (scene «build»). On a computer block 2
+ * slides over the pinned first screen again (the owner, 10 Nov 2026: data-cover, sites-runtime initCover); on a phone
+ * it scrolls in after it. Rules: sites-hero.css.
  */
 const FORMATS = [
   { key: "landing", name: "hg.f1" },
@@ -42,7 +43,7 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
     <p className={`st-hg__k st-hg__k--${area}`} aria-hidden="true">{text}</p>
   );
   return (
-    <section className="ai-hero ai-hero--center st-hero st-hg" id="top" aria-labelledby="st-title">
+    <section className="ai-hero ai-hero--center st-hero st-hg" id="top" aria-labelledby="st-title" data-cover="">
       <div className="ai-hero__bg" aria-hidden="true"><HeroFlux tone="mono" still /></div>
       <div className="ai-hero__in">
         <div className="ai-hero__copy st-hg__grid">

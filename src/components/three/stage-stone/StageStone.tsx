@@ -72,6 +72,9 @@ export default function StageStone() {
   return (
     <div ref={box} className="process__stone" aria-hidden="true">
       <Canvas
+        /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
+           root each time; the pointer is read from offsetX/Y, so the canvas' place on the page is never needed */
+        resize={{ scroll: false }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
         camera={{ fov: FOV, near: 0.1, far: 100, position: [0, 0, CAMERA_Z] }}

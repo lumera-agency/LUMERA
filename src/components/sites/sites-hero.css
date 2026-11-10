@@ -237,8 +237,9 @@ main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }
    drawn, with reduced motion too */
 html.js .st-hg .ai-hero__rock:not(.is-still) .ai-hero__stone { visibility: hidden; }
 .st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 1; animation: st-stone-in 0.9s var(--ease-out) both; }
-/* its entrance: a fade with a short rise, no scale (an object that grows on arrival reads as «it grows») */
-@keyframes st-stone-in { from { opacity: 0; transform: translateY(0.4em); } }
+/* its entrance: a fade in place. No scale (an object that grows on arrival reads as «it grows») and no rise (the owner,
+   10 Nov 2026: it looked as if it came up from below) */
+@keyframes st-stone-in { from { opacity: 0; } }
 html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: st-stone-in; }
 
 /* the corners' wrappers: their parts are the grid's items wherever the poster is not a sheet (below) */
@@ -250,9 +251,10 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
    picture is, centred, the room around it left as margin. --u is one unit across (and every size); down it may stretch
    up to a fifth (--v), so a squarer screen keeps less empty room; --ox / --oy are the sheet's margins inside the words'
    column. The words in Sofia Sans Extra Condensed 800, capitals: «ДИЗАЙН І РОЗРОБКА» across the top (2.41 em, its
-   baseline at 156), «САЙТІВ.» at the foot in ember (5.3 em, its baseline at 845; its em's baseline at 0.797); the
-   droplet's middle at 860 / 398, in front of both; the prices from 1190 across, 200 down. No formats and no button here
-   (the topbar has «Обговорити», the formats are block 2); the upright poster below keeps both
+   baseline at 156), «САЙТІВ.» smaller in ember on the right under it; the droplet's middle at 860 / 398, in front of
+   everything; the sample site «Ваш бренд» bottom left, the prices bottom right (the owner, 10 Nov 2026: the first
+   screen and what follows as one). No formats and no button here (the topbar has «Обговорити», the formats are
+   block 2); the upright poster below keeps both
    ========================================================================== */
 @media (min-width: 761px) and (min-aspect-ratio: 1/1) and (min-height: 501px) {
   main[data-ai-page="sites"] .st-hg {
@@ -260,19 +262,22 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
     --hg-h: calc(100svh - var(--topbar-h) - clamp(2rem, 6.6vh, 4.375rem) - 1.5 * var(--hg-pad));
     /* (5 Nov: a little more room between the topbar and «ДИЗАЙН І РОЗРОБКА») */
     padding-top: calc(var(--topbar-h) + clamp(2rem, 6.6vh, 4.375rem));
-    --u: min(calc(100cqi / 1810), calc(var(--hg-h) / 900));
+    /* (100cqi is the words' column, or, for the sample site beside it, the hero's inner box: the column is that box up
+       to 92rem, so both get the same unit) */
+    --u: min(calc(min(100cqi, 92rem) / 1810), calc(var(--hg-h) / 900));
     --v: min(calc(var(--hg-h) / 900), calc(var(--u) * 1.2));
     --ox: calc((100cqi - 1810 * var(--u)) / 2);
     --oy: calc((var(--hg-h) - 900 * var(--v)) / 2);
   }
   .st-hg .st-hg__grid { display: block; position: relative; height: var(--hg-h); min-height: 0; }
   .st-hg :is(.st-hg__corner--tl, .st-hg__acts) { display: none; }
-  /* the prices on the right, between the two lines: the format in the words' face, «від» and the sum in mono */
-  .st-hg .st-hg__corner--bl { display: block; position: absolute; z-index: 3; left: calc(var(--ox) + 1190 * var(--u)); top: calc(var(--oy) + 200 * var(--v)); width: calc(620 * var(--u)); }
-  .st-hg .st-hg__k--px { font-size: 0.75rem; }
-  .st-hg .st-hg__px { margin-top: 0.75rem; border-top: 1px solid rgb(246 246 243 / 0.3); font-size: clamp(0.9375rem, 1.15vw, 1.125rem); }
-  .st-hg .st-hg__pi { column-gap: 1rem; padding: 0.4375rem 0; border-bottom: 1px solid rgb(246 246 243 / 0.14); }
-  .st-hg .st-hg__pt { font: 700 clamp(1.5rem, 2.2vw, 2rem)/1 "St Hero XC", "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink); }
+  /* the prices bottom right, under «САЙТІВ.»: the format in the words' face, «від» and the sum in mono */
+  /* (sized in the sheet's units, so on a low screen they keep clear of «САЙТІВ.» above them) */
+  .st-hg .st-hg__corner--bl { display: block; position: absolute; z-index: 3; left: calc(var(--ox) + 1190 * var(--u)); top: calc(var(--oy) + 900 * var(--v) - 250 * var(--u)); width: calc(620 * var(--u)); }
+  .st-hg .st-hg__k--px { font-size: max(0.6875rem, 18 * var(--u)); }
+  .st-hg .st-hg__px { margin-top: calc(16 * var(--u)); border-top: 1px solid rgb(246 246 243 / 0.3); font-size: max(0.875rem, 26 * var(--u)); }
+  .st-hg .st-hg__pi { column-gap: 1rem; padding: calc(9 * var(--u)) 0; border-bottom: 1px solid rgb(246 246 243 / 0.14); }
+  .st-hg .st-hg__pt { font: 700 max(1.25rem, 46 * var(--u))/1 "St Hero XC", "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink); }
   .st-hg__pp b { font-weight: 500; color: var(--ink); }
   .st-hg__mark--tl,
   .st-hg__mark--bl { left: calc(var(--ox) - var(--gutter) * 0.5); }
@@ -301,13 +306,33 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   html:lang(uk) .st-hg :is(.st-h1__a, .st-h1__i, .st-h1__b) { top: calc(var(--oy) - 51 * var(--v)); font-size: 2.6em; }
   html:lang(uk) .st-hg .st-h1__i { left: calc(var(--ox) + 732 * var(--u)); }
   html:lang(uk) .st-hg .st-h1__b { left: calc(var(--ox) + 817 * var(--u)); }
-  .st-h1__s { left: calc(var(--ox) - 4 * var(--u)); top: calc(var(--oy) + 845 * var(--v) - 399 * var(--u)); font-size: 5em; letter-spacing: 0; color: var(--ember); }
+  /* «САЙТІВ.» smaller, right under the title on the right, so the sample site takes the bottom left corner (the owner,
+     10 Nov 2026: the first screen and what follows as one; the third of three settings) */
+  .st-h1__s { right: calc(var(--ox) - 2 * var(--u)); top: calc(var(--oy) + 450 * var(--v) - 207 * var(--u)); font-size: 2.6em; letter-spacing: 0; color: var(--ember); }
   .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
   .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
   .st-h1__s .tone::after { content: "."; }
   /* the droplet: in front of both lines */
   .st-hg .st-hg__stone { position: absolute; grid-area: auto; left: calc(var(--ox) + 860 * var(--u)); top: calc(var(--oy) + 398 * var(--v)); width: 0; height: 0; margin: 0; z-index: 2; font-size: calc(790 / 9.4 * var(--u)); }
   .st-hg .ai-hero__rock { top: 50%; }
+  /* the sample site on a computer and a phone (it used to follow the poster, a screen of its own): the bottom left
+     corner, its foot on the sheet's foot. Placed in the same units from the hero's inner box (a size container here,
+     so its 100cqi is the box), in the words' row. Its scene plays as the page opens; no replay button on the sheet */
+  .st-hg .ai-hero__in { container-type: inline-size; }
+  /* the droplet over everything, the sample site too (the owner, 10 Nov 2026): the words' sheet is a layer of its own
+     (its size container makes it one), so the whole sheet goes above the sample site; it lets the pointer through to
+     the sample site under it (its tilt), the prices keep theirs */
+  .st-hg .st-hg__grid { z-index: 3; pointer-events: none; }
+  .st-hg .st-hg__corner--bl { pointer-events: auto; }
+  /* the room under the sheet the first screen keeps for the crosses: block 2 starts at the screen's foot */
+  main[data-ai-page="sites"] .st-hero.st-hg { padding-bottom: calc(1.5 * var(--hg-pad)); }
+  .st-hero.st-hg .ai-hero__visual { position: absolute; z-index: 2; grid-area: 1 / 1; left: var(--ox); top: calc(var(--oy) + 900 * var(--v) - 500 * var(--u)); width: calc(860 * var(--u)); margin: 0; padding: 0; display: block; }
+  .st-hg .st-show { width: 100%; aspect-ratio: 1100 / 640; }
+  .st-hg .st-show__replay { display: none; }
+  /* a little in perspective (the owner, 10 Nov 2026): the computer and the phone as one card turned toward the middle
+     of the screen. The rotate property, so the mouse's tilt (fx-page.js, an inline transform) still adds to it */
+  .st-hero.st-hg .ai-hero__visual { perspective: 1700px; perspective-origin: 80% 40%; }
+  .st-hg .st-show { rotate: 0.32 1 0 15deg; }
 }
 
 /* ==========================================================================

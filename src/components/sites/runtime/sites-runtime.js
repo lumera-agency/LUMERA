@@ -128,6 +128,7 @@ async function boot() {
   initFaq();
   initSticky();
   initToTop();
+  initCover();
   initScenes();
   initDialogs();
   initCalc();
@@ -337,6 +338,20 @@ function initSticky() {
   });
   ends.forEach((el) => io.observe(el));
   phoneMQ.addEventListener('change', update);
+}
+
+/* ---------- 1 → 2 · the formats slide over the first screen again (the owner, 10 Nov 2026; off since 5 Nov), not on a
+   phone (the same day: there the page simply scrolls on). CSS: html.ai-stick, a first screen marked data-cover (ai.css) ---------- */
+function initCover() {
+  const hero = $('.ai-hero[data-cover]');
+  if (!hero || OG || typeof ResizeObserver !== 'function') return;
+  const phone = window.matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)');
+  const set = () => root.style.setProperty('--hero-h', `${hero.offsetHeight}px`);
+  const pin = () => root.classList.toggle('ai-stick', !phone.matches);
+  set();
+  pin();
+  new ResizeObserver(set).observe(hero);
+  phone.addEventListener('change', pin);
 }
 
 /* ==========================================================================

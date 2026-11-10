@@ -32,6 +32,9 @@ export default function HeroScene({ running, reducedMotion, ...rest }: Props) {
   const coarse = useMemo(() => typeof window !== "undefined" && matchMedia("(pointer: coarse)").matches, []);
   return (
     <Canvas
+      /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
+         root each time; the pointer is read from offsetX/Y, so the canvas' place on the page is never needed */
+      resize={{ scroll: false }}
       className="hero__canvas"
       style={{ position: "absolute", inset: 0 }}
       aria-hidden

@@ -46,6 +46,9 @@ export default function DropletScene({ active, interactive, awake, roll = 0, mir
   const geometry = useDropletGeometry(); // built while the photo loads
   return (
     <Canvas
+      /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
+         root each time; the pointer is read from offsetX/Y, so the canvas' place on the page is never needed */
+      resize={{ scroll: false }}
       // MSAA anti-aliases the outline (the surface is opaque); full DPR up to 2: the look lives on the photo's sharpness
       dpr={[1, maxDpr]}
       frameloop={active ? "always" : "never"}

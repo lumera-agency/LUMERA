@@ -28,6 +28,9 @@ const SHARD_DUST = 0.02;
 export default function ShardsScene({ running, reducedMotion }: { running: boolean; reducedMotion: boolean }) {
   return (
     <Canvas
+      /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
+         root each time; the pointer is read from offsetX/Y, so the canvas' place on the page is never needed */
+      resize={{ scroll: false }}
       className="hero__shards"
       style={{ position: "absolute", inset: 0 }}
       aria-hidden

@@ -39,6 +39,9 @@ export default function RobotStage({ host, slot, words, still }: { host: HTMLEle
   return (
     <div className="ai-bot__canvas" aria-hidden="true">
       <Canvas
+        /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
+           root each time; the pointer is read from offsetX/Y, so the canvas' place on the page is never needed */
+        resize={{ scroll: false }}
         dpr={[1, sharpest]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         camera={{ fov: 14, near: 0.1, far: 100, position: [0, 0, 18] }}
