@@ -71,7 +71,8 @@ const CONFIG = {
   /** a computer: the lines part round the pointer (along their normals, so they never cross) and light up a little;
    *  follow / fade: how fast it catches up and comes and goes (per second) */
   pointer: { radiusPx: 140, pushPx: 20, brighten: 0.3, follow: 5, fade: 2.5 },
-  maxDpr: 2,
+  /** (one pixel per CSS pixel, a Retina screen too: the light look for everyone, the owner, 10 Nov 2026) */
+  maxDpr: 1,
   /** a phone draws this share of the lines and the dust */
   phoneShare: 0.5,
   /** and its stream this much wider (the owner, 5 Nov 2026: at a computer's share of the width it was hardly seen) */

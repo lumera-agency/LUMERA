@@ -243,7 +243,7 @@ export function LetterFlow({ copy, loop = false }: { copy: FlowCopy; loop?: bool
           <div className="flow__table">
             <p className="flow__row"><i /><i /><i /></p>
             <p className="flow__row"><i /><i /><i /></p>
-            <p className="flow__row flow__row--new"><b className="flow__row-bar" /><span>{copy.from}</span><span>20&nbsp;000&nbsp;₴</span><span>15.11</span></p>
+            <p className="flow__row flow__row--new"><b className="flow__row-bar" /><span>{copy.from}</span><span>20&nbsp;000&nbsp;грн</span><span>15.11</span></p>
           </div>
         </div>
       );

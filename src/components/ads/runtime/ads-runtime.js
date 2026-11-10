@@ -1020,7 +1020,36 @@ function filmParts(scene, u) {
   for (const n of $$('[data-draw]', el)) anim(scene, n, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 560, delay: +n.dataset.draw, easing: MOVE });
   for (const n of $$('[data-ring]', el)) tap(scene, n, +n.dataset.ring);
   const trail = $(phoneMQ.matches ? '.rk-cur__trail--m' : '.rk-cur__trail--d', el);
-  if (trail) for (const c of $$('[data-t]', trail)) anim(scene, c, [{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: +c.dataset.t });
+  if (trail) drawTrail(scene, trail);
+}
+
+/* the cursor's trail: its dots come in along the way, each at its own time (data-t). One clock for all of them (an
+   empty animation on the trail, so the scene finishes or drops it like the rest) and a class on each dot as its time
+   comes (the fade is a short transition, ads.css), not an animation per dot: there were about 390 of them, all
+   running at once on every frame of the scene (10 Nov 2026) */
+function drawTrail(scene, trail) {
+  const dots = $$('[data-t]', trail).map((dot) => [dot, +dot.dataset.t]).sort((first, second) => first[1] - second[1]);
+  if (!dots.length) return;
+  const run = String(+(trail.dataset.run || 0) + 1);
+  trail.dataset.run = run;
+  for (const [dot] of dots) dot.classList.toggle('is-in', false);
+  trail.classList.toggle('is-drawing', true);
+  const clock = anim(scene, trail, [{ opacity: 1 }, { opacity: 1 }], { duration: dots[dots.length - 1][1] + 120, easing: 'linear', fill: 'none' });
+  let next = 0;
+  const step = () => {
+    // a newer play of the scene owns the trail now, or this one was dropped
+    if (trail.dataset.run !== run || clock.playState === 'idle') return;
+    const time = clock.playState === 'finished' ? Infinity : clock.currentTime ?? 0;
+    while (next < dots.length && dots[next][1] <= time) dots[next++][0].classList.toggle('is-in', true);
+    if (next >= dots.length) {
+      trail.classList.toggle('is-drawing', false);
+      return;
+    }
+    // (a paused scene, off screen: looked at again now and then, not every frame)
+    if (clock.playState === 'paused') setTimeout(step, 250);
+    else requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 function playPage(scene) {

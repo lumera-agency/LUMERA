@@ -8,9 +8,8 @@
   main[data-ai-page="sites"] .contact .st-get { grid-column: 1 / -1; order: 1; margin-top: var(--rhythm-m); }
 }
 
-/* the main page's page shell lays a grain over the screen (.page__grain, sticky, one screen tall). At the bottom of the
-   page it reached into the footer and stopped half-way down the chrome wordmark, a visible band (the owner, 15 Oct). Here
-   the footer sits above it: one even black from its top to the very bottom */
+/* the footer above the page's own layers: one even black from its top to the very bottom (it was for the main page's
+   grain, which reached into it as a band: the owner, 15 Oct; the grain is gone since 10 Nov 2026) */
 body:has(main[data-ai-page="sites"]) .footer { position: relative; z-index: 2; }
 
 /* the shop sample on phones: while its pinned bar is up (the product's price and «У кошик», or the cart's total), the
@@ -28,8 +27,8 @@ body:has(main[data-ai-page="sites"]) .footer { position: relative; z-index: 2; }
 :root:has(main[data-ai-page="sites"]) { --bg: #000; }
 body:has(main[data-ai-page="sites"]) { background: #000; }
 body:has(main[data-ai-page="sites"]) :is(.page, .footer) { background: #000; }
-/* the main page's film grain (it moved without end) and the «bridge» glow under its own hero */
-body:has(main[data-ai-page="sites"]) :is(.page__grain, .page__bridge) { display: none; }
+/* the «bridge» glow under the main page's own hero */
+body:has(main[data-ai-page="sites"]) .page__bridge { display: none; }
 /* block 2: the chosen format's tab and its dark card; the black card that glides under the chosen tab is what paints it
    (QA 19 Oct, N-04: it was still #0f0e0d) */
 main[data-ai-page="sites"] .st-rail__t[aria-selected="true"] { background: #000; }

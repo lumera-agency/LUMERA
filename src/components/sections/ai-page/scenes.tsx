@@ -30,7 +30,7 @@ export async function offerScenes(): Promise<Partial<Record<Product, React.React
         <div className="ai-mt">
           <p className="ai-mt__sk"><i /><i /><i /></p>
           <p className="ai-mt__sk"><i /><i /><i /></p>
-          <p className="ai-mt__row"><b className="ai-mt__bar" /><span>{t("art.mail.from")}</span><span>20 000 ₴</span><span>15.11</span></p>
+          <p className="ai-mt__row"><b className="ai-mt__bar" /><span>{t("art.mail.from")}</span><span>20 000 грн</span><span>15.11</span></p>
         </div>
       </div>
     ),

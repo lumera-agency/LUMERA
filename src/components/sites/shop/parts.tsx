@@ -184,7 +184,7 @@ export function Wipe({ shot, className = "", eager = false }: { shot: Shot; clas
   );
 }
 
-/** Sliding Number: digits roll to their value; the rest of the string stays (₴, spaces, brackets) */
+/** Sliding Number: digits roll to their value; the rest of the string stays (грн, spaces, brackets) */
 export function Roll({ v, className = "" }: { v: string | number; className?: string }) {
   const s = String(v);
   const ch = [...s];

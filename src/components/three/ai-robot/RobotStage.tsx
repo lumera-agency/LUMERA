@@ -33,9 +33,13 @@ export default function RobotStage({ host, slot, words, still }: { host: HTMLEle
   }, [still]);
 
   const running = visible && (!still || warm);
-  // the canvas covers the screen: as sharp as the screen's own pixels while that stays near three million drawn ones
-  // (a phone at its full density, the card's words crisp; a large screen at 1.5, as before)
-  const sharpest = useMemo(() => Math.min(3, Math.max(1.5, Math.sqrt(3e6 / (innerWidth * innerHeight)))), []);
+  // the canvas covers the screen. A phone: as sharp as its own pixels while that stays near three million drawn ones
+  // (the card's words crisp). A computer: one pixel per CSS pixel, as the site's other 3D (the owner, 10 Nov 2026);
+  // the card's words are kept sharp by its texture (BotScene), not by more pixels
+  const sharpest = useMemo(
+    () => (matchMedia("(hover: hover) and (pointer: fine)").matches ? 1 : Math.min(3, Math.max(1.5, Math.sqrt(3e6 / (innerWidth * innerHeight))))),
+    [],
+  );
   return (
     <div className="ai-bot__canvas" aria-hidden="true">
       <Canvas

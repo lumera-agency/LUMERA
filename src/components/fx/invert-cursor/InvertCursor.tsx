@@ -59,6 +59,10 @@ export function InvertCursor({
     svg.setAttribute("viewBox", `${-box / 2} ${-box / 2} ${box} ${box}`);
     const path = document.createElementNS(NS, "path");
     svg.append(path);
+    // out of sight while there is no lens: an empty layer that blends (difference) still cost the browser a pass over
+    // its square on every frame, all over the site (10 Nov 2026)
+    svg.style.visibility = "hidden";
+    let shown = false;
     document.body.append(svg);
     // the native pointer hides only inside the scope (invert-cursor.css)
     const areas = [...document.querySelectorAll<HTMLElement>(scope)];
@@ -140,6 +144,10 @@ export function InvertCursor({
       const speed = Math.hypot(vel.x, vel.y);
       const stretch = reduced || still ? 0 : Math.min(0.16, speed / 5200);
       path.setAttribute("d", cur.r > 0 ? outline(cur.r, time, stretch, Math.atan2(vel.y, vel.x)) : "");
+      if (cur.r > 0 !== shown) {
+        shown = cur.r > 0;
+        svg.style.visibility = shown ? "visible" : "hidden";
+      }
       svg.style.transform = `translate3d(${(cur.x - box / 2).toFixed(1)}px, ${(cur.y - box / 2).toFixed(1)}px, 0)`;
       // runs while the lens is out (its rim keeps rippling) or still settling
       const busy = cur.r > 0 || target.r > 0 || speed > 2;
@@ -175,15 +183,25 @@ export function InvertCursor({
       inScope = false;
       aim();
     };
-    // the page scrolls under a still pointer: what is under the lens changes
+    // the page scrolls under a still pointer: what is under the lens changes. Looked up about ten times a second while
+    // scrolling and once as it stops, not on every frame (a hit test of the page each frame of a scroll)
     let queued = 0;
+    let lookedAt = -Infinity;
+    let settle = 0;
+    const look = () => {
+      lookedAt = performance.now();
+      under = document.elementFromPoint(target.x, target.y);
+      inScope = Boolean(under?.closest(scope));
+      aim();
+    };
     const onScroll = () => {
-      if (queued || !placed) return;
+      if (!placed) return;
+      clearTimeout(settle);
+      settle = window.setTimeout(look, 140);
+      if (queued || performance.now() - lookedAt < 100) return;
       queued = requestAnimationFrame(() => {
         queued = 0;
-        under = document.elementFromPoint(target.x, target.y);
-        inScope = Boolean(under?.closest(scope));
-        aim();
+        look();
       });
     };
 
@@ -202,6 +220,7 @@ export function InvertCursor({
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
       cancelAnimationFrame(queued);
+      clearTimeout(settle);
       svg.remove();
       areas.forEach((a) => a.removeAttribute("data-invert-cursor"));
     };

@@ -561,6 +561,8 @@ html.ai-stick .ai-hero[data-cover] { position: sticky; top: min(0px, calc(100vh 
 /* the page after the first screen (layout/page PageShell) rides over it; its own background goes, so the first
    block's rounded corners show the pinned screen behind them; the dark blocks carry their own */
 html.ai-stick .ai-hero[data-cover] + .page { z-index: 1; background: transparent; }
+/* (covered whole: out of sight, not drawn; ai-runtime / sites-runtime hideUnder) */
+html.ai-stick .ai-hero[data-cover].is-under { visibility: hidden; }
 html.ai-stick .ai-hero[data-cover] + .page > .section { position: relative; z-index: 1; }
 /* the dark blocks after it keep their own black (the pinned first screen must not show through them) */
 html.ai-stick .ai-hero[data-cover] + .page > .section:not(.section--ivory) { background: var(--bg); }
@@ -1164,7 +1166,7 @@ html.motion:not(.ai-go):not(.is-ready) .ai-hero .ai-bub { opacity: 0; }
 :root:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) { --bg: #000; }
 body:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) { background: #000; }
 body:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) :is(.page, .footer) { background: #000; }
-body:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) :is(.page__grain, .page__bridge) { display: none; }
+body:has(main.ai:is([data-ai-page="ai"], [data-ai-page="case"], [data-ai-page="asst"])) .page__bridge { display: none; }
 main.ai:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero { background: #000; }
 main.ai:is([data-ai-page="case"], [data-ai-page="asst"]) .ai-hero::before { content: none; }
 main.ai:is([data-ai-page="case"], [data-ai-page="asst"]) :is(.ai-ad, .ai-bc, .ai-bc__art) { background: #000; }

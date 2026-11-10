@@ -3513,7 +3513,7 @@
 
 /* the frame's pill («Листайте и нажимайте сами»): here, not in sites.css, so the main page's configurator has it too
    (22 Oct: without these rules it stood in the flow under the frame, 30 px that pushed the preview past the screen) */
-.pvw__you { position: absolute; z-index: 30; left: 50%; bottom: 12px; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; font: 400 13px/1 var(--font-sans); color: #efebe3; background: rgba(15, 14, 13, 0.82); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.16), 0 10px 26px -12px rgba(0, 0, 0, 0.6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transform: translateX(-50%); cursor: pointer; transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
+.pvw__you { position: absolute; z-index: 30; left: 50%; bottom: 12px; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; font: 400 13px/1 var(--font-sans); color: #efebe3; background: rgba(15, 14, 13, 0.94); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.16), 0 10px 26px -12px rgba(0, 0, 0, 0.6); transform: translateX(-50%); cursor: pointer; transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
 .pvw__you::after { content: ""; position: absolute; inset: -4px 0; }
 .pvw__you { white-space: nowrap; }
 @media (max-width: 600px) { .pvw__you { bottom: 10px; min-height: 32px; padding: 0 13px; gap: 7px; font-size: 12px; } .pvw__you::after { inset: -6px 0; } }

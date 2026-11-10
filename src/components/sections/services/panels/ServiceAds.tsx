@@ -165,8 +165,8 @@ export async function ServiceAds() {
                         </span>
                         <span className="gs-v" data-v="cpl">
                           <i className="gs-flash"></i>
-                          <b>360 ₴</b>
-                          <b>288 ₴</b>
+                          <b>360 грн</b>
+                          <b>288 грн</b>
                         </span>
                       </p>
                       <p className="gs__row">
@@ -176,7 +176,7 @@ export async function ServiceAds() {
                           <span>{t("services.ads.kw.2")}</span>
                         </span>
                         <span>2</span>
-                        <span>351 ₴</span>
+                        <span>351 грн</span>
                       </p>
                     </div>
                     <div className="gs-card gs--narrow">
@@ -202,8 +202,8 @@ export async function ServiceAds() {
                         <span>{t("services.ads.col.cpl")}</span>
                         <span className="gs-v" data-v="cpl">
                           <i className="gs-flash"></i>
-                          <b>360 ₴</b>
-                          <b>288 ₴</b>
+                          <b>360 грн</b>
+                          <b>288 грн</b>
                         </span>
                       </p>
                     </div>

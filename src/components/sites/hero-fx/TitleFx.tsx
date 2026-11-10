@@ -9,7 +9,7 @@
  * drawn through it; «САЙТОВ.» in its colour on the page. Drawn while the first screen shows (every other frame while only
  * the slow waves move). The page's words stay in the DOM (the screen reader reads the H1's hidden sentence anyway); they
  * hide in the frame the canvas first shows the same letters, after their entrance. Without WebGL 2 or with reduced
- * motion nothing mounts. (The soap bubble over them is a layer of its own: SitesBubble.)
+ * motion nothing mounts.
  */
 import { useEffect, useRef } from "react";
 import { watchCover } from "./hero-cover";
@@ -186,7 +186,8 @@ export function TitleFx() {
       const bottom = Math.ceil(Math.max(...boxes.map((b) => b.bottom + pad)));
       const width = right - left;
       const height = bottom - top;
-      dpr = Math.min(devicePixelRatio || 1, 2, Math.sqrt(MAX_PIXELS / (width * height)));
+      // (one pixel per CSS pixel, a Retina screen too: a quarter of the pixels; the light look for everyone, the owner, 10 Nov 2026)
+      dpr = Math.min(1, Math.sqrt(MAX_PIXELS / (width * height)));
       Object.assign(canvas.style, { left: `${left - hr.left}px`, top: `${top - hr.top}px`, width: `${width}px`, height: `${height}px` });
       canvas.width = paper.width = Math.round(width * dpr);
       canvas.height = paper.height = Math.round(height * dpr);

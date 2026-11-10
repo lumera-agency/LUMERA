@@ -24,6 +24,8 @@ import { CHROME_LIGHTS, createChromeEnvironment, createMirrorEnvironment, create
 import { FACE, paintFace } from "./face";
 import { FACING, cardOnHand, makeHand, poseHand, type HandPose } from "./hand";
 import { makeCardStyle } from "./card-style";
+import { hideCardWords, makeCardWords, placeCardWords, type CardWords } from "./card-words";
+import "./card-words.css";
 import { makeAntennas, makeChinLogo, makeHandLogo, makeHandLook, makeLook, makeNeck } from "./look";
 import { LIME, botStage, damp, easeInOut, paintedTexture, phase, robotPointer, type BotWords, type FaceMood } from "./shared";
 
@@ -125,7 +127,8 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
     () =>
       words.leads.map((lead) => {
         const painted = paintedTexture(900, 516);
-        cardStyle.paint(painted.context, lead, words.tag);
+        // the glass alone: the words are the page's text over it (card-words.ts), sharp at the screen's own density
+        cardStyle.paint(painted.context, lead, words.tag, false);
         return { lead, ...painted, material: new THREE.MeshBasicMaterial({ map: painted.texture, transparent: true, depthWrite: false, toneMapped: false }) };
       }),
     [words, cardStyle],
@@ -156,6 +159,22 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
 
   const head = useRef<THREE.Group>(null);
   const cardGroups = useRef<(THREE.Group | null)[]>([]);
+  const cardFaces = useRef<(THREE.Mesh | null)[]>([]);
+  // the cards' words as the page's text over the canvas (card-words.ts), one set per card
+  const cardWords = useRef<CardWords[]>([]);
+  const canvasSize = useThree((three) => three.size);
+  useEffect(() => {
+    const host = gl.domElement.closest<HTMLElement>(".ai-bot__canvas") ?? gl.domElement.parentElement;
+    if (!host) return;
+    const layer = document.createElement("div");
+    layer.className = "bot-cards";
+    host.append(layer);
+    cardWords.current = cards.map((card) => makeCardWords(layer, card.lead, words.tag));
+    return () => {
+      layer.remove();
+      cardWords.current = [];
+    };
+  }, [gl, cards, words.tag]);
   const state = useRef({
     ready: false,
     time: 0,
@@ -212,7 +231,7 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
       if (!alive) return;
       chinLogo.paint();
       cards.forEach((card) => {
-        cardStyle.paint(card.context, card.lead, words.tag);
+        cardStyle.paint(card.context, card.lead, words.tag, false);
         card.texture.needsUpdate = true;
       });
     });
@@ -400,7 +419,16 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
         cardBody.opacity = cardStyle.bodyOpacity * (1 - vanish);
       }
       if (at < AT.talk || at >= AT.carry) lookTarget = card.position;
+      const face = cardFaces.current[turn];
+      const text = cardWords.current[turn];
+      if (face && text) {
+        card.updateMatrixWorld(true);
+        placeCardWords(text, face, camera, canvasSize, CARD.width - 0.02, CARD.height - 0.02, cardMaterial.opacity);
+      }
     }
+    cardWords.current.forEach((text, index) => {
+      if (!(card && working && index === turn && at < AT.land)) hideCardWords(text);
+    });
 
     // the right hand: beside the head, a thumbs up as a card is recorded
     const right = hands.right;
@@ -499,7 +527,15 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
           visible={false}
         >
           <mesh geometry={shapes.cardBody} material={cardBody} scale={[1, 1, cardStyle.depth]} />
-          <mesh geometry={shapes.cardFace} material={card.material} position={[0, 0, (CARD.depth * cardStyle.depth) / 2 + 0.008]} renderOrder={4} />
+          <mesh
+            ref={(mesh) => {
+              cardFaces.current[index] = mesh;
+            }}
+            geometry={shapes.cardFace}
+            material={card.material}
+            position={[0, 0, (CARD.depth * cardStyle.depth) / 2 + 0.008]}
+            renderOrder={4}
+          />
         </group>
       ))}
     </>

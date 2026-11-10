@@ -108,7 +108,7 @@ export async function ServiceAutomation() {
                         <p className="au-tr au-tr--fill">
                           <i className="au-bar"></i>
                           <span className="au-td">{t("services.lead-card.name")}</span>
-                          <span className="au-td">20 000 ₴</span>
+                          <span className="au-td">20 000 грн</span>
                           <span className="au-td">15.11</span>
                         </p>
                       </div>

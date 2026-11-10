@@ -242,6 +242,31 @@ function initCover() {
   set();
   new ResizeObserver(set).observe(hero);
   root.classList.add('ai-stick');
+  hideUnder(hero);
+}
+
+/* the first screen out of sight once the next block has covered it whole (past its rounded top too): its 3D, its
+   blurs and its canvases are then neither drawn nor put together by the browser on every frame of the rest of the page
+   (10 Nov 2026: «на рабочем компьютере сильно лагает»). CSS: .ai-hero[data-cover].is-under (ai.css) */
+function hideUnder(hero) {
+  const over = hero.nextElementSibling;
+  if (!over || typeof ResizeObserver !== 'function') return;
+  let top = 0;
+  let hidden = null;
+  let raf = 0;
+  const measure = () => { top = over.getBoundingClientRect().top + window.scrollY; };
+  const check = () => {
+    raf = 0;
+    const now = root.classList.contains('ai-stick') && window.scrollY > top + 48;
+    if (now === hidden) return;
+    hidden = now;
+    hero.classList.toggle('is-under', now);
+  };
+  const again = () => { measure(); check(); };
+  again();
+  new ResizeObserver(again).observe(document.body);
+  addEventListener('resize', again);
+  addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
 }
 
 /* ==========================================================================

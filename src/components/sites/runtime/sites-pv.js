@@ -52,7 +52,7 @@ import { SITE } from './sites-pv-copy.js';
 import { createFx } from './sites-pv-fx.js';
 import { hasAds } from '@/components/sections/pricing/configurator/engine.js';
 // (this page) the example sites: one module per format, js/sites-pv-n-*.js + css/sites-pv-n-*.css (dispatcher js/sites-pv-v2.js)
-import { N } from './sites-pv-v2.js';
+import { N, loadSamples } from './sites-pv-v2.js';
 
 const I = (d, w = 1.5) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d.replace(/<(path|rect|circle|ellipse|line|polyline)\b/g, '<$1 pathLength="1"')}</svg>`;
 const ICO = {
@@ -349,7 +349,7 @@ const two = (n) => String(n).padStart(2, '0');
 // the barcode: two bar patterns of different steps over each other read as one irregular code; the scan
 // line crosses it once under «Анімація»
 const barcode = (url) => `<span class="pv-bar" aria-hidden="true"><i class="pv-bar__code"></i><i class="pv-bar__scan"></i><span class="pv-bar__t">${esc(url)}</span></span>`;
-// the round sticker: «від 600 ₴ за годину», the call to action twice round its edge (fitted to the circle
+// the round sticker: «від 600 грн за годину», the call to action twice round its edge (fitted to the circle
 // by textLength, so UA, RU and EN all close the ring); under «Анімація» the ring turns slowly
 let ringN = 0;
 function sticker(s, e) {
@@ -384,7 +384,7 @@ const RENT_ICO = {
 };
 // a list with dotted leaders: [name, small note, value]
 const leaders = (rows) => `<dl class="pv-ld">${rows.map(([t, u, v]) => `<div><dt>${esc(t)}${u ? `<i>${esc(u)}</i>` : ''}</dt><dd>${v}</dd></div>`).join('')}</dl>`;
-// «900 ₴/год» → «900 ₴» and a small «/год»
+// «900 грн/год» → «900 грн» and a small «/год»
 const priceTag = (p) => { const [v, per] = String(p).split('/'); return `${esc(v)}${per ? `<small>/${esc(per)}</small>` : ''}`; };
 // the hall «Південь» for «Кадри наших гостей»: the same room, three glass pieces of the collection on its floor
 const southTrio = () => '<div class="pv-room pv-room--south pv-room--trio" aria-hidden="true"><i class="pv-room__sun"></i><i class="pv-room__sun"></i><i class="pv-room__sun"></i><i class="pv-room__floor"></i><i class="pv-room__pool"></i>'
@@ -878,7 +878,8 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
     return facesP;
   }
   const idle = window.requestIdleCallback ? (fn) => requestIdleCallback(fn, { timeout: 2000 }) : (fn) => setTimeout(fn, 400);
-  const nearIO = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { nearIO.disconnect(); idle(faces); } }, { rootMargin: '100% 0px' });
+  // (the React samples too: their chunks, in idle time, before a format of theirs is likely to be asked for)
+  const nearIO = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { nearIO.disconnect(); idle(faces); idle(loadSamples); } }, { rootMargin: '100% 0px' });
   nearIO.observe(el);
   const customCard = el.closest('[data-calc]')?.querySelector('input[name="calc-design"][value="custom"]')?.closest('label');
   for (const ev of ['pointerenter', 'touchstart', 'focusin']) customCard?.addEventListener(ev, faces, { once: true, passive: true });
@@ -1086,6 +1087,15 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
     // Лендінг+ (this page): the studio's landing, longer (cfg.plus); everything else treats it as the landing
     if (cfg.format === 'landingPlus') cfg = { ...cfg, format: 'landing', plus: true };
     else cfg = { ...cfg, plus: false };
+    // a React sample asked for before its chunk is in: drawn again with it as soon as it comes, if still asked for
+    if (cfg.format in N && !N[cfg.format]) {
+      const wanted = cfg.format;
+      void loadSamples().then(() => {
+        if (prev?.format !== wanted) return;
+        render(prev, page, false);
+        syncCube();
+      });
+    }
     const before = prev;
     const firstRun = !before;
     const site = cfg.format !== 'existing';

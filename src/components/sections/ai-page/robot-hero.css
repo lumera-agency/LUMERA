@@ -83,22 +83,27 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 
 /* a slow shifting light behind everything: three soft colour fields (lime, mint and teal, violet) drifting, and a second
    set in other places fading in and out over them, so the colours seem to flow; still with reduced motion */
-.bot-aurora { position: absolute; inset: -15%; pointer-events: none; filter: blur(48px); }
+/* (no blur filter: each field fades out on rounded stops, as the 48 px blur over the whole screen softened them; that
+   blur was drawn again on every frame of the drift, the heaviest part of the page for a graphics card; 10 Nov 2026) */
+.bot-aurora { position: absolute; inset: -15%; pointer-events: none; }
 .bot-aurora::before,
 .bot-aurora::after { content: ""; position: absolute; inset: 0; }
 .bot-aurora::before {
   background:
-    radial-gradient(32% 38% at 22% 28%, rgb(218 255 2 / 0.13), transparent 70%),
-    radial-gradient(34% 42% at 74% 30%, rgb(60 200 190 / 0.12), transparent 70%),
-    radial-gradient(40% 36% at 52% 82%, rgb(120 110 240 / 0.12), transparent 70%);
+    radial-gradient(32% 38% at 22% 28%, rgb(218 255 2 / 0.13), rgb(218 255 2 / 0.065) 35%, rgb(218 255 2 / 0.025) 57%, rgb(218 255 2 / 0.008) 67%, rgb(218 255 2 / 0.002) 76%, transparent 83%),
+    radial-gradient(34% 42% at 74% 30%, rgb(60 200 190 / 0.12), rgb(60 200 190 / 0.06) 35%, rgb(60 200 190 / 0.023) 57%, rgb(60 200 190 / 0.008) 67%, rgb(60 200 190 / 0.002) 76%, transparent 83%),
+    radial-gradient(40% 36% at 52% 82%, rgb(120 110 240 / 0.12), rgb(120 110 240 / 0.06) 35%, rgb(120 110 240 / 0.023) 57%, rgb(120 110 240 / 0.008) 67%, rgb(120 110 240 / 0.002) 76%, transparent 83%);
   animation: bot-aurora-drift 22s ease-in-out infinite alternate;
+  /* (held at one pose of its drift: the light look for everyone, the owner, 10 Nov 2026) */
+  animation-play-state: paused;
 }
 .bot-aurora::after {
   background:
-    radial-gradient(36% 40% at 68% 70%, rgb(218 255 2 / 0.1), transparent 70%),
-    radial-gradient(30% 36% at 30% 66%, rgb(80 160 255 / 0.12), transparent 70%),
-    radial-gradient(34% 34% at 50% 20%, rgb(90 215 150 / 0.11), transparent 70%);
+    radial-gradient(36% 40% at 68% 70%, rgb(218 255 2 / 0.1), rgb(218 255 2 / 0.05) 35%, rgb(218 255 2 / 0.019) 57%, rgb(218 255 2 / 0.007) 67%, rgb(218 255 2 / 0.002) 76%, transparent 83%),
+    radial-gradient(30% 36% at 30% 66%, rgb(80 160 255 / 0.12), rgb(80 160 255 / 0.06) 35%, rgb(80 160 255 / 0.023) 57%, rgb(80 160 255 / 0.008) 67%, rgb(80 160 255 / 0.002) 76%, transparent 83%),
+    radial-gradient(34% 34% at 50% 20%, rgb(90 215 150 / 0.11), rgb(90 215 150 / 0.055) 35%, rgb(90 215 150 / 0.021) 57%, rgb(90 215 150 / 0.007) 67%, rgb(90 215 150 / 0.002) 76%, transparent 83%);
   animation: bot-aurora-drift 26s ease-in-out -9s infinite alternate-reverse, bot-aurora-fade 13s ease-in-out infinite alternate;
+  animation-play-state: paused;
 }
 @keyframes bot-aurora-drift {
   0% { transform: translate(-4%, -3%) rotate(0deg) scale(1); }

@@ -210,8 +210,8 @@ export type ShopData = {
 };
 
 const NB = " ";
-/** 1 290 ₴ (no-break spaces between the groups and before the sign) */
-export const money = (n: number) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NB)}${NB}₴`;
+/** 1 290 грн (no-break spaces between the groups and before the sign) */
+export const money = (n: number) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NB)}${NB}грн`;
 /** 3 товари / 3 товара */
 export function plural(n: number, forms: string[]) {
   const a = n % 10;

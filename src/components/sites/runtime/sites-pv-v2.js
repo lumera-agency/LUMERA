@@ -16,7 +16,16 @@
  */
 import * as nLanding from './sites-pv-n-landing.js';
 import * as nPlus from './sites-pv-n-plus.js';
-import * as nCorp from '../clinic/module';
-import * as nShop from '../shop/module';
 
-export const N = { landing: nLanding, plus: nPlus, corporate: nCorp, ecommerce: nShop };
+/* the React samples (the clinic, the shop) are chunks of their own, fetched once the calculator is near or one of
+   them is asked for (loadSamples): they came with the page's own script before, React parts and GSAP Flip the first
+   screen never uses (10 Nov 2026). Until they are in, their formats show the configurator's own sample */
+export const N = { landing: nLanding, plus: nPlus, corporate: null, ecommerce: null };
+let samples = null;
+export function loadSamples() {
+  samples ??= Promise.all([import('../clinic/module'), import('../shop/module')]).then(([corp, shop]) => {
+    N.corporate = corp;
+    N.ecommerce = shop;
+  });
+  return samples;
+}

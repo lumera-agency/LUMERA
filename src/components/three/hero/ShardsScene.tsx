@@ -5,7 +5,8 @@
  * pointer: each drifts on its own slow path (two sines per axis, never quite repeating; nearer ones
  * wider). Fades in with heroState.shards.
  */
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { boot } from "@/lib/boot";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Resume } from "../lib/Resume";
@@ -26,6 +27,16 @@ const SHARDS = [
 const SHARD_DUST = 0.02;
 
 export default function ShardsScene({ running, reducedMotion }: { running: boolean; reducedMotion: boolean }) {
+  // still as a picture (the light look for everyone, the owner, 10 Nov 2026: «статичные как картинка»): drawn while the intro brings them in, then held on that
+  // frame (drawn again only when the canvas changes size), their blur then a still picture the browser draws once
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    void boot.introDone.promise.then(() => alive && setSettled(true));
+    return () => {
+      alive = false;
+    };
+  }, []);
   return (
     <Canvas
       /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
@@ -37,7 +48,7 @@ export default function ShardsScene({ running, reducedMotion }: { running: boole
       dpr={1}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       camera={{ fov: FOV, near: 0.1, far: 100, position: [0, 0, CAMERA_Z] }}
-      frameloop={reducedMotion ? "demand" : running ? "always" : "never"}
+      frameloop={reducedMotion || settled ? "demand" : running ? "always" : "never"}
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 0);
         gl.toneMapping = THREE.ACESFilmicToneMapping;

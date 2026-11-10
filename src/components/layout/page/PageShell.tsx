@@ -91,10 +91,17 @@ export function PageShell({ children }: { children: React.ReactNode }) {
         ease: "none",
         scrollTrigger: { trigger: el, start: "top 60%", end: "bottom 60%", scrub: true, onToggle: (self) => head.current?.classList.toggle("is-on", self.isActive) },
       });
-      for (const meta of el.querySelectorAll(".s-head__meta")) {
-        ScrollTrigger.create({ trigger: meta, start: "top 60%", onEnter: () => meta.classList.add("is-passed"), onLeaveBack: () => meta.classList.remove("is-passed") });
-      }
-      return () => io.disconnect();
+      // a section head's meta is passed once its top is above 60% of the screen (and again not, scrolled back above).
+      // An observer, not a trigger each (10 Nov 2026: seven of them looked at on every frame of every scroll); its
+      // area reaches far above the screen, so a jump past one counts as passing it
+      const passed = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle("is-passed", e.isIntersecting)), {
+        rootMargin: "100000px 0px -40% 0px",
+      });
+      el.querySelectorAll(".s-head__meta").forEach((meta) => passed.observe(meta));
+      return () => {
+        io.disconnect();
+        passed.disconnect();
+      };
     },
     { scope: page },
   );
@@ -144,7 +151,6 @@ export function PageShell({ children }: { children: React.ReactNode }) {
       <div className="page__bridge" data-bridge aria-hidden="true" ref={bridge}>
         <span className="page__bridge-glow" data-bridge-glow ref={bridgeGlow} />
       </div>
-      <div className="page__grain" aria-hidden="true" />
       <div className="spine" aria-hidden="true"><span className="spine__fill" data-spine ref={fill} /></div>
       <span className="spine__head" data-spine-head aria-hidden="true" ref={head} />
       {children}

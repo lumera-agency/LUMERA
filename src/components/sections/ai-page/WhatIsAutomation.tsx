@@ -20,7 +20,7 @@ export async function WhatIsAutomation({ index }: { index: number }) {
     body: t("art.mail.body"),
     fields: [
       { k: t("art.f.name"), v: t("art.mail.from") },
-      { k: t("art.f.budget"), v: "20 000 ₴" },
+      { k: t("art.f.budget"), v: "20 000 грн" },
       { k: t("art.f.term"), v: t("art.term") },
     ],
     reading: t("flow.reading"),

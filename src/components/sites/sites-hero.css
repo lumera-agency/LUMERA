@@ -434,14 +434,5 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
 .st-h1fx { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0; }
 .st-h1fx.is-live { opacity: 1; }
 .st-hg__title.is-fx .st-h1 { visibility: hidden; }
-/* the soap bubble (SitesBubble.tsx): a layer over the whole first screen, over its words, its corners and the droplet
-   (the pinned first screen is a layer of its own: block 2 still slides over it) */
-/* (5 Nov: the first screen no longer pins, so the bubble rides a rail as tall as the whole hero, its first screen and
-   the sample site, the canvas sticking to the screen's top: it stays till block 2 comes in. The hero clips instead of
-   hiding its overflow: hidden would make it the sticky canvas' scroller) */
+/* (the hero clips its overflow rather than hiding it: hidden would make it a scroller of its own) */
 .st-hero.st-hg { overflow: clip; }
-.st-hg .st-bubble-rail { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
-.st-hg .st-bubble { position: sticky; top: 0; display: block; width: 100%; height: 100vh; height: 100svh; pointer-events: none; }
-/* a computer: the bubble is the pointer while it shows over the first screen (SitesBubble: is-bubble) */
-.st-hg.is-bubble,
-.st-hg.is-bubble * { cursor: none; }

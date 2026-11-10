@@ -352,6 +352,31 @@ function initCover() {
   pin();
   new ResizeObserver(set).observe(hero);
   phone.addEventListener('change', pin);
+  hideUnder(hero);
+}
+
+/* the first screen out of sight once the next block has covered it whole (past its rounded top too): its 3D, its
+   blurs and its canvases are then neither drawn nor put together by the browser on every frame of the rest of the page
+   (10 Nov 2026: «на рабочем компьютере сильно лагает»). CSS: .ai-hero[data-cover].is-under (ai.css) */
+function hideUnder(hero) {
+  const over = hero.nextElementSibling;
+  if (!over || typeof ResizeObserver !== 'function') return;
+  let top = 0;
+  let hidden = null;
+  let raf = 0;
+  const measure = () => { top = over.getBoundingClientRect().top + window.scrollY; };
+  const check = () => {
+    raf = 0;
+    const now = root.classList.contains('ai-stick') && window.scrollY > top + 48;
+    if (now === hidden) return;
+    hidden = now;
+    hero.classList.toggle('is-under', now);
+  };
+  const again = () => { measure(); check(); };
+  again();
+  new ResizeObserver(again).observe(document.body);
+  addEventListener('resize', again);
+  addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
 }
 
 /* ==========================================================================
@@ -917,9 +942,11 @@ function initTabs() {
     const desk = img.closest('.st-dev__desk');
     img.src = phone && desk ? img.dataset.src.replace(/\.webp$/, '-s.webp') : img.dataset.src;
   }
-  // on a computer every still starts loading once block 2 is within a screen, so a tab never opens on an empty window;
-  // on a phone only the open format's (the phone audit: all ten, 2.2 MB, came at the page's load), and another
-  // format's as its tab is pressed (the blurred stand-in covers the moment)
+  // the open format's stills start loading once block 2 is within a screen. On a computer the other formats' follow
+  // once block 2 itself shows, and a tab's own as the pointer comes onto it: all of them at block 2's approach came
+  // with the page's load (block 2 is a screen down), about 1.1 MB the first screen never shows (10 Nov 2026). On a
+  // phone another format's as its tab is pressed (the phone audit: all ten, 2.2 MB, came at the page's load). The
+  // blurred stand-in covers the moment either way
   const stills = $$('.st-stage img', room);
   const eager = (imgs) => { for (const img of imgs) img.loading = 'eager'; };
   const stageImgs = (f) => $$(`.st-stage[data-fmt="${f}"] img`, room);
@@ -928,11 +955,19 @@ function initTabs() {
     if (!es.some((e) => e.isIntersecting)) return;
     near.disconnect();
     near2 = true;
-    eager(phone ? stageImgs(state.format) : stills);
+    eager(stageImgs(state.format));
   }, { rootMargin: '900px 0px' });
   near.observe(room);
   if (phone) {
     for (const b of buttons) b.addEventListener('pointerdown', () => { if (near2) eager(stageImgs(b.dataset.tab)); }, { passive: true });
+  } else {
+    const shown = new IntersectionObserver((es) => {
+      if (!es.some((e) => e.isIntersecting)) return;
+      shown.disconnect();
+      eager(stills);
+    });
+    shown.observe(room);
+    for (const b of buttons) b.addEventListener('pointerenter', () => eager(stageImgs(b.dataset.tab)), { passive: true });
   }
   // (15 Oct) Safari paints a page-long image inside a moving layer tile by tile and falls behind the scroll: the window
   // showed black, then the blurred stand-in. Each still is shown as a column of slices instead, each slice its own

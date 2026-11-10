@@ -38,7 +38,9 @@ export default function HeroScene({ running, reducedMotion, ...rest }: Props) {
       className="hero__canvas"
       style={{ position: "absolute", inset: 0 }}
       aria-hidden
-      dpr={[1, coarse ? 1.5 : 2]}
+      // (one pixel per CSS pixel, a Retina screen too: a quarter of the pixels of two, and the difference hardly shows
+      // on the stone's rough surface; the light look for everyone, the owner, 10 Nov 2026)
+      dpr={1}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       camera={{ fov: FOV, near: 0.1, far: 100, position: [0, 0, CAMERA_Z] }}
       frameloop={reducedMotion ? "demand" : running ? "always" : "never"}

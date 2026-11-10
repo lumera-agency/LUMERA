@@ -10,11 +10,17 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { setLenis } from "@/lib/scroll";
+import { useLite } from "@/lib/lite";
 import "./smooth-scroll.css";
 
 
 export function SmoothScroll({ lerp = 0.095 }: { lerp?: number }) {
+  // the light mode (lib/lite.ts) scrolls natively, no glide at all (the owner, 10 Nov 2026): the browser moves the
+  // page on its own thread, so a busy page never holds a frame of the scroll back (each frame of a glide waits for the
+  // page's script); every other computer glides as before
+  const light = useLite();
   useEffect(() => {
+    if (light) return;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const lenis = new Lenis({
@@ -47,6 +53,6 @@ export function SmoothScroll({ lerp = 0.095 }: { lerp?: number }) {
       lenis.destroy();
       setLenis(null);
     };
-  }, [lerp]);
+  }, [lerp, light]);
   return null;
 }

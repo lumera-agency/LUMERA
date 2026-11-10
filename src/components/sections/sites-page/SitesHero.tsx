@@ -7,7 +7,6 @@ import { SitesDropletSlot } from "@/components/sites/hero-fx/SitesDropletSlot";
 import type { SitesFacts } from "@/components/sites/facts";
 import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
 import { TitleFx } from "@/components/sites/hero-fx/TitleFx";
-import { SitesBubble } from "@/components/sites/hero-fx/SitesBubble";
 
 /**
  * 1 · the first screen, «Плакат». On a computer (the owner's pick of five settings, 5 Nov 2026) «ДИЗАЙН І РОЗРОБКА»
@@ -101,8 +100,6 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
         </div>
         <Show t={t} />
       </div>
-      {/* the soap bubble over the first screen (decoration): after the pointer, on a phone floating by itself */}
-      <SitesBubble />
     </section>
   );
 }

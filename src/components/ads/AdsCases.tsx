@@ -79,15 +79,20 @@ const writeNumber = (value: number, decimals: number) => {
 function CountUp({ value, run }: { value: string; run: boolean }) {
   const target = Number(value.replace(/[\s\u00a0\u202f]/g, "").replace(",", "."));
   const decimals = value.includes(",") ? value.split(",")[1].length : 0;
-  const [shown, setShown] = useState(() => writeNumber(0, decimals));
+  // the running digits written straight into their span, not through React state: a state set on every frame had React
+  // render the cases block again on each frame of the count (10 Nov 2026)
+  const runner = useRef<HTMLSpanElement>(null);
   useEffect(() => {
-    if (!run || !Number.isFinite(target)) return;
+    const out = runner.current;
+    if (!run || !out || !Number.isFinite(target)) return;
     const start = performance.now();
     const DURATION = 900;
     let frame = 0;
+    let written = "";
     const tick = (time: number) => {
       const progress = Math.min(1, (time - start) / DURATION);
-      setShown(writeNumber(target * (1 - (1 - progress) ** 3), decimals));
+      const next = writeNumber(target * (1 - (1 - progress) ** 3), decimals);
+      if (next !== written) out.textContent = written = next;
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
@@ -96,7 +101,7 @@ function CountUp({ value, run }: { value: string; run: boolean }) {
   return (
     <span className="rk-cs-count">
       <span className="rk-cs-count__end">{value}</span>
-      <span className="rk-cs-count__run" aria-hidden="true">{shown}</span>
+      <span className="rk-cs-count__run" aria-hidden="true" ref={runner}>{writeNumber(0, decimals)}</span>
     </span>
   );
 }
