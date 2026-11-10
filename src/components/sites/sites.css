@@ -5,6 +5,12 @@
  * main[data-ai-page="sites"] or the page's own st-* / ms-* / fx-* classes; the static page's header, footer, FAQ and
  * button rules are gone (the main page's components have their own).
  */
+/* the rolling digits (sites-rb.js), as sites-pv.css has them: the samples' styles come only with the page's script now,
+   and the formats' sums are in the page's HTML from the start (without these a sum shows its whole 0–9 strip) */
+.st-d { position: relative; display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: top; }
+.st-d > span { display: grid; }
+.st-d > span > i { display: block; height: 1em; font-style: normal; text-align: center; }
+
 /* ==================== from css/sites-page.css ==================== */
 /*
  * «Дизайн і сайти» (/dyzain-i-saity): this page's own layer over the AI pages' kit (css/ai-page.css, loaded first and
@@ -267,11 +273,14 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-stage__wk { font: 400 13px/1 var(--font-mono); color: rgba(239, 235, 227, 0.7); }
 .st-stage__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 26px; }
 .st-stage__acts .st-ghost { flex: 1 0 100%; justify-content: flex-start; }
-.st-ghost { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; font: inherit; font-size: var(--fs-small); color: #efebe3; text-decoration: underline; text-decoration-color: rgba(226, 101, 42, 0.8); text-underline-offset: 4px; background: none; cursor: pointer; }
-.st-ghost svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* «Порахувати свій варіант»: no underline (the owner, 10 Nov 2026), the arrow in a ring as «Подивитися ціни» on the ads
+   page (.ai-down); the ring fills on hover */
+.st-ghost { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; font: inherit; font-size: var(--fs-small); color: #efebe3; text-decoration: none; background: none; cursor: pointer; }
+.st-ghost svg { box-sizing: content-box; flex: none; width: 14px; height: 14px; padding: 9px; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.35); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
 @media (hover: hover) {
-  .st-ghost:hover { color: var(--ember-ink); }
+  .st-ghost:hover svg { color: #0f0e0d; background: #efebe3; box-shadow: none; transform: translateY(2px); }
 }
+.st-ghost:focus-visible svg { color: #0f0e0d; background: #efebe3; box-shadow: none; }
 .st-more2 { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 8px 0 16px; border: 0; border-radius: 999px; font: 500 var(--fs-small)/1 var(--font-sans); color: #efebe3; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.18); cursor: pointer; transition: background-color var(--dur-fast); }
 .st-more2 i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: #0f0e0d; background: #efebe3; transition: transform var(--dur) var(--ease-out); }
 .st-more2 svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
@@ -336,9 +345,9 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-get__list li::before { content: ""; position: absolute; left: 0; top: 0.1em; width: 18px; height: 18px; border-radius: 50%; background: var(--ink-dark) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23f1ece3' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 12px no-repeat; }
 .st-fmts__end { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 32px; margin-top: var(--rhythm-s); }
 .st-fmts__note { margin: 0; font-size: var(--fs-body-s); font-weight: 300; color: var(--ink-dark-soft); }
-.st-fmts__note .link { padding-block: 12px; color: var(--ink-dark); text-decoration-color: rgba(176, 70, 26, 0.7); }
+.st-fmts__note .link { padding-block: 12px; color: var(--ember-deep); }
 @media (hover: hover) {
-  .st-fmts__note .link:hover { color: var(--ember-deep); }
+  .st-fmts__note .link:hover { color: var(--ink-dark); }
 }
 .st-fmts__end .ai-replay { margin-left: auto; }
 
@@ -576,7 +585,9 @@ html:not(.motion) .st-build { display: none; }
 /* the configurator sized its frame from the summary card beside it (--side-rest, set on .cfg): here, from the screen;
    there is no tray of lead add-ons on this page (--tray 0) */
 .st-pvw { --side-rest: calc(var(--topbar-h) + 140px); box-shadow: 0 50px 90px -50px rgba(0, 0, 0, 0.95); }
-@media (min-width: 701px) { .st-pvw { --tray: 0px; } }
+/* (both classes: the samples' sites-pv.css now comes after this file, with the page's script, and sets .pvw's --tray and
+   --vph itself; as .pvw alone these lost to it) */
+@media (min-width: 701px) { .pvw.st-pvw { --tray: 0px; } }
 .st-pv .st-stage__end { align-items: flex-start; }
 .st-pv .st-stage__note { max-width: 52ch; }
 
@@ -594,7 +605,7 @@ html:not(.motion) .st-build { display: none; }
 }
 @media (max-width: 600px) {
   /* a phone shows more of the sample: a taller frame (the samples have their own phone composition) */
-  .st-pvw { --vph: 120cqw; }
+  .pvw.st-pvw { --vph: 120cqw; }
   .st-pv .st-stage__end { flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; }
 }
 
@@ -621,6 +632,12 @@ body:has(main[data-ai-page="sites"]) .ai-sticky:not(.is-on) { visibility: hidden
 body:has(main[data-ai-page="sites"]) .ai-sticky.is-on { visibility: visible; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s; }
 body:has(main[data-ai-page="sites"]) .st-sumbar:not(.is-on) { visibility: hidden; transform: translateY(8px); transition: opacity 0.35s var(--ease-out), transform 0.45s var(--ease-out), visibility 0s linear 0.45s; }
 body:has(main[data-ai-page="sites"]) .st-sumbar.is-on { visibility: visible; transition: opacity 0.35s var(--ease-out), transform 0.45s var(--ease-out), visibility 0s; }
+/* phones: the request bar and the button back up on one line, as on the AI pages (the owner, 10 Nov 2026: the button
+   used to step aside over the bar and was gone for most of the page) */
+@media (max-width: 600px) {
+  body:has(main[data-ai-page="sites"]) .ai-sticky { padding: 0 calc(1rem + 2.875rem + 0.5rem) 0 1rem; }
+  body:has(main[data-ai-page="sites"]) .to-top { bottom: calc(14px + env(safe-area-inset-bottom)); }
+}
 
 /* ==================== from css/sites-fx-page.css ==================== */
 /*
@@ -1001,10 +1018,13 @@ html:not(.motion) .faq__item::after { transition: none; }
 .st-hw-end__g { margin: 0; font-size: var(--fs-h4); font-weight: 300; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink-dark); }
 .st-hw-end__g b { font-weight: 400; color: var(--ember-deep); }
 .st-hw-end__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 26px; }
-.st-hw-end__calc { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-small); color: var(--ink-dark); text-decoration-color: rgba(176, 70, 26, 0.7); }
+/* to the calculator: the arrow in a ring, as «Порахувати свій варіант» (.st-ghost), in the ivory's dark */
+.st-hw-end__calc { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: var(--fs-small); color: var(--ink-dark); text-decoration: none; }
+.st-hw-end__calc svg { box-sizing: content-box; flex: none; width: 14px; height: 14px; padding: 9px; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
 @media (hover: hover) {
-  .st-hw-end__calc:hover { color: var(--ember-deep); }
+  .st-hw-end__calc:hover svg { color: var(--ivory, #fcfcfa); background: var(--ink-dark); box-shadow: none; transform: translateY(2px); }
 }
+.st-hw-end__calc:focus-visible svg { color: var(--ivory, #fcfcfa); background: var(--ink-dark); box-shadow: none; }
 .st-hw-end__note { margin: 12px 0 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-dark-mute); }
 
 /* the entrance (scene «how»): the board rises, the plan's boxes tick one by one */

@@ -19,9 +19,12 @@
   opacity: 0;
   visibility: hidden;
   transform: translateY(0.75rem) scale(0.9);
+  /* above a bar pinned to the bottom (BackToTop sets the lift) */
+  translate: 0 calc(-1 * var(--to-top-lift, 0px));
   transition:
     opacity 0.4s var(--ease-out, ease-out),
     transform 0.5s var(--ease-out, ease-out),
+    translate 0.45s var(--ease-out, ease-out),
     visibility 0s linear 0.5s,
     background 0.3s,
     color 0.3s;

@@ -27,10 +27,17 @@ const FORMATS = [
 
 export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
-  // the lead's italic face is fetched with the page: the line never re-wraps when it arrives
-  preload("/fonts/sites/source-serif-4-italic-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
-  // the computer's words wait unseen for their face (font-display: block): it comes with the page
+  // the lead's italic face is fetched with the page where the lead shows (the sheet: a phone on its side, a tablet
+  // upright; hidden on an upright phone and on the computer's poster, sites-hero.css): the line never re-wraps when it
+  // arrives, and nowhere else is it fetched for nothing
+  const sheet = "(max-width: 760px) and (orientation: landscape), (min-width: 761px) and (max-aspect-ratio: 999/1000), (orientation: landscape) and (max-height: 500px)";
+  for (const script of ["cyrillic", "latin"]) {
+    preload(`/fonts/sites/source-serif-4-italic-400-${script}.woff2`, { as: "font", type: "font/woff2", crossOrigin: "anonymous", media: sheet });
+  }
+  // the computer's words wait unseen for their face (font-display: block): it comes with the page, both files («сайтів.»'s
+  // full stop is in the Latin one)
   preload("/fonts/sofia-sans-xc-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  preload("/fonts/sofia-sans-xc-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const label = (text: string, area: string) => (
     <p className={`st-hg__k st-hg__k--${area}`} aria-hidden="true">{text}</p>
   );
@@ -53,7 +60,7 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
             <div className="ai-hero__rock">
               <i className="ai-hero__glow" />
               {/* the still: the droplet at rest, at the canvas' size and framing (square, centred on the body: 720 and 1072 px);
-                  shown only where nothing moves (reduced motion, Save-Data, no WebGL: sites-hero.css, .is-still), so it
+                  shown only where nothing can move (no WebGL: sites-hero.css, .is-still), so it
                   is asked for last; sizes ≈ the canvas' width (11.6 em of --hg-st), never below 0 on a low screen */}
               <img
                 className="ai-hero__stone"
@@ -100,20 +107,20 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
 }
 
 /*
- * The H1 (hero.title: «<line>Дизайн і розробка</line> <line><hl>сайтів</hl></line>»): its four words, each in a mask
- * it rises out of, set per screen by sites-hero.css (.st-h1); «розробка» comes in letter by letter. The screen reader
- * gets the plain sentence (.visually-hidden), the set words are aria-hidden.
+ * The H1 (hero.title: «<line>Дизайн і розробка</line> <line><hl>сайтів</hl></line>»): its four words, each set per
+ * screen by sites-hero.css (.st-h1), there from the first paint. The screen reader gets the plain sentence
+ * (.visually-hidden), the set words are aria-hidden.
  */
 function Title({ raw }: { raw: string }) {
   const lines = [...raw.matchAll(/<line>(.*?)<\/line>/g)].map((match) => match[1]);
   const [design, and, ...rest] = (lines[0] ?? "").split(/\s+/); // «Дизайн» «і» «розробка» (\s also takes a no-break space)
   const key = (lines[1] ?? "").replace(/<\/?hl>/g, "");
-  // one word, not a span a letter: the face's kerning holds (the reveal steps a letter at a time instead, sites-hero.css)
+  // one word, not a span a letter: the face's kerning holds
   const code = rest.join(" ");
   return (
     <>
       <span className="visually-hidden">{`${lines[0] ?? ""} ${key}`}</span>
-      <span className="st-h1" aria-hidden="true" style={{ "--n": [...code].length } as React.CSSProperties}>
+      <span className="st-h1" aria-hidden="true">
         <span className="st-h1__m st-h1__a"><span className="tone">{design}</span></span>
         <span className="st-h1__m st-h1__i"><span className="tone">{and}</span></span>
         <span className="st-h1__m st-h1__b"><span className="tone st-h1__code">{code}</span></span>

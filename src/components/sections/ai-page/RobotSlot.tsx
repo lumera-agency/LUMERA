@@ -3,7 +3,7 @@
  * Where the first screen's robot goes (three/ai-robot): its canvas over the whole screen, the head on this slot. Once
  * the page has loaded and the browser is idle, so the page never waits for three.js; without WebGL nothing comes and
  * the page shows the table's still, every request booked (.is-still on the screen: robot-hero.css keeps the rows as
- * waiting slots only while a robot is to come). With reduced motion the robot still comes, drawn once in its pose.
+ * waiting slots only while a robot is to come). It moves with reduced motion too (the owner, 9 Nov 2026).
  * A phone plays the scene as a film instead, from the first moment (RobotFilm); if it can't, the live scene comes; only
  * where neither can be drawn (no WebGL) a picture of the robot stands (RobotPicture).
  */
@@ -22,7 +22,6 @@ const PHONE = "(max-width: 599px) and (hover: none) and (pointer: coarse)";
 export function RobotSlot({ words, film }: { words: BotWords; film: string }) {
   const mark = useRef<HTMLSpanElement>(null);
   const [places, setPlaces] = useState<{ host: HTMLElement; slot: HTMLElement } | null>(null);
-  const [still, setStill] = useState(false);
   const [mode, setMode] = useState<"film" | "live" | "picture" | null>(null);
   useEffect(() => {
     let idle = 0;
@@ -31,8 +30,7 @@ export function RobotSlot({ words, film }: { words: BotWords; film: string }) {
       const host = slot?.closest<HTMLElement>(".ai-bot");
       if (slot && host) setPlaces({ host, slot });
     };
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reduced && matchMedia(PHONE).matches) {
+    if (matchMedia(PHONE).matches) {
       const frame = requestAnimationFrame(() => {
         find();
         setMode("film");
@@ -40,7 +38,6 @@ export function RobotSlot({ words, film }: { words: BotWords; film: string }) {
       return () => cancelAnimationFrame(frame);
     }
     const go = () => {
-      setStill(reduced);
       find();
       setMode("live");
     };
@@ -70,7 +67,7 @@ export function RobotSlot({ words, film }: { words: BotWords; film: string }) {
             setMode("picture");
           }}
         >
-          <RobotStage host={places.host} slot={places.slot} words={words} still={still} />
+          <RobotStage host={places.host} slot={places.slot} words={words} still={false} />
         </WebGLGate>
       )}
       {places && mode === "picture" && <RobotPicture host={places.host} slot={places.slot} />}

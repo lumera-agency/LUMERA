@@ -22,45 +22,83 @@ export type CaseView = {
 };
 export type CasesText = { index: number; nav: string; title: React.ReactNode; intro: string; cta: string; site: string; before: string; swipe: string };
 
-/** a number, its «≈» and its unit smaller; «before → after» with the old one struck through */
+/** a number, its «≈» and its unit smaller; «before → after» with the old one struck through. With `count` it runs up
+ *  from zero each time it comes into view whole after it has left the screen (the owner, 10 Nov 2026: the numbers count
+ *  when the block is seen, not when the page opens) */
 function Num({ text, count = false }: { text: string; count?: boolean }) {
   const [was, now] = text.includes(" → ") ? text.split(" → ") : [null, text];
   const match = now.match(/^(≈\s*)?(.+?)(\s*(?:грн|%))?$/);
   const body = match?.[2] ?? now;
+  const holder = useRef<HTMLSpanElement>(null);
+  const rounds = useRounds(holder, count);
   return (
-    <span className="rk-cs-num">
+    <span className="rk-cs-num" ref={holder}>
       {was && <s className="rk-cs-num__was">{was}</s>}
-      <span className="rk-cs-num__now">
+      {/* (a new round starts the count and the highlighter afresh) */}
+      <span className="rk-cs-num__now" data-run={rounds > 0 || undefined} key={rounds}>
         {match?.[1] && <span className="rk-cs-num__approx">≈</span>}
-        {count ? <CountUp value={body} /> : body}
+        {count ? <CountUp value={body} run={rounds > 0} /> : body}
         {match?.[3] && <small className="rk-cs-num__unit">{match[3].trim()}</small>}
       </span>
     </span>
   );
 }
 
-/** a number that runs up from zero when it appears (the owner, 6 Nov: the client must see the numbers), written as the
- *  message writes it (a space between thousands, a comma before the decimals); still with reduced motion */
-function CountUp({ value }: { value: string }) {
-  const target = Number(value.replace(/[\s ]/g, "").replace(",", "."));
-  const decimals = value.includes(",") ? value.split(",")[1].length : 0;
-  const [shown, setShown] = useState(value);
+/** how many times the element has come into view whole after being off the screen (0: not yet) */
+function useRounds(target: React.RefObject<HTMLElement | null>, on: boolean) {
+  const [rounds, setRounds] = useState(0);
   useEffect(() => {
-    if (!Number.isFinite(target) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const element = target.current;
+    if (!on || !element) return;
+    let armed = true;
+    const watch = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) armed = true;
+        else if (armed && entry.intersectionRatio > 0.98) {
+          armed = false;
+          setRounds((done) => done + 1);
+        }
+      },
+      { threshold: [0, 1] },
+    );
+    watch.observe(element);
+    return () => watch.disconnect();
+  }, [target, on]);
+  return rounds;
+}
+
+/** the number as the message writes it: a space between thousands, a comma before the decimals */
+const writeNumber = (value: number, decimals: number) => {
+  const [whole, fraction] = value.toFixed(decimals).split(".");
+  return whole.replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0") + (fraction ? `,${fraction}` : "");
+};
+
+/** a number that runs up from zero once `run` (the owner, 6 Nov: the client must see the numbers). The final number
+ *  stays in the line, unseen, so the line never changes width while it runs and a screen reader reads only it; with
+ *  reduced motion (no html.motion) the final number simply shows (ads.css) */
+function CountUp({ value, run }: { value: string; run: boolean }) {
+  const target = Number(value.replace(/[\s\u00a0\u202f]/g, "").replace(",", "."));
+  const decimals = value.includes(",") ? value.split(",")[1].length : 0;
+  const [shown, setShown] = useState(() => writeNumber(0, decimals));
+  useEffect(() => {
+    if (!run || !Number.isFinite(target)) return;
     const start = performance.now();
     const DURATION = 900;
     let frame = 0;
     const tick = (time: number) => {
       const progress = Math.min(1, (time - start) / DURATION);
-      const eased = 1 - (1 - progress) ** 3;
-      const [whole, fraction] = (target * eased).toFixed(decimals).split(".");
-      setShown(whole.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + (fraction ? `,${fraction}` : ""));
+      setShown(writeNumber(target * (1 - (1 - progress) ** 3), decimals));
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [target, decimals]);
-  return <>{shown}</>;
+  }, [run, target, decimals]);
+  return (
+    <span className="rk-cs-count">
+      <span className="rk-cs-count__end">{value}</span>
+      <span className="rk-cs-count__run" aria-hidden="true">{shown}</span>
+    </span>
+  );
 }
 
 const metric = (c: CaseView, key: CaseMetric["key"]) => c.metrics.find((m) => m.key === key)!;
@@ -177,8 +215,10 @@ export function AdsCases({ cases, text }: { cases: CaseView[]; text: CasesText }
               onClick={() => setActive(index)}
               key={item.id}
             >
-              <span className="rk-cs-card__n"><small>{text.nav} {index + 1}</small>{item.name}</span>
-              <span className="rk-cs-card__v"><Num text={item.tab.v} /></span>
+              {/* (read as before: the case's number first; the grid puts it under the name) */}
+              <span className="rk-cs-card__tag">{text.nav} {index + 1}</span>
+              <span className="rk-cs-card__n">{item.name}</span>
+              <span className="rk-cs-card__v"><Num text={item.tab.v} count /></span>
               <span className="rk-cs-card__k">{item.tab.k}</span>
               <span className="rk-cs-card__go" aria-hidden="true"><ArrowRight /></span>
             </button>

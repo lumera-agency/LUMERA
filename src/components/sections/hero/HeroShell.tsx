@@ -161,12 +161,13 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
   useEffect(() => {
     if (!build) return;
     island?.root.render(
+      // (the stone and its shards move with reduced motion too: the owner, 9 Nov 2026; only the intro is skipped there)
       <WebGLGate onSkip={skipScene}>
-        <ShardsScene running={running} reducedMotion={reducedMotion} />
-        <HeroScene heroRef={heroBox} glowRef={glowBox} orbitLabel={orbitLabel} running={running} reducedMotion={reducedMotion} />
+        <ShardsScene running={running} reducedMotion={false} />
+        <HeroScene heroRef={heroBox} glowRef={glowBox} orbitLabel={orbitLabel} running={running} reducedMotion={false} />
       </WebGLGate>,
     );
-  }, [build, running, reducedMotion, orbitLabel]);
+  }, [build, running, orbitLabel]);
 
   return (
     <div className="hero" data-hero ref={hero}>

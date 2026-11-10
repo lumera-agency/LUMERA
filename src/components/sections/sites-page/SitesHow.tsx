@@ -200,7 +200,7 @@ export async function SitesHow() {
           <p className="st-hw-end__g">{t.rich("how.guarantee", R)}</p>
           <div className="st-hw-end__acts">
             <ButtonLink href="#contact" variant="primary" data-how-cta="">{t("calc.send")}</ButtonLink>
-            <a className="link st-hw-end__calc" href="#design">{t("how.calc")}</a>
+            <a className="st-hw-end__calc" href="#design"><span>{t("how.calc")}</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v15M6 13.5l6 6 6-6" /></svg></a>
           </div>
           <p className="st-hw-end__note">{t("how.cta.note")}</p>
         </div>

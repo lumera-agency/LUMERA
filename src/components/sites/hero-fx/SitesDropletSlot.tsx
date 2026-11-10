@@ -2,9 +2,9 @@
 /*
  * «Дизайн і сайти»: where the live droplet goes (SitesDroplet.tsx): asked for as soon as the browser has a moment, not
  * after the whole page has loaded (it comes once, whole: the sooner the better; the words are painted before it anyway);
- * never with reduced motion, Save-Data or without WebGL: then the still under it simply stays (.is-still). A phone plays
- * the droplet as a film instead, from the first moment (SitesDropletFilm, the owner, 6 Nov 2026); if it can't, the live
- * droplet comes.
+ * never without WebGL: then the still under it simply stays (.is-still). A phone plays the droplet as a film instead,
+ * from the first moment (SitesDropletFilm, the owner, 6 Nov 2026); if it can't, the live droplet comes. It moves with
+ * reduced motion and Save-Data too (the owner, 9 Nov 2026: the picture only where nothing else can run).
  */
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
@@ -23,11 +23,6 @@ export function SitesDropletSlot() {
   const [mode, setMode] = useState<"film" | "live" | null>(null);
   useEffect(() => {
     const rock = mark.current?.parentElement ?? null;
-    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    if (saveData || matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      rock?.classList.add("is-still");
-      return;
-    }
     if (matchMedia(TOUCH).matches) {
       const frame = requestAnimationFrame(() => {
         setHost(rock);

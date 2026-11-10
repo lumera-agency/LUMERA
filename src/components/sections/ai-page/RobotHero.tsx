@@ -1,3 +1,4 @@
+import { preload } from "react-dom";
 import { getLocale, getTranslations } from "next-intl/server";
 import { BotStory } from "./BotStory";
 import { RobotSlot } from "./RobotSlot";
@@ -29,6 +30,10 @@ const RAIN = [
  * top left. The markup is the still (reduced motion, no script): every request booked.
  */
 export async function RobotHero() {
+  // the question waits unseen for its condensed face (font-display: block, robot-hero.css): it comes with the page, both
+  // files (the giant word's «?» is in the Latin one)
+  preload("/fonts/sofia-sans-xc-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  preload("/fonts/sofia-sans-xc-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const t = await getTranslations("ai");
   const locale = await getLocale();
   const leads = LEADS.map((n) => ({

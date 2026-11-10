@@ -19,6 +19,12 @@ import { getLenis } from '@/lib/scroll';
 import { SPRING, slideIn, rollNumber } from './sites-rb.js';
 import { spotlight, initTilt, mountGlide, beam, beamOnView, deltaChip } from './fx-page.js';
 import { mountHow } from './fx-how.js';
+// the samples' own styles come with this script, which builds the samples, as the main page's configurator has them
+// (10 Nov 2026: in the page's HTML they were most of its 322 KB, twice over, the CSS inlined and again in React's data,
+// for blocks a screen or more below; their few rules for the page itself are copied into sites.css: the rolling digits)
+import '../sites-pv.css';
+import '../clinic/clinic.css';
+import '../shop/shop.css';
 
 /** The words the page writes (the page's language, from the server: SitesRuntime's `strings`, the static page's keys). */
 let words = {};
@@ -284,17 +290,11 @@ function initFaq() {
 // comes or goes between two scroll events tells it
 const nudgeToTop = () => window.dispatchEvent(new Event('scroll'));
 
-/* ---------- (QA 19 Oct, S-02) the button back up steps aside over the page's controls in its corner (SitesShell's quiet
-   list: the questions, the form, block 2's tabs and buttons, the price card…). On narrow screens and phones on their
-   side block 3's controls run from edge to edge, so all of block 3 is marked (data-quiet). The button checks itself
-   only on a scroll, so a change of the page without one (an answer opens, «Що входить у ціну» opens and moves the
-   price's button, another format) asks it again ---------- */
+/* ---------- the button back up steps aside over the page's controls in its corner (SitesShell's quiet list: the
+   questions, the form, block 2's tabs and buttons, the price card…) and rises over the bars. It checks itself only on a
+   scroll, so a change of the page without one (an answer opens, «Що входить у ціну» opens and moves the price's
+   button, another format) asks it again ---------- */
 function initToTop() {
-  const narrow = window.matchMedia('(max-width: 860px), (max-width: 932px) and (max-height: 500px)');
-  const block3 = $('#design');
-  const mark = () => block3?.toggleAttribute('data-quiet', narrow.matches);
-  mark();
-  narrow.addEventListener('change', () => { mark(); nudgeToTop(); });
   let queued = 0;
   const later = () => {
     if (!queued) queued = requestAnimationFrame(() => { queued = 0; nudgeToTop(); });

@@ -75,9 +75,11 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 .ai-bot__title .bot-kicker b { font: 800 1.6rem / 0.72 "Bot Condensed", var(--font-sans); letter-spacing: 0; color: var(--signal); }
 .ai-bot__title .bot-kicker span { padding-left: 0.7rem; border-left: 1px solid rgb(218 255 2 / 0.6); font-size: 0.8125rem; letter-spacing: 0.12em; }
 
-/* the condensed face is the site's own file (as the sites page declares it), under a name of its own here */
-@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: swap; src: url("/fonts/sofia-sans-xc-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: swap; src: url("/fonts/sofia-sans-xc-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+/* the condensed face is the site's own file (as the sites page declares it), under a name of its own here. Blocking and
+   preloaded (RobotHero), as on the sites page: shown in a stand-in face first, the question grew when its own came and
+   pushed the robot and the table down (Lighthouse on a phone, 9 Nov 2026: CLS 0.135) */
+@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
 
 /* a slow shifting light behind everything: three soft colour fields (lime, mint and teal, violet) drifting, and a second
    set in other places fading in and out over them, so the colours seem to flow; still with reduced motion */
@@ -173,7 +175,7 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 /* a phone: the table and the answer are in the film, so the page's own wait unseen until the film is drawn; they show
    only for the live scene (.is-3d, the film refused) or the still (.is-still) */
 @media (max-width: 599px) and (hover: none) and (pointer: coarse) {
-  html.motion .ai-bot:not(.is-still):not(.is-3d) :is(.bot-stage, .bot-say) { visibility: hidden; }
+  html.js .ai-bot:not(.is-still):not(.is-3d) :is(.bot-stage, .bot-say) { visibility: hidden; }
 }
 
 /* ---------- the table ---------- */
@@ -218,12 +220,12 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 .bot-crm__new .bot-crm__state { transition: opacity 0.4s ease, background-color 0.4s ease, color 0.4s ease; }
 .bot-stage.is-playing .bot-crm__new.is-clearing td { color: transparent; background: rgb(var(--lime-rgb) / 0.025); box-shadow: none; }
 .bot-stage.is-playing .bot-crm__new.is-clearing .bot-crm__state { opacity: 0; }
-/* with motion the robot will play: its rows wait as slots from the first paint, the server's still (every request
-   booked) never flashing before the robot empties them (the owner, 5 Nov 2026); without the robot (no WebGL, a scene
-   that failed: .is-still, RobotSlot) the still stays */
-html.motion .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new td { color: transparent; background: rgb(var(--lime-rgb) / 0.025); border-bottom: 1px dashed rgb(var(--lime-rgb) / 0.35); }
-html.motion .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new td:first-child { box-shadow: inset 2px 0 0 rgb(var(--lime-rgb) / 0.25); }
-html.motion .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new .bot-crm__state { visibility: hidden; }
+/* the robot will play (with reduced motion too): its rows wait as slots from the first paint, the server's still
+   (every request booked) never flashing before the robot empties them (the owner, 5 Nov 2026); without the robot (no
+   WebGL, a scene that failed: .is-still, RobotSlot; no scripts) the still stays */
+html.js .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new td { color: transparent; background: rgb(var(--lime-rgb) / 0.025); border-bottom: 1px dashed rgb(var(--lime-rgb) / 0.35); }
+html.js .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new td:first-child { box-shadow: inset 2px 0 0 rgb(var(--lime-rgb) / 0.25); }
+html.js .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new .bot-crm__state { visibility: hidden; }
 /* a slot waiting for its card */
 .bot-stage.is-playing .bot-crm__new:not(.is-on) td { background: rgb(var(--lime-rgb) / 0.025); border-bottom: 1px dashed rgb(var(--lime-rgb) / 0.35); }
 .bot-stage.is-playing .bot-crm__new:not(.is-on) td:first-child { box-shadow: inset 2px 0 0 rgb(var(--lime-rgb) / 0.25); }
