@@ -430,9 +430,11 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   main[data-ai-page="sites"] .st-hg .ai-hero__actions.st-hg__acts { grid-row: 5; margin: 2rem 0 0; }
   /* (about 110 pt from the button to the sample site, more on an iPhone: there the sample starts below the screen's
      foot, under Safari's floating bar, not seen on the first screen; the owner, 10 Nov 2026, «чтоб не видно было».
-     --screen-under counts the status bar too, which the page is not told: 2 rem off it still clears an iPhone with a
-     notch, the shortest status bar) */
-  main[data-ai-page="sites"] .st-hero .ai-hero__visual { margin-top: max(5.75rem, calc(var(--screen-under) - 2rem)); }
+     --screen-under counts the status bar too, which the page is not told (iPhone 18 Pro, measured: small 714, screen
+     874, the page seen to 812 under a 62 pt status bar): 2.75 rem off it hides the sample there by ~6 pt, about 130 pt
+     after the button, the least that hides it («слишком много»); an iPhone with a shorter status bar may show its
+     edge) */
+  main[data-ai-page="sites"] .st-hero .ai-hero__visual { margin-top: max(5.75rem, calc(var(--screen-under) - 2.75rem)); }
 }
 
 /* the words as a liquid (TitleFx.tsx): the canvas over the words, shown once it draws the same letters; the page's words
