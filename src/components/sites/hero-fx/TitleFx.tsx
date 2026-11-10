@@ -13,6 +13,7 @@
  */
 import { useEffect, useRef } from "react";
 import { watchCover } from "./hero-cover";
+import { isLite, watchLite } from "@/lib/lite";
 
 /** The field's reach either way (css px): it is kept in 8 bits a channel, 0.5 the rest. */
 const RANGE = 48;
@@ -20,6 +21,11 @@ const RANGE = 48;
 const CELL = 5;
 /** Seconds after the last move until the field counts as settled. */
 const SETTLE = 1.6;
+/** Seconds before the settle over which the flow fades out: the field is cleared at nothing, not at full strength (its
+ *  last 8-bit steps, up to a few px, jumped back in one frame: the owner, 10 Nov 2026, «дергается разок»). */
+const FADE = 0.5;
+/** How fast the flow comes back in when the pointer moves again during the fade (share per second). */
+const FADE_IN = 8;
 /** What a move of 1 css px adds to the field under the pointer (css px), and at most a frame. */
 const GAIN = 0.36;
 const MAX_PUSH = 11;
@@ -63,7 +69,7 @@ const DRAW = `#version 300 es
 precision highp float;
 uniform sampler2D uMask, uField;
 uniform vec2 uRes, uSize;
-uniform float uDpr, uOn, uTime, uWake;
+uniform float uDpr, uFlow, uTime, uWake;
 uniform vec3 uAccent;
 out vec4 outColor;
 const float RANGE = ${RANGE.toFixed(1)};
@@ -89,12 +95,14 @@ void main() {
   vec2 uv = gl_FragCoord.xy / uRes;
   vec2 d = vec2(0.0);
   float shade = 1.0;
-  if (uOn > 0.5) {
+  // uFlow: how much of the flow shows (0 at rest, fading to 0 before the field is cleared)
+  if (uFlow > 0.0) {
     d = dec(uv);
     d *= smoothstep(0.25, 0.75, length(d)); // (the field's last 8-bit steps: no blur at rest)
     vec2 e = 1.0 / uSize;
     float div = (dec(uv + vec2(e.x, 0.0)).x - dec(uv - vec2(e.x, 0.0)).x + dec(uv + vec2(0.0, e.y)).y - dec(uv - vec2(0.0, e.y)).y) / (2.0 * ${CELL.toFixed(1)});
-    shade = 1.0 + clamp(-div * 0.35, -0.14, 0.18);
+    shade = 1.0 + clamp(-div * 0.35, -0.14, 0.18) * uFlow;
+    d *= uFlow;
   }
   vec4 outc = liquid(p - vec2(d.x, -d.y) * uDpr);
   outc.rgb *= shade;
@@ -186,8 +194,9 @@ export function TitleFx() {
       const bottom = Math.ceil(Math.max(...boxes.map((b) => b.bottom + pad)));
       const width = right - left;
       const height = bottom - top;
-      // (one pixel per CSS pixel, a Retina screen too: a quarter of the pixels; the light look for everyone, the owner, 10 Nov 2026)
-      dpr = Math.min(1, Math.sqrt(MAX_PIXELS / (width * height)));
+      // the screen's own density up to 2 (at one pixel per CSS pixel the letters went soft on a Retina screen and a
+      // phone: the owner, 10 Nov 2026, «слишком нечеткая»); one on a slow computer (lib/lite)
+      dpr = Math.min(devicePixelRatio || 1, isLite() ? 1 : 2, Math.sqrt(MAX_PIXELS / (width * height)));
       Object.assign(canvas.style, { left: `${left - hr.left}px`, top: `${top - hr.top}px`, width: `${width}px`, height: `${height}px` });
       canvas.width = paper.width = Math.round(width * dpr);
       canvas.height = paper.height = Math.round(height * dpr);
@@ -230,7 +239,8 @@ export function TitleFx() {
       clearField();
     };
 
-    const render = (flow: boolean) => {
+    /** `flow`: how much of the flow shows, 0 to 1 */
+    const render = (flow: number) => {
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.useProgram(paint.prog);
@@ -243,7 +253,7 @@ export function TitleFx() {
       gl.uniform2f(paint.uniform("uRes"), canvas.width, canvas.height);
       gl.uniform2f(paint.uniform("uSize"), fw, fh);
       gl.uniform1f(paint.uniform("uDpr"), dpr);
-      gl.uniform1f(paint.uniform("uOn"), flow ? 1 : 0);
+      gl.uniform1f(paint.uniform("uFlow"), flow * flow * (3 - 2 * flow));
       gl.uniform1f(paint.uniform("uTime"), clock);
       const wake = Math.min(1, clock / WAKE);
       gl.uniform1f(paint.uniform("uWake"), wake * wake * (3 - 2 * wake));
@@ -265,6 +275,7 @@ export function TitleFx() {
     let last = 0;
     let stirred = false;
     let odd = false;
+    let flowShare = 0;
 
     const step = (dt: number) => {
       const w = canvas.width / dpr;
@@ -300,7 +311,10 @@ export function TitleFx() {
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
       last = now;
       clock += dt;
-      const flowing = clock - lastInput < SETTLE;
+      const sinceInput = clock - lastInput;
+      const flowing = sinceInput < SETTLE;
+      const fadeTarget = flowing ? Math.min(1, (SETTLE - sinceInput) / FADE) : 0;
+      flowShare = fadeTarget > flowShare ? Math.min(fadeTarget, flowShare + dt * FADE_IN) : fadeTarget;
       if (flowing) {
         step(dt);
         stirred = true;
@@ -311,7 +325,7 @@ export function TitleFx() {
       }
       // (only the slow waves moving: every other frame shows them the same)
       odd = !odd;
-      if (flowing || odd) render(flowing);
+      if (flowing || odd) render(flowShare);
       raf = requestAnimationFrame(frame);
     };
     // drawn while the first screen shows: on screen, not covered by block 2, the tab open
@@ -365,9 +379,13 @@ export function TitleFx() {
     let redraw = 0;
     const ro = new ResizeObserver(() => {
       if (!live || redraw) return;
-      redraw = requestAnimationFrame(() => { redraw = 0; draw(); render(false); });
+      redraw = requestAnimationFrame(() => { redraw = 0; draw(); render(flowShare); });
     });
     ro.observe(host);
+    // found slow mid-visit: drawn again at one pixel per CSS pixel
+    const stopLite = watchLite(() => {
+      if (live) { draw(); render(flowShare); }
+    });
 
     // after the words' entrance (every word's animation finished) and with the faces in: the plain letters, then the
     // page's hide. Awaited, not timed: in a tab opened in the background the entrance waits until the tab shows, a timer
@@ -379,7 +397,7 @@ export function TitleFx() {
       if (gone) return;
       timer = window.setTimeout(() => {
         draw();
-        render(false);
+        render(0);
         requestAnimationFrame(() => {
           if (gone) return;
           live = true;
@@ -396,6 +414,7 @@ export function TitleFx() {
       cancelAnimationFrame(redraw);
       clearTimeout(timer);
       stopCover();
+      stopLite();
       io.disconnect();
       ro.disconnect();
       removeEventListener("pointermove", onPointer);

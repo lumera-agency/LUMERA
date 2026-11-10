@@ -427,6 +427,9 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-hg .st-hg__pi { padding: 0.4rem 0; }
   /* (the phone's old rule zeroes the actions' margins: this one is as strong) */
   main[data-ai-page="sites"] .st-hg .ai-hero__actions.st-hg__acts { grid-row: 5; margin: 2rem 0 0; }
+  /* the sample site right after the strip under the browser's bar, that strip is room enough; 3.5 rem where there is
+     none (the owner, 10 Nov 2026: «большой отступ после hero») */
+  main[data-ai-page="sites"] .st-hero .ai-hero__visual { margin-top: max(0px, calc(3.5rem - var(--screen-under))); }
 }
 
 /* the words as a liquid (TitleFx.tsx): the canvas over the words, shown once it draws the same letters; the page's words

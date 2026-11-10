@@ -2,9 +2,10 @@
 /*
  * A slow computer (the owner, 10 Nov 2026, after «на рабочем компьютере сильно лагает»): html.is-lite, set by PerfProbe
  * once it has measured slow frames (or a software renderer), kept for the visit (sessionStorage, read back before the
- * first paint by the layout's early script). It takes away the glide only (SmoothScroll): everything else is the
- * same for every computer, the site's light look (no grain, no glass blurs, still glows and shards, the 3D at one
- * pixel per CSS pixel) being everyone's since the same day.
+ * first paint by the layout's early script). It takes away the glide (SmoothScroll) and the double density of the
+ * home stone and the sites title (HeroScene, TitleFx: a sharp screen draws them at up to 2, a slow computer at 1, the
+ * owner, 10 Nov 2026); everything else is the same for every computer, the site's light look (no grain, no glass
+ * blurs, still glows and shards) being everyone's since the same day.
  */
 import { useSyncExternalStore } from "react";
 
@@ -25,10 +26,11 @@ export function goLite() {
   listeners.forEach((listener) => listener());
 }
 
-const subscribe = (listener: () => void) => {
+/** Calls `listener` when the light mode comes on; returns the stop. */
+export const watchLite = (listener: () => void) => {
   listeners.add(listener);
   return () => void listeners.delete(listener);
 };
 
 /** Whether the light mode is on (false on the server and in the hydrating render; the browser's answer right after). */
-export const useLite = () => useSyncExternalStore(subscribe, isLite, () => false);
+export const useLite = () => useSyncExternalStore(watchLite, isLite, () => false);

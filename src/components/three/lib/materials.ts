@@ -94,10 +94,11 @@ export const ROCK_GLSL = /* glsl */ `
  * a light silver dust (`dust` = share of fleck cells), so the small background
  * shards keep a faint shimmer without the strong ripple.
  */
-export function createObsidianMaterial({ grain = 1, vertexColors = false, smooth = false, dust = 0, firstSite = false } = {}) {
+/** `bump`: how strongly the rock's relief tilts the light (its ripple) */
+export function createObsidianMaterial({ grain = 1, vertexColors = false, smooth = false, dust = 0, firstSite = false, bump = 4.5 } = {}) {
   const uniforms = {
     uGrain: { value: grain },
-    uBump: { value: 4.5 },
+    uBump: { value: bump },
     uDust: { value: dust },
     uRot: { value: new THREE.Matrix3() }, // object → world rotation, keeps fleck glints glued to the stone
   };

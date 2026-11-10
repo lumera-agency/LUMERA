@@ -16,6 +16,7 @@ import { createDust } from "./dust";
 import { createStoneMask } from "./stoneMask";
 import { CAMERA_Z, FOV, REST_TILT, SEAM_FACING, STONE_EXTENT, SWAY, VIS_H, damp, heroClock, heroLayout, heroPointer, heroState } from "./state";
 import { boot } from "@/lib/boot";
+import { useLite } from "@/lib/lite";
 
 type Props = {
   /** the hero section: its box is the scene's frame */
@@ -30,6 +31,7 @@ type Props = {
 
 export default function HeroScene({ running, reducedMotion, ...rest }: Props) {
   const coarse = useMemo(() => typeof window !== "undefined" && matchMedia("(pointer: coarse)").matches, []);
+  const slowComputer = useLite();
   return (
     <Canvas
       /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
@@ -38,9 +40,9 @@ export default function HeroScene({ running, reducedMotion, ...rest }: Props) {
       className="hero__canvas"
       style={{ position: "absolute", inset: 0 }}
       aria-hidden
-      // (one pixel per CSS pixel, a Retina screen too: a quarter of the pixels of two, and the difference hardly shows
-      // on the stone's rough surface; the light look for everyone, the owner, 10 Nov 2026)
-      dpr={1}
+      // up to twice the CSS pixels, a phone too (at one the stone went soft and its specks glittered on a Retina screen
+      // and a phone: the owner, 10 Nov 2026, «слишком блестит но не четкий»); one on a slow computer (lib/lite)
+      dpr={slowComputer ? 1 : [1, 2]}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       camera={{ fov: FOV, near: 0.1, far: 100, position: [0, 0, CAMERA_Z] }}
       frameloop={reducedMotion ? "demand" : running ? "always" : "never"}
@@ -64,7 +66,8 @@ function Stone({ heroRef, glowRef, orbitLabel, reducedMotion, coarse }: Omit<Pro
   // metal edged in lime (the owner, 3 Nov: «вместо лаймового перелива был белый, и структура была другая»)
   const chrome = useMemo(() => createMirrorEnvironment(gl), [gl]);
   const geometry = useMemo(() => createStoneGeometries({ detail: coarse ? 26 : 36, coreDetail: coarse ? 20 : 28 }), [coarse]);
-  const obsidian = useMemo(() => createObsidianMaterial({ vertexColors: true, firstSite: true }), []);
+  // (a little less relief than the other stones: the owner, 10 Nov 2026, «рябь чуть убрать»)
+  const obsidian = useMemo(() => createObsidianMaterial({ vertexColors: true, firstSite: true, bump: 3.4 }), []);
   const silver = useMemo(() => {
     const s = createSilverMaterial({ mirror: true });
     s.material.envMap = chrome; // the chrome gets its own, brighter studio: it reads as liquid metal
