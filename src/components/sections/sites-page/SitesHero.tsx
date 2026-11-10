@@ -121,7 +121,10 @@ function Title({ raw }: { raw: string }) {
   return (
     <>
       <span className="visually-hidden">{`${lines[0] ?? ""} ${key}`}</span>
-      <span className="st-h1" aria-hidden="true">
+      {/* lang: the face's own letterforms on both pages. Its Russian ones (locl for RUS: «Д» flat on top) showed only
+          here, never in TitleFx's canvas (a canvas draws without a language), so «Д» changed shape the moment the
+          canvas took the words over (the owner, 10 Nov 2026). Hidden from screen readers: it sets only the shapes */}
+      <span className="st-h1" aria-hidden="true" lang="uk">
         <span className="st-h1__m st-h1__a"><span className="tone">{design}</span></span>
         <span className="st-h1__m st-h1__i"><span className="tone">{and}</span></span>
         <span className="st-h1__m st-h1__b"><span className="tone st-h1__code">{code}</span></span>
