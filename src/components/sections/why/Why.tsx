@@ -14,12 +14,30 @@ const STEP_GO = "M32 16H288";
 const STEP_BACK = "M288 16A12 12 0 0 1 288 40H32A12 12 0 0 1 32 16";
 const STEP_LOOP = "M32 16H288A12 12 0 0 1 288 40H32A12 12 0 0 1 32 16";
 
+/** a cell of the sample table: its words, and under them the line that stands in for them until the demo has read
+ *  that row (a price: the hollow mark before it, the flag that marks it) */
+const cell = (text: string, price = false) => (
+  <span className="wv__c">
+    <i className="wv__sk" aria-hidden="true" />
+    {price ? (
+      <span className="wv__v wv__price">
+        <i className="wv__flag" aria-hidden="true" />
+        {text}
+      </span>
+    ) : (
+      <span className="wv__v">{text}</span>
+    )}
+  </span>
+);
+
 /**
  * 4 · Чому ECLO: the competitors looked at first, then the site, the ads, the requests, and what the requests show
  * comes back into the first step: four steps on one closed way (the owner's brief, 10 Nov 2026; the words are his,
  * verbatim). The steps are an ordered list and the sample a real table; the way itself is drawn beside them
- * (WhyFigure on computers, a row of the steps on phones, where the steps are cards swept sideways). Under it the line
- * about the market, then the two notes: the 3D and motion, the open price.
+ * (WhyFigure on computers, a row of the steps on phones, where the steps are cards swept sideways). The table plays
+ * once as a 7-second demo of the analysis (the owner, 11 Nov 2026): its rows are gathered one by one, the prices are
+ * marked (none is a number), the promises fade (all alike), the conclusion comes. Under the contour the line about the
+ * market, then the two notes: the 3D and motion, the open price.
  */
 export async function Why() {
   const t = await getTranslations();
@@ -81,18 +99,24 @@ export async function Why() {
                             <tbody>
                               {THREE.map((r) => (
                                 <tr key={r}>
-                                  <th scope="row">{t(`why.table.row.${r}.name`)}</th>
-                                  <td>
-                                    <span className="wv__price">{t(`why.table.row.${r}.price`)}</span>
-                                  </td>
-                                  <td>{t(`why.table.row.${r}.promise`)}</td>
+                                  <th scope="row">{cell(t(`why.table.row.${r}.name`))}</th>
+                                  <td>{cell(t(`why.table.row.${r}.price`), true)}</td>
+                                  <td>{cell(t(`why.table.row.${r}.promise`))}</td>
                                 </tr>
                               ))}
                             </tbody>
                           </table>
+                          {/* the demo's own parts (why-contour-fx.css): the price column's band, the line that
+                              reads the table, the mark that it is being read; then the lap's own reading line */}
+                          <i className="wv__col" aria-hidden="true" />
+                          <i className="wv__probe" aria-hidden="true" />
+                          <i className="wv__live" aria-hidden="true" />
                           <i className="wv__scan" aria-hidden="true" />
                         </div>
-                        <figcaption className="wv__out">{t("why.table.out")}</figcaption>
+                        <figcaption className="wv__out">
+                          <i className="wv__wash" aria-hidden="true" />
+                          <span className="wv__out-t">{t("why.table.out")}</span>
+                        </figcaption>
                       </figure>
                     )}
                   </div>

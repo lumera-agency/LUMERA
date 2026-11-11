@@ -4,6 +4,10 @@ import { switching } from "@/lib/place";
 
 /** the contour's drawing, before the light starts round it (why-contour-fx.css) */
 const INTRO = 2700;
+/** step 1's table as a demo (why-contour-fx.css: --demo); then the time the lap's first reading of the table would
+ *  take, which is left out right after the demo */
+const DEMO = 7000;
+const REST = 3200;
 /** where the steps stand on the phones' row of steps, as a share of its loop's length (Why.tsx: STEP_LOOP); the last
  *  is the return, back at step 1 */
 const STEP_AT = [0, 0.1453, 0.2905, 0.4358, 1];
@@ -16,7 +20,8 @@ const STEP_AT = [0, 0.1453, 0.2905, 0.4358, 1];
  * motion as well (without the push, the row going in one step).
  * Motion: .wv-fx (allowed), .is-in once the block has come into view (the contour draws), .is-run when that is done
  * (the light goes round), .is-live while it is on the screen in a shown tab (off it everything waits), .is-seen on a
- * step and on the line under the contour as they come into view. With a pointer the stone leans a little after it.
+ * step and on the line under the contour as they come into view; .is-demo for the 7 seconds step 1's table plays
+ * its demo, once, as it comes into view, .is-demoed after it. With a pointer the stone leans a little after it.
  */
 export function WhyClient({ children }: { children: React.ReactNode }) {
   const root = useRef<HTMLElement>(null);
@@ -48,6 +53,7 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
     let bound = -1; // the card the row is on its way to (an arrow, a step's button)
     const take = (i: number) => {
       if (i === hand) return;
+      const was = hand;
       hand = i;
       block.dataset.on = String(i + 1);
       block.style.setProperty("--fa", String(STEP_AT[i]));
@@ -56,6 +62,8 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
         item.classList.toggle("is-on", k === i);
         item.classList.toggle("is-done", k < i);
       });
+      // (step 1 back in hand after its demo: its table is read through once more)
+      items[0].classList.toggle("is-reread", i === 0 && was > 0 && block.classList.contains("is-demoed"));
       steps.forEach((step, k) => (k === i % steps.length ? step.setAttribute("aria-current", "step") : step.removeAttribute("aria-current")));
       arrows.forEach((arrow) => (arrow.disabled = arrow.dataset.dir === "-1" ? i === 0 : i === last));
     };
@@ -104,14 +112,46 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
     if (!still) {
       block.classList.add("wv-fx");
       const marks = [...block.querySelectorAll(".wv__link, .wv__back, .wv__market")];
+      // the light starts round once the contour is drawn, and not before the table's demo is done
+      let starts = 0;
+      let demoEnds = 0;
+      const start = (ms: number) => {
+        clearTimeout(starts);
+        starts = window.setTimeout(() => block.classList.add("is-run"), ms);
+        timers.push(starts);
+      };
       const enter = () => {
         if (block.classList.contains("is-in")) return;
         block.classList.add("is-in");
-        timers.push(window.setTimeout(() => block.classList.add("is-run"), INTRO));
+        start(Math.max(INTRO, demoEnds - performance.now()));
+      };
+      const demo = () => {
+        if (block.classList.contains("is-demo") || block.classList.contains("is-demoed")) return;
+        // where the head row and the price column stand in the table (the reading line starts under the head, the
+        // band covers the column)
+        const table = block.querySelector<HTMLElement>(".wv__tbl");
+        const head = table?.querySelector("thead");
+        const price = head?.querySelector("th:nth-child(2)");
+        if (table && head && price) {
+          const t = table.getBoundingClientRect(), h = head.getBoundingClientRect(), c = price.getBoundingClientRect();
+          table.style.setProperty("--head-top", `${(h.top - t.top).toFixed(1)}px`);
+          table.style.setProperty("--head-bottom", `${(h.bottom - t.top).toFixed(1)}px`);
+          table.style.setProperty("--col-x", `${(c.left - t.left).toFixed(1)}px`);
+          table.style.setProperty("--col-w", `${c.width.toFixed(1)}px`);
+        }
+        block.classList.add("is-demo");
+        demoEnds = performance.now() + DEMO;
+        if (block.classList.contains("is-in") && !block.classList.contains("is-run")) start(DEMO);
+        timers.push(
+          window.setTimeout(() => {
+            block.classList.remove("is-demo");
+            block.classList.add("is-demoed");
+          }, DEMO + REST),
+        );
       };
       if (switching() && block.getBoundingClientRect().top < window.innerHeight) {
         // the page back in the other language: what was on screen stands as it was
-        block.classList.add("wv-skip", "is-in", "is-run", "is-swept");
+        block.classList.add("wv-skip", "is-in", "is-run", "is-swept", "is-demoed");
         marks.forEach((el) => el.getBoundingClientRect().top < window.innerHeight && el.classList.add("is-seen"));
         timers.push(window.setTimeout(() => block.classList.remove("wv-skip"), 100));
       }
@@ -151,7 +191,18 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
         { threshold: 0.7 },
       );
       ioPush.observe(row);
-      observers.push(ioFig, ioRow, ioSeen, ioLive, ioPush);
+      // the table has come into view: its demo, once
+      const mock = block.querySelector(".wv__mock");
+      const ioDemo = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          ioDemo.disconnect();
+          demo();
+        },
+        { threshold: 0.6 },
+      );
+      if (mock) ioDemo.observe(mock);
+      observers.push(ioFig, ioRow, ioSeen, ioLive, ioPush, ioDemo);
       // a pointer: the stone leans after it
       const body = block.querySelector<HTMLElement>(".wv__body");
       if (body && matchMedia("(hover: hover) and (pointer: fine)").matches) {
@@ -178,8 +229,8 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
       observers.forEach((observer) => observer.disconnect());
       offs.forEach((off) => off());
       timers.forEach(clearTimeout);
-      block.classList.remove("wv-fx", "wv-skip", "is-in", "is-run", "is-live", "is-swept");
-      block.querySelectorAll(".is-seen, .is-on, .is-done").forEach((el) => el.classList.remove("is-seen", "is-on", "is-done"));
+      block.classList.remove("wv-fx", "wv-skip", "is-in", "is-run", "is-live", "is-swept", "is-demo", "is-demoed");
+      block.querySelectorAll(".is-seen, .is-on, .is-done, .is-reread").forEach((el) => el.classList.remove("is-seen", "is-on", "is-done", "is-reread"));
     };
   }, []);
   return (
