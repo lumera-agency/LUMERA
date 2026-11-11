@@ -57,6 +57,10 @@ function telegramText(lead: Lead) {
     .join("\n");
 }
 
+/** Telegram refuses a message over 4096 characters: a long request is cut, never lost. */
+const TELEGRAM_MAX = 4096;
+const fit = (text: string) => (text.length > TELEGRAM_MAX ? `${text.slice(0, TELEGRAM_MAX - 1)}…` : text);
+
 export async function POST(request: Request) {
   const raw = await request.text();
   if (raw.length > MAX_BODY) return Response.json({ ok: false, error: "too large" }, { status: 413 });
@@ -87,7 +91,7 @@ export async function POST(request: Request) {
       : await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramText(lead), disable_web_page_preview: true }),
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: fit(telegramText(lead)), disable_web_page_preview: true }),
         });
     if (!r.ok) throw new Error(`channel answered ${r.status}`);
     return Response.json({ ok: true });
