@@ -15,9 +15,10 @@ const STEP_BACK = "M288 16A12 12 0 0 1 288 40H32A12 12 0 0 1 32 16";
 const STEP_LOOP = "M32 16H288A12 12 0 0 1 288 40H32A12 12 0 0 1 32 16";
 
 /** a cell of the sample table: its words, and under them the line that stands in for them until the demo has read
- *  that row (a price: the hollow mark before it, the flag that marks it) */
-const cell = (text: string, price = false) => (
-  <span className="wv__c">
+ *  that row (a price: the hollow mark before it, the flag that marks it); `col` its turn in the row, `line` that
+ *  line's length, % */
+const cell = (text: string, col: number, line: number, price = false) => (
+  <span className="wv__c" style={{ "--c": col, "--sw": `${line}%` } as React.CSSProperties}>
     <i className="wv__sk" aria-hidden="true" />
     {price ? (
       <span className="wv__v wv__price">
@@ -99,9 +100,9 @@ export async function Why() {
                             <tbody>
                               {THREE.map((r) => (
                                 <tr key={r}>
-                                  <th scope="row">{cell(t(`why.table.row.${r}.name`))}</th>
-                                  <td>{cell(t(`why.table.row.${r}.price`), true)}</td>
-                                  <td>{cell(t(`why.table.row.${r}.promise`))}</td>
+                                  <th scope="row">{cell(t(`why.table.row.${r}.name`), 0, 66)}</th>
+                                  <td>{cell(t(`why.table.row.${r}.price`), 1, [58, 50, 72][r - 1], true)}</td>
+                                  <td>{cell(t(`why.table.row.${r}.promise`), 2, [62, 90, 70][r - 1])}</td>
                                 </tr>
                               ))}
                             </tbody>

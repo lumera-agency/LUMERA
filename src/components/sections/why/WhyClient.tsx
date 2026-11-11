@@ -99,12 +99,13 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
       block.classList.add("is-swept");
       go(button.dataset.go ? +button.dataset.go : hand + +(button.dataset.dir || 0));
     });
+    // (the row is measured as the observer first reports it and whenever its size changes, never while the page is
+    // being put together: a measurement there would have the browser lay the whole page out on the spot)
     const resized = new ResizeObserver(() => {
       measure();
       read();
     });
     resized.observe(row);
-    measure();
     take(0);
 
     // ---------- motion ----------

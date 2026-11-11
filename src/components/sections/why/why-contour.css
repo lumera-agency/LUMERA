@@ -115,21 +115,27 @@
 
 /* ==========================================================================
    Computers (≥ 1101): step 1's panel on the left, the drawing on the right; steps 2–4 and the return's caption sit
-   in the drawing's own cell, each beside its node: --x / --y / --w in the field's units.
+   in the drawing's own cell, each beside its node (--x / --y in the field's units) and out to the cell's right edge.
    ========================================================================== */
 @media (min-width: 1101px) {
-  .wv__body { position: relative; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--col-gap); align-items: center; }
+  /* (--fig-cap: the drawing never taller than the screen under the top bar, so the whole contour is seen at once:
+     its width from that height; the owner, 11 Nov 2026: on a wide, low screen it ran off the screen. Not under
+     38.5rem tall: closer than that the steps' words would run into each other) */
+  .wv__body { --fig-cap: calc(max(38.5rem, 100vh - 6.5rem) * 760 / 780); position: relative; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--col-gap); align-items: center; }
+  @supports (height: 100svh) {
+    .wv__body { --fig-cap: calc(max(38.5rem, 100svh - 6.5rem) * 760 / 780); }
+  }
   .wv__loop,
   .wv__links { display: contents; }
   .wv__link--1 { grid-column: 1; grid-row: 1; position: relative; z-index: 2; }
-  .wv__fig { grid-column: 2; grid-row: 1; aspect-ratio: 760 / var(--fig-h); }
+  .wv__fig { grid-column: 2; grid-row: 1; width: min(100%, var(--fig-cap)); aspect-ratio: 760 / var(--fig-h); }
   .wv__art { position: absolute; inset: 0; }
   .wv__link:not(.wv__link--1),
-  .wv__back { grid-column: 2; grid-row: 1; align-self: start; justify-self: start; position: relative; z-index: 2; margin-left: calc(var(--x) * 100% / 760); margin-top: calc(var(--y) * 100% / 760); width: calc(var(--w) * 100% / 760); }
-  .wv__link--2 { --x: 368; --y: 170; --w: 392; }
-  .wv__link--3 { --x: 368; --y: 340; --w: 392; }
-  .wv__link--4 { --x: 368; --y: 510; --w: 392; }
-  .wv__back { --x: 368; --y: 661; --w: 392; padding-top: 0.875rem; }
+  .wv__back { --at-x: min(calc(var(--x) * 100% / 760), calc(var(--x) / 760 * var(--fig-cap))); grid-column: 2; grid-row: 1; align-self: start; justify-self: start; position: relative; z-index: 2; margin-left: var(--at-x); margin-top: min(calc(var(--y) * 100% / 760), calc(var(--y) / 760 * var(--fig-cap))); width: calc(100% - var(--at-x)); }
+  .wv__link--2 { --x: 368; --y: 170; }
+  .wv__link--3 { --x: 368; --y: 340; }
+  .wv__link--4 { --x: 368; --y: 510; }
+  .wv__back { --x: 368; --y: 661; padding-top: 0.875rem; }
   /* steps 2–4: the rule comes across from the node, the numeral stands left of the words */
   .wv__link:not(.wv__link--1) .wv__card { padding: 1.125rem 0 0 clamp(4.75rem, 6.2vw, 6.5rem); }
   .wv__link:not(.wv__link--1) .wv__n { position: absolute; left: 0; top: 1.125rem; }
@@ -138,6 +144,21 @@
   .wv__link--1 .wv__n { margin-bottom: 1.125rem; font-size: clamp(4.25rem, 6.4vw, 6.75rem); }
 }
 @media (min-width: 1101px) and (max-width: 1400px) {
+  .wv__link:not(.wv__link--1) .wv__p { font-size: var(--fs-caption); line-height: 1.45; }
+}
+/* (the narrowest computers: more of the width to the drawing and a smaller numeral, or the steps' words have no room
+   between the nodes; a low screen, where the drawing is held to its height: the smaller words as well) */
+@media (min-width: 1101px) and (max-width: 1240px) {
+  .wv__body { grid-template-columns: minmax(0, 9fr) minmax(0, 15fr); }
+  .wv__link:not(.wv__link--1) .wv__card { padding-left: 3.75rem; }
+  .wv__link:not(.wv__link--1) .wv__n { font-size: 2.625rem; }
+  .wv__link:not(.wv__link--1) .wv__p { margin-top: 0.375rem; }
+  /* (the words start nearer the nodes: the rule lies over the end of the node's own line) */
+  .wv__link--2,
+  .wv__link--3,
+  .wv__link--4 { --x: 330; }
+}
+@media (min-width: 1101px) and (max-height: 820px) {
   .wv__link:not(.wv__link--1) .wv__p { font-size: var(--fs-caption); line-height: 1.45; }
 }
 
