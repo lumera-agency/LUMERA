@@ -18,17 +18,11 @@
 .wv :is(.wv-node[data-n="3"], .wv__link--3) { --f: var(--f3); --i: 2; }
 .wv :is(.wv-node[data-n="4"], .wv__link--4) { --f: var(--f4); --i: 3; }
 .wv :is(.wv-node, .wv__link) { --at: calc(var(--i) * var(--lap) / 4 - var(--lap)); --d: calc(0.3s + var(--f) / var(--f4) * var(--draw)); }
-/* the table: --r a row's turn, --c a cell's turn in its row, --sw how long the line that stands in for its words */
+/* the table: --r a row's turn; on each cell (Why.tsx) --c its turn in the row, --sw how long the line that stands in
+   for its words */
 .wv__table tbody tr:nth-child(1) { --r: 0; }
 .wv__table tbody tr:nth-child(2) { --r: 1; }
 .wv__table tbody tr:nth-child(3) { --r: 2; }
-.wv__table tr > :nth-child(1) { --c: 0; --sw: 66%; }
-.wv__table tr > :nth-child(2) { --c: 1; --sw: 58%; }
-.wv__table tr > :nth-child(3) { --c: 2; --sw: 62%; }
-.wv__table tbody tr:nth-child(2) > :nth-child(2) { --sw: 50%; }
-.wv__table tbody tr:nth-child(2) > :nth-child(3) { --sw: 90%; }
-.wv__table tbody tr:nth-child(3) > :nth-child(2) { --sw: 72%; }
-.wv__table tbody tr:nth-child(3) > :nth-child(3) { --sw: 70%; }
 
 /* at rest (and with reduced motion) */
 .wv-run { display: none; }
