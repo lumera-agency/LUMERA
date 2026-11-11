@@ -52,8 +52,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       </main>
       <Footer />
       <MenuSheet />
-      {/* steps aside over the ride's HUD and arrows, the configurator's preview and price card, and the footer (it has its own link up); rises over the bar */}
-      <BackToTop label={t("footer.up.span")} quiet=".ride.is-on .ride__hud, .ride.is-on .ride__arrow, .cfg-sheet, .pvw, .cfg-sum, .footer" />
+      {/* steps aside over block 4's arrows (phones), the ride's HUD and arrows, the configurator's preview and price card, and the footer (it has its own link up); rises over the bar */}
+      <BackToTop label={t("footer.up.span")} quiet=".wv__nav-b, .ride.is-on .ride__hud, .ride.is-on .ride__arrow, .cfg-sheet, .pvw, .cfg-sum, .footer" />
     </>
   );
 }
