@@ -4,16 +4,18 @@ import { siteUrl } from "@/config/site";
 /** Every page in both languages, each pointing at the other (hreflang): the main page, the sites page, the ads page, the AI page and its
  *  two cases.
  *
- *  `updated` is the day the page's texts last changed (lastmod; from the git history on 12 Nov 2026). Search engines
- *  trust it only while it is true: move it when a page's texts change, not on every deploy (a build date would say
- *  «changed» every time, and Google would stop reading it). */
+ *  `updated` is the page's last significant change (lastmod), as Google counts it: its visible text, its structured
+ *  data (components/seo: the services, prices and questions) or its links. Shared messages count for every page that
+ *  shows them (contact.*, faq.*, nav.*, the configurator's prices). Search engines trust lastmod only while it is true:
+ *  move a date with such a change, not on every deploy (a build date would say «changed» every time, and Google would
+ *  stop reading it). 12 Nov 2026: every page got its structured data. */
 const PAGES = [
-  { path: "", priority: 1, updated: "2026-11-11" },
-  { path: "/dyzain-i-saity", priority: 0.8, updated: "2026-11-10" },
-  { path: "/reklama-i-analityka", priority: 0.8, updated: "2026-11-10" },
-  { path: "/ai-avtomatyzatsiia", priority: 0.8, updated: "2026-11-10" },
-  { path: "/keisy/poshuk-zamovlen", priority: 0.6, updated: "2026-11-10" },
-  { path: "/keisy/ai-asystent", priority: 0.6, updated: "2026-11-10" },
+  { path: "", priority: 1, updated: "2026-11-12" },
+  { path: "/dyzain-i-saity", priority: 0.8, updated: "2026-11-12" },
+  { path: "/reklama-i-analityka", priority: 0.8, updated: "2026-11-12" },
+  { path: "/ai-avtomatyzatsiia", priority: 0.8, updated: "2026-11-12" },
+  { path: "/keisy/poshuk-zamovlen", priority: 0.6, updated: "2026-11-12" },
+  { path: "/keisy/ai-asystent", priority: 0.6, updated: "2026-11-12" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

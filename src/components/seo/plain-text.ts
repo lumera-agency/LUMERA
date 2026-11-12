@@ -3,7 +3,8 @@ import { isValidElement, type ReactNode } from "react";
 /**
  * The words a message renders, as plain text: a t() string or a rich one (t.rich, the price lines with their <b>, an
  * answer with a link in it). The structured data says what the page says, so it is read from the same nodes the page
- * shows. A <br> becomes a space; the typesetting's no-break spaces (lib/typeset) become plain ones.
+ * shows. A <br> becomes a space; the typesetting's no-break spaces (lib/typeset) become plain ones, and its invisible
+ * soft hyphens and word joiners («2–⁠4») go.
  */
 export function plainText(node: ReactNode): string {
   const walk = (n: ReactNode): string => {
@@ -16,7 +17,7 @@ export function plainText(node: ReactNode): string {
   };
   return walk(node)
     .replace(/[   ]/g, " ")
-    .replace(/­/g, "")
+    .replace(/[­⁠]/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }

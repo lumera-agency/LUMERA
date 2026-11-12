@@ -9,11 +9,11 @@ import { AUDIT, PRODUCTS } from "@/components/sections/ai-page/prices";
  * configurator's engine, the sites page's Лендінг+, the AI page's lineup), so the markup can never show another price.
  *
  * The order is the owner's (12 Nov 2026): sites, ads, AI. No SaaS products: the studio does not make them (the owner,
- * 12 Nov 2026; the site has not shown them since 4 Nov, though what.3 is still in the messages).
+ * 4 and 12 Nov 2026).
  */
 
 /** A price as the page shows it: «від $500» (from) or exactly $450; per month for the ads' management. `note` is the
- *  page's own line beside it (the assistant's monthly support). */
+ *  page's own line beside it (the assistant's monthly support, an ads card's line), never new wording. */
 export type Price = { name: string; sum: number; from: boolean; perMonth?: boolean; note?: string };
 export type ServiceKey = "sites" | "ads" | "ai";
 export type ServiceInfo = {
@@ -56,14 +56,16 @@ export async function services(locale: string): Promise<ServiceInfo[]> {
       path: "/reklama-i-analityka",
       name: t("what.4.name"),
       desc: t("what.4.desc"),
-      // the price block's cards (ads/facts; «Орієнтир», the sum is fixed in the contract: «від»). Facebook / Instagram
-      // has no price yet («за запитом»), so no offer
+      // the price block's cards (ads/facts) as the site shows them: exact sums (the ads page, its FAQ «коштує $750»,
+      // «$150 на місяць»), Google Ads «від» as the main page and the menu say it. ChatGPT + Gemini and the management
+      // carry their cards' own lines (what the extra is and its «*» note; management only with a setup), so a reader
+      // of the markup gets no more than the page promises. Facebook / Instagram has no price yet («за запитом»): no offer
       prices: [
-        { name: t("ads.price.a.t"), sum: g.analytics.price, from: true },
+        { name: t("ads.price.a.t"), sum: g.analytics.price, from: false },
         { name: t("ads.price.g.t"), sum: g.googleAds.price, from: true },
-        { name: t("ads.price.ai.t"), sum: g.googleAdsAi.price, from: true },
-        { name: t("ads.price.s.t"), sum: bundleOnce("siteAds"), from: true },
-        { name: t("ads.price.m.t"), sum: PRICING.adsManagement.monthly, from: true, perMonth: true },
+        { name: t("ads.price.ai.t"), sum: g.googleAdsAi.price, from: false, note: `${t("ads.price.ai.d")} ${t("ads.price.ai.note")}` },
+        { name: t("ads.price.s.t"), sum: bundleOnce("siteAds"), from: false },
+        { name: t("ads.price.m.t"), sum: PRICING.adsManagement.monthly, from: false, perMonth: true, note: t("ads.price.m.d") },
       ],
     },
     {

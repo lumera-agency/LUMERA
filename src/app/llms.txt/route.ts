@@ -26,7 +26,7 @@ async function part(locale: string) {
   const t = await getTranslations({ locale });
   const list = await services(locale);
   const at = (path: string, hash = "") => `${pageUrl(locale, path)}${hash}`;
-  /** «Лендінг від $500», «Ведення реклами від $150 на місяць», «AI-асистент $450 (+ $90/міс супровід, …)» */
+  /** «Лендінг від $500», «Ведення реклами $150 на місяць (Можна додати …)», «AI-асистент $450 (+ $90/міс супровід, …)» */
   const price = (p: Price) =>
     [p.name, p.from ? t("start.from") : "", String(money(p.sum)), p.perMonth ? t("ads.price.month") : "", p.note ? `(${p.note.replace(/\.$/, "")})` : ""]
       .filter(Boolean)

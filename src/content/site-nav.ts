@@ -8,15 +8,15 @@ import { SITE_NAV } from "./nav";
 /** A section of a service's page, listed in its card in the header's panel as plain text (the owner, 5 Nov 2026: the
  *  card is one link to the page, its sections are not links); its anchor there (or another page), a price or a tag. */
 export type SiteNavSub = { text: string; href: string; price?: string; tag?: string };
-/** One service in the header's panel and the phone menu: its page, picture, «від» price (none for SaaS), sections. */
+/** One service in the header's panel and the phone menu: its page, picture, «від» price, sections. */
 export type SiteNavService = {
   n: string;
   name: string;
   short: string;
   desc: string;
   price: string | null;
-  /** the page's path without the language (for the current page), null for SaaS (a block on the main page) */
-  path: string | null;
+  /** the page's path without the language (to mark the current page) */
+  path: string;
   href: string;
   img: string;
   subs: SiteNavSub[];
@@ -73,14 +73,14 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const href = (path: string) => getPathname({ href: path, locale });
   const from = (n: number) => `${t("start.from")} ${money(n)}`;
   const home = href("/");
-  const service = (n: number, path: string | null, price: number | null): SiteNavService => ({
+  const service = (n: number, path: string, price: number | null): SiteNavService => ({
     n: String(n),
     name: t(`what.${n}.name`),
     short: t(`nav.svc.${n}`),
     desc: t(`what.${n}.desc`),
     price: price === null ? null : from(price),
     path,
-    href: path ? href(path) : `${home}#services`,
+    href: href(path),
     img: `/img/what/what-${n}-${locale}.webp`,
     subs: [],
   });
@@ -142,7 +142,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       { text: t("ads.nav.faq"), href: at(ADS, "#faq") },
     ],
   ];
-  // the owner, 4 Nov: no SaaS on the site for now (it was service(3, null, null), a block on the main page); the rest
+  // no SaaS: the studio does not make them (the owner, 4 and 12 Nov; what.3 and its picture are gone); the rest
   // numbered 1, 2, 3 as they stand
   const services = [
     service(1, SITES, minPaid(PRICING.formats)),

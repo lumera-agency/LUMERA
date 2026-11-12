@@ -4,8 +4,9 @@ import { aiHref } from "@/components/ai/links";
 import { WhatList } from "./WhatList";
 import "./what.css";
 
-/** The directions; each row leads to its panel in 3 · Послуги, except the ones with a page of their own. No SaaS for
- *  now (the owner, 4 Nov: it was n 3, svc-4); `n` is the message's and the picture's key, the row shows its place. */
+/** The directions; each row leads to its panel in 3 · Послуги, except the ones with a page of their own. No SaaS: the
+ *  studio does not make them (the owner, 4 and 12 Nov; it was n 3); `n` is the message's and the picture's key, the
+ *  row shows its place. */
 export const DIRECTIONS = [
   { n: 1, service: "svc-1" },
   { n: 2, service: "svc-3" },
