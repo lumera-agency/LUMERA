@@ -69,6 +69,12 @@ const PREFETCH = JSON.stringify({
   prefetch: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/lab*" } }, { not: { href_matches: "/ru/lab*" } }] }, eagerness: "moderate" }],
 });
 
+/* Vercel Web Analytics (the owner, 12 Nov 2026): no cookies, so no consent banner; it shows the pages and where the
+   visitors came from (Google, chatgpt.com, perplexity.ai). Vercel serves its script under /_vercel/insights once
+   Analytics is on in the project, so only the production build asks for it (locally and on previews it is a 404).
+   Deferred: it waits for the page and costs the first screen nothing. */
+const ANALYTICS = process.env.VERCEL_ENV === "production" ? `<script defer src="/_vercel/insights/script.js"></script>` : "";
+
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
@@ -85,7 +91,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <body>
         {/* EARLY as the body's first markup, not a React <script>: it runs as the page is parsed, before anything is
             drawn, and a render in the browser (a language switch) neither runs it again nor warns about a script tag */}
-        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY}</script><script type="speculationrules">${PREFETCH}</script>` }} />
+        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY}</script><script type="speculationrules">${PREFETCH}</script>${ANALYTICS}` }} />
         <PageCurtain />
         <RootKeep />
         {/* the light mode for computers that cannot keep the site's frames (lib/lite.ts) */}

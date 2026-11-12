@@ -9,14 +9,21 @@ import "@/components/sections/faq/faq.css";
  * and weeks in the answers from the configurator engine (facts). The fourth answer («Сайт уже є?») is linked from
  * block 2. On phones the runtime opens «Ви гарантуєте заявки?» instead of the first (the phone audit, 15 Oct).
  */
-export async function SitesFaq({ facts }: { facts: SitesFacts }) {
+/** The questions and answers, in order: the list below and the page's structured data (components/seo) read them
+ *  here, so the two always say the same. */
+export async function sitesFaqItems(facts: SitesFacts) {
   const t = await getTranslations("sites");
   const priced = new Set([1, 2, 8]);
-  const items = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
+  return [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
     n,
     q: t(`faq.q.${n}`),
     a: priced.has(n) ? priceLine(t.raw(`faq.a.${n}`), facts) : t(`faq.a.${n}`),
   }));
+}
+
+export async function SitesFaq({ facts }: { facts: SitesFacts }) {
+  const t = await getTranslations("sites");
+  const items = await sitesFaqItems(facts);
   return (
     <section className="section ai-sec" id="faq" aria-labelledby="faq-title">
       <div className="container faq-wrap">

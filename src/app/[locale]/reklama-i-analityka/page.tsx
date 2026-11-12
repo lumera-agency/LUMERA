@@ -14,8 +14,9 @@ import { AdsPause } from "@/components/sections/ads-page/AdsPause";
 import { AdsBridge } from "@/components/sections/ads-page/AdsBridge";
 import { AdsTerms } from "@/components/sections/ads-page/AdsTerms";
 import { AdsPrice } from "@/components/sections/ads-page/AdsPrice";
-import { AdsFaq } from "@/components/sections/ads-page/AdsFaq";
+import { AdsFaq, adsFaqItems } from "@/components/sections/ads-page/AdsFaq";
 import { AdsContact } from "@/components/sections/ads-page/AdsContact";
+import { PageJsonLd } from "@/components/seo/graph";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/reklama-i-analityka">) {
   const { locale } = await params;
@@ -73,6 +74,8 @@ export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i
             sites page) */}
         <i data-sr="" hidden aria-hidden="true" />
       </PageShell>
+      {/* the studio, the service with its prices and the questions for search engines and AI */}
+      <PageJsonLd locale={locale} path="/reklama-i-analityka" meta="ads.meta" service="ads" faq={await adsFaqItems(facts)} />
     </AdsShell>
   );
 }
