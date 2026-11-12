@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { getTranslations } from "next-intl/server";
 import { rich } from "@/lib/rich";
 import { WhyClient } from "./WhyClient";
@@ -8,7 +9,6 @@ import "./why-contour-fx.css";
 
 const STEPS = [1, 2, 3, 4] as const;
 const THREE = [1, 2, 3] as const; // the table's columns and rows, the sentences of the line under the contour
-const pad = (n: number) => String(n).padStart(2, "0");
 /** the phones' row of steps: the way 1 → 4 along the top, the return under it; then the loop the light is moved along */
 const STEP_GO = "M32 16H288";
 const STEP_BACK = "M288 16A12 12 0 0 1 288 40H32A12 12 0 0 1 32 16";
@@ -78,12 +78,11 @@ export async function Why() {
               {STEPS.map((n) => (
                 // (it takes the keyboard's focus: on computers that lights its node, on phones brings its card)
                 <li className={`wv__link wv__link--${n}`} tabIndex={0} key={n}>
-                  <div className="wv__card" data-n={pad(n)}>
-                    <i className="wv__rule" data-k={`${pad(n)} / 04`} aria-hidden="true" />
-                    <h3 className="wv__t">
-                      <span className="wv__n" data-n={pad(n)} aria-hidden="true">{pad(n)}</span>
-                      {t(`why.step.${n}.title`)}
-                    </h3>
+                  {/* (numbers as 1, 2, 3, never 01: the owner's rule, 3 Nov 2026, said again for this block on 13 Nov:
+                      no large numeral before the title, the count on the rule «1 / 4») */}
+                  <div className="wv__card">
+                    <i className="wv__rule" data-k={`${n} / ${STEPS.length}`} aria-hidden="true" />
+                    <h3 className="wv__t">{t(`why.step.${n}.title`)}</h3>
                     <p className="wv__p">{t(`why.step.${n}.text`)}</p>
                     {n === 1 && (
                       <figure className="wv__mock">
@@ -147,10 +146,19 @@ export async function Why() {
           </div>
         </div>
 
+        {/* each word its own box: the line comes in out of a blur word by word, as the manifesto does (WhyClient);
+            split at plain spaces only, so the typesetting's no-break spaces keep their words together */}
         <p className="wv__market">
-          {THREE.map((s) => (
-            <span className={s === 2 ? "wv__say wv__say--key" : "wv__say"} key={s}>
-              {t(`why.market.${s}`)}{" "}
+          {THREE.map((sentence) => (
+            <span className={sentence === 2 ? "wv__say wv__say--key" : "wv__say"} key={sentence}>
+              {t(`why.market.${sentence}`)
+                .split(" ")
+                .filter(Boolean)
+                .map((word, index) => (
+                  <Fragment key={index}>
+                    <span className="wv__word">{word}</span>{" "}
+                  </Fragment>
+                ))}
             </span>
           ))}
         </p>

@@ -2,13 +2,14 @@
    .wv-fx    motion allowed (without it: the still, everything shown, the light standing on node 1)
    .is-in    the block has come into view: the contour draws once, the nodes light 1 → 4, the steps rise
    .is-run   after that: one light goes round, node to node, resting a moment on each; the step it stands on is lit
-             (its node, its numeral, its rule; at step 1 the table is read through); the stone is lit from its side
+             (its node, its rule; at step 1 the table is read through); the stone is lit from its side
    .is-live  the block is on the screen and the tab shown: off it everything waits
    .is-seen  a step (or the line under the contour) has come into view
    .is-demo  step 1's table has come into view: it plays its 7 seconds once (section 3); .is-demoed after it
    phones    nothing runs on a timer: the light stands on the step whose card is in hand ([data-on], --fa, --on;
              .is-on that card, .is-done the ones before it) and goes over as the row is swept
-   Nothing is pinned, the scroll is the page's. Only transform, opacity and stroke-dashoffset move. */
+   Computers: nothing is pinned, the scroll is the page's. Phones and tablets: the page stops at the row of cards and
+   its scroll moves the row sideways (WhyClient, .is-ride). Only transform, opacity and stroke-dashoffset move. */
 
 .wv { --lap: 14s; --draw: 1.5s; --f2: 0.357; --f3: 0.4728; --f4: 0.5885; }
 /* --f: where a node stands on the loop (a share of its length from node 1); --at: when its step starts in the lap;
@@ -66,11 +67,10 @@
 /* the stone floats */
 .wv-fx.is-in .wv__rock-in { animation: wv-float 7s ease-in-out infinite alternate; }
 @keyframes wv-float { from { transform: translateY(-1.8%) rotate(-0.9deg); } to { transform: translateY(1.8%) rotate(0.9deg); } }
-/* the line under the contour comes sentence by sentence */
-.wv-fx .wv__say { opacity: 0; }
-.wv-fx .wv__market.is-seen .wv__say { opacity: 1; transition: opacity 0.9s ease; }
-.wv-fx .wv__market.is-seen .wv__say:nth-child(2) { transition-delay: 0.35s; }
-.wv-fx .wv__market.is-seen .wv__say:nth-child(3) { transition-delay: 0.7s; }
+/* the line under the contour comes in out of a blur word by word (WhyClient, the browser's own animations, as the
+   manifesto does; the owner, 13 Nov 2026: «для текста сделай эффект появления»); it waits unseen until then */
+.wv__word { display: inline-block; }
+.wv__market.is-waiting { opacity: 0; }
 
 @media (min-width: 1101px) {
   /* the steps rise as the line reaches their nodes */
@@ -129,7 +129,6 @@
 @keyframes wv-flag { 0% { opacity: 0; } 1.2% { opacity: 1; } 10%, 100% { opacity: 0; } }
 @keyframes wv-ring { 0% { opacity: 0.9; transform: scale(1); } 9% { opacity: 0; transform: scale(3.4); } 100% { opacity: 0; transform: scale(3.4); } }
 @media (min-width: 1101px) {
-  .wv-fx.is-run .wv__n::after { animation: wv-act var(--lap) linear var(--at) infinite; }
   .wv-fx.is-run .wv__rule::after { animation: wv-fill var(--lap) linear var(--at) infinite; }
   .wv-fx.is-run .wv__scan { animation: wv-scan var(--lap) cubic-bezier(0.45, 0, 0.55, 1) infinite; }
   .wv-fx.is-run .wv__price::after { animation: wv-flag var(--lap) linear calc((0.085 + var(--r) * 0.042) * var(--lap)) infinite; }
@@ -232,19 +231,17 @@
    are all there without it) ---------- */
 @media (min-width: 1101px) {
   .wv-node { pointer-events: all; }
-  .wv__body:has(.wv-node[data-n="1"]:hover) .wv__link--1 :is(.wv__n, .wv__rule)::after,
-  .wv__body:has(.wv-node[data-n="2"]:hover) .wv__link--2 :is(.wv__n, .wv__rule)::after,
-  .wv__body:has(.wv-node[data-n="3"]:hover) .wv__link--3 :is(.wv__n, .wv__rule)::after,
-  .wv__body:has(.wv-node[data-n="4"]:hover) .wv__link--4 :is(.wv__n, .wv__rule)::after,
-  .wv__link:is(:hover, :focus-visible) :is(.wv__n, .wv__rule)::after,
+  .wv__body:has(.wv-node[data-n="2"]:hover) .wv__link--2 .wv__rule::after,
+  .wv__body:has(.wv-node[data-n="3"]:hover) .wv__link--3 .wv__rule::after,
+  .wv__body:has(.wv-node[data-n="4"]:hover) .wv__link--4 .wv__rule::after,
+  .wv__link:is(:hover, :focus-visible) .wv__rule::after,
   .wv__body:has(.wv__link--1:is(:hover, :focus-visible)) .wv-node[data-n="1"] .wv-node__lit,
   .wv__body:has(.wv__link--2:is(:hover, :focus-visible)) .wv-node[data-n="2"] .wv-node__lit,
   .wv__body:has(.wv__link--3:is(:hover, :focus-visible)) .wv-node[data-n="3"] .wv-node__lit,
   .wv__body:has(.wv__link--4:is(:hover, :focus-visible)) .wv-node[data-n="4"] .wv-node__lit,
   .wv-node:hover .wv-node__lit { opacity: 1 !important; }
   .wv__link:is(:hover, :focus-visible) .wv__rule::after { transform: none !important; }
-  .wv-node__lit,
-  .wv__n::after { transition: opacity 0.25s ease; }
+  .wv-node__lit { transition: opacity 0.25s ease; }
 }
 
 /* ==========================================================================
@@ -274,13 +271,10 @@
   .wv[data-on="4"] .wv__step-n[data-go="2"]::before { box-shadow: inset 0 0 0 1.5px var(--lime), 0 0 0 0.1875rem var(--bg); }
   .wv-fx .wv__step-back { opacity: 0; }
   .wv-fx.is-in .wv__step-back { opacity: 1; transition: opacity 0.8s ease 0.5s; }
-  /* the card in hand: its numeral lit, its rule filled; the ones before it keep a trace */
-  .wv__n::after { transition: opacity 0.4s ease; }
+  /* the card in hand: its rule filled; the ones before it keep a trace */
   .wv__rule::after { transition: transform 0.9s var(--ease-out), opacity 0.5s ease; }
-  .wv-fx .is-on .wv__n::after { opacity: 1; }
   .wv-fx .is-on .wv__rule::after { transform: none; opacity: 1; }
   .wv-fx .is-done .wv__rule::after { transform: none; opacity: 0.4; }
-  .wv-fx .is-done .wv__n { -webkit-text-stroke-color: rgb(218 255 2 / 0.7); }
   /* step 1 back in hand after its demo (.is-reread): the table is read through, once each time */
   .wv-fx .wv__link--1.is-reread .wv__scan { animation: wv-scan-1 2.4s cubic-bezier(0.45, 0, 0.55, 1) 0.35s 1 both; }
   @keyframes wv-scan-1 { 0% { opacity: 0; transform: translateY(2.1rem); } 12% { opacity: 1; transform: translateY(2.1rem); } 88% { opacity: 1; transform: translateY(100%); } 100% { opacity: 0; transform: translateY(100%); } }
@@ -303,7 +297,6 @@
   .wv__nav-bar::after,
   .wv__nav-b,
   .wv__back,
-  .wv__n::after,
   .wv__rule::after,
   .wv-node__lit { transition: none; }
 }

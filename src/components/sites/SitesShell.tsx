@@ -31,25 +31,6 @@ type Props = {
   children: React.ReactNode;
 };
 
-/** Where the button back up steps aside (anything matching that overlaps it): see BackToTop below. Over the request bar
- *  and the sum bar it rises instead (BackToTop). */
-const TO_TOP_QUIET = [
-  ".footer",
-  "#faq",
-  "#contact",
-  ".st-rail",
-  ".st-stage__acts",
-  ".st-fmts__end",
-  ".st-sum",
-  ".ai-calc__send",
-  ".st-bd__rib",
-  ".st-hw-end__acts",
-  ".st-show__replay",
-].join(", ");
-/** On phones only the places that send a request and the footer, as on the AI pages (the owner, 10 Nov 2026: with
- *  every control of the page on the list the button was gone for most of it) */
-const TO_TOP_QUIET_PHONE = [".footer", "#contact", ".st-sum", ".ai-calc__send"].join(", ");
-
 /** The faces the first screen is set in: fetched with the page, so the words never re-wrap once the font comes in */
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
 
@@ -96,7 +77,7 @@ export async function SitesShell({ nav, footerLinks, cta, barCta, claim, strings
           fields' right edge, «Надіслати заявку», the cards' «Обговорити»): the footer, the bars, the questions, the form,
           block 2's tabs and card buttons, the price card, block 4's ribbon and end, the sample's «Ще раз»; on narrow screens
           all of block 3 (its controls run edge to edge: data-quiet, the runtime's initToTop) */}
-      <BackToTop label={t("footer.up.span")} quiet={TO_TOP_QUIET} phoneQuiet={TO_TOP_QUIET_PHONE} />
+      <BackToTop label={t("footer.up.span")} />
       <SitesRuntime strings={strings} />
     </>
   );

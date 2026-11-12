@@ -282,6 +282,13 @@ html.motion .st-hg .ai-hero__rock.is-live .ai-hero__canvas { animation: st-drop-
   40% { opacity: 1; }
   100% { opacity: 1; transform: none; filter: none; }
 }
+/* a phone, upright or on its side: no ripple, the droplet simply fades in (the owner, 13 Nov 2026: «на телефоне сделай
+   обычное появление капли») */
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) {
+  html.motion .st-hg .ai-hero__rock.is-live::before,
+  html.motion .st-hg .ai-hero__rock.is-live::after { animation: none; }
+  html.motion .st-hg .ai-hero__rock.is-live .ai-hero__canvas { animation: st-stone-in 0.8s var(--ease-out) both; }
+}
 
 /* the corners' wrappers: their parts are the grid's items wherever the poster is not a sheet (below) */
 .st-hg .st-hg__corner { display: contents; }
