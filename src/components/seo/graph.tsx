@@ -83,9 +83,7 @@ export async function pageGraph({ locale, path, meta, service, about, crumbs = [
       name: plainText(t("nav.services")),
       itemListElement: list.map((s) => ({
         "@type": "Offer",
-        itemOffered: s.hash
-          ? { "@type": "Service", name: plainText(s.name), description: plainText(s.desc), url: `${pageUrl(locale, s.path)}${s.hash}` }
-          : { "@type": "Service", "@id": serviceId(s), name: plainText(s.name), url: pageUrl(locale, s.path) },
+        itemOffered: { "@type": "Service", "@id": serviceId(s), name: plainText(s.name), url: pageUrl(locale, s.path) },
       })),
     },
   };

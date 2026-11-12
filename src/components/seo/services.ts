@@ -8,18 +8,18 @@ import { AUDIT, PRODUCTS } from "@/components/sections/ai-page/prices";
  * line in the main page's words (what.*), its page and its prices. Every sum comes from where its page takes it (the
  * configurator's engine, the sites page's Лендінг+, the AI page's lineup), so the markup can never show another price.
  *
- * The order is the owner's (12 Nov 2026): sites, ads, AI; the SaaS products, with no page or price, last.
+ * The order is the owner's (12 Nov 2026): sites, ads, AI. No SaaS products: the studio does not make them (the owner,
+ * 12 Nov 2026; the site has not shown them since 4 Nov, though what.3 is still in the messages).
  */
 
 /** A price as the page shows it: «від $500» (from) or exactly $450; per month for the ads' management. `note` is the
  *  page's own line beside it (the assistant's monthly support). */
 export type Price = { name: string; sum: number; from: boolean; perMonth?: boolean; note?: string };
-export type ServiceKey = "sites" | "ads" | "ai" | "saas";
+export type ServiceKey = "sites" | "ads" | "ai";
 export type ServiceInfo = {
   key: ServiceKey;
-  /** its page without the language; the SaaS products are a block of the main page (`hash`) */
+  /** its page, without the language */
   path: string;
-  hash?: string;
   name: string;
   desc: string;
   prices: Price[];
@@ -84,6 +84,5 @@ export async function services(locale: string): Promise<ServiceInfo[]> {
         { name: t("ai.offer.audit.t"), sum: AUDIT.price, from: false },
       ].filter((p) => p.sum > 0),
     },
-    { key: "saas", path: "/", hash: "#services", name: t("what.3.name"), desc: t("what.3.desc"), prices: [] },
   ];
 }

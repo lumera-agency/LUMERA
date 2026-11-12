@@ -33,9 +33,9 @@ async function part(locale: string) {
       .join(" ");
   const item = (name: string, url: string, note = "") => `- [${plainText(name)}](${url})${note ? `: ${plainText(note)}` : ""}`;
   const sections: [string, string[]][] = [
-    [t("nav.services"), list.map((s) => item(s.name, at(s.path, s.hash), [s.desc, s.prices.map(price).join("; ")].join(" ")))],
+    [t("nav.services"), list.map((s) => item(s.name, at(s.path), [s.desc, s.prices.map(price).join("; ")].join(" ")))],
     [t("nav.casesMore"), CASES.map((c) => item(t(`nav.caseTitle.${c.key}`), at(c.path, c.hash)))],
-    [t("nav.faq"), [item(studioName, at("/", "#faq")), ...list.filter((s) => !s.hash).map((s) => item(s.name, at(s.path, "#faq")))]],
+    [t("nav.faq"), [item(studioName, at("/", "#faq")), ...list.map((s) => item(s.name, at(s.path, "#faq")))]],
     [
       t("footer.map.contacts"),
       [`- [${CONTACTS.email}](mailto:${CONTACTS.email})`, ...realPhones().map((n) => `- [${phoneText(n)}](tel:${n})`), item(t("nav.contact"), at("/", "#contact"))],
