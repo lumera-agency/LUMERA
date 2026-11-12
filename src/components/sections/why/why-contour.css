@@ -1,0 +1,251 @@
+/* 4 · Чому ECLO, the contour (Why.tsx, WhyFigure.tsx): four steps on one closed way, what the requests show coming
+   back from step 4 into step 1. This file is the look and the layout; why-contour-fx.css is the motion.
+   Computers: step 1 with its sample table on the left; on the right the way drawn as a tall capsule round the stone
+   (the stone on its stand under a lamp), steps 2–4 and the return's caption set beside their nodes.
+   Phones and tablets: no stone. The way lies on its side as a row of the four steps, under it the steps as cards in
+   a row that is swept sideways (the owner's pick, 11 Nov 2026). */
+
+.wv { position: relative; isolation: isolate; }
+.wv__links { margin: 0; padding: 0; list-style: none; }
+.wv__link:focus-visible { outline: 1px dashed rgb(218 255 2 / 0.6); outline-offset: 0.625rem; border-radius: 0.25rem; }
+.wv__card { position: relative; }
+.wv__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; font-variation-settings: "SHRP" 50; letter-spacing: -0.02em; color: var(--ink); }
+.wv__p { margin: 0.5rem 0 0; font-size: var(--fs-body-s); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+/* a step's numeral: tall and hollow; its lit twin over it (::after) */
+.wv__n { position: relative; display: block; font: 200 clamp(3.25rem, 4.4vw, 4.75rem) / 0.86 var(--font-sans); letter-spacing: -0.05em; color: transparent; -webkit-text-stroke: 1px rgb(246 246 243 / 0.42); }
+.wv__n::after { content: attr(data-n); position: absolute; left: 0; top: 0; color: var(--lime); -webkit-text-stroke: 0 transparent; text-shadow: 0 0 1.75rem rgb(218 255 2 / 0.45); opacity: 0; }
+/* the rule over a step: its count at the right end, a lime fill that runs along it when the step is lit */
+.wv__rule { position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgb(246 246 243 / 0.2); }
+.wv__rule::before { content: attr(data-k); position: absolute; right: 0; top: 0.75rem; font: 400 0.6875rem / 1 var(--font-mono); letter-spacing: 0.1em; color: var(--ink-mute); }
+.wv__rule::after { content: ""; position: absolute; inset: -0.5px 0; background: var(--lime); box-shadow: 0 0 0.75rem var(--signal-glow); transform: scaleX(0); transform-origin: 0 50%; opacity: 0; }
+
+/* step 1: the main one */
+.wv__link--1 .wv__t { font-size: clamp(1.5rem, 1.1vw + 1.1rem, 2rem); letter-spacing: -0.025em; }
+.wv__link--1 .wv__p { margin-top: 0.75rem; max-width: 46ch; font-size: var(--fs-body); line-height: 1.55; }
+/* its sample table («Приклад · дані умовні») and what follows from it */
+.wv__mock { position: relative; margin: 1.5rem 0 0; border: solid rgb(246 246 243 / 0.12); border-width: 1px 0; }
+.wv__tbl { position: relative; }
+.wv__table { width: 100%; border-collapse: collapse; table-layout: fixed; text-align: left; }
+.wv__table caption { caption-side: top; padding: 0.75rem 0 0.25rem; font: 400 0.6875rem / 1.4 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; text-align: left; white-space: nowrap; color: var(--ink-mute); }
+.wv__table th,
+.wv__table td { padding: 0.8125rem 0.875rem 0.8125rem 0; font-size: var(--fs-small); font-weight: 400; line-height: 1.35; vertical-align: top; }
+.wv__table thead th { padding-block: 0.625rem; font: 400 0.6875rem / 1.3 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); }
+.wv__table tbody tr { border-top: 1px solid rgb(246 246 243 / 0.07); }
+.wv__table tbody th { color: var(--ink); }
+.wv__table td { color: var(--ink-soft); }
+.wv__table th:first-child { width: 31%; }
+.wv__table th:nth-child(2),
+.wv__table td:nth-child(2) { width: 31%; }
+/* the price each competitor gives: none of them a number (a hollow ember mark) */
+.wv__price { position: relative; display: inline-flex; align-items: baseline; gap: 0.5em; font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--ink-mute); }
+.wv__price::before { content: ""; flex: none; align-self: center; width: 0.375rem; height: 0.375rem; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ember); }
+.wv__price::after { content: ""; position: absolute; inset: -0.3em -0.55em; border-radius: 999px; background: rgb(210 86 28 / 0.26); opacity: 0; pointer-events: none; }
+.wv__out { --dot-y: 1.375rem; position: relative; margin: 0; padding: 0.9375rem 0 1.0625rem 1.375rem; border-top: 1px solid rgb(246 246 243 / 0.07); font-size: var(--fs-small); line-height: 1.45; color: var(--ink); text-wrap: pretty; }
+.wv__out::before,
+.wv__out::after { content: ""; position: absolute; left: 0.125rem; top: var(--dot-y); width: 0.375rem; height: 0.375rem; border-radius: 50%; }
+.wv__out-t { position: relative; display: block; }
+.wv__out::before { background: var(--signal); box-shadow: 0 0 0.625rem 1px var(--signal-glow); }
+.wv__out::after { box-shadow: 0 0 0 1px var(--signal); opacity: 0; }
+/* (a cell's words; the demo's own parts are unseen in the still: why-contour-fx.css) */
+.wv__c { position: relative; display: block; }
+.wv__v:not(.wv__price) { display: inline-block; vertical-align: top; }
+.wv__sk,
+.wv__flag,
+.wv__col,
+.wv__probe,
+.wv__live,
+.wv__wash,
+.wv__scan { display: none; }
+
+/* the return's caption; the line under the contour */
+.wv__back { display: flex; align-items: flex-start; gap: 0.625rem; margin: 0; font: 400 var(--fs-caption) / 1.5 var(--font-mono); letter-spacing: 0.01em; color: var(--ink); text-wrap: balance; }
+.wv__back-ico { flex: none; width: 1.125rem; height: 1.125rem; margin-top: 0.0625rem; fill: none; stroke: var(--lime); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.wv__market { margin: var(--rhythm-m) 0 0; padding: clamp(1.75rem, 4.5vh, 3rem) 0; border-top: 1px solid var(--line); max-width: none; font-size: clamp(1.25rem, 1.35vw + 0.85rem, 2.125rem); font-weight: 300; line-height: 1.32; letter-spacing: -0.02em; color: var(--ink-mute); text-wrap: pretty; }
+.wv__say--key { color: var(--ink); font-weight: 400; }
+
+/* phones' own parts */
+.wv__step,
+.wv__nav { display: none; }
+
+/* ==========================================================================
+   The drawing (decorative, computers only): a 760 × 780 field. Whatever stands in it besides the lines (the stone,
+   the lamp's cone, the glow) is placed by its centre and width in the field's units: --cx, --cy, --cw (--ch: its
+   height to its width).
+   ========================================================================== */
+.wv__fig { position: relative; --fig-h: 780; }
+.wv__art > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.wv__art > i,
+.wv__rock { position: absolute; left: calc((var(--cx) - var(--cw) / 2) * 100% / 760); top: calc((var(--cy) - var(--cw) * var(--ch, 1) / 2) * 100% / var(--fig-h)); width: calc(var(--cw) * 100% / 760); aspect-ratio: 1 / var(--ch, 1); pointer-events: none; }
+.wv__aura { --cx: 180; --cy: 470; --cw: 420; border-radius: 50%; background: radial-gradient(closest-side, rgb(218 255 2 / 0.13), rgb(218 255 2 / 0.04) 48%, rgb(218 255 2 / 0) 100%); }
+.wv__cone { --cx: 180; --cy: 252; --cw: 176; --ch: 2.1; clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%); background: linear-gradient(rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.05) 55%, rgb(255 255 255 / 0)); filter: blur(5px); }
+.wv-l { fill: none; stroke: rgb(246 246 243 / 0.3); stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; }
+.wv-l--join,
+.wv-l--lead { stroke: rgb(246 246 243 / 0.2); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.wv-l--lead-back { stroke: rgb(218 255 2 / 0.6); stroke-dasharray: 2 5; }
+.wv-l--back { stroke: var(--lime); stroke-opacity: 0.85; stroke-width: 1.5; stroke-dasharray: 2 7; }
+.wv-l--arrow { stroke: var(--lime); stroke-width: 1.75; }
+.wv-l--main { stroke: rgb(246 246 243 / 0.9); stroke-width: 2; }
+.wv-l--halo { stroke: rgb(246 246 243); stroke-opacity: 0.1; stroke-width: 14; }
+/* (the capsule: a glass track, its two edges, a ruler down each side, the stone's stand) */
+.wv-l--tube { stroke: rgb(246 246 243 / 0.04); stroke-width: 30; }
+.wv-l--edge { stroke: rgb(246 246 243 / 0.2); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.wv-l--ruler { stroke: rgb(246 246 243 / 0.28); stroke-width: 7; stroke-dasharray: 1 13; stroke-linecap: butt; }
+.wv-l--ped { stroke: rgb(246 246 243 / 0.26); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.wv-l--ped2 { stroke: rgb(218 255 2 / 0.6); }
+.wv-pulse { display: none; }
+.wv-spark { fill: var(--lime); filter: drop-shadow(0 0 6px var(--lime)); }
+.wv-node__halo { fill: rgb(246 246 243 / 0.05); }
+.wv-node__ring { fill: #0c0c0c; stroke: rgb(246 246 243 / 0.55); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.wv-node__n,
+.wv-node__lit text { font: 500 13px var(--font-mono); fill: var(--ink); }
+.wv-node--1 .wv-node__ring { fill: var(--ink); stroke: var(--ink); }
+.wv-node--1 .wv-node__n,
+.wv-node--1 .wv-node__lit text { font-size: 15px; fill: var(--on-ink); }
+.wv-node__lit { opacity: 0; }
+.wv-node__lit circle { fill: var(--lime); }
+.wv-node__lit text { fill: var(--on-ink); }
+.wv-node__ping { fill: none; stroke: var(--lime); stroke-width: 1.25; vector-effect: non-scaling-stroke; opacity: 0; }
+/* the stone, the light on the ground under it, the runner's light on its face (the light's shape is the stone's own) */
+.wv__rock { z-index: 1; --cx: 180; --cy: 372; --cw: 172; --ch: 1.204; isolation: isolate; }
+.wv__rock-in { position: absolute; inset: 0; }
+.wv__stone { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1.75rem 1.5rem rgb(0 0 0 / 0.8)); }
+.wv__pool { position: absolute; z-index: -1; left: -22%; right: -22%; bottom: -13%; height: 30%; border-radius: 50%; background: radial-gradient(closest-side, rgb(218 255 2 / 0.4), rgb(218 255 2 / 0)); filter: blur(14px); }
+.wv__shine { display: none; position: absolute; inset: 0; overflow: hidden; -webkit-mask: url(/img/stone.webp) center / 100% 100% no-repeat; mask: url(/img/stone.webp) center / 100% 100% no-repeat; mix-blend-mode: screen; }
+.wv__shine > i { position: absolute; left: 50%; top: 50%; width: 170%; aspect-ratio: 1; margin: -85% 0 0 -85%; background: conic-gradient(from -80deg, rgb(255 255 255 / 0) 0deg, rgb(232 255 140 / 0.34) 55deg, rgb(255 255 255 / 0.46) 80deg, rgb(232 255 140 / 0.34) 105deg, rgb(255 255 255 / 0) 160deg); -webkit-mask: radial-gradient(closest-side, transparent 12%, #000 52%); mask: radial-gradient(closest-side, transparent 12%, #000 52%); }
+
+/* ==========================================================================
+   Computers (≥ 1101): step 1's panel on the left, the drawing on the right; steps 2–4 and the return's caption sit
+   in the drawing's own cell, each beside its node (--x / --y in the field's units) and out to the cell's right edge.
+   ========================================================================== */
+@media (min-width: 1101px) {
+  /* (--fig-cap: the drawing never taller than the screen under the top bar, so the whole contour is seen at once:
+     its width from that height; the owner, 11 Nov 2026: on a wide, low screen it ran off the screen. Not under
+     38.5rem tall: closer than that the steps' words would run into each other) */
+  .wv__body { --fig-cap: calc(max(38.5rem, 100vh - 6.5rem) * 760 / 780); position: relative; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--col-gap); align-items: center; }
+  @supports (height: 100svh) {
+    .wv__body { --fig-cap: calc(max(38.5rem, 100svh - 6.5rem) * 760 / 780); }
+  }
+  .wv__loop,
+  .wv__links { display: contents; }
+  .wv__link--1 { grid-column: 1; grid-row: 1; position: relative; z-index: 2; }
+  .wv__fig { grid-column: 2; grid-row: 1; width: min(100%, var(--fig-cap)); aspect-ratio: 760 / var(--fig-h); }
+  .wv__art { position: absolute; inset: 0; }
+  .wv__link:not(.wv__link--1),
+  .wv__back { --at-x: min(calc(var(--x) * 100% / 760), calc(var(--x) / 760 * var(--fig-cap))); grid-column: 2; grid-row: 1; align-self: start; justify-self: start; position: relative; z-index: 2; margin-left: var(--at-x); margin-top: min(calc(var(--y) * 100% / 760), calc(var(--y) / 760 * var(--fig-cap))); width: calc(100% - var(--at-x)); }
+  .wv__link--2 { --x: 368; --y: 170; }
+  .wv__link--3 { --x: 368; --y: 340; }
+  .wv__link--4 { --x: 368; --y: 510; }
+  .wv__back { --x: 368; --y: 661; padding-top: 0.875rem; }
+  /* steps 2–4: the rule comes across from the node, the numeral stands left of the words */
+  .wv__link:not(.wv__link--1) .wv__card { padding: 1.125rem 0 0 clamp(4.75rem, 6.2vw, 6.5rem); }
+  .wv__link:not(.wv__link--1) .wv__n { position: absolute; left: 0; top: 1.125rem; }
+  .wv__link:not(.wv__link--1) .wv__t { padding-right: 4.5rem; }
+  .wv__link--1 .wv__rule { display: none; }
+  .wv__link--1 .wv__n { margin-bottom: 1.125rem; font-size: clamp(4.25rem, 6.4vw, 6.75rem); }
+}
+@media (min-width: 1101px) and (max-width: 1400px) {
+  .wv__link:not(.wv__link--1) .wv__p { font-size: var(--fs-caption); line-height: 1.45; }
+}
+/* (the narrowest computers: more of the width to the drawing and a smaller numeral, or the steps' words have no room
+   between the nodes; a low screen, where the drawing is held to its height: the smaller words as well) */
+@media (min-width: 1101px) and (max-width: 1240px) {
+  .wv__body { grid-template-columns: minmax(0, 9fr) minmax(0, 15fr); }
+  .wv__link:not(.wv__link--1) .wv__card { padding-left: 3.75rem; }
+  .wv__link:not(.wv__link--1) .wv__n { font-size: 2.625rem; }
+  .wv__link:not(.wv__link--1) .wv__p { margin-top: 0.375rem; }
+  /* (the words start nearer the nodes: the rule lies over the end of the node's own line) */
+  .wv__link--2,
+  .wv__link--3,
+  .wv__link--4 { --x: 330; }
+}
+@media (min-width: 1101px) and (max-height: 820px) {
+  .wv__link:not(.wv__link--1) .wv__p { font-size: var(--fs-caption); line-height: 1.45; }
+}
+
+/* ==========================================================================
+   Phones and tablets (≤ 1100): the way as a row of the four steps (1 → 4 along the top, the dashed return under it
+   back to 1), which is the switch as well; under it the steps as cards in a row that goes sideways: by the thumb, by
+   the arrows, by a tap on a step. The next card always shows its edge. The table keeps its three columns at 360.
+   ========================================================================== */
+@media (max-width: 1100px) {
+  .wv__fig { display: none; }
+  .wv__body { position: relative; margin-top: 0.75rem; }
+
+  /* the row of steps */
+  .wv__step { display: block; position: relative; max-width: 26rem; }
+  .wv__step svg { display: block; width: 100%; height: auto; overflow: visible; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .wv__step-go { stroke: rgb(246 246 243 / 0.34); stroke-width: 1.5; }
+  .wv__step-back { stroke: rgb(218 255 2 / 0.75); stroke-width: 1.25; stroke-dasharray: 2 5; }
+  .wv__step-arrow { stroke: var(--lime); stroke-width: 1.5; }
+  /* (the light: a dash of no length with round ends, moved along the loop to the step in hand, --fa) */
+  .wv__step-run { stroke: #f4ffb0; stroke-width: 7; stroke-dasharray: 0.001 0.999; stroke-dashoffset: calc(var(--fa, 0) * -1px); }
+  .wv__step-run--glow { stroke: var(--lime); stroke-width: 20; stroke-opacity: 0.28; }
+  .wv__step-n { position: absolute; z-index: 1; left: calc(10% + var(--k) * 26.667%); top: 28.57%; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; margin: -1.375rem 0 0 -1.375rem; padding: 0; border: 0; border-radius: 50%; background: none; font: 500 0.8125rem / 1 var(--font-mono); color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: color 0.35s ease 0.35s; }
+  .wv__step-n::before { content: ""; position: absolute; inset: 0.375rem; z-index: -1; border-radius: 50%; background: #0c0c0c; box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.55), 0 0 0 0.1875rem var(--bg); transition: background-color 0.35s ease 0.35s, box-shadow 0.35s ease 0.35s; }
+  .wv__step-n:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+  /* the cards */
+  .wv__loop { position: relative; display: flex; align-items: stretch; gap: 0.75rem; margin: 0 calc(var(--gutter) * -1); padding: 0.875rem var(--gutter) 0.25rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .wv__loop::-webkit-scrollbar { display: none; }
+  .wv__links { display: contents; }
+  .wv__link { position: relative; flex: 0 0 calc(100vw - var(--gutter) - 3.5rem); max-width: 24rem; scroll-snap-align: start; }
+  .wv__link:focus-visible { outline-offset: -0.25rem; border-radius: 1.25rem; }
+  .wv__card { height: 100%; padding: 0.875rem 0.75rem 1rem; border: 1px solid rgb(246 246 243 / 0.13); border-radius: 1.25rem; background: linear-gradient(rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 6rem), #0e0e0e; overflow: hidden; }
+  .wv__rule { left: 1.25rem; right: 1.25rem; background: none; }
+  .wv__rule::before { right: -0.5rem; top: 1.125rem; }
+  .wv__t { display: flex; align-items: baseline; }
+  .wv__n { flex: none; margin-right: 0.75rem; font-size: 2.75rem; }
+  .wv__link--1 .wv__t { padding-right: 3.5rem; font-size: 1.25rem; }
+  .wv__link--1 .wv__p { font-size: var(--fs-small); }
+  .wv__link:not(.wv__link--1) .wv__t { font-size: 1.5rem; }
+  .wv__link:not(.wv__link--1) .wv__p { position: relative; z-index: 1; margin-top: 0.875rem; font-size: 1.125rem; line-height: 1.46; color: var(--ink); }
+  /* (the short steps: their numeral once more, large and hollow, at the card's foot; said to no screen reader) */
+  .wv__link:not(.wv__link--1) .wv__card::after { content: attr(data-n); content: attr(data-n) / ""; position: absolute; right: 0.75rem; bottom: 0.25rem; font: 200 9.5rem / 0.8 var(--font-sans); letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 1px rgb(246 246 243 / 0.13); pointer-events: none; }
+
+  /* the table: three columns down to 360 */
+  .wv__mock { margin-top: 1.125rem; }
+  .wv__table th,
+  .wv__table td { padding: 0.6875rem 0.375rem 0.6875rem 0; font-size: 0.71875rem; }
+  .wv__table thead th { font-size: 0.5625rem; letter-spacing: 0.08em; }
+  .wv__table th:first-child { width: 30%; white-space: nowrap; }
+  .wv__table th:nth-child(2),
+  .wv__table td:nth-child(2) { width: 32%; }
+  .wv__table tbody th,
+  .wv__table td:nth-child(3) { font-size: 0.6875rem; }
+  .wv__table caption { font-size: 0.59375rem; }
+  .wv__price { gap: 0.35em; font-size: 0.59375rem; letter-spacing: -0.02em; line-height: 1.8; white-space: nowrap; }
+  .wv__price::before { width: 0.3125rem; height: 0.3125rem; }
+  .wv__out { --dot-y: 1.25rem; padding: 0.8125rem 0 0.9375rem 1.375rem; font-size: var(--fs-caption); }
+
+  /* the last card: the return */
+  .wv__back { position: relative; flex: 0 0 68vw; max-width: 20rem; scroll-snap-align: start; flex-direction: column; gap: 1rem; padding: 1.25rem 1rem; overflow: hidden; border: 1px dashed rgb(218 255 2 / 0.5); border-radius: 1.25rem; background: rgb(218 255 2 / 0.04); font-size: 1.0625rem; line-height: 1.55; }
+  .wv__back-ico { width: 2.25rem; height: 2.25rem; }
+  .wv__back::after { content: "→ 01"; content: "→ 01" / ""; position: absolute; right: 0.75rem; bottom: 0.5rem; font: 200 6.5rem / 0.8 var(--font-sans); letter-spacing: -0.06em; white-space: nowrap; color: transparent; -webkit-text-stroke: 1px rgb(218 255 2 / 0.4); pointer-events: none; }
+
+  /* back and on, and how far along */
+  .wv__nav { display: flex; align-items: center; gap: 0.625rem; margin-top: 0.875rem; }
+  .wv__nav-bar { position: relative; flex: 1; height: 2px; margin-right: 0.5rem; border-radius: 1px; background: rgb(246 246 243 / 0.16); overflow: hidden; }
+  .wv__nav-bar::after { content: ""; position: absolute; inset: 0; background: var(--lime); transform: scaleX(calc(var(--on, 1) / 5)); transform-origin: 0 50%; transition: transform 0.6s var(--ease-out); }
+  .wv__nav-b { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 1px solid rgb(246 246 243 / 0.3); border-radius: 50%; background: rgb(246 246 243 / 0.04); color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.3s ease, background-color 0.2s ease, border-color 0.2s ease; }
+  .wv__nav-b svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .wv__nav-b[data-dir="1"] { border-color: var(--lime); background: var(--lime); color: var(--on-ink); }
+  .wv__nav-b:disabled { opacity: 0.3; cursor: default; }
+  .wv__nav-b:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+  .wv__nav-b:active:not(:disabled) { transform: scale(0.94); }
+  /* (without the script the row is still swept by the thumb; the arrows would do nothing) */
+  html:not(.js) .wv__nav { display: none; }
+
+  .wv__market { margin-top: 2.5rem; font-size: 1.3125rem; line-height: 1.36; }
+}
+@media (max-width: 400px) {
+  .wv__mock { margin-right: -0.5rem; }
+}
+/* tablets: two cards and the edge of the third */
+@media (min-width: 701px) and (max-width: 1100px) {
+  .wv__link { flex-basis: calc((100vw - var(--gutter) - 4.25rem) / 2); max-width: none; }
+}
+
+@media (forced-colors: active) {
+  .wv__n { color: CanvasText; -webkit-text-stroke: 0; }
+  .wv__out::before { background: CanvasText; box-shadow: none; }
+}

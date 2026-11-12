@@ -1,0 +1,309 @@
+/* 4 · Чому ECLO, the contour's motion (WhyClient.tsx sets the classes; why-contour.css is the still).
+   .wv-fx    motion allowed (without it: the still, everything shown, the light standing on node 1)
+   .is-in    the block has come into view: the contour draws once, the nodes light 1 → 4, the steps rise
+   .is-run   after that: one light goes round, node to node, resting a moment on each; the step it stands on is lit
+             (its node, its numeral, its rule; at step 1 the table is read through); the stone is lit from its side
+   .is-live  the block is on the screen and the tab shown: off it everything waits
+   .is-seen  a step (or the line under the contour) has come into view
+   .is-demo  step 1's table has come into view: it plays its 7 seconds once (section 3); .is-demoed after it
+   phones    nothing runs on a timer: the light stands on the step whose card is in hand ([data-on], --fa, --on;
+             .is-on that card, .is-done the ones before it) and goes over as the row is swept
+   Nothing is pinned, the scroll is the page's. Only transform, opacity and stroke-dashoffset move. */
+
+.wv { --lap: 14s; --draw: 1.5s; --f2: 0.357; --f3: 0.4728; --f4: 0.5885; }
+/* --f: where a node stands on the loop (a share of its length from node 1); --at: when its step starts in the lap;
+   --d: when the drawing line reaches it */
+.wv :is(.wv-node[data-n="1"], .wv__link--1) { --f: 0; --i: 0; }
+.wv :is(.wv-node[data-n="2"], .wv__link--2) { --f: var(--f2); --i: 1; }
+.wv :is(.wv-node[data-n="3"], .wv__link--3) { --f: var(--f3); --i: 2; }
+.wv :is(.wv-node[data-n="4"], .wv__link--4) { --f: var(--f4); --i: 3; }
+.wv :is(.wv-node, .wv__link) { --at: calc(var(--i) * var(--lap) / 4 - var(--lap)); --d: calc(0.3s + var(--f) / var(--f4) * var(--draw)); }
+/* the table: --r a row's turn; on each cell (Why.tsx) --c its turn in the row, --sw how long the line that stands in
+   for its words */
+.wv__table tbody tr:nth-child(1) { --r: 0; }
+.wv__table tbody tr:nth-child(2) { --r: 1; }
+.wv__table tbody tr:nth-child(3) { --r: 2; }
+
+/* at rest (and with reduced motion) */
+.wv-run { display: none; }
+.wv-mask { fill: none; stroke: #fff; stroke-width: 16; }
+
+/* everything waits off the screen and in a hidden tab */
+.wv-fx:not(.is-live) *,
+.wv-fx:not(.is-live) *::before,
+.wv-fx:not(.is-live) *::after { animation-play-state: paused !important; }
+/* (the page back in the other language: what was seen stands as it was, nothing plays its way in again) */
+.wv-skip,
+.wv-skip *,
+.wv-skip *::before,
+.wv-skip *::after { transition: none !important; }
+
+/* ==========================================================================
+   1 · It comes into view
+   ========================================================================== */
+.wv-fx .wv-spark { display: none; }
+.wv-fx .wv__aura { opacity: 0; transform: scale(0.78); translate: calc(var(--px, 0) * -0.75rem) calc(var(--py, 0) * -0.5rem); }
+.wv-fx.is-in .wv__aura { opacity: 1; transform: none; transition: opacity 1.4s ease 0.1s, transform 1.8s var(--ease-out) 0.1s, translate 1s var(--ease-out); }
+/* (the stone leans a little after the pointer: --px, --py) */
+.wv-fx .wv__rock { opacity: 0; transform: translateY(5%) scale(0.84); translate: calc(var(--px, 0) * 0.875rem) calc(var(--py, 0) * 0.625rem); }
+.wv-fx.is-in .wv__rock { opacity: 1; transform: none; transition: opacity 0.9s ease 0.2s, transform 1.5s var(--ease-out) 0.2s, translate 0.9s var(--ease-out); }
+.wv-fx :is(.wv-l--tube, .wv-l--edge, .wv-l--ruler, .wv-l--ped, .wv__cone, .wv-l--join) { opacity: 0; }
+.wv-fx.is-in :is(.wv-l--tube, .wv-l--edge, .wv-l--ruler, .wv-l--ped, .wv__cone, .wv-l--join) { opacity: 1; transition: opacity 1.1s ease 0.1s; }
+.wv-fx.is-in .wv__cone { transition-delay: 0.7s; }
+/* the contour draws from node 1 round to node 4, then the dashed return back to node 1 */
+.wv-fx :is(.wv-l--main, .wv-l--halo) { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.wv-fx.is-in :is(.wv-l--main, .wv-l--halo) { stroke-dashoffset: 0; transition: stroke-dashoffset var(--draw) cubic-bezier(0.65, 0, 0.35, 1) 0.3s; }
+.wv-fx .wv-mask { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.wv-fx.is-in .wv-mask { stroke-dashoffset: 0; transition: stroke-dashoffset 0.7s cubic-bezier(0.65, 0, 0.35, 1) calc(0.3s + var(--draw)); }
+.wv-fx :is(.wv-l--arrow, .wv-l--lead) { opacity: 0; }
+.wv-fx.is-in .wv-l--lead { opacity: 1; transition: opacity 0.8s ease 1.1s; }
+.wv-fx.is-in .wv-l--arrow { opacity: 1; transition: opacity 0.3s ease calc(0.9s + var(--draw)); }
+/* the nodes light as the line reaches them */
+.wv-node__in,
+.wv-node__ping { transform-box: fill-box; transform-origin: center; }
+.wv-fx .wv-node__in { opacity: 0; transform: scale(0.3); }
+.wv-fx.is-in .wv-node__in { opacity: 1; transform: none; transition: opacity 0.3s ease var(--d), transform 0.8s cubic-bezier(0.34, 1.5, 0.64, 1) var(--d); }
+/* the stone floats */
+.wv-fx.is-in .wv__rock-in { animation: wv-float 7s ease-in-out infinite alternate; }
+@keyframes wv-float { from { transform: translateY(-1.8%) rotate(-0.9deg); } to { transform: translateY(1.8%) rotate(0.9deg); } }
+/* the line under the contour comes sentence by sentence */
+.wv-fx .wv__say { opacity: 0; }
+.wv-fx .wv__market.is-seen .wv__say { opacity: 1; transition: opacity 0.9s ease; }
+.wv-fx .wv__market.is-seen .wv__say:nth-child(2) { transition-delay: 0.35s; }
+.wv-fx .wv__market.is-seen .wv__say:nth-child(3) { transition-delay: 0.7s; }
+
+@media (min-width: 1101px) {
+  /* the steps rise as the line reaches their nodes */
+  .wv-fx .wv__card { opacity: 0; transform: translateY(1.5rem); }
+  .wv-fx.is-in .wv__card { opacity: 1; transform: none; transition: opacity 0.7s ease calc(var(--d) + 0.05s), transform 1s var(--ease-out) calc(var(--d) + 0.05s); }
+  .wv-fx.is-in .wv__link--1 .wv__card { transition-delay: 0.05s; }
+  .wv-fx .wv__back { opacity: 0; }
+  .wv-fx.is-in .wv__back { opacity: 1; transition: opacity 0.7s ease calc(0.7s + var(--draw)); }
+}
+
+/* ==========================================================================
+   2 · The light goes round, node to node (computers)
+   ========================================================================== */
+/* the light: a dash of no length with round ends, its glow, its tails behind it; all moved along the loop */
+.wv-fx .wv-run { display: inline; fill: none; stroke: var(--lime); stroke-linecap: round; opacity: 0; }
+.wv-run--dot { stroke-width: 9; stroke-dasharray: 0.001 0.999; }
+.wv-run--glow { --a: 0.24; stroke-width: 30; stroke-dasharray: 0.001 0.999; }
+.wv-run--tail { stroke-width: 3; }
+.wv-run--tail[data-k="0"] { --a: 0.62; --o: 0.025; stroke-dasharray: 0.025 0.975; }
+.wv-run--tail[data-k="1"] { --a: 0.32; --o: 0.06; stroke-dasharray: 0.06 0.94; }
+.wv-run--tail[data-k="2"] { --a: 0.16; --o: 0.11; stroke-dasharray: 0.11 0.89; }
+.wv-run--tail[data-k="3"] { --a: 0.09; --o: 0.17; stroke-dasharray: 0.17 0.83; }
+.wv-fx.is-run .wv-run { animation: wv-go var(--lap) cubic-bezier(0.65, 0, 0.35, 1) infinite, wv-on 0.5s ease both; }
+.wv-fx.is-run .wv-run--tail { animation: wv-go var(--lap) cubic-bezier(0.65, 0, 0.35, 1) infinite, wv-tail var(--lap) linear infinite; }
+/* (in px: a bare number is not valid inside calc() for a length; 1 px is one unit of the path's length) */
+@keyframes wv-go {
+  0%, 6% { stroke-dashoffset: calc(var(--o, 0) * 1px); }
+  25%, 31% { stroke-dashoffset: calc((var(--o, 0) - var(--f2)) * 1px); }
+  50%, 56% { stroke-dashoffset: calc((var(--o, 0) - var(--f3)) * 1px); }
+  75%, 81% { stroke-dashoffset: calc((var(--o, 0) - var(--f4)) * 1px); }
+  100% { stroke-dashoffset: calc((var(--o, 0) - 1) * 1px); }
+}
+@keyframes wv-on { from { opacity: 0; } to { opacity: var(--a, 1); } }
+/* (the tails show on the way, fold away as the light rests on a node) */
+@keyframes wv-tail {
+  0%, 7% { opacity: 0; } 12%, 19% { opacity: var(--a); } 25%, 32% { opacity: 0; } 37%, 44% { opacity: var(--a); }
+  50%, 57% { opacity: 0; } 62%, 69% { opacity: var(--a); } 75%, 82% { opacity: 0; } 87%, 94% { opacity: var(--a); } 100% { opacity: 0; }
+}
+/* a step is lit while the light stands on its node and until it reaches the next: its node (a ring leaves it twice),
+   its numeral, the rule over it filling from the node across */
+@keyframes wv-act { 0% { opacity: 0; } 1.5% { opacity: 1; } 23% { opacity: 1; } 28% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes wv-ping { 0% { opacity: 0.9; transform: scale(1); } 9% { opacity: 0; transform: scale(2.7); } 100% { opacity: 0; transform: scale(2.7); } }
+@keyframes wv-fill { 0% { transform: scaleX(0); opacity: 1; } 25% { transform: scaleX(1); opacity: 1; } 30% { transform: scaleX(1); opacity: 0; } 100% { transform: scaleX(0); opacity: 0; } }
+.wv-fx.is-run .wv-node__lit { animation: wv-act var(--lap) linear var(--at) infinite; }
+.wv-fx.is-run .wv-node__ping { animation: wv-ping var(--lap) linear var(--at) infinite; }
+.wv-fx.is-run .wv-node__ping--2 { animation-delay: calc(var(--at) + 0.4s); }
+/* the light comes back to node 1 and goes on into the panel: a pulse along the join, then the table is read through
+   (a line down it, each price marked as it passes, a ring from the conclusion's dot) */
+.wv-fx .wv-pulse { display: inline; fill: none; stroke: var(--lime); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 0.3 1; stroke-dashoffset: 0.3; opacity: 0; }
+.wv-fx.is-run .wv-pulse { animation: wv-pulse var(--lap) linear infinite; }
+@keyframes wv-pulse { 0% { stroke-dashoffset: 0.3px; opacity: 0; } 1% { opacity: 1; } 6% { stroke-dashoffset: -1px; opacity: 1; } 7%, 100% { stroke-dashoffset: -1px; opacity: 0; } }
+.wv-fx .wv__scan { display: block; position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.wv__scan::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: linear-gradient(90deg, rgb(218 255 2 / 0), var(--lime) 18%, var(--lime) 82%, rgb(218 255 2 / 0)); box-shadow: 0 0 0.75rem 1px var(--signal-glow); }
+.wv__scan::after { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 2rem; background: linear-gradient(rgb(218 255 2 / 0), rgb(218 255 2 / 0.1)); }
+@keyframes wv-scan { 0% { opacity: 0; transform: translateY(2.1rem); } 4% { opacity: 1; transform: translateY(2.1rem); } 19% { opacity: 1; transform: translateY(100%); } 22%, 100% { opacity: 0; transform: translateY(100%); } }
+@keyframes wv-flag { 0% { opacity: 0; } 1.2% { opacity: 1; } 10%, 100% { opacity: 0; } }
+@keyframes wv-ring { 0% { opacity: 0.9; transform: scale(1); } 9% { opacity: 0; transform: scale(3.4); } 100% { opacity: 0; transform: scale(3.4); } }
+@media (min-width: 1101px) {
+  .wv-fx.is-run .wv__n::after { animation: wv-act var(--lap) linear var(--at) infinite; }
+  .wv-fx.is-run .wv__rule::after { animation: wv-fill var(--lap) linear var(--at) infinite; }
+  .wv-fx.is-run .wv__scan { animation: wv-scan var(--lap) cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+  .wv-fx.is-run .wv__price::after { animation: wv-flag var(--lap) linear calc((0.085 + var(--r) * 0.042) * var(--lap)) infinite; }
+  .wv-fx.is-run .wv__out::after { animation: wv-ring var(--lap) linear calc(0.2 * var(--lap)) infinite; }
+}
+/* the stone is lit from the side the light is on; the lamp over it and its stand breathe */
+.wv-fx .wv__shine { display: block; opacity: 0; }
+.wv-fx.is-run .wv__shine { animation: wv-on 1.2s ease both; }
+.wv-fx.is-run .wv__shine > i { animation: wv-turn var(--lap) cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+@keyframes wv-turn { 0%, 6% { transform: rotate(-90deg); } 25%, 31% { transform: rotate(26deg); } 50%, 56% { transform: rotate(72deg); } 75%, 81% { transform: rotate(144deg); } 100% { transform: rotate(270deg); } }
+.wv-fx.is-run .wv__cone { animation: wv-lamp 5s ease-in-out infinite alternate; }
+.wv-fx.is-run .wv-l--ped2 { animation: wv-lamp 2.4s ease-in-out infinite alternate; }
+@keyframes wv-lamp { from { opacity: 0.7; } to { opacity: 1; } }
+/* a slow computer (html.is-lite, lib/lite.ts): the stone stands still and unlit, the lamp steady */
+.is-lite .wv-fx .wv__shine { display: none; }
+.is-lite .wv-fx .wv__rock-in,
+.is-lite .wv-fx .wv__cone,
+.is-lite .wv-fx .wv-l--ped2 { animation: none; }
+
+/* ==========================================================================
+   3 · Step 1's table as a demo of the analysis: 7 seconds, once, as the table comes into view (the owner, 11 Nov
+   2026). Before it the grid stands empty, a line in place of every word. Then:
+   0.4 – 3.0 s  a lime line reads down the table; behind it each row is gathered: the competitor, its price, its promise
+   3.4 – 5.2 s  the price column is marked (ember): none of the three is a number
+   5.0 – 6.0 s  the promises fade: all three say the same
+   5.6 – 7.0 s  the conclusion: its dot, a lime line and a wash across it, its words
+   On computers the light on the contour waits at node 1 meanwhile (rings leave the node, pulses go from it into the
+   table) and starts round when the demo is done. The lap's own reading of the table keeps off while .is-demo is on.
+   ========================================================================== */
+.wv { --demo: 7s; }
+.wv-fx .wv__sk { display: block; position: absolute; left: 0; top: 0.42em; width: var(--sw); height: 0.5em; border-radius: 999px; background: rgb(246 246 243 / 0.1); overflow: hidden; opacity: 0; pointer-events: none; }
+.wv-fx .wv__sk::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(246 246 243 / 0), rgb(246 246 243 / 0.24), rgb(246 246 243 / 0)); transform: translateX(-100%); }
+.wv-fx .wv__flag { display: block; position: absolute; inset: -0.3em -0.55em; border-radius: 999px; background: rgb(210 86 28 / 0.32); box-shadow: 0 0 1rem rgb(210 86 28 / 0.35); opacity: 0; pointer-events: none; }
+/* (--col-x, --col-w, --head-top, --head-bottom: the price column and the head row, measured by WhyClient) */
+.wv-fx .wv__col { display: block; position: absolute; left: calc(var(--col-x, 31%) - var(--col-pad, 0.5rem)); width: var(--col-w, 31%); top: var(--head-top, 2rem); bottom: 0; border-radius: 0.375rem; background: linear-gradient(rgb(210 86 28 / 0.18), rgb(210 86 28 / 0.05)); box-shadow: inset 1px 0 0 rgb(210 86 28 / 0.4), inset -1px 0 0 rgb(210 86 28 / 0.4); transform-origin: 50% 0; transform: scaleY(0); opacity: 0; pointer-events: none; }
+.wv-fx .wv__probe { display: block; position: absolute; left: 0; right: 0; top: var(--head-bottom, 4.15rem); bottom: 0; opacity: 0; pointer-events: none; }
+.wv__probe::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: linear-gradient(90deg, rgb(218 255 2 / 0), var(--lime) 14%, var(--lime) 86%, rgb(218 255 2 / 0)); box-shadow: 0 0 0.875rem 1px var(--signal-glow); }
+.wv__probe::after { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 2.5rem; background: linear-gradient(rgb(218 255 2 / 0), rgb(218 255 2 / 0.12)); }
+.wv-fx .wv__live { display: block; position: absolute; right: 0.125rem; top: calc(var(--head-top, 2rem) / 2); width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0.625rem 1px var(--signal-glow); opacity: 0; pointer-events: none; }
+.wv__live::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 1px var(--lime); opacity: 0; }
+.wv-fx .wv__wash { display: block; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(218 255 2 / 0.12), rgb(218 255 2 / 0) 72%); opacity: 0; pointer-events: none; }
+.wv__wash::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: linear-gradient(90deg, var(--lime), rgb(218 255 2 / 0.25)); box-shadow: 0 0 0.75rem var(--signal-glow); transform: scaleX(0); transform-origin: 0 50%; }
+.wv__wash::after { content: ""; position: absolute; left: 0.125rem; top: var(--dot-y); width: 0.375rem; height: 0.375rem; border-radius: 50%; box-shadow: 0 0 0 1px var(--lime); opacity: 0; }
+
+/* before its turn */
+.wv-fx:not(.is-demo, .is-demoed) :is(.wv__v, .wv__out-t),
+.wv-fx:not(.is-demo, .is-demoed) .wv__out::before { opacity: 0; }
+.wv-fx:not(.is-demoed) .wv__sk { opacity: 1; }
+.wv-fx:not(.is-demoed) .wv__sk::after { animation: wv-shim 1.7s linear calc(var(--r) * 0.2s + var(--c) * 0.12s) infinite; }
+@keyframes wv-shim { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
+
+/* the rows are gathered */
+.wv-fx.is-demo .wv__live { animation: wv-live var(--demo) linear both; }
+.wv-fx.is-demo .wv__live::after { animation: wv-live-ring 1.2s ease-out infinite; }
+@keyframes wv-live { 0% { opacity: 0; } 4% { opacity: 1; } 84% { opacity: 1; } 90%, 100% { opacity: 0; } }
+@keyframes wv-live-ring { 0% { opacity: 0.9; transform: scale(1); } 70%, 100% { opacity: 0; transform: scale(3); } }
+.wv-fx.is-demo .wv__probe { animation: wv-probe var(--demo) linear both; }
+@keyframes wv-probe { 0%, 4% { opacity: 0; transform: translateY(0); } 6% { opacity: 1; transform: translateY(0); } 43% { opacity: 1; transform: translateY(100%); } 47%, 100% { opacity: 0; transform: translateY(100%); } }
+.wv-fx.is-demo .wv__sk { animation: wv-sk 0.5s ease calc(0.5s + var(--r) * 0.85s + var(--c) * 0.14s) both; }
+@keyframes wv-sk { from { opacity: 1; } to { opacity: 0; } }
+.wv-fx.is-demo .wv__v { animation: wv-v 0.6s var(--ease-out) calc(0.62s + var(--r) * 0.85s + var(--c) * 0.14s) both; }
+@keyframes wv-v { from { opacity: 0; transform: translateY(0.3rem); } to { opacity: 1; transform: none; } }
+/* the prices are marked */
+.wv-fx.is-demo .wv__col { animation: wv-col var(--demo) var(--ease-out) both; }
+@keyframes wv-col { 0%, 48% { opacity: 0; transform: scaleY(0); } 56% { opacity: 1; transform: scaleY(1); } 74% { opacity: 1; transform: scaleY(1); } 82%, 100% { opacity: 0; transform: scaleY(1); } }
+.wv-fx.is-demo .wv__flag { animation: wv-flag-d 1.2s ease calc(3.75s + var(--r) * 0.3s) both; }
+@keyframes wv-flag-d { 0% { opacity: 0; transform: scale(0.8); } 30% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0; transform: scale(1); } }
+.wv-fx.is-demo .wv__price::before { animation: wv-pop 0.7s ease calc(3.75s + var(--r) * 0.3s) both; }
+@keyframes wv-pop { 0%, 100% { transform: scale(1); } 40% { transform: scale(2.1); } }
+/* the promises fade */
+.wv-fx.is-demo .wv__table td:nth-child(3) .wv__c { animation: wv-same var(--demo) ease both; }
+@keyframes wv-same { 0%, 68% { opacity: 1; } 74% { opacity: 0.34; } 87% { opacity: 0.34; } 95%, 100% { opacity: 1; } }
+/* the conclusion */
+.wv-fx.is-demo .wv__wash { animation: wv-wash var(--demo) ease both; }
+@keyframes wv-wash { 0%, 79% { opacity: 0; } 85% { opacity: 1; } 93% { opacity: 1; } 100% { opacity: 0; } }
+.wv-fx.is-demo .wv__wash::before { animation: wv-wash-line var(--demo) var(--ease-out) both; }
+@keyframes wv-wash-line { 0%, 79% { transform: scaleX(0); } 91%, 100% { transform: scaleX(1); } }
+.wv-fx.is-demo .wv__wash::after { animation: wv-wash-ring var(--demo) ease-out both; }
+@keyframes wv-wash-ring { 0%, 82% { opacity: 0; transform: scale(1); } 83% { opacity: 0.9; transform: scale(1); } 94%, 100% { opacity: 0; transform: scale(3.6); } }
+.wv-fx.is-demo .wv__out::before { animation: wv-dot var(--demo) ease both; }
+@keyframes wv-dot { 0%, 79% { opacity: 0; transform: scale(0); } 83% { opacity: 1; transform: scale(1.7); } 88%, 100% { opacity: 1; transform: scale(1); } }
+.wv-fx.is-demo .wv__out-t { animation: wv-v 0.8s var(--ease-out) 5.7s both; }
+/* the lap's own reading of the table keeps off meanwhile (an important rule stands over an animation) */
+.wv-fx.is-demo .wv__scan,
+.wv-fx.is-demo .wv__price::after,
+.wv-fx.is-demo .wv__out::after { opacity: 0 !important; }
+@media (max-width: 1100px) {
+  .wv__col { --col-pad: 0.25rem; }
+}
+/* computers: node 1 at work until the light starts round */
+@media (min-width: 1101px) {
+  .wv-fx.is-demo:not(.is-run) .wv-node--1 .wv-node__ping { animation: wv-ping-d 1.75s ease-out infinite; }
+  .wv-fx.is-demo:not(.is-run) .wv-node--1 .wv-node__ping--2 { animation-delay: 0.4s; }
+  .wv-fx.is-demo:not(.is-run) .wv-pulse { animation: wv-pulse-d 1.75s linear infinite; }
+}
+@keyframes wv-ping-d { 0% { opacity: 0.9; transform: scale(1); } 60%, 100% { opacity: 0; transform: scale(2.7); } }
+@keyframes wv-pulse-d { 0% { stroke-dashoffset: 0.3px; opacity: 0; } 8% { opacity: 1; } 55% { stroke-dashoffset: -1px; opacity: 1; } 62%, 100% { stroke-dashoffset: -1px; opacity: 0; } }
+
+/* ---------- a pointer on a node or on a step's words, or the keyboard's focus on the step, lights both (the words
+   are all there without it) ---------- */
+@media (min-width: 1101px) {
+  .wv-node { pointer-events: all; }
+  .wv__body:has(.wv-node[data-n="1"]:hover) .wv__link--1 :is(.wv__n, .wv__rule)::after,
+  .wv__body:has(.wv-node[data-n="2"]:hover) .wv__link--2 :is(.wv__n, .wv__rule)::after,
+  .wv__body:has(.wv-node[data-n="3"]:hover) .wv__link--3 :is(.wv__n, .wv__rule)::after,
+  .wv__body:has(.wv-node[data-n="4"]:hover) .wv__link--4 :is(.wv__n, .wv__rule)::after,
+  .wv__link:is(:hover, :focus-visible) :is(.wv__n, .wv__rule)::after,
+  .wv__body:has(.wv__link--1:is(:hover, :focus-visible)) .wv-node[data-n="1"] .wv-node__lit,
+  .wv__body:has(.wv__link--2:is(:hover, :focus-visible)) .wv-node[data-n="2"] .wv-node__lit,
+  .wv__body:has(.wv__link--3:is(:hover, :focus-visible)) .wv-node[data-n="3"] .wv-node__lit,
+  .wv__body:has(.wv__link--4:is(:hover, :focus-visible)) .wv-node[data-n="4"] .wv-node__lit,
+  .wv-node:hover .wv-node__lit { opacity: 1 !important; }
+  .wv__link:is(:hover, :focus-visible) .wv__rule::after { transform: none !important; }
+  .wv-node__lit,
+  .wv__n::after { transition: opacity 0.25s ease; }
+}
+
+/* ==========================================================================
+   Phones and tablets: the light stands on the step whose card is in hand and goes over as the row is swept. The
+   cards do not rise one by one: they stand in their row; once, as the row comes into view, it gives a small push
+   sideways to show its way (WhyClient).
+   ========================================================================== */
+@media (max-width: 1100px) {
+  .wv__step-run { transition: stroke-dashoffset 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
+  /* the step in hand (the return lights step 1 again)… */
+  .wv[data-on="1"] .wv__step-n[data-go="0"],
+  .wv[data-on="2"] .wv__step-n[data-go="1"],
+  .wv[data-on="3"] .wv__step-n[data-go="2"],
+  .wv[data-on="4"] .wv__step-n[data-go="3"],
+  .wv[data-on="5"] .wv__step-n[data-go="0"] { color: var(--on-ink); }
+  .wv[data-on="1"] .wv__step-n[data-go="0"]::before,
+  .wv[data-on="2"] .wv__step-n[data-go="1"]::before,
+  .wv[data-on="3"] .wv__step-n[data-go="2"]::before,
+  .wv[data-on="4"] .wv__step-n[data-go="3"]::before,
+  .wv[data-on="5"] .wv__step-n[data-go="0"]::before { background-color: var(--lime); box-shadow: inset 0 0 0 1px var(--lime), 0 0 0 0.1875rem var(--bg), 0 0 1.25rem 0.25rem var(--signal-glow); }
+  /* …and the ones before it */
+  .wv:is([data-on="2"], [data-on="3"], [data-on="4"]) .wv__step-n[data-go="0"],
+  .wv:is([data-on="3"], [data-on="4"]) .wv__step-n[data-go="1"],
+  .wv[data-on="4"] .wv__step-n[data-go="2"] { color: var(--lime); }
+  .wv:is([data-on="2"], [data-on="3"], [data-on="4"]) .wv__step-n[data-go="0"]::before,
+  .wv:is([data-on="3"], [data-on="4"]) .wv__step-n[data-go="1"]::before,
+  .wv[data-on="4"] .wv__step-n[data-go="2"]::before { box-shadow: inset 0 0 0 1.5px var(--lime), 0 0 0 0.1875rem var(--bg); }
+  .wv-fx .wv__step-back { opacity: 0; }
+  .wv-fx.is-in .wv__step-back { opacity: 1; transition: opacity 0.8s ease 0.5s; }
+  /* the card in hand: its numeral lit, its rule filled; the ones before it keep a trace */
+  .wv__n::after { transition: opacity 0.4s ease; }
+  .wv__rule::after { transition: transform 0.9s var(--ease-out), opacity 0.5s ease; }
+  .wv-fx .is-on .wv__n::after { opacity: 1; }
+  .wv-fx .is-on .wv__rule::after { transform: none; opacity: 1; }
+  .wv-fx .is-done .wv__rule::after { transform: none; opacity: 0.4; }
+  .wv-fx .is-done .wv__n { -webkit-text-stroke-color: rgb(218 255 2 / 0.7); }
+  /* step 1 back in hand after its demo (.is-reread): the table is read through, once each time */
+  .wv-fx .wv__link--1.is-reread .wv__scan { animation: wv-scan-1 2.4s cubic-bezier(0.45, 0, 0.55, 1) 0.35s 1 both; }
+  @keyframes wv-scan-1 { 0% { opacity: 0; transform: translateY(2.1rem); } 12% { opacity: 1; transform: translateY(2.1rem); } 88% { opacity: 1; transform: translateY(100%); } 100% { opacity: 0; transform: translateY(100%); } }
+  .wv-fx .wv__link--1.is-reread .wv__price::after { animation: wv-flag-1 1.1s ease calc(0.95s + var(--r) * 0.5s) 1 both; }
+  @keyframes wv-flag-1 { 0% { opacity: 0; } 18% { opacity: 1; } 100% { opacity: 0; } }
+  .wv-fx .wv__link--1.is-reread .wv__out::after { animation: wv-ping-1 1s ease-out 2.7s 1 both; }
+  @keyframes wv-ping-1 { from { opacity: 0.9; transform: scale(1); } to { opacity: 0; transform: scale(2.6); } }
+  /* the return in hand */
+  .wv__back { transition: border-color 0.4s ease, background-color 0.4s ease; }
+  .wv[data-on="5"] .wv__back { border-color: var(--lime); background-color: rgb(218 255 2 / 0.09); }
+  /* (the arrow «on» beckons until the row has been moved once) */
+  .wv-fx:not(.is-swept) .wv__nav-b[data-dir="1"] { animation: wv-beckon 1.8s ease-in-out infinite; }
+  @keyframes wv-beckon { 0%, 100% { transform: none; } 50% { transform: translateX(0.3125rem); } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wv__step-run,
+  .wv__step-n,
+  .wv__step-n::before,
+  .wv__nav-bar::after,
+  .wv__nav-b,
+  .wv__back,
+  .wv__n::after,
+  .wv__rule::after,
+  .wv-node__lit { transition: none; }
+}
