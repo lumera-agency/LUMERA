@@ -8,6 +8,7 @@ import { LogoSprite } from "@/components/ui/logo/LogoSprite";
 import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
 import { SiteNavProvider } from "@/components/layout/site-nav/SiteNavProvider";
 import { getSiteNav } from "@/content/site-nav";
+import { PRICES } from "@/components/sections/services/copy";
 import "../globals.css";
 import "@/components/layout/page/page.css";
 import { RootKeep } from "@/components/layout/RootKeep";
@@ -25,18 +26,21 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
   const path = locale === routing.defaultLocale ? "/" : `/${locale}`;
+  // a sum in the title or the description ({landing} …) is the configurator engine's, as on the page (services/copy)
+  const title = t("title", PRICES);
+  const description = t("description", PRICES);
   return {
     // every page's canonical, hreflang and og:url are paths: they resolve against the site's address (config/site)
     metadataBase: new URL(siteUrl),
     robots: allowIndexing ? undefined : { index: false, follow: false },
-    title: t("title"),
-    description: t("description"),
+    title,
+    description,
     alternates: { canonical: path, languages: { uk: "/", ru: "/ru", "x-default": "/" } },
     openGraph: {
       type: "website",
       siteName: studioName,
-      title: t("title"),
-      description: t("description"),
+      title,
+      description,
       url: path,
       locale: locale === "ru" ? "ru_RU" : "uk_UA",
       alternateLocale: locale === "ru" ? ["uk_UA"] : ["ru_RU"],

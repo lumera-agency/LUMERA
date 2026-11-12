@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { getPathname } from "@/i18n/navigation";
-import { brandName, siteUrl, studioName } from "@/config/site";
+import { brandAltNames, brandName, siteUrl, studioName } from "@/config/site";
 import { CONTACTS, realPhones } from "@/config/contacts";
 import { PRICING } from "@/components/sections/pricing/configurator/engine.js";
+import { PRICES } from "@/components/sections/services/copy";
 import { plainText } from "./plain-text";
 import { services, type Price, type ServiceInfo, type ServiceKey } from "./services";
 
@@ -68,7 +69,8 @@ export async function pageGraph({ locale, path, meta, service, about, crumbs = [
     "@type": "Organization",
     "@id": ORG,
     name: studioName,
-    alternateName: brandName,
+    // «ECLO» and the other spellings people use (config/site: «Екло»)
+    alternateName: [brandName, ...brandAltNames],
     url: `${siteUrl}/`,
     // the site's icon, the favicon's picture: a new logo there is the studio's logo here too
     logo: `${siteUrl}/apple-touch-icon.png`,
@@ -102,8 +104,9 @@ export async function pageGraph({ locale, path, meta, service, about, crumbs = [
     "@type": "WebPage",
     "@id": `${url}#webpage`,
     url,
-    name: plainText(m("title")),
-    description: plainText(m("description")),
+    // the page's <title> and description, the sums in them the engine's as in its metadata (services/copy)
+    name: plainText(m("title", PRICES)),
+    description: plainText(m("description", PRICES)),
     inLanguage: locale,
     isPartOf: { "@id": WEBSITE },
     about: { "@id": own ? serviceId(own) : topic ? serviceId(topic) : ORG },
