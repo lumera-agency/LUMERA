@@ -34,8 +34,8 @@ export type SiteNavData = {
   cases: SiteNavCase[];
   /** the AI assistant: a client's case too (the owner, 28 Oct), its own page, no figure yet */
   assistant: { chip: string; name: string; href: string };
-  /** the phones (to call) and the messengers (config/contacts) */
-  contacts: { phones: { text: string; href: string }[]; telegram: string; viber: string };
+  /** the phones (to call), the messengers and the mail (config/contacts) */
+  contacts: { phones: { text: string; href: string }[]; telegram: string; viber: string; email: { text: string; href: string } };
   labels: {
     services: string;
     cases: string;
@@ -177,6 +177,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       phones: CONTACTS.phones.map((n) => ({ text: phoneText(n), href: telHref(n) })),
       telegram: telegramHref(),
       viber: viberHref(),
+      email: { text: CONTACTS.email, href: `mailto:${CONTACTS.email}` },
     },
     assistant: { chip: t("ai.nav.case"), name: t("nav.caseTitle.asst"), href: href("/keisy/ai-asystent") },
     labels: {
