@@ -39,6 +39,15 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 const motion = !reducedMotion && !OG && typeof Element.prototype.animate === 'function';
 const phoneMQ = window.matchMedia('(max-width: 600px)');
 const narrowMQ = window.matchMedia('(max-width: 860px)');
+/* The formats' page-long stills in AVIF where the browser decodes it, WebP elsewhere: each has its .avif beside its
+   .webp, 28% lighter in all at the same look (12 Nov 2026: quality 60 against the WebP, no difference seen at 4x).
+   Asked once, of a one-pixel picture */
+const stillFormat = new Promise((resolve) => {
+  const probe = new Image();
+  probe.onload = () => resolve(probe.width === 1 ? 'avif' : 'webp');
+  probe.onerror = () => resolve('webp');
+  probe.src = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADrbWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAAAAAAAOcGl0bQAAAAAAAQAAAB5pbG9jAAAAAEQAAAEAAQAAAAEAAAETAAAAFwAAAChpaW5mAAAAAAABAAAAGmluZmUCAAAAAAEAAGF2MDFDb2xvcgAAAABqaXBycAAAAEtpcGNvAAAAFGlzcGUAAAAAAAAAAQAAAAEAAAAQcGl4aQAAAAADCAgIAAAADGF2MUOBAAwAAAAAE2NvbHJuY2x4AAEADQAGgAAAABdpcG1hAAAAAAAAAAEAAQQBAoMEAAAAH21kYXQSAAoFGAAGBCAyDBgACiiihAAAsBKamA==';
+});
 const fineMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const EASE_IO = 'cubic-bezier(0.65, 0, 0.35, 1)';
@@ -916,7 +925,8 @@ function mountSamples() {
   const host = $('[data-pv]');
   if (!host || !pvModule || !strings) return null;
   try {
-    return pvModule.mountPreview(host, { t: strings, lang: lang(), assets: PV_ASSETS, reducedMotion: !motion, phone: phoneMQ.matches, labels: { take: t('sites.pv.take', 'Гортайте й натискайте самі'), auto: t('sites.pv.auto', 'Автопрокрутка'), full: t('sites.pv.full', 'На весь екран'), close: t('sites.pv.close', 'Закрити') }, full: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
+    // (a slow computer, html.is-lite: the sample site holds still, its entrances and loops are not needed to read it)
+    return pvModule.mountPreview(host, { t: strings, lang: lang(), assets: PV_ASSETS, reducedMotion: !motion || document.documentElement.classList.contains('is-lite'), phone: phoneMQ.matches, labels: { take: t('sites.pv.take', 'Гортайте й натискайте самі'), auto: t('sites.pv.auto', 'Автопрокрутка'), full: t('sites.pv.full', 'На весь екран'), close: t('sites.pv.close', 'Закрити') }, full: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
   } catch (error) {
     console.warn('[samples] the sample sites are not available.', error);
     host.closest('[data-pv-box]')?.setAttribute('hidden', '');
@@ -938,10 +948,13 @@ function initTabs() {
   // audit: the first still came twice, 0.5 MB more, 1.3 MB in Russian). (QA 19 Oct, S-20) So do narrow tablets and
   // phones on their side, up to 860 px: the same copies, the open format's first, another's as its tab is pressed
   const phone = narrowMQ.matches;
-  for (const img of $$('.st-dev__img[data-src]', room)) {
-    const desk = img.closest('.st-dev__desk');
-    img.src = phone && desk ? img.dataset.src.replace(/\.webp$/, '-s.webp') : img.dataset.src;
-  }
+  void stillFormat.then((format) => {
+    for (const img of $$('.st-dev__img[data-src]', room)) {
+      const desk = img.closest('.st-dev__desk');
+      const still = phone && desk ? img.dataset.src.replace(/\.webp$/, '-s.webp') : img.dataset.src;
+      img.src = still.replace(/\.webp$/, `.${format}`);
+    }
+  });
   // the open format's stills start loading once block 2 is within a screen. On a computer the other formats' follow
   // once block 2 itself shows, and a tab's own as the pointer comes onto it: all of them at block 2's approach came
   // with the page's load (block 2 is a screen down), about 1.1 MB the first screen never shows (10 Nov 2026). On a
@@ -971,8 +984,11 @@ function initTabs() {
   }
   // (15 Oct) Safari paints a page-long image inside a moving layer tile by tile and falls behind the scroll: the window
   // showed black, then the blurred stand-in. Each still is shown as a column of slices instead, each slice its own
-  // small layer (under 2 000 device px), painted before the scroll starts; the <img> stays for decode() only
-  for (const img of $$('.st-dev__img', room)) sliceStill(img);
+  // small layer (under 2 000 device px), painted before the scroll starts; the <img> stays for decode() only. (Sliced
+  // once its address is chosen: the slices draw that address)
+  void stillFormat.then(() => {
+    for (const img of $$('.st-dev__img', room)) sliceStill(img);
+  });
   // the rulers: the pictured sample's blocks in order (the round-6 Базовий designs), Лендінг+'s extra ones marked
   for (const ol of $$('[data-ruler]', room)) {
     const plus = ol.dataset.ruler === 'landingPlus';

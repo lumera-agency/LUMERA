@@ -1,14 +1,21 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import dynamic from "next/dynamic";
 import { boot, loader, sceneRun, useSceneRunning } from "@/lib/boot";
 import { useReducedMotion } from "@/lib/hooks";
+import { heroGlow, heroGlowMoved } from "@/lib/hero-glow";
+import { isLite, useLite } from "@/lib/lite";
+import { canRunFull } from "@/lib/perf/mode";
+import { playAlphaFilm } from "@/components/fx/alpha-film/alpha-film";
 import { WebGLGate } from "@/components/three/lib/WebGLGate";
+import { stonePlace } from "@/components/three/hero/state";
 import { useBoot } from "./useBoot";
+import { HeroOrbit } from "./HeroOrbit";
 import "./hero.css";
 
-// three.js and the scenes load after the first paint; the page works without them
+// three.js and the scenes load after the first paint; the page works without them. In LITE (lib/lite) they are never
+// asked for: the stone is a still with its orbit in CSS (below)
 const HeroScene = dynamic(
   () =>
     import("@/components/three/hero/HeroScene").then((m) => {
@@ -17,16 +24,64 @@ const HeroScene = dynamic(
     }),
   { ssr: false },
 );
-const ShardsScene = dynamic(() => import("@/components/three/hero/ShardsScene"), { ssr: false });
 
-/** The page rides over the first screen: the hero's content is held back as the page scrolls
- *  (HOLD of the scroll, so it nearly stays put) and dims, and the blocks slide over it. */
-const HOLD = 0.7;
+/**
+ * The blurred shards behind the stone, as pictures (the owner, 12 Nov 2026: taken from LITE's way of doing it; they
+ * were a second three.js scene that drew only through the intro and then stood still, «статичные как картинка», the
+ * owner, 10 Nov 2026). Each is its own picture of the scene's shard at the pose the intro left it in
+ * (tools/capture-shards.mjs and shards-cut.py in the optimization folder), placed as the scene placed it: x a share of
+ * the hero's width, y and the height shares of its height, the drift it had made by then in hero heights; a phone's
+ * layout has fewer and smaller (phone). The scene's CSS blur stays on their box (hero.css); not in LITE.
+ */
+const SHARD_PICTURES = [
+  { seed: 3, x: 0.415, y: 0.845, height: 0.1387, driftX: 0.0427, driftY: -0.0103, phone: { x: 0.1, y: 0.4, height: 0.0809 } },
+  { seed: 5, x: 0.585, y: 0.965, height: 0.0693, driftX: -0.004, driftY: 0.0003, phone: null },
+  { seed: 8, x: 0.915, y: 0.615, height: 0.096, driftX: -0.028, driftY: 0.001, phone: { x: 0.94, y: 0.56, height: 0.0678 } },
+  { seed: 13, x: 0.958, y: 0.93, height: 0.1333, driftX: -0.0035, driftY: -0.0527, phone: { x: 0.9, y: 0.97, height: 0.0762 } },
+  { seed: 21, x: 0.8, y: 0.29, height: 0.04, driftX: 0.012, driftY: -0.014, phone: null },
+  { seed: 34, x: 0.5, y: 0.5, height: 0.0587, driftX: -0.0027, driftY: 0.0173, phone: null },
+];
+
+/* The page rides over the first screen: the hero holds still (sticky, hero.css) and dims, and the blocks slide over
+   it. On every screen since 12 Nov 2026 (the owner: «давай сделай стики на компьютере»): on a computer a script held
+   the content back to 0.7 of the scroll, a frame behind the browser's own scroll once the glide was off, so the
+   content jumped as the page came over it. */
 
 /** No 3D here: the start-up doesn't wait for a scene that won't come. */
 const skipScene = () => {
   boot.sceneLoaded.resolve();
   boot.sceneReady.resolve();
+};
+
+/**
+ * LITE's stone (lib/lite): a short film of the live stone, its orbit of services running round it in CSS (HeroOrbit).
+ * The owner, 12 Nov 2026: the long film «тормозит» (20 s with the orbit's words in it, 4.9 MB), a still with a light
+ * along its chrome did not look right, this one «норм». An 8 s loop of the live scene with its transparency, the
+ * orbit's words left out and no rise and fall (the page floats the film and the orbit together, hero.css), the stone
+ * turning about ±10° (NO_ORBIT=1 FILM_SCALE=2 FILM_SWAY=0.29 FILM_BOB=0 tools/record-film.mjs, then encode-film.sh crf
+ * 25, in the optimization folder): 2.0 MB at 1600 px a half for a computer (softer was rejected), 0.6 MB at 912 for a
+ * phone, one film for both languages. Under it from the first paint a still of its own first frame (tools/film-still.py),
+ * which stays alone where no graphics card draws the page: there every frame of the film would fall on the processor.
+ * STILL_FRAME is how far both reach from the stone's centre, in stone heights: they are laid by it where the live stone
+ * would stand (stonePlace), on a wide screen and on a phone alike. ORBIT is the ring as the scene sets it: its centre
+ * 0.22 of the scene's units above the stone's (the stone is 3.1 high), and the camera's distance in hero heights (FOV
+ * 28, CAMERA_Z 11), for CSS perspective from the hero's centre as the camera looks.
+ */
+const STILL_FRAME = { left: 0.86, right: 0.86, up: 0.6, down: 0.6 };
+const ORBIT = { lift: 0.22 / 3.1, depth: 2.0054 };
+/** LITE's stone stands this many stone heights right of the orbit's centre: the ring leans and is seen from the hero's
+ *  centre, to the stone's left, so it reaches further right than left and the stone looked off to its left (the owner,
+ *  12 Nov 2026: «чуть отцентрируем камень по сравнению к бегущей строке»); its seen middle is 0.040 to 0.043 right */
+const STONE_RIGHT = 0.04;
+const WIDE = "(min-width: 701px)";
+/* The loop starts where the stone turns, so it sets off the long way at once (the owner, 13 Nov 2026: it went a little
+   to one side for 0.4 s, then turned, which looked jerky on a slow computer): frame 13 of the recording first. ?v: a
+   new cut under the same name (the pictures and films are cached for a week, next.config) */
+const FILM = {
+  wide: "/img/hero/stone-film-lite-d.mp4?v=2",
+  narrow: "/img/hero/stone-film-lite.mp4?v=2",
+  stillWide: "/img/hero/stone-film-lite-d.webp?v=2",
+  stillNarrow: "/img/hero/stone-film-lite.webp?v=2",
 };
 
 /**
@@ -47,6 +102,8 @@ const glowBox: { current: HTMLDivElement | null } = { current: null };
 export function HeroShell({ orbitLabel, children }: { orbitLabel: string; children: React.ReactNode }) {
   const hero = useRef<HTMLDivElement>(null);
   const glow = useRef<HTMLDivElement>(null);
+  const still = useRef<HTMLImageElement>(null);
+  const lite = useLite();
   const reducedMotion = useReducedMotion();
   const started = useSceneRunning();
   const [visible, setVisible] = useState(true);
@@ -57,9 +114,11 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
 
   useBoot(hero, reducedMotion);
   useEffect(() => {
+    // LITE: no scene to wait for, nothing of it fetched (read from the page, not from the render: this runs before
+    // the render that knows the mode)
+    if (isLite()) return skipScene();
     let alive = true;
     void import("@/components/three/hero/HeroScene");
-    void import("@/components/three/hero/ShardsScene");
     // with processor to spare (8 threads and more) built alongside the roll: measured on 10 Nov 2026, the roll ran as
     // smoothly there and the page opened about 0.6 s sooner. A slower one keeps the order above: on a processor four
     // times slower the roll's words (drawn on the main thread) stalled while the scenes were built
@@ -70,8 +129,8 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     };
   }, []);
 
-  // pause the canvases off-screen, under the page (touch: the hero is sticky, never off-screen, only
-  // covered) and in a background tab; the hero's height for its sticky top (hero.css)
+  // pause the canvases off-screen, under the page (the hero is sticky, never off-screen, only covered) and in a
+  // background tab; the hero's height for its sticky top (hero.css)
   useEffect(() => {
     const el = hero.current;
     if (!el) return;
@@ -114,30 +173,42 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     };
   }, []);
 
-  // the lift. Touch screens scroll natively, a step ahead of a script: there the browser runs it
-  // itself with the scroll (a scroll-driven animation, hero.css), or there is none
+  // On a computer, as numbers only: how far the sticky hero is held, for the page's seam that carries its glow on
+  // (PageShell, lib/hero-glow), and its dimming where the browser has no scroll timelines to run it (hero.css). Nothing
+  // on screen waits for this. A touch screen's seam does not follow the glow.
   useEffect(() => {
     const el = hero.current;
     if (!el || reducedMotion || matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+    const dimByScript = !CSS.supports("animation-timeline: scroll()");
     let queued = 0;
-    // (the hero's height from a resize observer, not read each frame: a read after the page's other writes in the same
-    // frame had the browser lay the page out again on every frame of a scroll; past the hero nothing is written)
+    // (the sizes from a resize observer, not read each frame: a read after the page's other writes in the same frame
+    // had the browser lay the page out again on every frame of a scroll)
     let height = el.offsetHeight || 1;
-    let shown = -1;
+    // a hero taller than the screen first scrolls to its foot, then holds (its sticky top, hero.css)
+    let before = 0;
+    let shownDim = -1;
     const apply = () => {
       queued = 0;
-      const y = Math.min(Math.max(window.scrollY, 0), height);
-      if (y === shown) return;
-      shown = y;
-      el.style.setProperty("--lift", `${(y * HOLD).toFixed(1)}px`);
-      el.style.setProperty("--lift-dim", (0.55 * (y / height)).toFixed(3));
+      const y = Math.max(window.scrollY, 0);
+      const lift = Math.max(0, y - before);
+      if (lift !== heroGlow.lift) {
+        heroGlow.lift = lift;
+        heroGlowMoved();
+      }
+      if (!dimByScript) return;
+      const dim = Math.min(y / height, 1);
+      if (dim === shownDim) return;
+      shownDim = dim;
+      el.style.setProperty("--lift-dim", (0.55 * dim).toFixed(3));
     };
     const onScroll = () => {
       if (!queued) queued = requestAnimationFrame(apply);
     };
     const sized = new ResizeObserver(() => {
       height = el.offsetHeight || 1;
-      shown = -1;
+      const screen = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hero-min")) || window.innerHeight;
+      before = Math.max(0, height - screen);
+      shownDim = -1;
       onScroll();
     });
     sized.observe(el);
@@ -147,10 +218,115 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       cancelAnimationFrame(queued);
       sized.disconnect();
       window.removeEventListener("scroll", onScroll);
+      heroGlow.lift = 0;
+      heroGlowMoved();
     };
   }, [reducedMotion]);
 
   const running = started && visible;
+
+  // LITE's stone moves (its film plays, it floats with its orbit, the orbit turns: hero.css) only where a graphics card
+  // draws the page; without one the film's frames and the compositor's work fall on the processor (12 Nov 2026: the
+  // orbit alone took 31% of a core there), so the still of the film's first frame stands, the orbit too
+  const [film, setFilm] = useState(false);
+  useEffect(() => {
+    setFilm(lite && canRunFull());
+  }, [lite]);
+  const filmCanvas = useRef<HTMLCanvasElement>(null);
+  /** tells the film to hold while the hero is off screen or under the page (set by the film once it plays) */
+  const holdFilm = useRef<(held: boolean) => void>(() => {});
+  const seen = useRef(visible);
+  useEffect(() => {
+    seen.current = visible;
+    holdFilm.current(!visible);
+  }, [visible]);
+  // the film, asked for once the page has loaded and the browser is idle (never in the first screen's way), shown over
+  // the still of its first frame from that frame on
+  useEffect(() => {
+    const host = hero.current;
+    const canvas = filmCanvas.current;
+    const frame = canvas?.closest<HTMLElement>(".hero__still");
+    if (!film || !host || !canvas || !frame) return;
+    let stop = () => {};
+    let cancelWait = () => {};
+    const start = () => {
+      stop = playAlphaFilm({
+        canvas,
+        src: matchMedia(WIDE).matches ? FILM.wide : FILM.narrow,
+        watch: host,
+        onShown: () => frame.classList.add("has-film"),
+        // (no WebGL, or the browser will not play it: the still of its first frame stays)
+        onFail: () => {},
+        hold: (set) => {
+          holdFilm.current = set;
+          set(!seen.current);
+          return () => {
+            holdFilm.current = () => {};
+          };
+        },
+      });
+    };
+    const whenIdle = () => {
+      if (typeof requestIdleCallback === "function") {
+        const handle = requestIdleCallback(start, { timeout: 3000 });
+        cancelWait = () => cancelIdleCallback(handle);
+      } else {
+        const timer = window.setTimeout(start, 800);
+        cancelWait = () => clearTimeout(timer);
+      }
+    };
+    if (document.readyState === "complete") whenIdle();
+    else window.addEventListener("load", whenIdle, { once: true });
+    return () => {
+      window.removeEventListener("load", whenIdle);
+      cancelWait();
+      stop();
+      frame.classList.remove("has-film");
+    };
+  }, [film]);
+
+  // LITE: the still laid where the stone would stand, its orbit round it and the glow behind it; again on a new size
+  // and once the headline's font is in (on a phone the stone stands between the header and the headline)
+  useEffect(() => {
+    const host = hero.current;
+    const picture = still.current;
+    const frame = picture?.closest<HTMLElement>(".hero__still");
+    if (!lite || !host || !picture || !frame) return;
+    const place = () => {
+      const { centerX, centerY, size } = stonePlace(host, host.offsetWidth, host.offsetHeight);
+      const stoneX = centerX + STONE_RIGHT * size;
+      // the still and the film over it
+      for (const layer of [picture, filmCanvas.current]) {
+        if (!layer) continue;
+        layer.style.left = `${(stoneX - STILL_FRAME.left * size).toFixed(1)}px`;
+        layer.style.top = `${(centerY - STILL_FRAME.up * size).toFixed(1)}px`;
+        layer.style.width = `${((STILL_FRAME.left + STILL_FRAME.right) * size).toFixed(1)}px`;
+        layer.style.height = `${((STILL_FRAME.up + STILL_FRAME.down) * size).toFixed(1)}px`;
+        // (placed: a phone's picture may show now, hero.css)
+        layer.dataset.placed = "";
+      }
+      // the orbit's ring (hero.css, HeroOrbit)
+      frame.style.setProperty("--orbit-x", `${centerX.toFixed(1)}px`);
+      frame.style.setProperty("--orbit-y", `${(centerY - ORBIT.lift * size).toFixed(1)}px`);
+      frame.style.setProperty("--orbit-stone-y", `${centerY.toFixed(1)}px`);
+      frame.style.setProperty("--orbit-size", `${size.toFixed(1)}px`);
+      frame.style.setProperty("--orbit-depth", `${Math.round(ORBIT.depth * host.offsetHeight)}px`);
+      if (glow.current) glow.current.style.transform = `translate3d(${stoneX.toFixed(1)}px, ${centerY.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      // (the page's bridge carries this light on from the numbers, lib/hero-glow)
+      heroGlow.centerX = stoneX;
+      heroGlow.centerY = centerY;
+      heroGlowMoved();
+    };
+    place();
+    const sized = new ResizeObserver(place);
+    sized.observe(host);
+    let alive = true;
+    void document.fonts?.ready.then(() => alive && place());
+    return () => {
+      alive = false;
+      sized.disconnect();
+    };
+  }, [lite, film]);
 
   // the island (see above): made once, taken over by each shell, its box moved into this hero before it is drawn
   useLayoutEffect(() => {
@@ -181,9 +357,8 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
   useEffect(() => {
     if (!build) return;
     island?.root.render(
-      // (the stone and its shards move with reduced motion too: the owner, 9 Nov 2026; only the intro is skipped there)
+      // (the stone moves with reduced motion too: the owner, 9 Nov 2026; only the intro is skipped there)
       <WebGLGate onSkip={skipScene}>
-        <ShardsScene running={running} reducedMotion={false} />
         <HeroScene heroRef={heroBox} glowRef={glowBox} orbitLabel={orbitLabel} running={running} reducedMotion={false} />
       </WebGLGate>,
     );
@@ -194,7 +369,43 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       <div className="hero__bg" aria-hidden="true">
         <div className="hero__glow" data-glow ref={glow} />
       </div>
+      <div className={`hero__shards${started ? " is-in" : ""}`} aria-hidden="true">
+        {SHARD_PICTURES.map((shard) => (
+          <img
+            key={shard.seed}
+            className="hero__shard"
+            src={`/img/hero/shard-${shard.seed}.webp`}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            data-phone={shard.phone ? "" : undefined}
+            style={
+              {
+                "--x": shard.x,
+                "--y": shard.y,
+                "--height": shard.height,
+                "--drift-x": shard.driftX,
+                "--drift-y": shard.driftY,
+                ...(shard.phone ? { "--phone-x": shard.phone.x, "--phone-y": shard.phone.y, "--phone-height": shard.phone.height } : {}),
+              } as CSSProperties
+            }
+          />
+        ))}
+      </div>
       {/* (the 3D: the island's box goes here) */}
+      {/* LITE's stone, the still and its orbit: the picture in the markup for every visitor, shown and fetched only in
+          LITE (hero.css; a lazy picture that is not displayed is never fetched), the orbit made only there */}
+      <div className={`hero__still${started ? " is-in" : ""}${film ? " is-film" : ""}`} aria-hidden="true">
+        {/* (the stone, its light and its orbit float together: hero.css) */}
+        <div className="hero__float">
+          <picture>
+            <source media={WIDE} srcSet={FILM.stillWide} />
+            <img ref={still} src={FILM.stillNarrow} alt="" loading="lazy" decoding="async" />
+          </picture>
+          {film && <canvas ref={filmCanvas} className="hero__film" />}
+          {lite && <HeroOrbit label={orbitLabel} />}
+        </div>
+      </div>
       {children}
     </div>
   );

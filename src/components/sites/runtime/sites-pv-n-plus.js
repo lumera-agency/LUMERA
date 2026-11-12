@@ -99,6 +99,8 @@
  * SOFTWARE.
  * ---------------------------------------------------------------------------------------------------------
  */
+import { allowWebGL } from '@/lib/perf/mode';
+
 export const meta = { theme: 'light', cube: 'light', bg: '#eae4da' };
 export const object3d = true;
 
@@ -1438,8 +1440,10 @@ function mountLens(site, ctx, { L, plan, still, phone, vp, dispose, seen, swatch
     try { tex?.dispose(); mat?.dispose(); scene?.children.forEach((m) => m.geometry?.dispose()); renderer?.dispose(); renderer?.forceContextLoss(); } catch { /* already lost */ }
   });
 
-  // three.js and the first frame, once the hero has been seen (the poster until then)
+  // three.js and the first frame, once the hero has been seen (the poster until then; in LITE, lib/perf/mode, the
+  // poster stays: no three.js, no WebGL there)
   seen(plan, async () => {
+    if (!allowWebGL()) return;
     const seenAt = performance.now();
     try {
       THREE = await import('three');

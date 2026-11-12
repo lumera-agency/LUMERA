@@ -12,7 +12,10 @@ import "../globals.css";
 import "@/components/layout/page/page.css";
 import { RootKeep } from "@/components/layout/RootKeep";
 import { PageCurtain } from "@/components/fx/page-curtain/PageCurtain";
+import { Preloader } from "@/components/fx/preloader/Preloader";
+import { PreloaderRelease } from "@/components/fx/preloader/PreloaderRelease";
 import { PerfProbe } from "@/components/fx/lite/PerfProbe";
+import { EARLY_SCRIPT } from "@/lib/perf/early";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads"];
@@ -56,13 +59,6 @@ export const viewport: Viewport = {
   themeColor: "#0a0a0a",
 };
 
-/* Runs before first paint: the intro's start states are hidden only when JS and motion are on
-   (styles/base.css), and come back by themselves after 3.5 s should a script fail; while the preloader is still up
-   they wait for it (up to 10 s): shown under it, the headline would be seen whole as the sheet fades, then hidden and
-   played in by the intro (23 Oct). Reached through the page curtain (fx/page-curtain: a link from another page of the
-   site, just now) the page comes up under it, html.is-curtain; should no script lift it, it goes after 6 s */
-const EARLY = `(function(r){try{history.scrollRestoration='manual'}catch(e){}r.classList.add('js');try{var q=location.search;if(/[?&]lite=1/.test(q))sessionStorage.setItem('eclo:lite','1');else if(/[?&](lite=0|full=1)/.test(q))sessionStorage.setItem('eclo:lite','0');if(sessionStorage.getItem('eclo:lite')==='1')r.classList.add('is-lite')}catch(e){}if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');try{var c=+sessionStorage.getItem('eclo:curtain');sessionStorage.removeItem('eclo:curtain');var n=performance.getEntriesByType('navigation')[0];if(r.classList.contains('motion')&&Date.now()-c<8000&&(!n||n.type==='navigate')){r.classList.add('is-curtain');setTimeout(function(){r.classList.remove('is-curtain')},6000)}}catch(e){}var t=Date.now();setTimeout(function f(){if(document.querySelector('[data-preloader]')&&Date.now()-t<10000)return setTimeout(f,250);r.classList.add('is-ready')},3500)})(document.documentElement)`;
-
 /* Chrome fetches a page of the site while the pointer rests on its link, so the next page is in by the time the curtain
    has covered this one (the studio's /lab left out) */
 const PREFETCH = JSON.stringify({
@@ -83,12 +79,17 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
     <html lang={locale} suppressHydrationWarning>
       <head />
       <body>
-        {/* EARLY as the body's first markup, not a React <script>: it runs as the page is parsed, before anything is
+        {/* the early script (lib/perf/early.ts: the page's mode, the intro's guard) as the body's first markup, not a React <script>: it runs as the page is parsed, before anything is
             drawn, and a render in the browser (a language switch) neither runs it again nor warns about a script tag */}
-        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY}</script><script type="speculationrules">${PREFETCH}</script>` }} />
+        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY_SCRIPT}</script><script type="speculationrules">${PREFETCH}</script>` }} />
+        {/* the preloader on whichever page a visit starts (the owner, 12 Nov 2026: ads lead to every part of the site);
+            later pages of the visit come up without it (its own clock decides). The home page's start-up leads it out
+            (hero/useBoot), any other page's once it has loaded (PreloaderRelease) */}
+        <Preloader brand={studioName} note={t("preloader.note")} words={t("preloader.words")} />
+        <PreloaderRelease />
         <PageCurtain />
         <RootKeep />
-        {/* the light mode for computers that cannot keep the site's frames (lib/lite.ts) */}
+        {/* the page's own measures; a FULL page that stays slow goes LITE (lib/perf/monitor.ts) */}
         <PerfProbe />
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>

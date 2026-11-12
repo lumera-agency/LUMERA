@@ -10,6 +10,7 @@
  */
 import { useEffect, useState } from "react";
 import FluxLines from "./FluxLines";
+import { useLite } from "@/lib/lite";
 
 /** The first screen counts as covered once less than this much of it shows under the topbar (px; QA 19 Oct, N-05). */
 const COVER_EDGE = 20;
@@ -27,6 +28,9 @@ const TONES = {
  */
 export function HeroFlux({ under = "#formats", tone = "ember", still = false }: { under?: string; tone?: keyof typeof TONES; still?: boolean } = {}) {
   const [covered, setCovered] = useState(false);
+  // LITE (lib/lite): the lines are their still picture (flux-lines.css), the component makes no context. A page that
+  // goes LITE while they run mounts them anew, which stops the running ones and lets their canvas go
+  const lite = useLite();
   // (read once on the client: the component mounts after hydration, so the first render already knows the screen)
   const [dpr] = useState(() => (typeof matchMedia === "function" && matchMedia("(max-width: 600px)").matches ? 0.85 : 1));
   useEffect(() => {
@@ -55,6 +59,7 @@ export function HeroFlux({ under = "#formats", tone = "ember", still = false }: 
   }, [under]);
   return (
     <FluxLines
+      key={lite ? "still" : "live"}
       colors={TONES[tone]}
       glow={2}
       rimWidth={0.2}

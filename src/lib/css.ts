@@ -4,11 +4,20 @@
  */
 const root = () => (typeof document === "undefined" ? null : document.documentElement);
 
-/** The root font size in px: 16 up to ~1680×1000, more on bigger screens. */
+let rem = 0;
+/**
+ * The root font size in px: 16 up to ~1680×1000, more on bigger screens. Read from the styles once and again only after
+ * a resize (the one thing that changes it): every dpx() asked for it, and each read had the browser work the page's
+ * styles out first, 224 ms of the home page's load on a processor four times slower (11 Nov 2026).
+ */
 export function remPx() {
+  if (rem) return rem;
   const el = root();
-  return (el && parseFloat(getComputedStyle(el).fontSize)) || 16;
+  if (!el) return 16;
+  rem = parseFloat(getComputedStyle(el).fontSize) || 16;
+  return rem;
 }
+if (typeof window !== "undefined") window.addEventListener("resize", () => void (rem = 0));
 
 /** A design px (the size at 16 px to the rem) on this screen. */
 export const dpx = (n: number) => (n * remPx()) / 16;

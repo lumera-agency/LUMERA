@@ -10,7 +10,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { createStoneGeometries } from "../lib/geometry";
+import { builtStoneGeometries, createStoneGeometries } from "../lib/geometry";
 import { CHROME_LIGHTS, createChromeEnvironment, createObsidianMaterial, createSilverMaterial, createStudioEnvironment } from "../lib/materials";
 import { REST_TILT, SEAM_FACING, STONE_EXTENT } from "../hero/state";
 import { Resume } from "../lib/Resume";
@@ -95,7 +95,8 @@ export default function StageStone() {
 function Stone() {
   const { gl, scene, size } = useThree();
   const studio = useMemo(() => createStudioEnvironment(gl), [gl]);
-  const geometry = useMemo(() => createStoneGeometries({ detail: 28, coreDetail: 22 }), []);
+  // the first screen's stone, built already: the same shape (lib/geometry), finer; built here only without it
+  const geometry = useMemo(() => builtStoneGeometries() ?? createStoneGeometries({ detail: 28, coreDetail: 22 }), []);
   const obsidian = useMemo(() => createObsidianMaterial({ vertexColors: true }), []);
   const silver = useMemo(() => {
     const s = createSilverMaterial();
@@ -116,7 +117,8 @@ function Stone() {
     return () => {
       studio.dispose();
       silver.material.envMap?.dispose();
-      for (const d of [geometry.rock, geometry.core, obsidian.material, silver.material]) d.dispose();
+      // (the shape is not let go of: the first screen's stone may still draw it)
+      for (const resource of [obsidian.material, silver.material]) resource.dispose();
     };
   }, [scene, studio, geometry, obsidian, silver]);
 

@@ -9,12 +9,12 @@ export async function HeroRail() {
       <div className="rail__inner">
         <div className="rail__track" aria-hidden="true" data-rail-track><span className="rail__pulse" /></div>
         <ol className="rail__list" aria-label={t("label")}>
-          {steps.map((n, i) => (
-            <li key={n} className="rail__step" style={{ "--i": i } as React.CSSProperties} data-reveal="step">
+          {steps.map((step) => (
+            <li key={step} className="rail__step" data-reveal="step">
               <span className="rail__node" aria-hidden="true" />
-              <span className="rail__num" aria-hidden="true">{n}</span>
-              <span className="rail__title">{t(`${n}.title`)}</span>
-              <span className="rail__text">{t(`${n}.text`)}</span>
+              <span className="rail__num" aria-hidden="true">{step}</span>
+              <span className="rail__title">{t(`${step}.title`)}</span>
+              <span className="rail__text">{t(`${step}.text`)}</span>
             </li>
           ))}
         </ol>

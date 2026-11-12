@@ -20,6 +20,8 @@
  */
 import { useEffect, useRef } from "react";
 import { watchCover } from "@/components/sites/hero-fx/hero-cover";
+import { allowWebGL } from "@/lib/perf/mode";
+import { isLite, useLite } from "@/lib/lite";
 
 const CONFIG = {
   /** the spine, as fractions of the hero's width and height (a centripetal Catmull-Rom curve through them). Keep its
@@ -379,12 +381,14 @@ function catmullRom(points: Point[], count: number): Point[] {
 export function AdsFibers({ under = "#case" }: { under?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const originRef = useRef<HTMLElement>(null);
+  const lite = useLite();
 
   useEffect(() => {
     const canvas = ref.current;
     const origin = originRef.current;
     const box = canvas?.parentElement;
-    const gl = canvas?.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: false });
+    // (LITE, lib/perf/mode: no context; ads.css lays the fibres' still picture in the box instead)
+    const gl = allowWebGL() ? canvas?.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: false }) : null;
     if (!canvas || !origin || !box || !gl) return;
     const lineProgram = compile(gl, LINE_VS, LINE_FS);
     const sparkProgram = compile(gl, SPARK_VS, SPARK_FS);
@@ -722,8 +726,10 @@ export function AdsFibers({ under = "#case" }: { under?: string }) {
       document.removeEventListener("visibilitychange", run);
       removeEventListener("pointermove", onPointer);
       document.documentElement.removeEventListener("mouseleave", onLeave);
+      // the page went LITE: the context is let go at once (otherwise it goes with the canvas)
+      if (isLite()) gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [under]);
+  }, [under, lite]);
 
   return (
     <div className="rk-fib" aria-hidden="true">

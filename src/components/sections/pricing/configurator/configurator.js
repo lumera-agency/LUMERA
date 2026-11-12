@@ -60,7 +60,8 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
   // (no tray cards: the ads and the automation have schemes of their own in the frame, the owner, 9 Nov 2026; the wheel
   // over the sample scrolls the sample alone, never the page under it: ownWheel. «Що входить у ціну» scrolls by the
   // wheel too: data-lenis-prevent, the page's smooth scroll leaves it its own)
-  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion, phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto, full: t.preview.full, close: t.preview.close }, full: true, tray: false, ownWheel: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
+  // (a slow computer, html.is-lite: the sample site holds still, its entrances and loops are not needed to read it)
+  const preview = mountPreview(ref('preview'), { t, lang, assets, reducedMotion: reducedMotion || document.documentElement.classList.contains('is-lite'), phone: phoneMQ.matches, labels: { take: t.preview.take, auto: t.preview.auto, full: t.preview.full, close: t.preview.close }, full: true, tray: false, ownWheel: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
   const sheet = ref('sheet');
   const bar = ref('bar');
   const editor = ref('editor');

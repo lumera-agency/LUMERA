@@ -27,7 +27,7 @@ export async function Pricing() {
           </h2>
           <p className="s-head__intro" data-sr="">{t("pricing.intro")}</p>
         </header>
-        <PricingClient robot={<RobotConsole />} ads={<AdsScheme />} />
+        <PricingClient robot={<RobotConsole later />} ads={<AdsScheme />} />
       </div>
     </section>
   );

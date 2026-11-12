@@ -62,11 +62,24 @@ export async function SitesHow() {
                 </div>
                 {/* 3–5 · the design (it wipes in over the scheme) */}
                 <div className="st-bd__l st-bd__l--d" data-l="d">
-                  <div className="st-bd__wipe"><div className="st-bd__wipe-in"><img className="st-bd__img" width="1200" height="750" alt="" loading="lazy" decoding="async" src={t("img.how.d")} /></div></div>
+                  <div className="st-bd__wipe"><div className="st-bd__wipe-in">
+                    {/* AVIF where the browser takes it (a third lighter, 12 Nov 2026), a phone the 600-px copy */}
+                    <picture>
+                      <source type="image/avif" media="(max-width: 600px)" srcSet={t("img.how.d").replace(/\.webp$/, "-s.avif")} />
+                      <source type="image/avif" srcSet={t("img.how.d").replace(/\.webp$/, ".avif")} />
+                      <source media="(max-width: 600px)" srcSet={t("img.how.d").replace(/\.webp$/, "-s.webp")} />
+                      <img className="st-bd__img" width="1200" height="750" alt="" loading="lazy" decoding="async" src={t("img.how.d")} />
+                    </picture>
+                  </div></div>
                 </div>
                 <div className="st-bd__l st-bd__l--p" data-l="p">
                   <span className="st-bd__tag st-bd__tag--d">{t("how.tag.d")}</span>
-                  <div className="st-bd__ph"><img width="300" height="600" alt="" loading="lazy" decoding="async" src={t("img.how.m")} /></div>
+                  <div className="st-bd__ph">
+                    <picture>
+                      <source type="image/avif" srcSet={t("img.how.m").replace(/\.webp$/, ".avif")} />
+                      <img width="300" height="600" alt="" loading="lazy" decoding="async" src={t("img.how.m")} />
+                    </picture>
+                  </div>
                   <span className="st-bd__tag st-bd__tag--m">{t("how.tag.m")}</span>
                 </div>
                 {/* 4 · the test address: a click, your edits */}

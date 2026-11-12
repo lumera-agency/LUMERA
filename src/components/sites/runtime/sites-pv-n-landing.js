@@ -96,6 +96,7 @@
  * ---------------------------------------------------------------------------------------------------------
  */
 import { SPRING, rollNumber } from './sites-rb.js';
+import { allowWebGL } from '@/lib/perf/mode';
 
 export const meta = { theme: 'light', cube: 'light', bg: '#E0186C' };
 export const object3d = true;
@@ -944,7 +945,8 @@ export function enhance(site, ctx = {}) {
 async function mountDish(site, holder, ctx, onDispose, api) {
   const canvas = holder.querySelector('canvas.fx-gl');
   const still = !!ctx.reducedMotion;
-  if (!canvas || typeof WebGLRenderingContext === 'undefined') return;
+  // (LITE, lib/perf/mode: the poster stays, no three.js and no WebGL)
+  if (!canvas || typeof WebGLRenderingContext === 'undefined' || !allowWebGL()) return;
   const THREE = await import('three');
   if (!site.isConnected) return;
   let renderer;

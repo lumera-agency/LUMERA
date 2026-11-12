@@ -1,6 +1,4 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { studioName } from "@/config/site";
-import { Preloader } from "@/components/fx/preloader/Preloader";
 import { SmoothScroll } from "@/components/fx/smooth-scroll/SmoothScroll";
 import { Topbar } from "@/components/layout/topbar/Topbar";
 import { MenuSheet } from "@/components/layout/menu/MenuSheet";
@@ -28,18 +26,12 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const t = await getTranslations();
   return (
     <>
-      {/* the main page's own: the AI pages (ads land there) open without it */}
-      <Preloader
-        brand={studioName}
-        note={t("preloader.note")}
-        words={t("preloader.words")}
-        stages={t("preloader.stages")}
-      />
       <SmoothScroll />
       <main>
         <Hero />
         <Topbar />
-        <PageShell>
+        {/* (not the services, the approach or the prices: pinned, or growing as the configurator comes in) */}
+        <PageShell skip="#what, #manifesto, #why, #faq, #contact">
           <What />
           <Services />
           <Manifesto />

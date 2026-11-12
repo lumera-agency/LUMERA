@@ -99,16 +99,33 @@ function sheen(context: CanvasRenderingContext2D, strength: number) {
   context.fill();
 }
 
+/** the frost's grain by face size and strength, painted once and laid on every card */
+const frostGrains = new Map<string, HTMLCanvasElement>();
+
 /** a fine frost: dense pale grain, so the glass reads matte (frosted), not clear */
 function frost(context: CanvasRenderingContext2D, alpha: number) {
   const { width, height } = context.canvas;
+  // (9000 specks drawn on each card, each with its colour parsed from a string, took 120 to 130 ms of the AI page's
+  // load at 4x CPU: three cards, painted twice. One grain on a layer of its own, drawn over the glass, is the same
+  // picture: specks laid over each other and then over the glass add up as specks laid on the glass one by one)
+  const key = `${width}x${height}:${alpha}`;
+  let grain = frostGrains.get(key);
+  if (!grain) {
+    grain = document.createElement("canvas");
+    grain.width = width;
+    grain.height = height;
+    const grainContext = grain.getContext("2d")!;
+    grainContext.fillStyle = "#ffffff";
+    for (let speck = 0; speck < 9000; speck++) {
+      grainContext.globalAlpha = alpha * Math.random();
+      grainContext.fillRect(Math.random() * width, Math.random() * height, 1.5, 1.5);
+    }
+    frostGrains.set(key, grain);
+  }
   context.save();
   outline(context, 3, 46);
   context.clip();
-  for (let speck = 0; speck < 9000; speck++) {
-    context.fillStyle = `rgba(255, 255, 255, ${alpha * Math.random()})`;
-    context.fillRect(Math.random() * width, Math.random() * height, 1.5, 1.5);
-  }
+  context.drawImage(grain, 0, 0);
   context.restore();
 }
 

@@ -249,6 +249,11 @@ function initCover() {
    blurs and its canvases are then neither drawn nor put together by the browser on every frame of the rest of the page
    (10 Nov 2026: «на рабочем компьютере сильно лагает»). CSS: .ai-hero[data-cover].is-under (ai.css) */
 function hideUnder(hero) {
+  // off the screen altogether (a phone: the first screen is not pinned there, it scrolls away): .is-away stops its
+  // animations too (ai.css)
+  if (typeof IntersectionObserver === 'function') {
+    new IntersectionObserver((entries) => hero.classList.toggle('is-away', !entries[entries.length - 1].isIntersecting)).observe(hero);
+  }
   const over = hero.nextElementSibling;
   if (!over || typeof ResizeObserver !== 'function') return;
   let top = 0;

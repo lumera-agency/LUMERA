@@ -87,6 +87,13 @@ main[data-ai-page="ads"] .rk-hero .ai-hero__bg {
 .rk-fib { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .rk-fib::before { content: ""; position: absolute; inset: 0; background: radial-gradient(46% 50% at 62% 56%, rgba(120, 170, 40, 0.12), rgba(120, 170, 40, 0.04) 55%, transparent 100%); }
 .rk-fib__gl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+/* LITE (lib/lite): the fibres as a still picture of themselves (tools/capture-canvas.mjs in the optimization folder),
+   no canvas drawn; fetched only there (a background of a rule that matches in LITE alone) */
+html.is-lite .rk-fib__gl, html.is-lite .rk-fib__origin { display: none; }
+html.is-lite .rk-fib { background: url("/img/ads/fibers-d.webp") center / cover no-repeat; }
+@media (max-width: 760px) {
+  html.is-lite .rk-fib { background-image: url("/img/ads/fibers-m.webp"); }
+}
 .rk-fib__origin { position: absolute; left: 0; top: 0; width: 180px; height: 180px; margin: -90px 0 0 -90px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.7), rgba(214, 245, 120, 0.42) 28%, rgba(198, 240, 60, 0.14) 58%, transparent 100%); opacity: 0; mix-blend-mode: screen; will-change: transform, opacity; }
 main[data-ai-page="ads"] .rk-hero .ai-hero__copy { position: relative; }
 main[data-ai-page="ads"] .rk-hero .ai-hero__copy::before { content: ""; position: absolute; inset: -22% -16% -22% -14%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.32) 55%, transparent 100%); pointer-events: none; }

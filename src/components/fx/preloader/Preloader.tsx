@@ -17,7 +17,8 @@
  * own, moved as a layer; only the chrome's flow inside them is drawn from script).
  *
  * Once per visit (sessionStorage): opened again in the same tab the page comes up at once, unless the
- * language was switched. While it runs the page can't be scrolled (html.is-loading).
+ * language was switched; reached from another page of the site it comes up at once too (the owner, 12 Nov 2026: the
+ * visitor is on the site already, 3.1 to 3.5 s of the roll were in their way). While it runs the page can't be scrolled (html.is-loading).
  * Server component: the markup and an inline script that starts the clock before any bundle runs.
  * Props are plain strings, so the same component works for any site (words · separated).
  */
@@ -60,19 +61,67 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
   const root = document.documentElement;
   const el = document.querySelector<HTMLElement>("[data-preloader]");
   if (!el || !root.classList.contains("js")) return;
-  // once per visit: the page reached again in this tab (back from another page, the browser's back) comes up at once;
-  // a reload plays it again. A language switch stays in the page (LangSwitch): the sheet the new words render with is
-  // never shown (preloader.css, html.pl-done)
+  // once per visit: the page reached again in this tab (back from another page, the browser's back) comes up at once,
+  // and so does the page reached from another page of the site (the site's links load the next page whole, so it says
+  // where it came from); a reload plays it again. A language switch stays in the page (LangSwitch): the sheet the new
+  // words render with is never shown (preloader.css, html.pl-done)
   let again = false;
   try {
     const nav = performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined;
     const reload = nav?.type === "reload";
-    again = !reload && sessionStorage.getItem("eclo:seen") === "1";
+    const fromSite = !!document.referrer && new URL(document.referrer).origin === location.origin;
+    again = !reload && (sessionStorage.getItem("eclo:seen") === "1" || fromSite);
     sessionStorage.setItem("eclo:seen", "1");
   } catch {}
   if (again) {
     root.classList.add("pl-done");
     el.remove();
+    return;
+  }
+  // LITE (lib/lite: html.is-lite, set before this runs by the layout's early script): no roll (the owner, 11 Nov 2026:
+  // «в лайт версии прелоудер убери вообще»), a thin lime line instead while the first screen loads under the sheet (the
+  // owner, 12 Nov 2026: «просто линию загрузки лаймовую самую простую, которая не нагружает … под прелоудером должен
+  // загрузиться первый экран»). One transform animation the compositor runs (preloader.css); the sheet goes once the
+  // page's start-up lets it (finish: hero/useBoot, PreloaderRelease) and the first screen's fonts and pictures are in,
+  // at the latest 5 s after that; finish resolves as it starts to fade, so the page's entrance plays as it goes
+  if (root.classList.contains("is-lite")) {
+    root.classList.add("is-loading");
+    root.classList.remove("is-curtain");
+    const letGo = () => root.classList.remove("is-loading");
+    setTimeout(letGo, 9000);
+    el.setAttribute("data-pl-lite", "");
+    el.querySelector(".preloader__frame")?.remove();
+    const line = document.createElement("span");
+    line.className = "preloader__line";
+    el.append(line);
+    const pause = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+    const firstScreen = () =>
+      Promise.all([
+        document.fonts ? document.fonts.ready : Promise.resolve(),
+        ...[...document.images]
+          .filter((image) => {
+            const box = image.getBoundingClientRect();
+            return box.width > 0 && box.bottom > 0 && box.top < window.innerHeight;
+          })
+          .map((image) => (image.decode ? image.decode().catch(() => {}) : Promise.resolve())),
+      ]);
+    let leaving: Promise<void> | null = null;
+    (window as unknown as { ecloLoader: unknown }).ecloLoader = {
+      step() {},
+      rolled: Promise.resolve(),
+      finish() {
+        leaving ??= Promise.race([firstScreen(), pause(5000)]).then(() => {
+          letGo();
+          el.setAttribute("data-pl-out", "");
+          el.style.pointerEvents = "none";
+          void pause(350).then(() => {
+            el.remove();
+            root.classList.add("pl-done");
+          });
+        });
+        return leaving;
+      },
+    };
     return;
   }
   // the page holds still under it (base.css; SmoothScroll stops Lenis); let go as it opens the page
@@ -297,8 +346,12 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
         l.textContent = ch === " " ? " " : ch;
         return l;
       }));
-      for (const l of s.children as HTMLCollectionOf<HTMLElement>) l.style.width = l.offsetWidth + "px";
     });
+    // (every width read first, then every one set: read and set letter by letter, each read laid the sheet out again,
+    // 48 times, about 15 ms at CPU 4x, 12 Nov 2026)
+    const letters = items.flatMap((s) => [...(s.children as HTMLCollectionOf<HTMLElement>)]);
+    const widths = letters.map((letter) => letter.offsetWidth);
+    letters.forEach((letter, index) => (letter.style.width = widths[index] + "px"));
     return node;
   });
 
@@ -354,26 +407,30 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
       { duration: 600, delay, fill: "backwards" },
     );
   /** Phones: the message cards one after another down the column, the ones before dimming a little: each rises,
-   *  types, then its word comes. Resolves as the last one has all but settled. */
+   *  types, then its word comes. Resolves as the last one has all but settled. Quicker since 12 Nov 2026 (the owner:
+   *  the cards held a phone's page about 4 s): a card every 380 ms instead of 680, typing for 280 ms instead of 480,
+   *  the first card 450 ms after the name starts instead of 650; for three words 2.3 s instead of 3.3. */
   const SETTLE = "cubic-bezier(0.34, 1.36, 0.64, 1)";
   const sayPhone = () => {
     row.style.visibility = "";
-    const B = 680;
+    const B = 380, TYPING = 280;
     items.forEach((s, i) => {
       const t = i * B, card = cards[i];
-      if (i) cards[i - 1].animate([{ opacity: 1 }, { opacity: 0.42 }], { duration: 500, delay: t, fill: "forwards" });
-      card.animate([{ opacity: 0, transform: "translate3d(0, 1.1em, 0) scale(0.94)" }, { opacity: 1, transform: "none" }], { duration: 620, delay: t, easing: SETTLE, fill: "backwards" });
+      if (i) cards[i - 1].animate([{ opacity: 1 }, { opacity: 0.42 }], { duration: 400, delay: t, fill: "forwards" });
+      card.animate([{ opacity: 0, transform: "translate3d(0, 1.1em, 0) scale(0.94)" }, { opacity: 1, transform: "none" }], { duration: 560, delay: t, easing: SETTLE, fill: "backwards" });
       card.querySelectorAll(".preloader__typing > i").forEach((d, k) =>
-        d.animate([{ opacity: 0.25, transform: "translateY(0)" }, { opacity: 1, transform: "translateY(-0.18em)", offset: 0.5 }, { opacity: 0.25, transform: "translateY(0)" }], { duration: 360, delay: t + 120 + k * 90 }),
+        d.animate([{ opacity: 0.25, transform: "translateY(0)" }, { opacity: 1, transform: "translateY(-0.18em)", offset: 0.5 }, { opacity: 0.25, transform: "translateY(0)" }], { duration: 240, delay: t + 70 + k * 60 }),
       );
-      card.querySelector(".preloader__typing")!.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, delay: t + 470, fill: "forwards" });
-      card.querySelector(".preloader__pip")!.animate([{ transform: "scale(0)" }, { transform: "scale(1.6)", offset: 0.55 }, { transform: "scale(1)" }], { duration: 460, delay: t + 120, fill: "backwards" });
-      sayWord(s, t + 480);
+      card.querySelector(".preloader__typing")!.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, delay: t + TYPING - 20, fill: "forwards" });
+      card.querySelector(".preloader__pip")!.animate([{ transform: "scale(0)" }, { transform: "scale(1.6)", offset: 0.55 }, { transform: "scale(1)" }], { duration: 400, delay: t + 70, fill: "backwards" });
+      sayWord(s, t + TYPING);
     });
-    // (the last word comes after its typing)
-    return wait((items.length - 1) * B + 1300);
+    // (the last word comes after its typing: its letters take about 820 ms)
+    return wait((items.length - 1) * B + TYPING + 820);
   };
-  const BEAT = 380;
+  // a word every 300 ms, the first 500 ms after the name starts (the owner, 12 Nov 2026: the words under the name a
+  // little quicker; they were 380 and 650)
+  const BEAT = 300;
   const sayAll = () => {
     if (PHONE) return sayPhone();
     row.style.visibility = "";
@@ -395,7 +452,7 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
     }
     // the words' weight is drawn on the main thread: they start once the page's first burst of work has passed
     const calm = new Promise<void>((r) => ("requestIdleCallback" in window ? requestIdleCallback(() => r(), { timeout: 900 }) : setTimeout(r, 300)));
-    return Promise.all([name ? blurIn(name) : Promise.resolve(), Promise.all([wait(650), calm]).then(sayAll)]);
+    return Promise.all([name ? blurIn(name) : Promise.resolve(), Promise.all([wait(PHONE ? 450 : 500), calm]).then(sayAll)]);
   });
 
   // The way out, as the name came in: the name blurs out to the right, the words blur away, the brand

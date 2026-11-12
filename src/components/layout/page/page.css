@@ -26,6 +26,8 @@
 .page ::selection { color: var(--on-ink); background: rgba(246, 246, 243, 0.86); }
 .section--ivory ::selection { color: #fcfcfa; background: #0f0e0d; }
 .page [hidden] { display: none !important; }
+/* FULL: a block far from the view is not rendered (lib/perf/far.ts, the blocks named by the page: PageShell skip) */
+.page > .is-far { content-visibility: auto; }
 
 .visually-hidden {
   position: absolute !important;

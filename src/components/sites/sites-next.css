@@ -25,6 +25,16 @@ body:has(main[data-ai-page="sites"]) .footer { position: relative; z-index: 2; }
    and the AI pages untouched); the ivory blocks stay ivory. The cards keep their hairline edge, so they still read.
    ========================================================================== */
 :root:has(main[data-ai-page="sites"]) { --bg: #000; }
+/* this page's scrollbar in its own accent, the ember of «САЙТОВ.», not the site's lime (the owner, 11 Nov 2026: «там больше
+   подходит оранжевый»); as base.css's, the same strengths. Set on the root alone (scrollbar-color and the thumb's two
+   variables are inherited from it; base.css draws the thumb from them): written as rules for every element's thumb
+   under :root:has(), any change anywhere in the page had the browser work out the styles of the whole page again, 471
+   to 2280 ms of style work in this page's load on a processor four times slower (measured 11 Nov 2026) */
+:root:has(main[data-ai-page="sites"]) {
+  scrollbar-color: color-mix(in srgb, var(--ember) 72%, transparent) rgb(246 246 243 / 0.07);
+  --scroll-thumb: color-mix(in srgb, var(--ember) 72%, transparent);
+  --scroll-thumb-hover: var(--ember);
+}
 body:has(main[data-ai-page="sites"]) { background: #000; }
 body:has(main[data-ai-page="sites"]) :is(.page, .footer) { background: #000; }
 /* the «bridge» glow under the main page's own hero */

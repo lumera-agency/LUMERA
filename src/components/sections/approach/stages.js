@@ -203,13 +203,16 @@ function initStages(root, gsap = GSAP, ScrollTrigger = ST) {
       const body = natural - (parseFloat(cardCss.paddingTop) || 0) - (parseFloat(cardCss.paddingBottom) || 0);
       const k = Math.min(1.6, Math.max(1, 1 + room / Math.max(1, body)));
       root.style.setProperty('--deck-k', k.toFixed(3));
-      const deckH = Math.max(...cards.map((c) => c.offsetHeight));
+      const heights = cards.map((card) => card.offsetHeight);
+      const deckH = Math.max(...heights);
       root.style.setProperty('--deck-h', `${deckH}px`);
-      // each card sits centred in the frame, so whichever is on top faces the stone
-      cards.forEach((c) => { c.style.top = `${Math.round((deckH - c.offsetHeight) / 2)}px`; });
-      // the current stage's title rides at 47% of the view, the stone beside it
+      // the current stage's title rides at 47% of the view, the stone beside it. Read before the cards are placed, and
+      // the cards placed by the heights read above: each card's height read right after the one before was moved laid
+      // the page out again card by card (12 Nov 2026: 25 to 47 ms of forced layout in this measure at CPU 4x)
       const bar = topbarHeight();
       const top = Math.max(bar + dpx(24), Math.min(window.innerHeight * 0.47 - titleOffset(), window.innerHeight - pin.offsetHeight - dpx(32)));
+      // each card sits centred in the frame, so whichever is on top faces the stone
+      cards.forEach((card, index) => { card.style.top = `${Math.round((deckH - heights[index]) / 2)}px`; });
       root.style.setProperty('--pin-top', `${Math.round(top)}px`);
     }
     const top = root.getBoundingClientRect().top;

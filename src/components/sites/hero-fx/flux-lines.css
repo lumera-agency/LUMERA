@@ -14,6 +14,14 @@
   height: 100%;
 }
 
+/* LITE (lib/lite): the lines as a still picture of themselves (tools/capture-canvas.mjs in the optimization folder), no
+   canvas drawn; fetched only there (a background of a rule that matches in LITE alone) */
+html.is-lite .flux-lines-canvas { display: none; }
+html.is-lite .flux-lines-container { background: url("/img/sites/flux-d.webp") center / cover no-repeat; }
+@media (max-width: 600px) {
+  html.is-lite .flux-lines-container { background-image: url("/img/sites/flux-m.webp"); }
+}
+
 /* in the hero: the first screen, under the words and the stone, fading out towards the sample site below, so the
    canvas never draws what nobody sees. The fade is a still black gradient laid over the canvas (a mask on a canvas
    that redraws costs a composite every frame; the ground is pure black, so the two look the same) */

@@ -13,6 +13,7 @@ import { AiSprite } from "./parts";
 // the topbar's links and UA · RU are styled with the main page's header (its first screen); ai.css goes last
 import "@/components/layout/header/header.css";
 import "./ai.css";
+import "./ai-own.css";
 
 type Props = {
   /** which page (CSS scope): ai, case, asst */

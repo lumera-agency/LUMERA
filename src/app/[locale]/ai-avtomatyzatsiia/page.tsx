@@ -71,7 +71,7 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
       claim={t("foot.claim")}
     >
       <RobotHero />
-      <PageShell>
+      <PageShell skip="#how, #niches, #case, .ai-pause, #offer, #faq, #contact">
         <WhatIsAutomation index={next()} />
         <Niches index={next()} />
         <Proof index={next()} />
