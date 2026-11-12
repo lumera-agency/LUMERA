@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import dynamic from "next/dynamic";
 import { boot, loader, sceneRun, useSceneRunning } from "@/lib/boot";
@@ -94,6 +94,8 @@ let island: { box: HTMLDivElement; root: Root; drop: number } | null = null;
 /** The hero and its glow as the scenes see them: whichever shell holds the island now. */
 const heroBox: { current: HTMLDivElement | null } = { current: null };
 const glowBox: { current: HTMLDivElement | null } = { current: null };
+/** A value the page never changes once loaded (the graphics card): nothing to listen to. */
+const noSubscribe = () => () => {};
 
 /**
  * The first screen's stage: background light, the 3D canvases and the boot sequence.
@@ -228,10 +230,8 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
   // LITE's stone moves (its film plays, it floats with its orbit, the orbit turns: hero.css) only where a graphics card
   // draws the page; without one the film's frames and the compositor's work fall on the processor (12 Nov 2026: the
   // orbit alone took 31% of a core there), so the still of the film's first frame stands, the orbit too
-  const [film, setFilm] = useState(false);
-  useEffect(() => {
-    setFilm(lite && canRunFull());
-  }, [lite]);
+  // (asked of the browser only: the server knows no graphics card and renders the still)
+  const film = useSyncExternalStore(noSubscribe, () => lite && canRunFull(), () => false);
   const filmCanvas = useRef<HTMLCanvasElement>(null);
   /** tells the film to hold while the hero is off screen or under the page (set by the film once it plays) */
   const holdFilm = useRef<(held: boolean) => void>(() => {});
@@ -371,6 +371,7 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       </div>
       <div className={`hero__shards${started ? " is-in" : ""}`} aria-hidden="true">
         {SHARD_PICTURES.map((shard) => (
+          // eslint-disable-next-line @next/next/no-img-element -- small decorative pictures cut to size already, placed by CSS
           <img
             key={shard.seed}
             className="hero__shard"

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element -- the stills and the board's pictures are set, swapped and sliced by the page's script (runtime) */
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich as R } from "@/components/ai/rich";
