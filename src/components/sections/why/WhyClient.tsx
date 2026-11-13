@@ -57,10 +57,14 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
     const steps = [...block.querySelectorAll<HTMLButtonElement>(".wv__step-n")];
     const arrows = [...block.querySelectorAll<HTMLButtonElement>(".wv__nav-b")];
     const last = items.length - 1;
-    // where the row stands with each card in hand (the last ones may share the row's end)
+    // where the row stands with each card in hand (the last ones may share the row's end), by the layout's own offsets:
+    // on the ride the cards are moved by a translate, which the row's scroll width would count
     let stops: number[] = [];
+    let end = 0;
     const measure = () => {
-      const end = Math.max(0, row.scrollWidth - row.clientWidth);
+      const look = getComputedStyle(row);
+      const content = items[last].offsetLeft + items[last].offsetWidth - items[0].offsetLeft;
+      end = Math.max(0, Math.round(parseFloat(look.paddingLeft) + content + parseFloat(look.paddingRight) - row.clientWidth));
       stops = items.map((item) => Math.min(end, item.offsetLeft - items[0].offsetLeft));
     };
     let hand = -1; // the card in hand
@@ -81,7 +85,11 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
       steps.forEach((step, k) => (k === i % steps.length ? step.setAttribute("aria-current", "step") : step.removeAttribute("aria-current")));
       arrows.forEach((arrow) => (arrow.disabled = arrow.dataset.dir === "-1" ? i === 0 : i === last));
     };
-    const at = (i: number) => Math.abs(stops[i] - row.scrollLeft) < 4;
+    // (the ride, below: the body held while the page scrolls, the page's scroll since it was held the row's way sideways)
+    let riding = false;
+    let rideFrom = 0;
+    const sideways = () => (riding ? Math.min(end, Math.max(0, window.scrollY - rideFrom)) : row.scrollLeft);
+    const at = (i: number) => Math.abs(stops[i] - sideways()) < 4;
     const read = () => {
       if (bound >= 0 && at(bound)) {
         take(bound);
@@ -89,21 +97,20 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
         return;
       }
       if (hand >= 0 && at(hand)) return;
+      const x = sideways();
       let near = 0;
       stops.forEach((stop, i) => {
-        if (Math.abs(stop - row.scrollLeft) < Math.abs(stops[near] - row.scrollLeft)) near = i;
+        if (Math.abs(stop - x) < Math.abs(stops[near] - x)) near = i;
       });
       take(near);
     };
-    // (set below: the page stopped at the row, its scroll moving the row sideways)
-    let ride: ScrollTrigger | null = null;
     const go = (i: number) => {
       const to = Math.max(0, Math.min(last, i));
       measure();
       if (at(to)) return take(to);
       bound = to;
       // (on the ride the page's scroll moves the row: one px down, one px sideways)
-      if (ride) scrollToY(ride.start + stops[to], { duration: 0.8 });
+      if (riding) scrollToY(rideFrom + stops[to], { duration: 0.8 });
       else row.scrollTo({ left: stops[to], behavior: still ? "auto" : "smooth" });
     };
     on(row, "scroll", () => {
@@ -138,10 +145,13 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
       if (next !== shift) first.style.setProperty("--join-dy", `${next}px`);
     };
 
+    // (set with the ride, below)
+    let placeRide = () => {};
     const resized = new ResizeObserver(() => {
       measure();
       read();
       meet();
+      placeRide();
     });
     const body = block.querySelector<HTMLElement>(".wv__body");
     resized.observe(row);
@@ -280,59 +290,104 @@ export function WhyClient({ children }: { children: React.ReactNode }) {
         offs.push(() => market.classList.remove("is-waiting"));
       }
 
-      // phones and tablets: the page stops at the row and its scroll moves the row sideways, as the services ride
-      // does on computers (the owner, 13 Nov 2026: «чтоб при скролле останавливался и скролился горизонтально»). The
-      // row is held under the top bar, in the middle of the room left; one px of the page's scroll is one px sideways,
-      // and a scroll that ends between two cards settles on the nearer. The thumb's own sideways sweep gives way to it
+      // phones and tablets: the page stops at the row and its scroll moves the row sideways, as the services ride does
+      // on computers (the owner, 13 Nov 2026: «чтоб при скролле останавливался и скролился горизонтально»). The
+      // browser holds the body and moves the cards itself (why-contour.css .is-ride: sticky, the page's scroll
+      // timeline), on the thread that scrolls the page: a script that pinned the body and moved the row a frame behind
+      // the scroll made a fast fling jump (the owner, 13 Nov 2026: «подлагивает, прыгает»; measured: 17 to 46 px at
+      // the pin's ends, the row up to 164 px behind). This measures where, names the card in hand as the page scrolls
+      // and settles a scroll left between two cards on the nearer once the page has come to rest (not while a finger
+      // is on it or it still glides on). One px of the page's scroll is one px sideways; the body is held under the top
+      // bar, in the middle of the room left. Where the browser has no scroll timelines the cards follow from here
       const rowWidth = matchMedia(ROW);
-      let distance = 0;
-      const settle = (progress: number) => {
-        if (!distance) return progress;
-        return stops.reduce((best, stop) => (Math.abs(stop / distance - progress) < Math.abs(best - progress) ? stop / distance : best), 0);
+      const ride = block.querySelector<HTMLElement>(".wv__ride");
+      const timeline = CSS.supports("animation-timeline: scroll()");
+      let rideHeight = -1;
+      let following = 0;
+      const follow = () => {
+        following = 0;
+        if (!riding) return;
+        const x = sideways();
+        if (!timeline) row.style.setProperty("--ride-x", `${-x}px`);
+        if (x > 90) block.classList.add("is-swept");
+        read();
       };
-      const dropRide = () => {
-        ride?.kill();
-        ride = null;
-        block.classList.remove("is-ride");
+      placeRide = () => {
+        if (!riding || !ride || !body) return;
+        measure();
+        const bar = topbarHeight();
+        const height = body.offsetHeight;
+        const top = Math.round(bar + Math.max(0, (window.innerHeight - bar - height) / 2));
+        rideFrom = Math.round(ride.getBoundingClientRect().top + window.scrollY - top);
+        block.style.setProperty("--ride-top", `${top}px`);
+        block.style.setProperty("--ride-height", `${height + end}px`);
+        block.style.setProperty("--ride-travel", `${end}px`);
+        block.style.setProperty("--ride-from", `${rideFrom}px`);
+        block.style.setProperty("--ride-to", `${rideFrom + end}px`);
+        follow();
+        // the page below grew or shrank with it: its scroll scenes measured again
+        if (height + end !== rideHeight) {
+          rideHeight = height + end;
+          refreshSoon();
+        }
       };
-      const makeRide = () => {
-        dropRide();
-        if (!body || !rowWidth.matches) return;
-        block.classList.add("is-ride");
-        ride = ScrollTrigger.create({
-          trigger: body,
-          pin: true,
-          start: () => `top ${Math.round(topbarHeight() + Math.max(0, (window.innerHeight - topbarHeight() - body.offsetHeight) / 2))}`,
-          end: () => {
-            measure();
-            distance = Math.max(0, row.scrollWidth - row.clientWidth);
-            return `+=${distance}`;
-          },
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          // (after 3 · Послуги's ride and before 5 · Підхід's deck: the spacers go in in the page's order)
-          refreshPriority: 1.5,
-          snap: { snapTo: settle, duration: { min: 0.15, max: 0.45 }, delay: 0.06, ease: "power1.inOut" },
-          onUpdate: (self) => {
-            row.scrollLeft = self.progress * distance;
-          },
-        });
+      let touching = false;
+      let resting = 0;
+      const settle = () => {
+        if (!riding || touching || bound >= 0) return;
+        const x = window.scrollY - rideFrom;
+        if (x <= 2 || x >= end - 2) return;
+        const nearest = stops.reduce((best, stop) => (Math.abs(stop - x) < Math.abs(best - x) ? stop : best), 0);
+        if (Math.abs(nearest - x) > 2) scrollToY(rideFrom + nearest, { duration: 0.45 });
       };
-      // (set up after the preloader's roll, as the other pinned blocks are, lib/boot; then every trigger below it is
-      // measured again, once for all the blocks that start then: lib/gsap refreshSoon)
+      const restSoon = () => {
+        clearTimeout(resting);
+        resting = window.setTimeout(settle, 200);
+      };
+      const startRide = () => {
+        riding = rowWidth.matches;
+        block.classList.toggle("is-ride", riding);
+        if (riding) return placeRide();
+        for (const name of ["--ride-top", "--ride-height", "--ride-travel", "--ride-from", "--ride-to"]) block.style.removeProperty(name);
+        row.style.removeProperty("--ride-x");
+        rideHeight = -1;
+        refreshSoon();
+        read();
+      };
+      // (set up after the preloader's roll, as the other pinned blocks are, lib/boot: measured once the page stands)
       let alive = true;
       afterRoll().then(() => {
         if (!alive) return;
-        makeRide();
-        refreshSoon();
-        on(rowWidth, "change", () => {
-          makeRide();
-          refreshSoon();
-        });
+        startRide();
+        on(rowWidth, "change", startRide);
+        on(window, "resize", placeRide);
+        on(window, "scroll", () => {
+          if (!riding) return;
+          if (!following) following = requestAnimationFrame(follow);
+          restSoon();
+        }, { passive: true });
+        on(window, "touchstart", () => {
+          touching = true;
+          bound = -1;
+          clearTimeout(resting);
+        }, { passive: true });
+        const lifted = () => {
+          touching = false;
+          restSoon();
+        };
+        on(window, "touchend", lifted, { passive: true });
+        on(window, "touchcancel", lifted, { passive: true });
+        // (a scroll scene above it set up or measured anew moves where the body is held)
+        ScrollTrigger.addEventListener("refresh", placeRide);
+        offs.push(() => ScrollTrigger.removeEventListener("refresh", placeRide));
       });
       offs.push(() => {
         alive = false;
-        dropRide();
+        riding = false;
+        cancelAnimationFrame(following);
+        clearTimeout(resting);
+        for (const name of ["--ride-top", "--ride-height", "--ride-travel", "--ride-from", "--ride-to"]) block.style.removeProperty(name);
+        row.style.removeProperty("--ride-x");
       });
       // a pointer: the stone leans after it
       if (body && matchMedia("(hover: hover) and (pointer: fine)").matches) {

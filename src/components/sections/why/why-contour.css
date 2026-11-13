@@ -225,15 +225,31 @@
   .wv__nav-b:active:not(:disabled) { transform: scale(0.94); }
   /* (without the script the row is still swept by the thumb; the arrows would do nothing) */
   html:not(.js) .wv__nav { display: none; }
-  /* the ride (WhyClient): the page stops at the row and its scroll moves it sideways, so the row takes no sweep of
-     its own and snaps nowhere by itself (a snap would pull the scrolled row back). The block holds a pin now: it is
-     rendered always, never skipped while far (lib/perf/far.ts, page.css: a skipped block would hold the pinned row
-     in its own box, out of the screen's) */
-  .wv.is-ride .wv__loop { overflow-x: hidden; scroll-snap-type: none; }
+  /* the ride (WhyClient .is-ride): the page stops at the row and its scroll moves it sideways, all of it done by the
+     browser on the thread that scrolls the page (the owner, 13 Nov 2026: in a fast fling the row «подлагивает,
+     прыгает» while a script pinned it and moved it a frame behind the scroll). The body is held by sticky inside a box
+     as tall as the row's way sideways; the cards go sideways by an animation on the page's own scroll timeline, from
+     the scroll the body is held at to where it is let go (--ride-from, --ride-to, measured by WhyClient); where the
+     browser has no scroll timelines, WhyClient moves them (--ride-x). The row takes no sweep of its own and snaps
+     nowhere by itself. Rendered always, never skipped while far (lib/perf/far.ts, page.css): a skipped block keeps no
+     sticky child in view */
+  .wv.is-ride .wv__ride { height: var(--ride-height); }
+  .wv.is-ride .wv__body { position: sticky; top: var(--ride-top); }
+  .wv.is-ride .wv__loop { overflow: hidden; scroll-snap-type: none; }
+  .wv.is-ride :is(.wv__link, .wv__back) { translate: var(--ride-x, 0px) 0; }
+  @supports (animation-timeline: scroll()) {
+    .wv.is-ride :is(.wv__link, .wv__back) {
+      animation: wv-ride linear both;
+      animation-timeline: scroll(root block);
+      animation-range: var(--ride-from) var(--ride-to);
+    }
+  }
   .page > .wv.is-far { content-visibility: visible; }
 
   .wv__market { margin-top: 2.5rem; font-size: 1.3125rem; line-height: 1.36; }
 }
+/* (the ride's cards: from where they stand to the row's way sideways, why-contour.css above) */
+@keyframes wv-ride { from { translate: 0 0; } to { translate: calc(-1 * var(--ride-travel)) 0; } }
 @media (max-width: 400px) {
   .wv__mock { margin-right: -0.5rem; }
 }
