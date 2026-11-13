@@ -3,6 +3,7 @@ import { CONTACTS, phoneText, realPhones, telHref } from "@/config/contacts";
 import { studioName } from "@/config/site";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiHref } from "@/components/ai/links";
+import { TocToggle } from "./TocToggle";
 
 /*
  * «Політика конфіденційності»: what the site takes, why, where it goes, the cookies, how long, the visitor's rights.
@@ -57,8 +58,8 @@ export async function PrivacyHero() {
           </ul>
         </div>
         <nav className="ai-hero__visual lg-toc lg-glass" aria-labelledby="lg-toc">
-          <p className="lg-toc__label" id="lg-toc">{t("hero.toc")}</p>
-          <ol className="lg-toc__list">
+          <TocToggle label={t("hero.toc")} list="lg-toc-list" />
+          <ol className="lg-toc__list" id="lg-toc-list">
             {rows.map((key) => (
               <li key={key}>
                 <a className="lg-toc__row" href={`#${key}`}>

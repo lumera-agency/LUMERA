@@ -19,6 +19,9 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform float uScroll;
 uniform vec3 uPointer;
+/** a phone (a tall narrow screen): fewer streams, less light (the words over it stay easy to read) */
+uniform float uDim;
+uniform float uStreams;
 out vec4 outColour;
 
 const vec3 LIME = vec3(0.776, 0.941, 0.235);
@@ -40,6 +43,7 @@ void main() {
   vec2 pointer = vec2(uPointer.x / H, (H - uPointer.y) / H);
   vec3 colour = vec3(0.0);
   for (int s = 0; s < 3; s++) {
+    if (float(s) >= uStreams) break;
     float fs = float(s);
     float seed = fs * 17.13 + 3.1;
     float f1 = 1.7 + fs * 0.41;
@@ -75,7 +79,7 @@ void main() {
       colour += tint * light * (0.35 + 0.65 * run) * glowAt * (0.3 + 0.55 * r);
     }
   }
-  colour = 1.0 - exp(-colour * 1.5);
+  colour = 1.0 - exp(-colour * 1.5 * uDim);
   float alpha = clamp(max(colour.r, max(colour.g, colour.b)), 0.0, 1.0);
   outColour = vec4(colour, alpha);
 }`;
@@ -106,6 +110,8 @@ export const create: Create = (canvas, pointer) => {
   const uTime = gl.getUniformLocation(program, "uTime");
   const uScroll = gl.getUniformLocation(program, "uScroll");
   const uPointer = gl.getUniformLocation(program, "uPointer");
+  const uDim = gl.getUniformLocation(program, "uDim");
+  const uStreams = gl.getUniformLocation(program, "uStreams");
   let dpr = 1;
   let lift = 0;
   gl.clearColor(0, 0, 0, 0);
@@ -117,6 +123,9 @@ export const create: Create = (canvas, pointer) => {
       canvas.height = Math.round(h * ratio);
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform2f(uRes, canvas.width, canvas.height);
+      const narrow = w / h < 0.8;
+      gl.uniform1f(uDim, narrow ? 0.6 : 1);
+      gl.uniform1f(uStreams, narrow ? 2 : 3);
     },
     draw(now, dt, scroll) {
       lift += ((pointer.on ? 1 : 0) - lift) * Math.min(1, dt / 350);

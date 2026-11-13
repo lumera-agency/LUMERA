@@ -48,6 +48,7 @@ html.motion main[data-ai-page="legal"] .ai-hero__visual { animation: ai-rise-in 
 .lg-toc { width: 100%; max-width: 26.5rem; justify-self: end; padding: 1.25rem 1.5rem 1rem; }
 .lg-toc__label { margin: 0 0 0.875rem; font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
 .lg-toc__list { margin: 0; padding: 0; list-style: none; }
+.lg-toc__toggle { display: none; }
 .lg-toc__row {
   position: relative;
   display: grid;
@@ -86,6 +87,10 @@ html.motion main[data-ai-page="legal"] .ai-hero__visual { animation: ai-rise-in 
 /* a part: its label on the page's line, then one glass block, the title on the left, the text on the right */
 .lg-part { padding-top: clamp(3rem, 7vh, 5rem); }
 .lg-meta { margin-bottom: 1.25rem; }
+.lg-meta,
+.lg-head__title--wide,
+.lg-hero .ai-crumbs,
+.lg-hero .ai-hero__lead { text-shadow: 0 0 0.75rem rgb(10 10 10 / 0.9), 0 0 0.25rem rgb(10 10 10 / 0.75); }
 .lg-panel { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: start; padding: clamp(1.75rem, 3.2vw, 3.25rem); }
 .lg-head__title {
   grid-column: 1 / span 4;
@@ -100,7 +105,7 @@ html.motion main[data-ai-page="legal"] .ai-hero__visual { animation: ai-rise-in 
 }
 .lg-head__title .line-mask { padding-bottom: 0.1em; margin-bottom: -0.1em; }
 .lg-head__title--wide { max-width: 20ch; }
-.lg-body { grid-column: 6 / -1; max-width: 44rem; font-size: 1.0625rem; font-weight: 300; line-height: 1.7; color: var(--ink-soft); }
+.lg-body { grid-column: 6 / -1; max-width: 38rem; font-size: 1.0625rem; font-weight: 300; line-height: 1.7; color: var(--ink-soft); }
 .lg-body b { font-weight: 500; color: var(--ink); }
 .lg-wide { margin-top: clamp(1.75rem, 4vh, 2.75rem); }
 
@@ -175,7 +180,7 @@ html.motion main[data-ai-page="legal"] .ai-hero__visual { animation: ai-rise-in 
 /* the questions: one glass card, the mail as the main button (lime, as the ads and AI pages' first screens have it),
    the address and the phones under it */
 .lg .lg-ask .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.55); }
-.lg-ask__card { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 2rem var(--col-gap); align-items: center; padding: clamp(1.75rem, 4vw, 3.5rem); }
+.lg-ask__card { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 2rem var(--col-gap); align-items: center; padding: clamp(1.75rem, 3.2vw, 3.25rem); }
 .lg-ask__title { margin: 0; font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
 .lg-ask__p { max-width: 40ch; margin: 1rem 0 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
 .lg-ask__act { display: grid; justify-items: start; gap: 1rem; }
@@ -195,7 +200,32 @@ html.motion main[data-ai-page="legal"] .ai-hero__visual { animation: ai-rise-in 
   .lg-ask__card { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 860px) {
+  .lg-hero__shade { background: linear-gradient(180deg, rgb(10 10 10 / 0.72) 0%, rgb(10 10 10 / 0.6) 55%, rgb(10 10 10 / 0) 100%); }
   .lg-toc { max-width: none; justify-self: stretch; }
+  .lg-toc .lg-toc__label { display: none; }
+  .lg-toc__toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    min-height: 2.75rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+    color: var(--ink);
+    background: none;
+    cursor: pointer;
+  }
+  .lg-toc__chev { width: 1.125rem; height: 1.125rem; margin-left: auto; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.4s var(--ease-out); }
+  .lg-toc.is-open .lg-toc__chev { transform: rotate(180deg); }
+  .lg-toc:not(.is-open) .lg-toc__list { display: none; }
+  .lg-toc.is-open .lg-toc__list { margin-top: 0.5rem; }
+  .lg-toc__toggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 0.25rem; border-radius: 0.25rem; }
   .lg-hero .ai-hero__visual { margin-top: 2.75rem; }
 }
 @media (max-width: 600px) {
