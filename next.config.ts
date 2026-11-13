@@ -30,19 +30,21 @@ const toDomain = [
  * Security headers on every response. Framing is refused (no page here embeds another), the browser keeps to the
  * declared file types, other sites get only the origin as referrer, and the browser features the site never uses stay
  * off. The content policy names what the pages load (all first-party: inline boot scripts, workers and blob: URLs of
- * the 3D, data:/blob: pictures, /_vercel/insights) and is only reported for now: once a preview and the live site show
- * no reports, it becomes Content-Security-Policy and gains upgrade-insecure-requests. `next dev` needs eval.
+ * the 3D, data:/blob: pictures, /_vercel/insights) and is enforced (the owner, 13 Nov 2026): a script, style, frame or
+ * request from any other host is refused, so injected code cannot load more or send data away. Checked with no
+ * violations on every page type. `next dev` needs eval; Vercel's toolbar on previews needs vercel.live (previews only).
  */
+const preview = process.env.VERCEL_ENV === "preview";
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self'",
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}${preview ? " https://vercel.live" : ""}`,
+  `style-src 'self' 'unsafe-inline'${preview ? " https://vercel.live" : ""}`,
+  `img-src 'self' data: blob:${preview ? " https://vercel.live https://vercel.com" : ""}`,
+  `font-src 'self'${preview ? " https://vercel.live https://assets.vercel.com" : ""}`,
   "media-src 'self' blob:",
-  "connect-src 'self'",
+  `connect-src 'self'${preview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
   "worker-src 'self' blob:",
-  "frame-src 'none'",
+  `frame-src ${preview ? "https://vercel.live" : "'none'"}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -56,7 +58,7 @@ const security = [
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
       { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
-      { key: "Content-Security-Policy-Report-Only", value: CSP },
+      { key: "Content-Security-Policy", value: CSP },
     ],
   },
 ];
