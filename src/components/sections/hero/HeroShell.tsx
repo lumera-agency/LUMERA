@@ -67,11 +67,14 @@ const skipScene = () => {
  * LITE's stone (lib/lite), and a phone's (PHONE): a short film of the live stone, its orbit of services running round
  * it in CSS (HeroOrbit).
  * The owner, 12 Nov 2026: the long film «тормозит» (20 s with the orbit's words in it, 4.9 MB), a still with a light
- * along its chrome did not look right, this one «норм». An 8 s loop of the live scene with its transparency, the
- * orbit's words left out and no rise and fall (the page floats the film and the orbit together, hero.css), the stone
- * turning about ±10° (NO_ORBIT=1 FILM_SCALE=2 FILM_SWAY=0.29 FILM_BOB=0 tools/record-film.mjs, then encode-film.sh crf
- * 25, in the optimization folder): 2.0 MB at 1600 px a half for a computer (softer was rejected), 0.6 MB at 912 for a
- * phone, one film for both languages. Under it from the first paint a still of its own first frame (tools/film-still.py),
+ * along its chrome did not look right, this one «норм». A loop of the live scene with its transparency, the orbit's
+ * words left out and no rise and fall (the page floats the film and the orbit together, hero.css), the stone turning
+ * about ±10° (NO_ORBIT=1 FILM_SCALE=2 FILM_SWAY=0.29 FILM_BOB=0 tools/record-film.mjs, then encode-film.sh crf 25, in
+ * the optimization folder), one film for both languages: a computer's 8 s, 2.0 MB at 1600 px a half (softer was
+ * rejected); a phone's 12 s at 60 frames a second, 1.05 MB at 912 (the owner, 13 Nov 2026: in 8 s the stone swung right
+ * and left four times as fast as the live one, «дергано»; 12 s runs it a third slower, 10 s was the other choice; then
+ * «чуть плавнее»: the turn itself was even, but at 30 frames the chrome's light jumped about 5 screen pixels a frame
+ * on a phone, at 60 half that; recorded with fps 60, encoded at 60, crf 25 as before). Under it from the first paint a still of its own first frame (tools/film-still.py),
  * which stays alone where no graphics card draws the page: there every frame of the film would fall on the processor.
  * STILL_FRAME is how far both reach from the stone's centre, in stone heights: they are laid by it where the live stone
  * would stand (stonePlace), on a wide screen and on a phone alike. ORBIT is the ring as the scene sets it: its centre
@@ -85,14 +88,18 @@ const ORBIT = { lift: 0.22 / 3.1, depth: 2.0054 };
  *  12 Nov 2026: «чуть отцентрируем камень по сравнению к бегущей строке»); its seen middle is 0.040 to 0.043 right */
 const STONE_RIGHT = 0.04;
 const WIDE = "(min-width: 701px)";
+/** a wide screen that is no phone (PHONE turned round): the computer's film and its still; a phone on its side gets
+ *  the phone's */
+const WIDE_NOT_PHONE = `${WIDE} and (hover: hover), ${WIDE} and (pointer: fine), ${WIDE} and (min-height: 700px)`;
 /* The loop starts where the stone turns, so it sets off the long way at once (the owner, 13 Nov 2026: it went a little
-   to one side for 0.4 s, then turned, which looked jerky on a slow computer): frame 13 of the recording first. ?v: a
+   to one side for 0.4 s, then turned, which looked jerky on a slow computer): the computer's from frame 13 of its
+   recording, the phone's from frame 328 (the turn found by the chrome's side-to-side centre, stonefilm turn.py). ?v: a
    new cut under the same name (the pictures and films are cached for a week, next.config) */
 const FILM = {
   wide: "/img/hero/stone-film-lite-d.mp4?v=2",
-  narrow: "/img/hero/stone-film-lite.mp4?v=2",
+  narrow: "/img/hero/stone-film-lite.mp4?v=4",
   stillWide: "/img/hero/stone-film-lite-d.webp?v=2",
-  stillNarrow: "/img/hero/stone-film-lite.webp?v=2",
+  stillNarrow: "/img/hero/stone-film-lite.webp?v=4",
 };
 
 /**
@@ -269,8 +276,8 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     const start = () => {
       stop = playAlphaFilm({
         canvas,
-        // (a phone on its side as well: its stone is small there, the phone's cut is sharp enough)
-        src: matchMedia(WIDE).matches && !onPhone() ? FILM.wide : FILM.narrow,
+        // (a phone on its side gets the phone's cut as well: its stone is small there)
+        src: matchMedia(WIDE_NOT_PHONE).matches ? FILM.wide : FILM.narrow,
         watch: host,
         onShown: () => setFilmShown(true),
         // (no WebGL, or the browser will not play it: the still of its first frame stays)
@@ -420,7 +427,7 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
         {/* (the stone, its light and its orbit float together: hero.css) */}
         <div className="hero__float">
           <picture>
-            <source media={WIDE} srcSet={FILM.stillWide} />
+            <source media={WIDE_NOT_PHONE} srcSet={FILM.stillWide} />
             <img ref={still} src={FILM.stillNarrow} alt="" loading="lazy" decoding="async" />
           </picture>
           {film && <canvas ref={filmCanvas} className="hero__film" />}
