@@ -172,7 +172,9 @@ html.motion main[data-ai-page="legal"] .ai-hero__visual { animation: ai-rise-in 
 .lg-card__t { margin: 1.25rem 0 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; color: var(--ink); text-wrap: balance; }
 .lg-card__d { margin: 0; font-size: var(--fs-body-s); font-weight: 300; line-height: 1.6; color: var(--ink-soft); text-wrap: pretty; }
 
-/* the questions: one glass card, the mail as the main button, the address and the phones under it */
+/* the questions: one glass card, the mail as the main button (lime, as the ads and AI pages' first screens have it),
+   the address and the phones under it */
+.lg .lg-ask .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(218 255 2 / 0.55); }
 .lg-ask__card { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 2rem var(--col-gap); align-items: center; padding: clamp(1.75rem, 4vw, 3.5rem); }
 .lg-ask__title { margin: 0; font-size: var(--fs-h3); font-weight: 400; font-variation-settings: "SHRP" 64; line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
 .lg-ask__p { max-width: 40ch; margin: 1rem 0 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }

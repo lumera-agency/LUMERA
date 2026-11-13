@@ -2,9 +2,9 @@
 /*
  * The page's moving backdrop, one ground under the whole page (the owner, 13 Nov 2026: «полноценный единый фон … ты
  * как будто скроллишь, и этот фон продолжается»; the blocks over it are glass). Fixed to the screen and drawn there,
- * it rides with the scroll at a slower pace, so the ground runs on under the page. Three to choose from, ?bg= in the
- * address while he chooses: a «Потоки» (streams), b «Точки» (a field of dots), c «Рельєф» (contour lines, the
- * default); 0 none.
+ * it rides with the scroll at a slower pace, so the ground runs on under the page. The default d «Сяйво» (glowing
+ * fibres, after the owner's reference reel of 13 Nov 2026, in the ads page's language); still to compare, ?bg= in the
+ * address: a «Потоки» (streams), b «Точки» (a field of dots), c «Рельєф» (contour lines); 0 none.
  *
  * Only where a graphics card draws the page and the page is FULL (lib/perf/mode): without one, or LITE, the page keeps
  * its plain dark ground. It starts once the browser is idle (never in the first paint's way), plays only while the
@@ -15,14 +15,14 @@ import { useEffect, useRef } from "react";
 import { canRunFull, isLite, watchMode } from "@/lib/perf/mode";
 import type { Effect, Pointer } from "./types";
 
-type Kind = "streams" | "dots" | "relief" | "none";
-const PICK: Record<string, Kind> = { a: "streams", b: "dots", c: "relief", "0": "none" };
-const DEFAULT: Kind = "relief";
+type Kind = "aurora" | "streams" | "dots" | "relief" | "none";
+const PICK: Record<string, Kind> = { d: "aurora", a: "streams", b: "dots", c: "relief", "0": "none" };
+const DEFAULT: Kind = "aurora";
 /** frames a second, and fewer on a touch screen */
-const FPS: Record<Exclude<Kind, "none">, number> = { streams: 50, dots: 40, relief: 30 };
+const FPS: Record<Exclude<Kind, "none">, number> = { aurora: 45, streams: 50, dots: 40, relief: 30 };
 
 const load = (kind: Exclude<Kind, "none">) =>
-  kind === "streams" ? import("./streams") : kind === "dots" ? import("./dots") : import("./relief");
+  kind === "aurora" ? import("./aurora") : kind === "streams" ? import("./streams") : kind === "dots" ? import("./dots") : import("./relief");
 
 export function Backdrop() {
   const box = useRef<HTMLDivElement>(null);
