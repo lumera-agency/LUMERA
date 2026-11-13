@@ -52,15 +52,17 @@ function useRounds(target: React.RefObject<HTMLElement | null>, on: boolean) {
     const element = target.current;
     if (!on || !element) return;
     let armed = true;
+    // (told at 95 % as well as at whole: Safari lays out to fractions of a pixel, and a number that never comes to 100 %
+    // in view never crossed the only threshold there was, so it stood at 0, 13 Nov 2026, «Обращений» on an iPhone)
     const watch = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) armed = true;
-        else if (armed && entry.intersectionRatio > 0.98) {
+        else if (armed && entry.intersectionRatio >= 0.95) {
           armed = false;
           setRounds((done) => done + 1);
         }
       },
-      { threshold: [0, 1] },
+      { threshold: [0, 0.95, 1] },
     );
     watch.observe(element);
     return () => watch.disconnect();
