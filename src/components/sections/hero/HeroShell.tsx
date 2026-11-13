@@ -14,8 +14,8 @@ import { useBoot } from "./useBoot";
 import { HeroOrbit } from "./HeroOrbit";
 import "./hero.css";
 
-// three.js and the scenes load after the first paint; the page works without them. In LITE (lib/lite) they are never
-// asked for: the stone is a still with its orbit in CSS (below)
+// three.js and the scenes load after the first paint; the page works without them. In LITE (lib/lite) and on a phone
+// they are never asked for: the stone is a film over a still, its orbit in CSS (below)
 const HeroScene = dynamic(
   () =>
     import("@/components/three/hero/HeroScene").then((m) => {
@@ -47,6 +47,16 @@ const SHARD_PICTURES = [
    the content back to 0.7 of the scroll, a frame behind the browser's own scroll once the glide was off, so the
    content jumped as the page came over it. */
 
+/**
+ * A phone (a finger and a small screen, either way up): its stone is LITE's film, not the live 3D, the rest of the page
+ * as it is (the owner, 13 Nov 2026, «делай 1»: under the live stone the phone's graphics fell behind, the stone's
+ * entrance and the text of block 2 sliding over it «подлагивает»; measured with a slow graphics stand-in, block 2's
+ * text drew 98 to 122 frames of 180 over the live stone, 167 over the film). The robot and the droplet were films on a
+ * phone already. hero.css shows the still from the first paint by the same test.
+ */
+const PHONE = "(hover: none) and (pointer: coarse) and (max-width: 699px), (hover: none) and (pointer: coarse) and (max-height: 699px)";
+const onPhone = () => matchMedia(PHONE).matches;
+
 /** No 3D here: the start-up doesn't wait for a scene that won't come. */
 const skipScene = () => {
   boot.sceneLoaded.resolve();
@@ -54,7 +64,8 @@ const skipScene = () => {
 };
 
 /**
- * LITE's stone (lib/lite): a short film of the live stone, its orbit of services running round it in CSS (HeroOrbit).
+ * LITE's stone (lib/lite), and a phone's (PHONE): a short film of the live stone, its orbit of services running round
+ * it in CSS (HeroOrbit).
  * The owner, 12 Nov 2026: the long film «тормозит» (20 s with the orbit's words in it, 4.9 MB), a still with a light
  * along its chrome did not look right, this one «норм». An 8 s loop of the live scene with its transparency, the
  * orbit's words left out and no rise and fall (the page floats the film and the orbit together, hero.css), the stone
@@ -116,9 +127,9 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
 
   useBoot(hero, reducedMotion);
   useEffect(() => {
-    // LITE: no scene to wait for, nothing of it fetched (read from the page, not from the render: this runs before
-    // the render that knows the mode)
-    if (isLite()) return skipScene();
+    // LITE and a phone: no scene to wait for, nothing of it fetched (read from the page, not from the render: this runs
+    // before the render that knows the mode)
+    if (isLite() || onPhone()) return skipScene();
     let alive = true;
     void import("@/components/three/hero/HeroScene");
     // with processor to spare (8 threads and more) built alongside the roll: measured on 10 Nov 2026, the roll ran as
@@ -227,12 +238,18 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
 
   const running = started && visible;
 
-  // LITE's stone moves (its film plays, it floats with its orbit, the orbit turns: hero.css) only where a graphics card
+  // the stone as a film (LITE, a phone) rather than the live 3D
+  // (asked of the browser only: the server knows neither the screen nor the graphics card, and renders the still)
+  const phone = useSyncExternalStore(noSubscribe, onPhone, () => false);
+  const filmStone = lite || phone;
+  // that stone moves (its film plays, it floats with its orbit, the orbit turns: hero.css) only where a graphics card
   // draws the page; without one the film's frames and the compositor's work fall on the processor (12 Nov 2026: the
   // orbit alone took 31% of a core there), so the still of the film's first frame stands, the orbit too
-  // (asked of the browser only: the server knows no graphics card and renders the still)
-  const film = useSyncExternalStore(noSubscribe, () => lite && canRunFull(), () => false);
+  const film = useSyncExternalStore(noSubscribe, () => (lite || onPhone()) && canRunFull(), () => false);
   const filmCanvas = useRef<HTMLCanvasElement>(null);
+  // its first frame drawn: shown over the still from then on (state, not a class set by hand: React writes the block's
+  // class anew as the stone comes in, and on a phone the film is often up before that, under the preloader)
+  const [filmShown, setFilmShown] = useState(false);
   /** tells the film to hold while the hero is off screen or under the page (set by the film once it plays) */
   const holdFilm = useRef<(held: boolean) => void>(() => {});
   const seen = useRef(visible);
@@ -252,9 +269,10 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     const start = () => {
       stop = playAlphaFilm({
         canvas,
-        src: matchMedia(WIDE).matches ? FILM.wide : FILM.narrow,
+        // (a phone on its side as well: its stone is small there, the phone's cut is sharp enough)
+        src: matchMedia(WIDE).matches && !onPhone() ? FILM.wide : FILM.narrow,
         watch: host,
-        onShown: () => frame.classList.add("has-film"),
+        onShown: () => setFilmShown(true),
         // (no WebGL, or the browser will not play it: the still of its first frame stays)
         onFail: () => {},
         hold: (set) => {
@@ -281,17 +299,18 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       window.removeEventListener("load", whenIdle);
       cancelWait();
       stop();
-      frame.classList.remove("has-film");
+      setFilmShown(false);
     };
   }, [film]);
 
-  // LITE: the still laid where the stone would stand, its orbit round it and the glow behind it; again on a new size
-  // and once the headline's font is in (on a phone the stone stands between the header and the headline)
+  // the film's stone (LITE, a phone): the still laid where the stone would stand, its orbit round it and the glow
+  // behind it; again on a new size and once the headline's font is in (on a phone the stone stands between the header
+  // and the headline)
   useEffect(() => {
     const host = hero.current;
     const picture = still.current;
     const frame = picture?.closest<HTMLElement>(".hero__still");
-    if (!lite || !host || !picture || !frame) return;
+    if (!filmStone || !host || !picture || !frame) return;
     const place = () => {
       const { centerX, centerY, size } = stonePlace(host, host.offsetWidth, host.offsetHeight);
       const stoneX = centerX + STONE_RIGHT * size;
@@ -326,7 +345,7 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
       alive = false;
       sized.disconnect();
     };
-  }, [lite, film]);
+  }, [filmStone, film]);
 
   // the island (see above): made once, taken over by each shell, its box moved into this hero before it is drawn
   useLayoutEffect(() => {
@@ -394,9 +413,10 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
         ))}
       </div>
       {/* (the 3D: the island's box goes here) */}
-      {/* LITE's stone, the still and its orbit: the picture in the markup for every visitor, shown and fetched only in
-          LITE (hero.css; a lazy picture that is not displayed is never fetched), the orbit made only there */}
-      <div className={`hero__still${started ? " is-in" : ""}${film ? " is-film" : ""}`} aria-hidden="true">
+      {/* the film's stone (LITE, a phone), the still and its orbit: the picture in the markup for every visitor, shown
+          and fetched only there (hero.css; a lazy picture that is not displayed is never fetched), the orbit made only
+          there */}
+      <div className={`hero__still${started ? " is-in" : ""}${film ? " is-film" : ""}${film && filmShown ? " has-film" : ""}`} aria-hidden="true">
         {/* (the stone, its light and its orbit float together: hero.css) */}
         <div className="hero__float">
           <picture>
@@ -404,7 +424,7 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
             <img ref={still} src={FILM.stillNarrow} alt="" loading="lazy" decoding="async" />
           </picture>
           {film && <canvas ref={filmCanvas} className="hero__film" />}
-          {lite && <HeroOrbit label={orbitLabel} />}
+          {filmStone && <HeroOrbit label={orbitLabel} />}
         </div>
       </div>
       {children}

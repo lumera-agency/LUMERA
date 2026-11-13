@@ -86,7 +86,8 @@ html.is-lite .hero__shards { display: none; }
    paint seconds late (measured 11 Nov 2026: 5.6 s). On a wide screen CSS puts it where stonePlace would (the same
    numbers), the script then lays it exactly; on a phone its place hangs on the headline's, so the still waits unseen
    for the script. With the intro it settles a little, as the stone does, and the orbit with it.
-   Not displayed in FULL, so the lazy picture is never fetched */
+   A phone has this stone in FULL as well (HeroShell PHONE, the same test: shown from the first paint), its settle as
+   unhurried as FULL's intro. Not displayed on a computer in FULL, so the lazy picture is never fetched there */
 .hero__still {
   position: absolute;
   inset: 0;
@@ -95,6 +96,10 @@ html.is-lite .hero__shards { display: none; }
   pointer-events: none;
 }
 html:not(.is-lite) .hero__still { display: none; }
+@media (hover: none) and (pointer: coarse) and (max-width: 699px), (hover: none) and (pointer: coarse) and (max-height: 699px) {
+  html:not(.is-lite) .hero__still { display: block; }
+  html:not(.is-lite) .hero__still :is(img, .hero__film) { transition-duration: 1.2s; }
+}
 .hero__still :is(img, .hero__film) {
   --stone: min(74vh, 46vw);
   position: absolute;
