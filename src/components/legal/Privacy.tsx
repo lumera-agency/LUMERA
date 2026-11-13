@@ -3,7 +3,6 @@ import { CONTACTS, phoneText, realPhones, telHref } from "@/config/contacts";
 import { studioName } from "@/config/site";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiHref } from "@/components/ai/links";
-import { Backdrop } from "./backdrop/Backdrop";
 
 /*
  * «Політика конфіденційності»: what the site takes, why, where it goes, the cookies, how long, the visitor's rights.
@@ -39,7 +38,8 @@ export async function PrivacyHero() {
   const rows = ["short", ...PARTS, "ask"] as const;
   return (
     <section className="ai-hero lg-hero" id="top" aria-labelledby="lg-title">
-      <Backdrop />
+      {/* a shade under the title, so the ground's lines stay behind the words */}
+      <span className="lg-hero__shade" aria-hidden="true" />
       <div className="ai-hero__in">
         <div className="ai-hero__copy">
           <nav className="ai-crumbs" aria-label={c("crumbs.label")}>
@@ -56,7 +56,7 @@ export async function PrivacyHero() {
             <li>{t("hero.chip")}</li>
           </ul>
         </div>
-        <nav className="ai-hero__visual lg-toc" aria-labelledby="lg-toc">
+        <nav className="ai-hero__visual lg-toc lg-glass" aria-labelledby="lg-toc">
           <p className="lg-toc__label" id="lg-toc">{t("hero.toc")}</p>
           <ol className="lg-toc__list">
             {rows.map((key) => (
@@ -75,21 +75,37 @@ export async function PrivacyHero() {
   );
 }
 
-/** One part: the label on the page's line (its node lights as it passes), the title on the left, the text on the right */
+/**
+ * One part: its label on the page's line (the node lights as the reader passes it), then the part itself as one glass
+ * block over the moving ground, its title on the left, its text on the right. `wide`: the title stands on the ground,
+ * the content (the short version's cards) under it at full width.
+ */
 function Part({ id, label, title, wide = false, children }: { id: string; label: string; title: React.ReactNode; wide?: boolean; children: React.ReactNode }) {
+  const meta = (
+    <p className="s-head__meta lg-meta">
+      <span className="s-head__index">{INDEX[id]}</span>
+      <span>{label}</span>
+    </p>
+  );
   return (
     <section className={`section lg-part${wide ? " lg-part--wide" : ""}`} id={id} aria-labelledby={`${id}-title`}>
-      <div className="container lg-part__in">
-        <header className="s-head lg-head">
-          <p className="s-head__meta">
-            <span className="s-head__index">{INDEX[id]}</span>
-            <span>{label}</span>
-          </p>
-          <h2 className="lg-head__title" id={`${id}-title`} data-split="">
-            {title}
-          </h2>
-        </header>
-        <div className="lg-body">{children}</div>
+      <div className="container">
+        {meta}
+        {wide ? (
+          <>
+            <h2 className="lg-head__title lg-head__title--wide" id={`${id}-title`} data-split="">
+              {title}
+            </h2>
+            <div className="lg-wide">{children}</div>
+          </>
+        ) : (
+          <div className="lg-panel lg-glass" data-sr="">
+            <h2 className="lg-head__title" id={`${id}-title`} data-split="">
+              {title}
+            </h2>
+            <div className="lg-body">{children}</div>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -104,9 +120,7 @@ async function RowsOf({ ns, keys }: { ns: string; keys: string[] }) {
   return (
     <ul className="lg-rows">
       {keys.map((key) => (
-        <li key={key} data-sr="">
-          {t.rich(key, tags)}
-        </li>
+        <li key={key}>{t.rich(key, tags)}</li>
       ))}
     </ul>
   );
@@ -121,7 +135,7 @@ export async function PrivacyParts() {
       <Part id="short" label={t("nav.short")} title={t("short.title")} wide>
         <div className="lg-cards">
           {["1", "2", "3", "4"].map((key) => (
-            <article className="card lg-card" key={key} data-sr="">
+            <article className="card lg-card lg-glass" key={key} data-sr="">
               <span className="lg-card__n" aria-hidden="true">{`0${key}`}</span>
               <h3 className="lg-card__t">{t(`short.${key}.t`)}</h3>
               <p className="lg-card__d">{t.rich(`short.${key}.d`, tags)}</p>
@@ -131,8 +145,8 @@ export async function PrivacyParts() {
       </Part>
 
       <Part id="who" label={t("nav.who")} title={t("who.title")}>
-        <p className="lg-p" data-sr="">{t("who.p")}</p>
-        <dl className="lg-facts" data-sr="">
+        <p className="lg-p">{t("who.p")}</p>
+        <dl className="lg-facts">
           <div>
             <dt>{t("who.owner")}</dt>
             <dd>{t.rich("who.ownerValue", tags)}</dd>
@@ -162,30 +176,30 @@ export async function PrivacyParts() {
 
       <Part id="why" label={t("nav.why")} title={t("why.title")}>
         <Rows ns="why" n={3} />
-        <p className="lg-p lg-p--key" data-sr="">{t("why.p")}</p>
+        <p className="lg-p lg-p--key">{t("why.p")}</p>
       </Part>
 
       <Part id="where" label={t("nav.where")} title={t("where.title")}>
-        <p className="lg-p" data-sr="">{t("where.p")}</p>
-        <p className="lg-p lg-p--lead-in" data-sr="">{t("where.via")}</p>
+        <p className="lg-p">{t("where.p")}</p>
+        <p className="lg-p lg-p--lead-in">{t("where.via")}</p>
         <Rows ns="where" n={2} />
-        <p className="lg-p" data-sr="">{t("where.none")}</p>
+        <p className="lg-p">{t("where.none")}</p>
       </Part>
 
       <Part id="cookies" label={t("nav.cookies")} title={t("cookies.title")}>
         {["1", "2", "3"].map((key) => (
-          <p className="lg-p" key={key} data-sr="">{t.rich(`cookies.${key}`, tags)}</p>
+          <p className="lg-p" key={key}>{t.rich(`cookies.${key}`, tags)}</p>
         ))}
       </Part>
 
       <Part id="keep" label={t("nav.keep")} title={t("keep.title")}>
-        <p className="lg-p" data-sr="">{t("keep.1")}</p>
-        <p className="lg-p" data-sr="">{t("keep.2")}</p>
+        <p className="lg-p">{t("keep.1")}</p>
+        <p className="lg-p">{t("keep.2")}</p>
       </Part>
 
       <Part id="rights" label={t("nav.rights")} title={t("rights.title")}>
         <Rows ns="rights" n={5} />
-        <p className="lg-p lg-p--key" data-sr="">{t.rich("rights.how", tags)}</p>
+        <p className="lg-p lg-p--key">{t.rich("rights.how", tags)}</p>
       </Part>
 
       <Part id="safety" label={t("nav.safety")} title={t("safety.title")}>
@@ -193,7 +207,7 @@ export async function PrivacyParts() {
       </Part>
 
       <Part id="changes" label={t("nav.changes")} title={t("changes.title")}>
-        <p className="lg-p" data-sr="">{t("changes.p")}</p>
+        <p className="lg-p">{t("changes.p")}</p>
       </Part>
     </>
   );
@@ -206,13 +220,11 @@ export async function PrivacyAsk() {
   return (
     <section className="section lg-part lg-ask" id="ask" aria-labelledby="ask-title">
       <div className="container">
-        <header className="s-head lg-head lg-head--plain">
-          <p className="s-head__meta">
-            <span className="s-head__index">{INDEX.ask}</span>
-            <span>{t("nav.ask")}</span>
-          </p>
-        </header>
-        <div className="card lg-ask__card" data-sr="">
+        <p className="s-head__meta lg-meta">
+          <span className="s-head__index">{INDEX.ask}</span>
+          <span>{t("nav.ask")}</span>
+        </p>
+        <div className="card lg-ask__card lg-glass" data-sr="">
           <div className="lg-ask__copy">
             <h2 className="lg-ask__title" id="ask-title">{t("ask.title")}</h2>
             <p className="lg-ask__p">{t("ask.p")}</p>

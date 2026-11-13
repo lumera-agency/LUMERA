@@ -7,6 +7,7 @@ import { MenuSheet } from "@/components/layout/menu/MenuSheet";
 import { Footer } from "@/components/layout/footer/Footer";
 import { BackToTop } from "@/components/fx/back-to-top/BackToTop";
 import { aiHref } from "@/components/ai/links";
+import { Backdrop } from "./backdrop/Backdrop";
 // the main page's header styles, the inner pages' kit (the first screen, the crumbs, the chips), then this page's own
 import "@/components/layout/header/header.css";
 import "@/components/ai/ai.css";
@@ -27,7 +28,7 @@ type Props = {
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
 
 /**
- * A document of the studio (the privacy policy) in the main page's frame, as the AI, sites and ads pages are: the smooth
+ * A document of the studio (the privacy policy) over one moving ground, in the main page's frame, as the AI, sites and ads pages are: the smooth
  * scroll, the topbar (on from the start: the first screen has no header of its own), the phone menu, the footer with
  * the chrome wordmark, the button back up. A page to read: no scenes, no runtime of its own, no sticky request bar.
  */
@@ -39,6 +40,8 @@ export async function LegalShell({ nav, footerLinks, cta, children }: Props) {
   return (
     <>
       <SmoothScroll />
+      {/* one moving ground under the whole page, the blocks over it glass (backdrop/Backdrop.tsx) */}
+      <Backdrop />
       <Topbar always links={nav} cta={cta} home={home} />
       <main id="main" className="ai lg" data-ai-page="legal">
         {children}

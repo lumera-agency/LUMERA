@@ -3,7 +3,7 @@
  * shader): graphite lines on black, every fifth one stronger, the highest summits in lime. The pointer raises a soft
  * hill under it, and the lines part round it.
  */
-import type { Create } from "./types";
+import { PARALLAX, type Create } from "./types";
 
 const VERTEX = `#version 300 es
 in vec2 aPos;
@@ -14,6 +14,7 @@ precision highp float;
 uniform vec2 uRes;
 uniform float uTime;
 uniform vec3 uPointer;
+uniform float uScroll;
 out vec4 outColour;
 
 float hash(vec2 p) {
@@ -39,13 +40,15 @@ float fbm(vec2 p) {
   return v;
 }
 void main() {
-  vec2 uv = gl_FragCoord.xy / uRes.y;
+  // the ground rides up with the page (uScroll: device px); the pointer's hill stays where the pointer is
+  vec2 screen = gl_FragCoord.xy / uRes.y;
+  vec2 uv = (gl_FragCoord.xy - vec2(0.0, uScroll)) / uRes.y;
   float t = uTime * 0.001;
   vec2 p = uv * 1.85 + vec2(t * 0.016, t * 0.009);
   vec2 q = vec2(fbm(p + vec2(0.0, t * 0.025)), fbm(p + vec2(5.2, 1.3) - t * 0.018));
   float n = fbm(p + 0.9 * q);
   vec2 m = uPointer.xy / uRes.y;
-  float d = distance(uv, m);
+  float d = distance(screen, m);
   n += uPointer.z * 0.12 * exp(-d * d * 24.0);
   float v = n * 17.0;
   float w = fwidth(v);
@@ -87,6 +90,7 @@ export const create: Create = (canvas, pointer) => {
   const uRes = gl.getUniformLocation(program, "uRes");
   const uTime = gl.getUniformLocation(program, "uTime");
   const uPointer = gl.getUniformLocation(program, "uPointer");
+  const uScroll = gl.getUniformLocation(program, "uScroll");
   let dpr = 1;
   let lift = 0;
   gl.clearColor(0, 0, 0, 0);
@@ -99,10 +103,11 @@ export const create: Create = (canvas, pointer) => {
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform2f(uRes, canvas.width, canvas.height);
     },
-    draw(now, dt) {
+    draw(now, dt, scroll) {
       // the hill under the pointer rises and settles softly
       lift += ((pointer.on ? 1 : 0) - lift) * Math.min(1, dt / 400);
       gl.uniform1f(uTime, now);
+      gl.uniform1f(uScroll, scroll * PARALLAX * dpr);
       gl.uniform3f(uPointer, pointer.x * dpr, canvas.height - pointer.y * dpr, lift);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.drawArrays(gl.TRIANGLES, 0, 3);

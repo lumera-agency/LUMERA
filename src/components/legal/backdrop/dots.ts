@@ -3,7 +3,7 @@
  * way). The dots are graphite; the crests of the swell and the dots under the pointer light lime, as the list's dots
  * do under the pointer. A 2D canvas, the dots sorted into a few shades so each shade is one fill.
  */
-import type { Create } from "./types";
+import { PARALLAX, type Create } from "./types";
 
 const COLS = 140;
 const ROWS = 58;
@@ -30,13 +30,14 @@ export const create: Create = (canvas, pointer) => {
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     },
-    draw(now) {
+    draw(now, _dt, scroll) {
       ctx.clearRect(0, 0, width, height);
       for (let s = 0; s < SHADES; s++) {
         ink[s].length = 0;
         lime[s].length = 0;
       }
-      const t = now * 0.001;
+      // the swell rolls on as the page scrolls (as if the page moved over the sea)
+      const t = now * 0.001 + scroll * PARALLAX * 0.004;
       const horizon = height * 0.38;
       const focal = Math.max(width, height * 1.4) * 0.6;
       const scale = Math.min(1.4, Math.max(0.7, width / 1440));

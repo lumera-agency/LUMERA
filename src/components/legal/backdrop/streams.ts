@@ -4,7 +4,7 @@
  * slow eddy. A 2D canvas: each frame the old trails fade a little and every streak adds its next short step.
  */
 import { noise3 } from "./noise";
-import type { Create } from "./types";
+import { PARALLAX, type Create } from "./types";
 
 const INK = "rgba(232, 234, 228, 0.2)";
 const LIME = "rgba(218, 255, 2, 0.62)";
@@ -19,6 +19,8 @@ export const create: Create = (canvas, pointer) => {
   if (!ctx) return null;
   let width = 0;
   let height = 0;
+  let ratio = 1;
+  let lastScroll = Number.NaN;
   let count = 0;
   let x = new Float32Array(0);
   let y = new Float32Array(0);
@@ -35,6 +37,7 @@ export const create: Create = (canvas, pointer) => {
     resize(w, h, dpr) {
       width = w;
       height = h;
+      ratio = dpr;
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -48,8 +51,20 @@ export const create: Create = (canvas, pointer) => {
         lime[i] = Math.random() < 0.06 ? 1 : 0;
       }
     },
-    draw(now, dt) {
+    draw(now, dt, scroll) {
       const k = Math.min(2.5, dt / 16.7);
+      // the page scrolled: the trails and the streaks ride up with it, slower
+      if (Number.isNaN(lastScroll)) lastScroll = scroll;
+      const shift = (scroll - lastScroll) * PARALLAX;
+      lastScroll = scroll;
+      if (shift) {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.globalCompositeOperation = "copy";
+        ctx.drawImage(canvas, 0, -Math.round(shift * ratio));
+        ctx.restore();
+        for (let i = 0; i < count; i++) y[i] -= shift;
+      }
       // the old trails fade
       ctx.globalCompositeOperation = "destination-out";
       ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(0.2, 0.05 * k)})`;
