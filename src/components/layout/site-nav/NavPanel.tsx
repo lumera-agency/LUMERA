@@ -8,7 +8,6 @@
  * Hidden until opened (disclosure.ts animates them).
  */
 import { usePathname } from "@/i18n/navigation";
-import { focusBlock } from "@/lib/scroll";
 import { useSiteNav } from "./SiteNavProvider";
 import type { NavPanelId } from "./disclosure";
 import "./nav-panel.css";
@@ -29,15 +28,6 @@ export function NavChevron() {
   );
 }
 
-/** SaaS has no page of its own: on the main page it goes to its panel in the services' ride (as WhatList does). */
-function goToService(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
-  const event = new CustomEvent("services:go", { detail: { id }, cancelable: true });
-  if (document.dispatchEvent(event)) return; // nobody took it: the page's link routing does (lib/scroll)
-  e.preventDefault();
-  const panel = document.getElementById(id);
-  if (panel) focusBlock(panel);
-}
-
 export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
   const nav = useSiteNav();
   const path = usePathname();
@@ -54,14 +44,11 @@ export function NavPanel({ kind, id }: { kind: NavPanelId; id: string }) {
   const cards =
     kind === "services"
       ? nav.services.map((s) => {
-          const saas = s.path === null;
           const ids = `${id}-${s.n}`;
-          const page = saas && onMain ? "#svc-4" : s.href;
-          const toPage = saas && onMain ? (e: React.MouseEvent<HTMLAnchorElement>) => goToService(e, "svc-4") : undefined;
           const current = s.path === path;
           return (
             <li key={s.n}>
-              <a className="navp__card" href={page} onClick={toPage} data-current={current ? "" : undefined} aria-current={current ? "page" : undefined} aria-labelledby={`${ids}-name`} aria-describedby={s.subs.length ? undefined : `${ids}-desc`}>
+              <a className="navp__card" href={s.href} data-current={current ? "" : undefined} aria-current={current ? "page" : undefined} aria-labelledby={`${ids}-name`} aria-describedby={s.subs.length ? undefined : `${ids}-desc`}>
                 <span className="navp__in">
                   <span className="navp__meta">
                     <span data-line="">{s.n}</span>

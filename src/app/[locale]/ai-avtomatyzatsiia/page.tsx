@@ -15,6 +15,7 @@ import { Pause } from "@/components/sections/ai-page/Pause";
 import { Niches } from "@/components/sections/ai-page/Niches";
 import { Offer } from "@/components/sections/ai-page/Offer";
 import { AUDIT, PRODUCTS, daysText, usd, weeksText } from "@/components/sections/ai-page/prices";
+import { PageJsonLd } from "@/components/seo/graph";
 import "@/components/sections/ai-page/ai-page.css";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/ai-avtomatyzatsiia">) {
@@ -89,6 +90,7 @@ export default async function AiAutomationPage({ params }: PageProps<"/[locale]/
           out={{ title: t("out.title"), items: [1, 2, 3, 4].map((i) => t(`out.${i}`)) }}
         />
       </PageShell>
+      <PageJsonLd locale={locale} path="/ai-avtomatyzatsiia" meta="ai.meta" service="ai" faq={faq} />
     </AiShell>
   );
 }

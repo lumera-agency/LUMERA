@@ -18,11 +18,18 @@ const COUNT = 11;
 /** «А якщо сайту немає?»: the question that links to the sites page */
 const SITES_Q = 4;
 
+/** The questions and answers, in order: the list below and the page's structured data (components/seo) read them
+ *  here, so the two always say the same (the link to the sites page under the fourth is the list's own). */
+export async function adsFaqItems(facts: AdsFacts) {
+  const t = await getTranslations("ads");
+  return Array.from({ length: COUNT }, (_, i) => i + 1).map((n) => ({ n, q: t(`faq.q.${n}`), a: priceLine(t.raw(`faq.a.${n}`), facts) }));
+}
+
 export async function AdsFaq({ index, facts }: { index: number; facts: AdsFacts }) {
   const t = await getTranslations("ads");
   const c = await getTranslations("aiCommon");
   const sites = aiHref(await getLocale(), "/dyzain-i-saity");
-  const items = Array.from({ length: COUNT }, (_, i) => i + 1).map((n) => ({ n, q: t(`faq.q.${n}`), a: priceLine(t.raw(`faq.a.${n}`), facts) }));
+  const items = await adsFaqItems(facts);
   return (
     <section className="section ai-sec" id="faq" aria-labelledby="faq-title">
       <div className="container faq-wrap">

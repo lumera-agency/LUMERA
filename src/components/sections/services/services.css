@@ -21,8 +21,8 @@
 .services { border-top: 1px solid var(--line); }
 .service__foot { grid-column: 7 / span 3; grid-row: 3; align-self: start; max-width: var(--measure); }
 .service__price { margin: 0.875rem 0 0; padding-top: 0.75rem; border-top: 1px solid var(--line); font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
-/* «Детальніше» opens a card: the word and a lime disc with a plus (the FAQ's sign); a link (SaaS)
-   gets an arrow instead. On hover the disc flows out to the left into a pill under the word, the word
+/* «Детальніше» opens a card: the word and a lime disc with a plus (the FAQ's sign); a link (a service's
+   own page) gets an arrow instead. On hover the disc flows out to the left into a pill under the word, the word
    turns dark and the plus turns. When its slide comes to the middle, the disc sends out one ring. */
 .service__more-btn {
   --more-ico: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d0d0d' stroke-width='1.9' stroke-linecap='round'><path d='M12 5v14M5 12h14'/></svg>");

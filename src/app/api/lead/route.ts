@@ -6,22 +6,37 @@
  *   TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID  a Telegram bot that writes the request to a chat.
  * With neither set it answers 503, and the form tells the visitor the failure is on our side.
  * `fax` is a field people never see: a bot that fills it is thanked and ignored.
+ *
+ * Only the site's own forms get through (the 13 Nov 2026 audit). They send JSON from the same origin: another site
+ * cannot make its visitors' browsers post here (JSON needs a CORS preflight this route never grants, and the browser
+ * names a cross-site request). In Telegram what a visitor typed arrives as code, so a link in it cannot be tapped; only
+ * a contact that looks like a phone, a mail or an @username stays live, to answer. A flood from one address is the
+ * host's to stop: a Vercel Firewall rate limit on this path.
  */
 import { brandName, siteUrl } from "@/config/site";
 
-const MAX_BODY = 16000; // bytes
+// bytes: room for the longest brief the fields keep (each is cut below), so a long comment is cut, never refused
+const MAX_BODY = 64 * 1024;
 
-const str = (v: unknown, n: number) => (typeof v === "string" ? v.trim().slice(0, n) : "");
+/** the first n UTF-16 units, never half an emoji (Telegram refuses a lone surrogate, and the lead with it) */
+function cut(text: string, n: number) {
+  const part = text.slice(0, n);
+  const last = part.charCodeAt(part.length - 1);
+  return last >= 0xd800 && last <= 0xdbff ? part.slice(0, -1) : part;
+}
+const str = (v: unknown, n: number) => (typeof v === "string" ? cut(v.trim(), n) : "");
+/** one line: a line break in a name or a contact cannot fake the message's next field */
+const line = (v: unknown, n: number) => str(v, n).replace(/[\r\n\u2028\u2029]+/g, " ");
 
 type Lead = ReturnType<typeof clean>;
 function clean(body: Record<string, unknown>) {
   return {
-    name: str(body.name, 120),
-    contact: str(body.contact, 160),
-    task: str(body.task, 80),
-    package: str(body.package, 240),
+    name: line(body.name, 120),
+    contact: line(body.contact, 160),
+    task: line(body.task, 80),
+    package: line(body.package, 240),
     details: str(body.details, 1500),
-    site: str(body.site, 240),
+    site: line(body.site, 240),
     note: str(body.note, 2000),
     lang: body.lang === "ru" ? "ru" : "uk",
     page: str(body.page, 300),
@@ -33,70 +48,128 @@ function clean(body: Record<string, unknown>) {
 function pageLine(page: string) {
   let path = "";
   try {
-    path = new URL(page, siteUrl).pathname;
+    const url = new URL(page, siteUrl);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return "";
+    path = url.pathname;
   } catch {
     return "";
   }
+  // only a path the site could have (lowercase letters, digits, dashes, slashes): nothing typed reaches the plain text
+  if (!/^\/[a-z0-9/-]{0,80}$/.test(path)) return "";
   return /^\/(ru\/?)?$/.test(path) ? "" : `Страница: ${path}`;
 }
 
-function telegramText(lead: Lead) {
-  return [
-    `Новая заявка с сайта ${brandName}`,
-    `Имя: ${lead.name}`,
-    `Контакт: ${lead.contact}`,
-    lead.task && `Задача: ${lead.task}`,
-    lead.package && `Выбрано в калькуляторе: ${lead.package}`,
-    lead.details && `Состав:\n${lead.details}`,
-    lead.site && `Сайт: ${lead.site}`,
-    lead.note && `Комментарий: ${lead.note}`,
-    pageLine(lead.page),
-    `Язык страницы: ${lead.lang.toUpperCase()}`,
-  ]
-    .filter(Boolean)
-    .join("\n");
-}
+/** A contact the studio answers with one tap: a phone (digits, plain spaces, brackets, dashes), a plain mail address or
+ *  a Telegram @username. Anything else, a link dressed as a mail included, arrives as code. */
+const LIVE_CONTACT = /^(\+?[0-9 ()-]{7,20}|[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,24}|@?[A-Za-z][A-Za-z0-9_]{4,31})$/;
 
 /** Telegram refuses a message over 4096 characters: a long request is cut, never lost. */
 const TELEGRAM_MAX = 4096;
-const fit = (text: string) => (text.length > TELEGRAM_MAX ? `${text.slice(0, TELEGRAM_MAX - 1)}…` : text);
+
+/** The message and its entities (UTF-16 offsets, as JavaScript counts): our labels as plain text, what the visitor
+ *  typed as code. */
+function telegramMessage(lead: Lead) {
+  const fields: [label: string, value: string, code: boolean][] = [
+    ["Имя: ", lead.name, true],
+    ["Контакт: ", lead.contact, !LIVE_CONTACT.test(lead.contact)],
+    ["Задача: ", lead.task, true],
+    ["Выбрано в калькуляторе: ", lead.package, true],
+    ["Состав:\n", lead.details, true],
+    ["Сайт: ", lead.site, true],
+    ["Комментарий: ", lead.note, true],
+  ];
+  let text = `Новая заявка с сайта ${brandName}`;
+  const entities: { type: "code"; offset: number; length: number }[] = [];
+  for (const [label, value, code] of fields) {
+    if (!value) continue;
+    text += `\n${label}`;
+    if (code) entities.push({ type: "code", offset: text.length, length: value.length });
+    text += value;
+  }
+  text += `\n${[pageLine(lead.page), `Язык страницы: ${lead.lang.toUpperCase()}`].filter(Boolean).join("\n")}`;
+  if (text.length <= TELEGRAM_MAX) return { text, entities };
+  const kept = cut(text, TELEGRAM_MAX - 1);
+  const end = kept.length;
+  return {
+    text: `${kept}…`,
+    entities: entities.filter((e) => e.offset < end).map((e) => ({ ...e, length: Math.min(e.length, end - e.offset) })),
+  };
+}
+
+const fail = (status: number, error: string) => Response.json({ ok: false, error }, { status });
+
+/** The site's own forms only: JSON, from this very origin (the browser's Sec-Fetch-Site and Origin say so). */
+function fromOwnPage(request: Request) {
+  if (!(request.headers.get("content-type") ?? "").toLowerCase().startsWith("application/json")) return 415;
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite && fetchSite !== "same-origin") return 403;
+  const origin = request.headers.get("origin");
+  if (origin) {
+    const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+    try {
+      if (new URL(origin).host !== host) return 403;
+    } catch {
+      return 403; // «null» and other non-URLs
+    }
+  }
+  return 0;
+}
 
 export async function POST(request: Request) {
-  const raw = await request.text();
-  if (raw.length > MAX_BODY) return Response.json({ ok: false, error: "too large" }, { status: 413 });
-  let body: Record<string, unknown>;
+  const refused = fromOwnPage(request);
+  if (refused) return fail(refused, refused === 415 ? "unsupported" : "forbidden");
+  // the size in bytes, before and after reading (a Cyrillic letter is two)
+  if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY) return fail(413, "too large");
+  const raw = await request.arrayBuffer();
+  if (raw.byteLength > MAX_BODY) return fail(413, "too large");
+  let body: unknown;
   try {
-    body = JSON.parse(raw || "{}");
+    body = JSON.parse(new TextDecoder().decode(raw) || "{}");
   } catch {
-    return Response.json({ ok: false, error: "bad request" }, { status: 400 });
+    return fail(400, "bad request");
   }
-  if (str(body.fax, 200)) return Response.json({ ok: true }); // a bot: nothing is sent
+  if (!body || typeof body !== "object" || Array.isArray(body)) return fail(400, "bad request");
+  const fields = body as Record<string, unknown>;
+  if (str(fields.fax, 200)) return Response.json({ ok: true }); // a bot: nothing is sent
 
-  const lead = clean(body);
+  const lead = clean(fields);
   // the same minimum the form checks: a name and a way to reach the person
-  if (lead.name.length < 2 || lead.contact.length < 3) return Response.json({ ok: false, error: "name and contact required" }, { status: 422 });
+  if (lead.name.length < 2 || lead.contact.length < 3) return fail(422, "name and contact required");
 
   const { LEAD_WEBHOOK_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } = process.env;
   if (!LEAD_WEBHOOK_URL && !(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID)) {
     console.error("[lead] no channel: set LEAD_WEBHOOK_URL or TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID");
-    return Response.json({ ok: false, error: "no channel" }, { status: 503 });
+    return fail(503, "no channel");
   }
   try {
-    const r = LEAD_WEBHOOK_URL
-      ? await fetch(LEAD_WEBHOOK_URL, {
+    let r: Response;
+    if (LEAD_WEBHOOK_URL) {
+      r = await fetch(LEAD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...lead, receivedAt: new Date().toISOString() }),
+      });
+    } else {
+      const send = () =>
+        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...lead, receivedAt: new Date().toISOString() }),
-        })
-      : await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: fit(telegramText(lead)), disable_web_page_preview: true }),
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, ...telegramMessage(lead), link_preview_options: { is_disabled: true } }),
         });
+      r = await send();
+      // the chat's limit (about 20 messages a minute): wait as Telegram says, once, so a real lead is not lost
+      if (r.status === 429) {
+        const wait = Number((await r.json().catch(() => null))?.parameters?.retry_after ?? 0);
+        if (wait > 0 && wait <= 5) {
+          await new Promise((done) => setTimeout(done, wait * 1000));
+          r = await send();
+        }
+      }
+    }
     if (!r.ok) throw new Error(`channel answered ${r.status}`);
     return Response.json({ ok: true });
   } catch (error) {
     console.error("[lead]", (error as Error).message);
-    return Response.json({ ok: false, error: "not delivered" }, { status: 502 });
+    return fail(502, "not delivered");
   }
 }

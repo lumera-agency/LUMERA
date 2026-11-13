@@ -98,16 +98,18 @@ function CountUp({ value, run }: { value: string; run: boolean }) {
     const tick = (time: number) => {
       const progress = Math.min(1, (time - start) / DURATION);
       const next = writeNumber(target * (1 - (1 - progress) ** 3), decimals);
-      if (next !== written) out.textContent = written = next;
+      if (next !== written) out.dataset.n = written = next;
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [run, target, decimals]);
+  // the running digits live in data-n and are drawn by CSS (ads.css): the span never holds text, so the page's text has
+  // only the final number, before and after the count (a search engine or an AI reads «196», not «1960» or «196196»)
   return (
     <span className="rk-cs-count">
       <span className="rk-cs-count__end">{value}</span>
-      <span className="rk-cs-count__run" aria-hidden="true" ref={runner}>{writeNumber(0, decimals)}</span>
+      <span className="rk-cs-count__run" aria-hidden="true" data-n={writeNumber(0, decimals)} ref={runner} />
     </span>
   );
 }
@@ -125,7 +127,7 @@ const STAT_ICON: Record<"n" | "cr" | "spend", React.ReactNode> = {
  *  plainly one to follow), the screenshot as large as the room allows (top left, as in the account), who and when and
  *  the note on the numbers at its foot. One column (phones) shows the screenshot wider than the window, so its figures
  *  stay readable: it scrolls sideways and opens on the ringed cells (without rings on its middle, where the figures are) */
-function Window({ c, text }: { c: CaseView; text: CasesText }) {
+function Window({ c, text, hidden }: { c: CaseView; text: CasesText; hidden: boolean }) {
   const [shot, setShot] = useState(0);
   const [panned, setPanned] = useState(false);
   const pan = useRef<HTMLDivElement>(null);
@@ -147,7 +149,7 @@ function Window({ c, text }: { c: CaseView; text: CasesText }) {
     return () => sized.disconnect();
   }, [current]);
   return (
-    <figure className="rk-cs-win">
+    <figure className="rk-cs-win" hidden={hidden}>
       <div className="rk-cs-win__bar">
         <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
         <span className="rk-cs-win__host">ads.google.com</span>
@@ -167,12 +169,15 @@ function Window({ c, text }: { c: CaseView; text: CasesText }) {
       <div className="rk-cs-win__body" data-panned={panned || undefined}>
         {/* (the scroller is only a box in one column; on a computer it gives way and the screenshot fits the window) */}
         <div className="rk-cs-win__pan" ref={pan} onScroll={(event) => Math.abs(event.currentTarget.scrollLeft - opened.current) > 8 && setPanned(true)}>
-          <span className="rk-cs-win__in" style={{ "--ar": current.w / current.h, "--w": current.w } as React.CSSProperties} key={`${c.id}-${current.id}`}>
-            <img src={current.src} width={current.w} height={current.h} alt={current.alt} loading="lazy" decoding="async" />
-            {current.rings?.map((ring, index) => (
-              <span className="rk-cs-ring" aria-hidden="true" key={index} style={{ left: `${ring.left}%`, top: `${ring.top}%`, width: `${ring.width}%`, height: `${ring.height}%` }} />
-            ))}
-          </span>
+          {/* every screenshot is in the HTML with its alt (the figures in it), the ones not chosen hidden */}
+          {c.shots.map((s, index) => (
+            <span className="rk-cs-win__in" hidden={index !== shot} style={{ "--ar": s.w / s.h, "--w": s.w } as React.CSSProperties} key={`${c.id}-${s.id}`}>
+              <img src={s.src} width={s.w} height={s.h} alt={s.alt} loading="lazy" decoding="async" />
+              {s.rings?.map((ring, n) => (
+                <span className="rk-cs-ring" aria-hidden="true" key={n} style={{ left: `${ring.left}%`, top: `${ring.top}%`, width: `${ring.width}%`, height: `${ring.height}%` }} />
+              ))}
+            </span>
+          ))}
         </div>
         <span className="rk-cs-win__hint" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M8 7.5 3.5 12 8 16.5M16 7.5l4.5 4.5-4.5 4.5M4 12h16" /></svg>
@@ -195,7 +200,6 @@ function Window({ c, text }: { c: CaseView; text: CasesText }) {
  */
 export function AdsCases({ cases, text }: { cases: CaseView[]; text: CasesText }) {
   const [active, setActive] = useState(0);
-  const c = cases[active];
   /** the arrow keys move between the cases while a card has the focus */
   const keys = (event: React.KeyboardEvent) => {
     const step = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 0;
@@ -235,20 +239,26 @@ export function AdsCases({ cases, text }: { cases: CaseView[]; text: CasesText }
             </button>
           ))}
         </div>
-        <div className="rk-cs-facts" role="tabpanel" aria-labelledby={`case-${c.id}`} key={c.id}>
-          <dl className="rk-cs-dl">
-            {(["n", "cr", "spend"] as const).map((key) => (
-              <div key={key}>
-                <dt><span className="rk-cs-dl__ico" aria-hidden="true"><svg viewBox="0 0 24 24">{STAT_ICON[key]}</svg></span>{metric(c, key).k}</dt>
-                <dd><Num text={metric(c, key).v} count /></dd>
-              </div>
-            ))}
-          </dl>
-          <p className="rk-cs-how">{c.how}</p>
-        </div>
+        {/* all three cases are in the HTML (search engines and AI do not click tabs: the 13 Nov audit), the ones not
+            chosen hidden; showing one again replays its entrance as a fresh mount did */}
+        {cases.map((item, index) => (
+          <div className="rk-cs-facts" role="tabpanel" aria-labelledby={`case-${item.id}`} hidden={index !== active} key={item.id}>
+            <dl className="rk-cs-dl">
+              {(["n", "cr", "spend"] as const).map((key) => (
+                <div key={key}>
+                  <dt><span className="rk-cs-dl__ico" aria-hidden="true"><svg viewBox="0 0 24 24">{STAT_ICON[key]}</svg></span>{metric(item, key).k}</dt>
+                  <dd><Num text={metric(item, key).v} count /></dd>
+                </div>
+              ))}
+            </dl>
+            <p className="rk-cs-how">{item.how}</p>
+          </div>
+        ))}
         <div className="rk-cs-end"><ButtonLink href="#contact" variant="primary">{text.cta}</ButtonLink></div>
       </div>
-      <Window c={c} text={text} key={c.id} />
+      {cases.map((item, index) => (
+        <Window c={item} text={text} hidden={index !== active} key={item.id} />
+      ))}
     </div>
   );
 }

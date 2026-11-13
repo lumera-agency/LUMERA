@@ -14,6 +14,8 @@ import { Approach } from "@/components/sections/approach/Approach";
 import { Pricing } from "@/components/sections/pricing/Pricing";
 import { Faq } from "@/components/sections/faq/Faq";
 import { Contact } from "@/components/sections/contact/Contact";
+import { mainFaqItems } from "@/components/sections/faq/items";
+import { PageJsonLd } from "@/components/seo/graph";
 
 /**
  * The page: the blocks in reading order (v2): 1 the first screen → 2 what we do → 3 the services →
@@ -41,6 +43,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <Faq />
           <Contact />
         </PageShell>
+        {/* the studio, the site, this page and its questions for search engines and AI */}
+        <PageJsonLd locale={locale} path="/" meta="meta" faq={await mainFaqItems()} />
       </main>
       <Footer />
       <MenuSheet />

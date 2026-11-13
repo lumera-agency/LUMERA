@@ -214,8 +214,6 @@ function track(tl, root, beats, result) {
     .to([nums[last], labels[last]], { color: C.soft, duration: 0.3 }, result);
 }
 
-const REST_AT = 8.0; // clip 4 (SaaS) comes to rest here; the others name their own
-
 /* ---------- round 8 kit: no rolling text, captions, full-window scenes ---------- */
 /** Labels stacked in one cell (a host, a clock, a caption, a counter): the old one fades out,
  *  then the new one fades in. Never both at once, never a roll. */
@@ -816,53 +814,7 @@ function leads(gsap, root) {
   return tl;
 }
 
-/* ---------- 4 · SaaS (v2): a product's main screen builds itself — first the wireframe (lime dashes
-   mark where each block goes), then the interface (the blocks fill in, the chart draws, the numbers
-   count up), then the release (an ember «Реліз v1.0» on the chart). The rest frame is the finished
-   dashboard with the release badge; the CSS default is that same frame. ---------- */
-function saas(gsap, root) {
-  const q = gsap.utils.selector(root);
-  const cap = q('.d-cap')[0];
-  const caps = q('.d-cap__set > b');
-  const boxes = q('.sa-box');
-  const line = q('.sa-line')[0];
-  const area = q('.sa-area')[0];
-  const badge = q('.sa-badge')[0];
-  const live = q('.sa-rows i');
-  const nums = q('.sa-num').map((el) => ({ el, to: Number(el.dataset.to) || 0, v: { n: 0 } }));
-  const fmt = (n) => Math.round(n).toLocaleString('uk-UA').replace(/ /g, ' ');
-  const tl = gsap.timeline({ paused: true, defaults: { ease: E.arrive } });
-  tl.set(boxes, { '--fill': 0, '--wf': 0 }, 0)
-    .set(line, { strokeDashoffset: 1 }, 0)
-    .set(area, { opacity: 0 }, 0)
-    .set(badge, { autoAlpha: 0, scale: 0.6, y: 6 }, 0)
-    .set(live, { scale: 0 }, 0)
-    .set(cap, { autoAlpha: 1 }, 0)
-    .set(caps, { autoAlpha: 0, y: 0 }, 0);
-  nums.forEach(({ el, v }) => tl.set(v, { n: 0, onComplete: () => { el.textContent = fmt(0); } }, 0));
-  track(tl, root, [0.4, 2.6, 5.4], 7.2);
-  // 1 · the prototype: where each block goes, drawn one after another
-  tl.to(boxes, { '--wf': 1, duration: 0.35, stagger: 0.14, ease: 'power2.out' }, 0.5);
-  caption(tl, caps, -1, 0, 0.6);
-  // 2 · the interface: the blocks fill in, the chart draws, the numbers count
-  tl.to(boxes, { '--fill': 1, duration: 0.45, stagger: 0.12 }, 2.7)
-    .to(boxes, { '--wf': 0, duration: 0.5, stagger: 0.12, ease: E.leave }, 3.0)
-    .to(line, { strokeDashoffset: 0, duration: 1.4, ease: E.camera }, 3.3)
-    .to(area, { opacity: 1, duration: 0.8, ease: E.camera }, 3.8);
-  // (a slow computer, html.is-lite: each number at once, not counted up)
-  nums.forEach(({ el, to, v }) => tl.to(v, { n: to, duration: 1.3, ease: 'power2.out', onUpdate: () => { el.textContent = fmt(document.documentElement.classList.contains('is-lite') ? to : v.n); } }, 3.2));
-  caption(tl, caps, 0, 1, 2.8);
-  // 3 · the release: the badge, and the clients' rows go live
-  tl.to(badge, { autoAlpha: 1, scale: 1, y: 0, duration: 0.5, ease: E.result }, 5.6)
-    .to(live, { scale: 1, duration: 0.3, stagger: 0.12, ease: E.result }, 5.9);
-  caption(tl, caps, 1, 2, 5.6);
-  tl.to(cap, { autoAlpha: 0, duration: 0.3, ease: E.leave }, 7.2)
-    .addLabel('rest', REST_AT);
-  return tl;
-}
-
-
-const BUILDERS = { design, ads, leads, saas };
+const BUILDERS = { design, ads, leads };
 
 /** The clips in the page now; destroy() stops them and takes off what they hung on the page
  *  (a language switch renders the block anew, and init runs again on the new one). */

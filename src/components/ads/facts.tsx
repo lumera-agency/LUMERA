@@ -30,6 +30,9 @@ export function adsFacts(locale: string) {
     siteAds: bundle("siteAds"),
     // «≈ 1 тиждень» never splits
     wAds: strings.weeks(span.min, span.max).replace(/ /g, NBSP) as string,
+    // the same span after «настройка занимает» (the RU FAQ): Russian takes the accusative there, «≈ 1 неделю» («недели»,
+    // «недель» stay as they are); in Ukrainian «тиждень» reads the same either way
+    wAdsAcc: strings.weeks(span.min, span.max).replace(/неделя$/, "неделю").replace(/ /g, NBSP) as string,
     wSiteAds: strings.weeks(siteAdsSpan.min, siteAdsSpan.max).replace(/ /g, NBSP) as string,
   };
 }

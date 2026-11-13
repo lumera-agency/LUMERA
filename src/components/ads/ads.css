@@ -761,6 +761,13 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
 .rk-cs-count__run { display: none; }
 html.motion .rk-cs-count__run { display: block; }
 html.motion .rk-cs-count__end { color: transparent; }
+/* the running digits (data-n, from «0») are drawn here, so the page's text holds only the final number (AdsCases CountUp) */
+.rk-cs-count__run::before { content: attr(data-n); }
+/* all three cases and every screenshot are in the HTML; the ones not chosen stay hidden (their own display would win
+   over the browser's [hidden] rule) */
+.rk-cs-facts[hidden],
+.rk-cs-win[hidden],
+.rk-cs-win__in[hidden] { display: none; }
 /* the cards: the name and «Кейс 2» on the left, the price large on the right with what it is under it; the chosen one
    dark with its price in ember */
 .rk-cs__cards { display: grid; gap: 0.5rem; }
