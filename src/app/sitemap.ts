@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { siteUrl } from "@/config/site";
 
 /** Every page in both languages, each pointing at the other (hreflang): the main page, the sites page, the ads page, the AI page and its
- *  two cases.
+ *  two cases, the privacy policy.
  *
  *  `updated` is the page's last significant change (lastmod), as Google counts it: its visible text, its structured
  *  data (components/seo: the services, prices and questions) or its links. Shared messages count for every page that
@@ -16,6 +16,7 @@ const PAGES = [
   { path: "/ai-avtomatyzatsiia", priority: 0.8, updated: "2026-11-12" },
   { path: "/keisy/poshuk-zamovlen", priority: 0.6, updated: "2026-11-12" },
   { path: "/keisy/ai-asystent", priority: 0.6, updated: "2026-11-12" },
+  { path: "/polityka-konfidentsiinosti", priority: 0.3, updated: "2026-11-13" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -5,6 +5,7 @@ import { LangSwitch } from "@/components/layout/lang-switch/LangSwitch";
 import { ScrollTopLink } from "@/components/layout/page-nav/ScrollTopLink";
 import { rich } from "@/lib/rich";
 import { getSiteNav } from "@/content/site-nav";
+import { aiHref } from "@/components/ai/links";
 import { Wordmark } from "./Wordmark";
 import { FooterMap } from "./FooterMap";
 import "./footer.css";
@@ -18,7 +19,8 @@ import "./footer.css";
  */
 export async function Footer({ claim, links, cta }: { claim?: React.ReactNode; links?: readonly NavLink[]; cta?: NavCta } = {}) {
   const t = await getTranslations();
-  const nav = await getSiteNav(await getLocale());
+  const locale = await getLocale();
+  const nav = await getSiteNav(locale);
   // a link to a service's page («Дизайн і розробка сайтів» on the ads page): the map below has it already
   const services = new Set(nav.services.map((s) => s.href));
   const items = (links ?? PAGE_NAV.map((l) => ({ href: l.href, text: t(l.label) }))).filter((l) => !services.has(l.href));
@@ -43,7 +45,11 @@ export async function Footer({ claim, links, cta }: { claim?: React.ReactNode; l
       </div>
       <FooterMap />
       <div className="container footer__bottom">
-        <p className="footer__legal">{t("footer.legal")}</p>
+        <p className="footer__legal">
+          {t("footer.legal")}
+          {/* the privacy policy, from every page (the owner, 13 Nov 2026) */}
+          <a className="footer__privacy" href={aiHref(locale, "/polityka-konfidentsiinosti")}>{t("footer.privacy")}</a>
+        </p>
         <div className="footer__end">
           <LangSwitch />
           <ScrollTopLink className="footer__up">
