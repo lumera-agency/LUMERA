@@ -761,8 +761,8 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
 .rk-cs-count__run { display: none; }
 html.motion .rk-cs-count__run { display: block; }
 html.motion .rk-cs-count__end { color: transparent; }
-/* the «0» before the count starts is drawn here, so the page's text holds only the final number (AdsCases CountUp) */
-.rk-cs-count__run:empty::before { content: attr(data-zero); }
+/* the running digits (data-n, from «0») are drawn here, so the page's text holds only the final number (AdsCases CountUp) */
+.rk-cs-count__run::before { content: attr(data-n); }
 /* all three cases and every screenshot are in the HTML; the ones not chosen stay hidden (their own display would win
    over the browser's [hidden] rule) */
 .rk-cs-facts[hidden],

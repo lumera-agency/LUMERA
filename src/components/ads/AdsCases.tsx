@@ -98,18 +98,18 @@ function CountUp({ value, run }: { value: string; run: boolean }) {
     const tick = (time: number) => {
       const progress = Math.min(1, (time - start) / DURATION);
       const next = writeNumber(target * (1 - (1 - progress) ** 3), decimals);
-      if (next !== written) out.textContent = written = next;
+      if (next !== written) out.dataset.n = written = next;
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [run, target, decimals]);
-  // the running span is empty in the HTML and its «0» is drawn by CSS (ads.css, data-zero): in the page's text the final
-  // number stands alone, so a search engine or an AI reads «196», not «1960» (the 13 Nov audit)
+  // the running digits live in data-n and are drawn by CSS (ads.css): the span never holds text, so the page's text has
+  // only the final number, before and after the count (a search engine or an AI reads «196», not «1960» or «196196»)
   return (
     <span className="rk-cs-count">
       <span className="rk-cs-count__end">{value}</span>
-      <span className="rk-cs-count__run" aria-hidden="true" data-zero={writeNumber(0, decimals)} ref={runner} />
+      <span className="rk-cs-count__run" aria-hidden="true" data-n={writeNumber(0, decimals)} ref={runner} />
     </span>
   );
 }

@@ -15,9 +15,16 @@
  */
 import { brandName, siteUrl } from "@/config/site";
 
-const MAX_BODY = 16000; // bytes
+// bytes: room for the longest brief the fields keep (each is cut below), so a long comment is cut, never refused
+const MAX_BODY = 64 * 1024;
 
-const str = (v: unknown, n: number) => (typeof v === "string" ? v.trim().slice(0, n) : "");
+/** the first n UTF-16 units, never half an emoji (Telegram refuses a lone surrogate, and the lead with it) */
+function cut(text: string, n: number) {
+  const part = text.slice(0, n);
+  const last = part.charCodeAt(part.length - 1);
+  return last >= 0xd800 && last <= 0xdbff ? part.slice(0, -1) : part;
+}
+const str = (v: unknown, n: number) => (typeof v === "string" ? cut(v.trim(), n) : "");
 /** one line: a line break in a name or a contact cannot fake the message's next field */
 const line = (v: unknown, n: number) => str(v, n).replace(/[\r\n\u2028\u2029]+/g, " ");
 
@@ -41,15 +48,20 @@ function clean(body: Record<string, unknown>) {
 function pageLine(page: string) {
   let path = "";
   try {
-    path = new URL(page, siteUrl).pathname;
+    const url = new URL(page, siteUrl);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return "";
+    path = url.pathname;
   } catch {
     return "";
   }
+  // only a path the site could have (lowercase letters, digits, dashes, slashes): nothing typed reaches the plain text
+  if (!/^\/[a-z0-9/-]{0,80}$/.test(path)) return "";
   return /^\/(ru\/?)?$/.test(path) ? "" : `Страница: ${path}`;
 }
 
-/** A contact the studio answers with one tap: a phone, a mail or a Telegram @username; anything else arrives as code. */
-const LIVE_CONTACT = /^(\+?[\d\s()-]{7,20}|[^\s@]+@[^\s@]+\.[^\s@]+|@?[A-Za-z][A-Za-z0-9_]{4,31})$/;
+/** A contact the studio answers with one tap: a phone (digits, plain spaces, brackets, dashes), a plain mail address or
+ *  a Telegram @username. Anything else, a link dressed as a mail included, arrives as code. */
+const LIVE_CONTACT = /^(\+?[0-9 ()-]{7,20}|[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,24}|@?[A-Za-z][A-Za-z0-9_]{4,31})$/;
 
 /** Telegram refuses a message over 4096 characters: a long request is cut, never lost. */
 const TELEGRAM_MAX = 4096;
@@ -76,9 +88,10 @@ function telegramMessage(lead: Lead) {
   }
   text += `\n${[pageLine(lead.page), `Язык страницы: ${lead.lang.toUpperCase()}`].filter(Boolean).join("\n")}`;
   if (text.length <= TELEGRAM_MAX) return { text, entities };
-  const end = TELEGRAM_MAX - 1;
+  const kept = cut(text, TELEGRAM_MAX - 1);
+  const end = kept.length;
   return {
-    text: `${text.slice(0, end)}…`,
+    text: `${kept}…`,
     entities: entities.filter((e) => e.offset < end).map((e) => ({ ...e, length: Math.min(e.length, end - e.offset) })),
   };
 }

@@ -122,9 +122,11 @@ function Title({ raw }: { raw: string }) {
           here, never in TitleFx's canvas (a canvas draws without a language), so «Д» changed shape the moment the
           canvas took the words over (the owner, 10 Nov 2026). Hidden from screen readers: it sets only the shapes */}
       <span className="st-h1" aria-hidden="true" lang="uk">
-        <span className="st-h1__m st-h1__a"><span className="tone">{design}</span></span>
-        <span className="st-h1__m st-h1__i"><span className="tone">{and}</span></span>
-        <span className="st-h1__m st-h1__b"><span className="tone st-h1__code">{code}</span></span>
+        {/* (the spaces between the words keep the page's text readable for search engines and AI; the grid and the
+            absolutely placed words draw nothing for them) */}
+        <span className="st-h1__m st-h1__a"><span className="tone">{design}</span></span>{" "}
+        <span className="st-h1__m st-h1__i"><span className="tone">{and}</span></span>{" "}
+        <span className="st-h1__m st-h1__b"><span className="tone st-h1__code">{code}</span></span>{" "}
         <span className="st-h1__m st-h1__s"><span className="tone"><em className="hl">{key}</em></span></span>
       </span>
     </>
