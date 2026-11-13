@@ -7,8 +7,9 @@
  * in the very middle, its letters coming in left to right, each out of a blur and
  * sliding into place, as smoothly as the AI page's «Робот усе розібрав» (React Bits BlurText there); under it the
  * services as one line as wide as the name, each word squashed flat and heavy as it comes in, then settling, a lime
- * dot dropping in between them. It leaves the way the name came in (the owner: «без штор, как текст появляется»):
- * everything on it blurs away, then the black thins out while the page behind it comes into focus out of a blur (the
+ * dot dropping in between them. It leaves plainly (the owner: «без штор, как текст появляется»; 13 Nov 2026: «появление,
+ * а уход обычный», the name no longer sliding off letter by letter): everything on it blurs away together, then the
+ * black thins out while the page behind it comes into focus out of a blur (the
  * sheet blurs what is behind it, the page itself is never touched). finish() resolves as the page starts to show, so
  * its intro plays under it.
 
@@ -244,6 +245,9 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
           gl.uniform1i(u("uBevel"), 1);
           gl.uniform2f(u("uRes"), w, h);
           gl.uniform1f(u("uSlope"), bevel * 0.9);
+          // (how far apart the slope is read, in device px: 1, as the footer's word; the shader divides by it, so left
+          // unset at 0 the chrome came out dark, 13 Nov 2026, when the 404 page added it)
+          gl.uniform1f(u("uStep"), 1);
           gl.uniform3f(u("uLens"), 0, 0, 0);
           gl.uniform4f(u("uDrop"), 0, 0, 99, 0);
           gl.viewport(0, 0, w, h);
@@ -373,16 +377,6 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
       ).finished;
     }));
   };
-  /** The way out, mirrored: each letter, left to right, blurs and slides off to the right. */
-  const blurOut = (n: Name) => {
-    const DIST = n.cap * 0.3, B = Math.max(6, n.cap * 0.06);
-    n.letters.forEach((l, i) => {
-      const timing = { duration: 480, delay: i * 60, easing: "cubic-bezier(0.37, 0, 0.63, 1)", fill: "forwards" as const };
-      l.animate([{ opacity: 1, transform: "translateX(0px)" }, { opacity: 0, transform: "translateX(" + DIST.toFixed(1) + "px)" }], timing);
-      l.animate([{ filter: "blur(0px)" }, { filter: "blur(" + B.toFixed(1) + "px)" }], timing);
-    });
-  };
-
   // The words: each comes in letter by letter, squashed flat and heavy, stretching up and settling to its weight (the
   // face's own weight axis, so it thickens rather than scales); a lime dot drops in after it and squashes as it lands
   const sayWord = (s: HTMLElement, at: number) =>
@@ -455,15 +449,14 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
     return Promise.all([name ? blurIn(name) : Promise.resolve(), Promise.all([wait(PHONE ? 450 : 500), calm]).then(sayAll)]);
   });
 
-  // The way out, as the name came in: the name blurs out to the right, the words blur away, the brand
-  // and the note too; then the black thins out while what is behind it comes into focus (the sheet's own backdrop
+  // The way out: the name, the words, the brand and the note blur away together; then the black thins out while what is behind it comes into focus (the sheet's own backdrop
   // blur, from strong to none: the page is never touched). Resolves as the page starts to show
   const blurAway = (n: Element, delay: number) =>
     n.animate([{ opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(10px)" }], { duration: 520, delay, easing: "cubic-bezier(0.37, 0, 0.63, 1)", fill: "forwards" });
   const leave = () => {
     el.querySelectorAll<HTMLElement>("[data-pl-copy]").forEach((c) => blurAway(c, 0));
-    if (name) blurOut(name);
-    else stage.querySelector(".preloader__plain")?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" });
+    const shown = name ? name.node : stage.querySelector(".preloader__plain");
+    if (shown) blurAway(shown, 0);
     blurAway(row, 60);
     const AT = 360, FOCUS = 1500;
     const bg = q(".preloader__bg");
