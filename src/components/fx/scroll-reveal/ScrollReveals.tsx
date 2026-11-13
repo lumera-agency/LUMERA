@@ -13,6 +13,7 @@
 import { useEffect } from "react";
 import { gsap, SplitText } from "@/lib/gsap";
 import { switching } from "@/lib/place";
+import { isLite } from "@/lib/lite";
 
 /** The line a block's top crosses to come in, as a share of the screen's height from its top (as «top 88%» was). */
 const LINE = { block: 0.88, touch: 0.98, title: 0.86 };
@@ -55,17 +56,27 @@ export function ScrollReveals({ root = "[data-page]", exclude = ".is-deck .stage
     const ctx = gsap.context(() => {
       const items = [...scope.querySelectorAll<HTMLElement>("[data-sr]")].filter((el) => !el.closest(exclude) && !seen(el));
       const touch = !matchMedia("(hover: hover) and (pointer: fine)").matches;
-      const rise = touch ? 0 : 24;
+      // a slow computer (lib/lite): the blocks only fade in, by the compositor (no rise, no stagger driven from script),
+      // and the headings are not split and slid in at all (the owner, 11 Nov 2026: «отключай анимацию текста»)
+      const lite = isLite();
+      const rise = touch || lite ? 0 : 24;
       // (a page with no [data-sr] blocks, e.g. the AI page: GSAP would warn «target not found» on an empty set)
       if (items.length) {
         gsap.set(items, { opacity: 0, y: rise });
         stops.push(
-          observeIn(items, touch ? LINE.touch : LINE.block, (batch) => {
+          observeIn(items, touch ? LINE.touch : LINE.block, (arrived) => {
+            // a block whose [data-sr] was taken away since is shown by its own part now (the services ride lights its
+            // panels and clears this start state as it starts): left alone. In LITE its fade from nothing played on a
+            // panel that already stood there, so the first slide blinked out and in (the owner, 13 Nov 2026)
+            const batch = arrived.filter((el) => el.hasAttribute("data-sr"));
             const passed = batch.filter((el) => el.getBoundingClientRect().bottom < 0);
             // done: the transform goes (a transformed ancestor would break a pinned, fixed child)
             if (passed.length) gsap.set(passed, { opacity: 1, y: 0, overwrite: true, clearProps: "transform" });
             const now = batch.filter((el) => !passed.includes(el));
-            if (now.length)
+            if (now.length && isLite()) {
+              gsap.set(now, { opacity: 1, y: 0, overwrite: true, clearProps: "transform" });
+              now.forEach((el, index) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, delay: index * 50, easing: "ease-out", fill: "backwards" }));
+            } else if (now.length)
               gsap.to(now, { opacity: 1, y: 0, duration: touch ? 0.6 : 1.1, ease: touch ? "power2.out" : "expo.out", stagger: touch ? 0.05 : 0.08, overwrite: true, clearProps: "transform" });
           }),
         );
@@ -78,7 +89,7 @@ export function ScrollReveals({ root = "[data-page]", exclude = ".is-deck .stage
 
       // the headings: split into lines, held under their masks until they come in. A split made again (the face
       // coming in, a resize) carries the reveal's progress over (SplitText's autoSplit, from the returned animation)
-      const titles = [...scope.querySelectorAll<HTMLElement>("[data-split]")].filter((title) => !seen(title));
+      const titles = lite ? [] : [...scope.querySelectorAll<HTMLElement>("[data-split]")].filter((title) => !seen(title));
       const reveals = new Map<HTMLElement, { entered: boolean; tween: gsap.core.Tween | null }>();
       for (const title of titles) {
         const state = { entered: false, tween: null as gsap.core.Tween | null };
@@ -99,7 +110,9 @@ export function ScrollReveals({ root = "[data-page]", exclude = ".is-deck .stage
               const state = reveals.get(title);
               if (!state) continue;
               state.entered = true;
-              state.tween?.play();
+              // (found slow since: the lines simply there)
+              if (isLite()) state.tween?.progress(1);
+              else state.tween?.play();
             }
           }),
         );

@@ -55,9 +55,12 @@ html.cfg-editing body { overflow: hidden; }
 html { scrollbar-color: rgb(218 255 2 / 0.72) rgb(246 246 243 / 0.07); }
 ::-webkit-scrollbar { width: 0.75rem; height: 0.75rem; background: transparent; }
 ::-webkit-scrollbar-track { background: rgb(246 246 243 / 0.07); }
-::-webkit-scrollbar-thumb { border: 0.1875rem solid transparent; border-radius: 999px; background: rgb(218 255 2 / 0.72) padding-box; }
+/* (the thumb's colours through --scroll-thumb and --scroll-thumb-hover: a page with its own accent sets them on the
+   root, sites-next.css; a rule of its own for every element's thumb under :root:has() had every change of the page
+   restyle the whole page) */
+::-webkit-scrollbar-thumb { border: 0.1875rem solid transparent; border-radius: 999px; background: var(--scroll-thumb, rgb(218 255 2 / 0.72)) padding-box; }
 @media (hover: hover) {
-  ::-webkit-scrollbar-thumb:hover { background-color: var(--lime, #daff02); border-width: 0.125rem; }
+  ::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-thumb-hover, var(--lime, #daff02)); border-width: 0.125rem; }
 }
 ::-webkit-scrollbar-corner { background: transparent; }
 

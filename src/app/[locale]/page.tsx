@@ -1,6 +1,4 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { studioName } from "@/config/site";
-import { Preloader } from "@/components/fx/preloader/Preloader";
 import { SmoothScroll } from "@/components/fx/smooth-scroll/SmoothScroll";
 import { Topbar } from "@/components/layout/topbar/Topbar";
 import { MenuSheet } from "@/components/layout/menu/MenuSheet";
@@ -30,18 +28,12 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const t = await getTranslations();
   return (
     <>
-      {/* the main page's own: the AI pages (ads land there) open without it */}
-      <Preloader
-        brand={studioName}
-        note={t("preloader.note")}
-        words={t("preloader.words")}
-        stages={t("preloader.stages")}
-      />
       <SmoothScroll />
       <main>
         <Hero />
         <Topbar />
-        <PageShell>
+        {/* (not the services, the approach or the prices: pinned, or growing as the configurator comes in) */}
+        <PageShell skip="#what, #manifesto, #why, #faq, #contact">
           <What />
           <Services />
           <Manifesto />
@@ -57,7 +49,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <Footer />
       <MenuSheet />
       {/* steps aside over block 4's arrows (phones), the ride's HUD and arrows, the configurator's preview and price card, and the footer (it has its own link up); rises over the bar */}
-      <BackToTop label={t("footer.up.span")} quiet=".wv__nav-b, .ride.is-on .ride__hud, .ride.is-on .ride__arrow, .cfg-sheet, .pvw, .cfg-sum, .footer" />
+      <BackToTop label={t("footer.up.span")} />
     </>
   );
 }

@@ -5,7 +5,7 @@
  */
 import * as THREE from "three";
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
-import { mergeVertices, toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
+import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 
 export function mulberry32(seed: number) {
   return function random() {
@@ -91,8 +91,69 @@ function createBlocks(random: Random, count: number) {
   };
 }
 
+/**
+ * Each vertex's point among the distinct points of a geometry (the very same bits of x, y and z), numbered in the order
+ * they first come: an unindexed icosphere carries every point about six times over (once per triangle round it), and
+ * the stone's shape is a function of the point alone, so it is worked out once a point. Bits, not a tolerance: the
+ * same point always comes out with the same bits here (checked: the shell's 82140 vertices are 13692 points, as many
+ * as the sphere has), and the result is the same to the last bit as working out every vertex.
+ */
+function distinctPoints(position: THREE.BufferAttribute) {
+  const words = new Uint32Array(position.array.buffer, position.array.byteOffset, position.count * 3);
+  let size = 1024;
+  while (size < position.count * 2) size *= 2;
+  const slots = new Int32Array(size).fill(-1);
+  const firstVertex = new Int32Array(position.count);
+  const pointOf = new Int32Array(position.count);
+  let points = 0;
+  for (let vertex = 0; vertex < position.count; vertex++) {
+    const x = words[vertex * 3];
+    const y = words[vertex * 3 + 1];
+    const z = words[vertex * 3 + 2];
+    let slot = (Math.imul(x, 0x9e3779b1) ^ Math.imul(y, 0x85ebca77) ^ Math.imul(z, 0xc2b2ae3d)) & (size - 1);
+    for (;;) {
+      const point = slots[slot];
+      if (point < 0) {
+        slots[slot] = points;
+        firstVertex[points] = vertex;
+        pointOf[vertex] = points++;
+        break;
+      }
+      const other = firstVertex[point] * 3;
+      if (words[other] === x && words[other + 1] === y && words[other + 2] === z) {
+        pointOf[vertex] = point;
+        break;
+      }
+      slot = (slot + 1) & (size - 1);
+    }
+  }
+  return { pointOf, firstVertex: firstVertex.subarray(0, points), points };
+}
+
+/** mergeVertices for a geometry with positions only, by the very same bits: the same points in the same order and the
+ *  same index as three's (its rounded text keys cost most of the core's build) */
+function mergeSamePoints(geometry: THREE.BufferGeometry) {
+  const position = geometry.attributes.position as THREE.BufferAttribute;
+  const { pointOf, firstVertex, points } = distinctPoints(position);
+  const merged = new Float32Array(points * 3);
+  for (let point = 0; point < points; point++) merged.set(position.array.subarray(firstVertex[point] * 3, firstVertex[point] * 3 + 3), point * 3);
+  const result = new THREE.BufferGeometry();
+  result.setAttribute("position", new THREE.BufferAttribute(merged, 3));
+  result.setIndex(Array.from(pointOf));
+  return result;
+}
+
 /** The hero stone: shell (blocks, cracks, cleavage ledges, groove) + liquid chrome core.
  *  Cavities are baked into vertex colours as occlusion; `aDust` = silver spatter density. */
+/**
+ * The stone's shape as it was last built (the first screen's, as a rule). The «Подход» stone is the same stone (seed
+ * 11): it takes this shape rather than building it again, which held the page for 260 ms in one block as the visitor
+ * scrolled towards block 5 (CPU 4x, 12 Nov 2026). A shape is kept as long as the page lives: a geometry let go of by
+ * one renderer (dispose) stays whole on the processor and is sent to a graphics card again when drawn.
+ */
+let lastStone: { rock: THREE.BufferGeometry; core: THREE.BufferGeometry } | null = null;
+export const builtStoneGeometries = () => lastStone;
+
 export function createStoneGeometries({ seed = 11, detail = 36, coreDetail = 28, planes = 22, stretch = [0.84, 1.6, 0.88] } = {}) {
   const random = mulberry32(seed);
   const noise = new SimplexNoise({ random });
@@ -106,10 +167,20 @@ export function createStoneGeometries({ seed = 11, detail = 36, coreDetail = 28,
   // non-indexed icosphere → one normal per facet before the creasing below
   const rock = new THREE.IcosahedronGeometry(1, detail);
   rock.deleteAttribute("uv");
-  const rp = rock.attributes.position;
+  const rp = rock.attributes.position as THREE.BufferAttribute;
   const ao = new Float32Array(rp.count * 3);
   const dust = new Float32Array(rp.count);
+  const { pointOf, firstVertex } = distinctPoints(rp);
+  const shape = rp.array as Float32Array;
   for (let i = 0; i < rp.count; i++) {
+    // a point already worked out: its copy (the first copy holds the result by now)
+    const first = firstVertex[pointOf[i]];
+    if (first !== i) {
+      shape.copyWithin(i * 3, first * 3, first * 3 + 3);
+      ao.copyWithin(i * 3, first * 3, first * 3 + 3);
+      dust[i] = dust[first];
+      continue;
+    }
     u.fromBufferAttribute(rp, i).normalize();
     const { offset, crack } = blocks(u);
     const k = vein(u);
@@ -131,7 +202,7 @@ export function createStoneGeometries({ seed = 11, detail = 36, coreDetail = 28,
   let core: THREE.BufferGeometry = new THREE.IcosahedronGeometry(1, coreDetail);
   core.deleteAttribute("normal");
   core.deleteAttribute("uv");
-  core = mergeVertices(core);
+  core = mergeSamePoints(core);
   const cp = core.attributes.position;
   const veinAttr = new Float32Array(cp.count);
   for (let i = 0; i < cp.count; i++) {
@@ -145,25 +216,6 @@ export function createStoneGeometries({ seed = 11, detail = 36, coreDetail = 28,
   }
   core.setAttribute("aVein", new THREE.BufferAttribute(veinAttr, 1));
   core.computeVertexNormals();
-  return { rock: shell, core };
-}
-
-/** A small fractured fragment, no seam. */
-export function createShardGeometry(seed: number, detail = 8) {
-  const random = mulberry32(seed);
-  const noise = new SimplexNoise({ random });
-  const hull = createHull(random, 11, 0.55, 1.0);
-  const blocks = createBlocks(random, 6);
-  const stretch = [0.65 + random() * 0.45, 0.85 + random() * 0.6, 0.55 + random() * 0.4];
-  const u = new THREE.Vector3();
-  const geo = new THREE.IcosahedronGeometry(1, detail);
-  geo.deleteAttribute("uv");
-  const p = geo.attributes.position;
-  for (let i = 0; i < p.count; i++) {
-    u.fromBufferAttribute(p, i).normalize();
-    const { offset, crack } = blocks(u);
-    const r = hull.radius(u) * (1 + offset) * (1 - 0.05 * crack) * (1 + noise.noise3d(u.x * 4, u.y * 4, u.z * 4) * 0.02);
-    p.setXYZ(i, u.x * r * stretch[0], u.y * r * stretch[1], u.z * r * stretch[2]);
-  }
-  return toCreasedNormals(geo, THREE.MathUtils.degToRad(32));
+  lastStone = { rock: shell, core };
+  return lastStone;
 }

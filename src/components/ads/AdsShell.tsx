@@ -26,10 +26,6 @@ type Props = {
   children: React.ReactNode;
 };
 
-/** Where the button back up steps aside: only the request block and the footer (the owner, 22 Oct: with every row
- *  and button of the page on the list it blinked on and off as they passed its corner) */
-const TO_TOP_QUIET = ["#contact", ".footer"].join(", ");
-
 /** The faces the first screen is set in: fetched with the page, so the words never re-wrap once the font comes in */
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
 
@@ -54,7 +50,7 @@ export async function AdsShell({ nav, footerLinks, cta, barCta, claim, children 
       </main>
       <Footer claim={claim} links={footerLinks} cta={cta} />
       <MenuSheet links={nav} cta={cta} home={home} />
-      <BackToTop label={t("footer.up.span")} quiet={TO_TOP_QUIET} />
+      <BackToTop label={t("footer.up.span")} />
       <AdsRuntime />
     </>
   );

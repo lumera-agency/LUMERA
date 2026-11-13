@@ -131,7 +131,8 @@ export function TitleFx() {
   useEffect(() => {
     const canvas = ref.current;
     const host = canvas?.parentElement;
-    if (!canvas || !host || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // (a slow computer, lib/lite: the page's own letters, no liquid: the owner, 11 Nov 2026, «отключай анимацию текста»)
+    if (!canvas || !host || matchMedia("(prefers-reduced-motion: reduce)").matches || isLite()) return;
     const gl = canvas.getContext("webgl2", { premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
     if (!gl) return;
     let field: ReturnType<typeof program>;
@@ -195,8 +196,8 @@ export function TitleFx() {
       const width = right - left;
       const height = bottom - top;
       // the screen's own density up to 2 (at one pixel per CSS pixel the letters went soft on a Retina screen and a
-      // phone: the owner, 10 Nov 2026, «слишком нечеткая»); one on a slow computer (lib/lite)
-      dpr = Math.min(devicePixelRatio || 1, isLite() ? 1 : 2, Math.sqrt(MAX_PIXELS / (width * height)));
+      // phone: the owner, 10 Nov 2026, «слишком нечеткая»)
+      dpr = Math.min(devicePixelRatio || 1, 2, Math.sqrt(MAX_PIXELS / (width * height)));
       Object.assign(canvas.style, { left: `${left - hr.left}px`, top: `${top - hr.top}px`, width: `${width}px`, height: `${height}px` });
       canvas.width = paper.width = Math.round(width * dpr);
       canvas.height = paper.height = Math.round(height * dpr);
@@ -382,9 +383,15 @@ export function TitleFx() {
       redraw = requestAnimationFrame(() => { redraw = 0; draw(); render(flowShare); });
     });
     ro.observe(host);
-    // found slow mid-visit: drawn again at one pixel per CSS pixel
+    // found slow mid-visit: the liquid goes, the page's own letters show again
     const stopLite = watchLite(() => {
-      if (live) { draw(); render(flowShare); }
+      if (!isLite()) return;
+      live = false;
+      run();
+      canvas.classList.remove("is-live");
+      host.classList.remove("is-fx");
+      // (LITE holds no WebGL context: this one is let go at once)
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
     });
 
     // after the words' entrance (every word's animation finished) and with the faces in: the plain letters, then the

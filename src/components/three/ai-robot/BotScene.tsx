@@ -226,19 +226,15 @@ export function BotScene({ slot, words, still }: { slot: HTMLElement; words: Bot
       .then(() => {
         if (alive) state.current.ready = true;
       });
-    // the cards' words and the chin's again once the site's fonts are in
+    // the chin's words again once the site's fonts are in (the cards' glass has no words to wait for: theirs are the
+    // page's text over it)
     document.fonts?.ready.then(() => {
-      if (!alive) return;
-      chinLogo.paint();
-      cards.forEach((card) => {
-        cardStyle.paint(card.context, card.lead, words.tag, false);
-        card.texture.needsUpdate = true;
-      });
+      if (alive) chinLogo.paint();
     });
     return () => {
       alive = false;
     };
-  }, [gl, scene, camera, cards, words.tag, chinLogo, cardStyle]);
+  }, [gl, scene, camera, chinLogo]);
 
   useEffect(
     () => () => {

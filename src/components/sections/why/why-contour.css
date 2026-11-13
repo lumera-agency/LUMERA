@@ -11,9 +11,6 @@
 .wv__card { position: relative; }
 .wv__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; font-variation-settings: "SHRP" 50; letter-spacing: -0.02em; color: var(--ink); }
 .wv__p { margin: 0.5rem 0 0; font-size: var(--fs-body-s); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
-/* a step's numeral: tall and hollow; its lit twin over it (::after) */
-.wv__n { position: relative; display: block; font: 200 clamp(3.25rem, 4.4vw, 4.75rem) / 0.86 var(--font-sans); letter-spacing: -0.05em; color: transparent; -webkit-text-stroke: 1px rgb(246 246 243 / 0.42); }
-.wv__n::after { content: attr(data-n); position: absolute; left: 0; top: 0; color: var(--lime); -webkit-text-stroke: 0 transparent; text-shadow: 0 0 1.75rem rgb(218 255 2 / 0.45); opacity: 0; }
 /* the rule over a step: its count at the right end, a lime fill that runs along it when the step is lit */
 .wv__rule { position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgb(246 246 243 / 0.2); }
 .wv__rule::before { content: attr(data-k); position: absolute; right: 0; top: 0.75rem; font: 400 0.6875rem / 1 var(--font-mono); letter-spacing: 0.1em; color: var(--ink-mute); }
@@ -136,12 +133,13 @@
   .wv__link--3 { --x: 368; --y: 340; }
   .wv__link--4 { --x: 368; --y: 510; }
   .wv__back { --x: 368; --y: 661; padding-top: 0.875rem; }
-  /* steps 2–4: the rule comes across from the node, the numeral stands left of the words */
-  .wv__link:not(.wv__link--1) .wv__card { padding: 1.125rem 0 0 clamp(4.75rem, 6.2vw, 6.5rem); }
-  .wv__link:not(.wv__link--1) .wv__n { position: absolute; left: 0; top: 1.125rem; }
+  /* steps 2–4: the rule comes across from the node, the words start where it starts */
+  .wv__link:not(.wv__link--1) .wv__card { padding: 1.125rem 0 0; }
   .wv__link:not(.wv__link--1) .wv__t { padding-right: 4.5rem; }
   .wv__link--1 .wv__rule { display: none; }
-  .wv__link--1 .wv__n { margin-bottom: 1.125rem; font-size: clamp(4.25rem, 6.4vw, 6.75rem); }
+  /* step 1 stands where its table's top line meets the join from node 1 (WhyClient measures --join-dy; the owner,
+     13 Nov 2026: «линия не сходится с первым пунктом») */
+  .wv__link--1 { top: var(--join-dy, 0px); }
 }
 @media (min-width: 1101px) and (max-width: 1400px) {
   .wv__link:not(.wv__link--1) .wv__p { font-size: var(--fs-caption); line-height: 1.45; }
@@ -150,8 +148,6 @@
    between the nodes; a low screen, where the drawing is held to its height: the smaller words as well) */
 @media (min-width: 1101px) and (max-width: 1240px) {
   .wv__body { grid-template-columns: minmax(0, 9fr) minmax(0, 15fr); }
-  .wv__link:not(.wv__link--1) .wv__card { padding-left: 3.75rem; }
-  .wv__link:not(.wv__link--1) .wv__n { font-size: 2.625rem; }
   .wv__link:not(.wv__link--1) .wv__p { margin-top: 0.375rem; }
   /* (the words start nearer the nodes: the rule lies over the end of the node's own line) */
   .wv__link--2,
@@ -193,14 +189,10 @@
   .wv__card { height: 100%; padding: 0.875rem 0.75rem 1rem; border: 1px solid rgb(246 246 243 / 0.13); border-radius: 1.25rem; background: linear-gradient(rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 6rem), #0e0e0e; overflow: hidden; }
   .wv__rule { left: 1.25rem; right: 1.25rem; background: none; }
   .wv__rule::before { right: -0.5rem; top: 1.125rem; }
-  .wv__t { display: flex; align-items: baseline; }
-  .wv__n { flex: none; margin-right: 0.75rem; font-size: 2.75rem; }
   .wv__link--1 .wv__t { padding-right: 3.5rem; font-size: 1.25rem; }
   .wv__link--1 .wv__p { font-size: var(--fs-small); }
   .wv__link:not(.wv__link--1) .wv__t { font-size: 1.5rem; }
   .wv__link:not(.wv__link--1) .wv__p { position: relative; z-index: 1; margin-top: 0.875rem; font-size: 1.125rem; line-height: 1.46; color: var(--ink); }
-  /* (the short steps: their numeral once more, large and hollow, at the card's foot; said to no screen reader) */
-  .wv__link:not(.wv__link--1) .wv__card::after { content: attr(data-n); content: attr(data-n) / ""; position: absolute; right: 0.75rem; bottom: 0.25rem; font: 200 9.5rem / 0.8 var(--font-sans); letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 1px rgb(246 246 243 / 0.13); pointer-events: none; }
 
   /* the table: three columns down to 360 */
   .wv__mock { margin-top: 1.125rem; }
@@ -220,7 +212,6 @@
   /* the last card: the return */
   .wv__back { position: relative; flex: 0 0 68vw; max-width: 20rem; scroll-snap-align: start; flex-direction: column; gap: 1rem; padding: 1.25rem 1rem; overflow: hidden; border: 1px dashed rgb(218 255 2 / 0.5); border-radius: 1.25rem; background: rgb(218 255 2 / 0.04); font-size: 1.0625rem; line-height: 1.55; }
   .wv__back-ico { width: 2.25rem; height: 2.25rem; }
-  .wv__back::after { content: "→ 01"; content: "→ 01" / ""; position: absolute; right: 0.75rem; bottom: 0.5rem; font: 200 6.5rem / 0.8 var(--font-sans); letter-spacing: -0.06em; white-space: nowrap; color: transparent; -webkit-text-stroke: 1px rgb(218 255 2 / 0.4); pointer-events: none; }
 
   /* back and on, and how far along */
   .wv__nav { display: flex; align-items: center; gap: 0.625rem; margin-top: 0.875rem; }
@@ -234,6 +225,12 @@
   .wv__nav-b:active:not(:disabled) { transform: scale(0.94); }
   /* (without the script the row is still swept by the thumb; the arrows would do nothing) */
   html:not(.js) .wv__nav { display: none; }
+  /* the ride (WhyClient): the page stops at the row and its scroll moves it sideways, so the row takes no sweep of
+     its own and snaps nowhere by itself (a snap would pull the scrolled row back). The block holds a pin now: it is
+     rendered always, never skipped while far (lib/perf/far.ts, page.css: a skipped block would hold the pinned row
+     in its own box, out of the screen's) */
+  .wv.is-ride .wv__loop { overflow-x: hidden; scroll-snap-type: none; }
+  .page > .wv.is-far { content-visibility: visible; }
 
   .wv__market { margin-top: 2.5rem; font-size: 1.3125rem; line-height: 1.36; }
 }
@@ -246,6 +243,5 @@
 }
 
 @media (forced-colors: active) {
-  .wv__n { color: CanvasText; -webkit-text-stroke: 0; }
   .wv__out::before { background: CanvasText; box-shadow: none; }
 }

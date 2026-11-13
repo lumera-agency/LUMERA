@@ -78,8 +78,14 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 /* the condensed face is the site's own file (as the sites page declares it), under a name of its own here. Blocking and
    preloaded (RobotHero), as on the sites page: shown in a stand-in face first, the question grew when its own came and
    pushed the robot and the table down (Lighthouse on a phone, 9 Nov 2026: CLS 0.135) */
-@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+/* (the question's own letters in both languages, capitals, the spaces, «?» and «AI», are cut from the two files into two
+   small ones, 7 KB instead of 65 (sofia-sans-xc-bot-*.woff2, the same glyphs and kerning). The full files keep every
+   other letter, their ranges less those: a new word in the question still gets its face, and only then are they
+   loaded) */
+@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-0405, U+0407-040F, U+0413, U+0416, U+0419-041B, U+0424, U+0426, U+042A-042D, U+042F-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-latin.woff2") format("woff2"); unicode-range: U+0000-001F, U+0021-003E, U+0040, U+0042-0048, U+004A-009F, U+00A1-00FF, U+2000-206F; }
+@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-bot-cyrillic.woff2") format("woff2"); unicode-range: U+0406, U+0410-0412, U+0414-0415, U+0417-0418, U+041C-0423, U+0425, U+0427-0429, U+042E; }
+@font-face { font-family: "Bot Condensed"; font-style: normal; font-weight: 500 800; font-display: block; src: url("/fonts/sofia-sans-xc-bot-latin.woff2") format("woff2"); unicode-range: U+0020, U+003F, U+0041, U+0049, U+00A0; }
 
 /* a slow shifting light behind everything: three soft colour fields (lime, mint and teal, violet) drifting, and a second
    set in other places fading in and out over them, so the colours seem to flow; still with reduced motion */
@@ -160,6 +166,9 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 .bot-rain[data-via="WhatsApp"] .bot-rain__via i { background: #25d366; }
 .bot-rain__who { font-size: 1.05em; font-weight: 600; }
 .bot-rain__msg { overflow: hidden; text-overflow: ellipsis; font-size: 0.78em; opacity: 0.8; }
+/* LITE (lib/lite): no rain behind the robot's picture, the table's dot holds still */
+html.is-lite .bot-rain { display: none; }
+html.is-lite .bot-table__status i { animation: none; }
 @keyframes bot-rain {
   from { translate: 0 -8vh; rotate: var(--turn); }
   to { translate: 3vw 125vh; rotate: calc(var(--turn) + 50deg); }
@@ -177,6 +186,11 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 .ai-bot__film { position: absolute; display: block; }
 .ai-bot__picture { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .ai-bot__picture img { position: absolute; display: block; max-width: none; }
+/* LITE on a computer (RobotSlot, .is-desk): the picture is the film's own first frame, and the film takes its place in
+   one step as that frame is drawn, the picture gone at the same moment. Not faded in as elsewhere: for the fade's 1.2 s
+   the moving film lay over the still picture and the robot showed twice (the owner, 11 Nov 2026: «кадр расплывается») */
+.ai-bot.is-desk .ai-bot__canvas { transition: none; }
+.ai-bot.is-desk.is-film .ai-bot__picture { visibility: hidden; }
 /* a phone: the table and the answer are in the film, so the page's own wait unseen until the film is drawn; they show
    only for the live scene (.is-3d, the film refused) or the still (.is-still) */
 @media (max-width: 599px) and (hover: none) and (pointer: coarse) {
@@ -227,10 +241,11 @@ html.motion main[data-ai-page="ai"] .ai-bot .ai-bot__title > :nth-child(n + 4) {
 .bot-stage.is-playing .bot-crm__new.is-clearing .bot-crm__state { opacity: 0; }
 /* the robot will play (with reduced motion too): its rows wait as slots from the first paint, the server's still
    (every request booked) never flashing before the robot empties them (the owner, 5 Nov 2026); without the robot (no
-   WebGL, a scene that failed: .is-still, RobotSlot; no scripts) the still stays */
-html.js .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new td { color: transparent; background: rgb(var(--lime-rgb) / 0.025); border-bottom: 1px dashed rgb(var(--lime-rgb) / 0.35); }
-html.js .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new td:first-child { box-shadow: inset 2px 0 0 rgb(var(--lime-rgb) / 0.25); }
-html.js .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new .bot-crm__state { visibility: hidden; }
+   WebGL, a scene that failed: .is-still, RobotSlot; no scripts; LITE, lib/lite, from the first paint) the still
+   stays */
+html.js:not(.is-lite) .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new td { color: transparent; background: rgb(var(--lime-rgb) / 0.025); border-bottom: 1px dashed rgb(var(--lime-rgb) / 0.35); }
+html.js:not(.is-lite) .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new td:first-child { box-shadow: inset 2px 0 0 rgb(var(--lime-rgb) / 0.25); }
+html.js:not(.is-lite) .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new .bot-crm__state { visibility: hidden; }
 /* a slot waiting for its card */
 .bot-stage.is-playing .bot-crm__new:not(.is-on) td { background: rgb(var(--lime-rgb) / 0.025); border-bottom: 1px dashed rgb(var(--lime-rgb) / 0.35); }
 .bot-stage.is-playing .bot-crm__new:not(.is-on) td:first-child { box-shadow: inset 2px 0 0 rgb(var(--lime-rgb) / 0.25); }
@@ -355,3 +370,11 @@ html.js .ai-bot:not(.is-still) .bot-stage:not(.is-playing) .bot-crm__new .bot-cr
   .ai-bot__canvas,
   .bot-say { transition: none; }
 }
+
+/* The first screen out of sight (covered by the next block: .is-under; scrolled off the screen, a phone: .is-away,
+   ai-runtime.js): its raining cards and the table's dot stop. Hidden is not stopped: they were worked out on every
+   frame of the whole page, 205 to 234 ms of the main thread a second on a processor four times slower against 56
+   without them (11 Nov 2026). At the file's end, after the rules that start them: an animation shorthand written later
+   would reset the play state. Named one by one, never `*`: a rule for every element of the first screen made every
+   style pass of the sites page (the same .ai-hero, a large page) five times dearer (measured the same day) */
+.ai-hero:is(.is-under, .is-away) :is(.bot-rain, .bot-table__status i) { animation-play-state: paused; }

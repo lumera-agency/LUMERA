@@ -20,6 +20,7 @@
  */
 
 import { gsap as GSAP } from '@/lib/gsap';
+import { demoState, gates, gated, registerDemo } from './control.js';
 
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
@@ -39,21 +40,6 @@ export function boxIn(box, el) {
  *  `gate`: also wait for the stone (see `gates`); `active`: a service row only
  *  plays once its top has passed 45% of the viewport (it is the row being read),
  *  or at once when its chip was picked on a phone (`chosen`, see openDemos). */
-const demoState = new WeakMap(); // demo root → { tl, visible, held, active, chosen, done, sync }
-const gates = { split: true }; // closed while the stone still has to get there
-const gated = new Set();
-const regate = () => gated.forEach((state) => state.sync());
-document.addEventListener('journey:ready', (e) => {
-  // closed only if the stone's route has that moment and hasn't reached it yet
-  for (const name of Object.keys(gates)) gates[name] = !e.detail.cues?.includes(name) || e.detail.passed.includes(name);
-  regate();
-});
-for (const name of Object.keys(gates)) {
-  document.addEventListener(`journey:${name}`, () => {
-    gates[name] = true;
-    regate();
-  });
-}
 function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActive = false } = {}) {
   const gsap = GSAP;
   const row = el.closest('.service');
@@ -116,7 +102,7 @@ function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActi
       el.dispatchEvent(new CustomEvent('demo:rest', { bubbles: true })); // 3 · Послуги's switcher moves on (sections.js)
     });
   }
-  demoState.set(el, state);
+  registerDemo(el, state);
   el._demo = state; // look-dev from the console: document.querySelector('[data-demo]')._demo.tl
   if (gate) gated.add(state);
   let queued = 0;
@@ -159,37 +145,6 @@ function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActi
     row?.classList.remove('is-live');
   };
 }
-
-/** Hold (or release) the demos inside `container` — e.g. while a stacked row is covered. */
-export function holdDemos(container, held) {
-  for (const root of container.querySelectorAll('[data-demo]')) {
-    const state = demoState.get(root);
-    if (!state || state.held === held) continue;
-    state.held = held;
-    if (held) state.rewind(); // covered by the next row: it starts over when uncovered
-    state.sync();
-  }
-}
-
-/** 3 · Послуги on phones, a switcher with one service open at a time (sections.js initServiceTabs):
- *  only its clip may play. Closed (`open` false): held on its start frame — paused, nothing of it
- *  ticks. Opened: back to its start frame, measured afresh (from the layout it has now) and on again;
- *  `chosen` (its chip was picked) plays it as soon as it is in view, wherever it sits on the screen.
- *  Without motion the clips keep their rest frames and this does nothing. */
-export function openDemos(container, open, { chosen = false } = {}) {
-  for (const root of container.querySelectorAll('[data-demo]')) {
-    const state = demoState.get(root);
-    if (!state) continue;
-    state.held = !open;
-    state.chosen = open && chosen;
-    state.reset(open);
-    state.check?.();
-    state.sync();
-  }
-}
-
-/** A clip's timeline (3 · Послуги's switcher draws its progress on the chosen chip). */
-export const demoTimeline = (root) => demoState.get(root)?.tl ?? null;
 
 /** Function-based tween values are measured once; re-measure after layout changes.
  *  Only a new width counts: a phone's address bar sliding away mid-scroll changes the
@@ -504,7 +459,8 @@ function design(gsap, root, onDestroy) {
     .to(psTabs, { autoAlpha: 1, y: 0, duration: 0.3 }, 5.5)
     .to(gauge, { autoAlpha: 1, y: 0, duration: 0.4 }, 5.7)
     .to(arc, { strokeDashoffset: 1 - score / 100, duration: 1.6, ease: 'power2.out' }, 6.0)
-    .to(counter, { n: score, duration: 1.6, ease: 'power2.out', onUpdate: () => { num.textContent = String(Math.round(counter.n)); } }, 6.0)
+    // (a slow computer, html.is-lite: the score at once, not counted up)
+    .to(counter, { n: score, duration: 1.6, ease: 'power2.out', onUpdate: () => { num.textContent = String(document.documentElement.classList.contains('is-lite') ? score : Math.round(counter.n)); } }, 6.0)
     .to(num, { color: lime, duration: 0.3 }, 7.5);
   [6.9, 7.35, 7.8].forEach((t, k) => {
     tl.to(checks[k], { autoAlpha: 1, x: 0, duration: 0.3 }, t)

@@ -6,6 +6,7 @@
  */
 import { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { isLite } from "@/lib/lite";
 
 export function ShrinkTotal({ value, when, share = 1, from }: { value: string; when: string; /** the bar's final width, 0–1 */ share?: number; /** the number it counts down from */ from?: number }) {
   const ref = useRef<HTMLParagraphElement>(null);
@@ -16,7 +17,8 @@ export function ShrinkTotal({ value, when, share = 1, from }: { value: string; w
       const el = ref.current;
       const n = el?.querySelector<HTMLElement>(".ai-split__n");
       const bar = el?.querySelector<HTMLElement>(".ai-split__fill");
-      if (!el || !n || !bar || from === undefined) return;
+      // (a slow computer, lib/lite: the final number and bar at once)
+      if (!el || !n || !bar || from === undefined || isLite()) return;
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const to = Number(num);

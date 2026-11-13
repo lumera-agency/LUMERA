@@ -1,26 +1,12 @@
 "use client";
 /*
- * WebGLGate: 3D only where it can run. Without WebGL (an old GPU, acceleration off, a policy) or when
- * a scene throws, the canvas stays out (or `fallback` shows) and the page carries on without it;
- * `onSkip` lets whoever waits for the scene stop waiting.
+ * WebGLGate: 3D only where it may run. In LITE (lib/perf/mode.ts), without WebGL (an old GPU, acceleration off, a
+ * policy) or when a scene throws, the canvas stays out (or `fallback` shows) and the page carries on without it;
+ * `onSkip` lets whoever waits for the scene stop waiting. The children are not rendered then, so a scene loaded with
+ * next/dynamic is never fetched. The page going LITE while a scene runs takes the scene down the same way.
  */
-import { Component, useEffect, useSyncExternalStore, type ReactNode } from "react";
-
-let support: boolean | undefined;
-
-/** Whether this browser can open a WebGL context (asked once; the probe context is released). */
-export function hasWebGL() {
-  if (support !== undefined) return support;
-  try {
-    const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
-    support = Boolean(gl);
-    gl?.getExtension("WEBGL_lose_context")?.loseContext();
-  } catch {
-    support = false;
-  }
-  return support;
-}
+import { Component, useEffect, type ReactNode } from "react";
+import { useWebGLAllowed } from "@/lib/perf/mode";
 
 type BoundaryProps = { fallback: ReactNode; onError: () => void; children: ReactNode };
 
@@ -38,14 +24,12 @@ class SceneBoundary extends Component<BoundaryProps, { failed: boolean }> {
   }
 }
 
-const noSubscribe = () => () => {};
-
 export function WebGLGate({ children, fallback = null, onSkip }: { children: ReactNode; fallback?: ReactNode; onSkip?: () => void }) {
   // the server and the hydrating render show the fallback alike; the browser's answer comes right after
-  const ok = useSyncExternalStore(noSubscribe, hasWebGL, () => null);
+  const allowed = useWebGLAllowed();
   useEffect(() => {
-    if (ok === false) onSkip?.();
-  }, [ok, onSkip]);
-  if (!ok) return fallback;
+    if (allowed === false) onSkip?.();
+  }, [allowed, onSkip]);
+  if (!allowed) return fallback;
   return <SceneBoundary fallback={fallback} onError={() => onSkip?.()}>{children}</SceneBoundary>;
 }

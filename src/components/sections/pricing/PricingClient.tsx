@@ -3,7 +3,12 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import { createPortal } from "react-dom";
 import { useLocale } from "next-intl";
 import { ScrollTrigger } from "@/lib/gsap";
+import { afterRoll } from "@/lib/boot";
 import { dpx, topbarHeight } from "@/lib/css";
+import { scrollCalm, watchSection } from "@/lib/perf/sections";
+
+/** the configurator's code is in (a language switch finds it so and mounts at once, before the paint) */
+let fetched = false;
 
 /** The configurator's stills (the live 3D cube's, transparent), fetched only after an intent toward 3D. */
 const ASSETS = {
@@ -22,6 +27,13 @@ const ASSETS = {
  * are now (22 Oct: after «−» the questions stayed hidden for 1300 px).
  * A layout effect: after a language switch the modules are in already and resolve before the page is painted, so the
  * block never shows empty first. Leaving (a switch renders the page anew) takes it all down again.
+ * Fetched as the visitor comes within three screens of the block (lib/perf/sections.ts) and mounted in the next pause
+ * of the scroll, or a screen before the block at the latest (mounting takes one long frame: in a moving scroll it showed
+ * as a hitch, 267 ms on a processor four times slower), not with the page: its
+ * code, the sample sites' and their styles were fetched in the page's first fifth of a second and the configurator
+ * started under the preloader, about 340 ms of the main thread on a processor four times slower (11 Nov 2026). It
+ * changes the page's height as it mounts, so a jump to a block below it and a kept place wait for it (settleLayout). A
+ * preset link clicked before it is in keeps its preset (html[data-cfg-pending], which presets.js applies) and fetches it.
  * `robot` and `ads` (the owner, 9 Nov 2026): the AI page's robot console and the ads page's way of a request, rendered
  * on the server (Pricing.tsx); they go into the configurator's frame (its slots) for when the automation, or ads or
  * analytics, are chosen.
@@ -37,9 +49,14 @@ export function PricingClient({ robot, ads }: { robot?: ReactNode; ads?: ReactNo
     if (!el) return;
     let height = el.offsetHeight;
     let timer = 0;
+    // (during the preloader's roll the pinned blocks are not set up yet, they measure everything themselves after it:
+    // lib/boot afterRoll)
+    let rolled = false;
+    void afterRoll().then(() => void (rolled = true));
     const ro = new ResizeObserver(() => {
       if (el.offsetHeight === height) return;
       height = el.offsetHeight;
+      if (!rolled) return;
       clearTimeout(timer);
       timer = window.setTimeout(() => ScrollTrigger.refresh(), 150);
     });
@@ -72,13 +89,16 @@ export function PricingClient({ robot, ads }: { robot?: ReactNode; ads?: ReactNo
     let mounted: { destroy(): void; schemesReady?(): void } | undefined;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const abs = (p: string) => new URL(p, document.baseURI).href;
-    (async () => {
+    let started: Promise<void> | null = null;
+    const start = () => (started ??= (async () => {
       const [{ mountConfigurator }, { initPresets, presetReady, keepWhole }, form] = await Promise.all([
         import("./configurator/configurator.js"),
         import("./presets.js"),
         import("@/components/sections/contact/lead-form.js"),
       ]);
       if (!alive) return; // left before the modules were in
+      await scrollCalm(el);
+      if (!alive) return;
       stopPresets = initPresets(reducedMotion);
       // the island's own API (configurator.js, JSDoc-typed loosely)
       const mount = mountConfigurator as unknown as (host: HTMLElement, options: Record<string, unknown>) => { destroy(): void; schemesReady?(): void };
@@ -103,9 +123,25 @@ export function PricingClient({ robot, ads }: { robot?: ReactNode; ads?: ReactNo
       const sum = el.querySelector(".cfg-sum");
       if (sum) fitRo.observe(sum);
       fit();
-    })();
+      fetched = true;
+    })());
+    const onEarlyPreset = (event: MouseEvent) => {
+      if (started) return;
+      const link = (event.target as Element | null)?.closest?.<HTMLAnchorElement>("a[data-cfg-preset]");
+      if (!link || event.button > 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      document.documentElement.dataset.cfgPending = link.dataset.cfgPreset ?? "";
+      link.closest("dialog")?.close();
+      void start();
+    };
+    document.addEventListener("click", onEarlyPreset);
+    let stopWatching = () => {};
+    if (fetched || !section) void start();
+    else stopWatching = watchSection(section, { preload: start }, { name: "pricing", near: 3, layout: true });
     return () => {
       alive = false;
+      stopWatching();
+      document.removeEventListener("click", onEarlyPreset);
       ro.disconnect();
       fitRo.disconnect();
       window.removeEventListener("resize", fit);

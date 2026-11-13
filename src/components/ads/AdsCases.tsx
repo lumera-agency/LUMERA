@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- the account's screenshots are shown as they are, never re-encoded (the client's numbers stay pixel for pixel) */
 import { useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/button/Button";
+import { isLite } from "@/lib/lite";
 
 type Ring = { left: number; top: number; width: number; height: number };
 export type CaseShot = { id: string; src: string; w: number; h: number; rings?: Ring[]; label: string; alt: string };
@@ -85,6 +86,11 @@ function CountUp({ value, run }: { value: string; run: boolean }) {
   useEffect(() => {
     const out = runner.current;
     if (!run || !out || !Number.isFinite(target)) return;
+    // (a slow computer, lib/lite: the number at once, not counted up)
+    if (isLite()) {
+      out.textContent = writeNumber(target, decimals);
+      return;
+    }
     const start = performance.now();
     const DURATION = 900;
     let frame = 0;

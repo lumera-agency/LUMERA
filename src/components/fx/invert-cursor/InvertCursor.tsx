@@ -76,6 +76,8 @@ export function InvertCursor({
     let under: Element | null = null;
     let still = false; // a plain circle here ([data-cursor-still])
     let placed = false;
+    /** the pointer is over an area with a lens of its own (see move) */
+    let handed = false;
     let time = 0;
     let last = 0;
     let raf = 0;
@@ -172,6 +174,16 @@ export function InvertCursor({
       under = e.target as Element | null;
       inScope = Boolean(under?.closest?.(scope));
       aim();
+      // an area that draws its own lens ([data-lens-handoff]: the footer's wordmark) takes over at its edge, and gives it
+      // back there, at once and at the same size: neither shrinks away nor grows from nothing there (the owner, 12 Nov
+      // 2026: the lens broke off at the wordmark's edge)
+      const handing = Boolean(under?.closest?.("[data-lens-handoff]"));
+      if (handing !== handed) {
+        handed = handing;
+        cur.r = target.r;
+        cur.x = target.x;
+        cur.y = target.y;
+      }
     };
     const press = (on: boolean) => () => {
       down = on;

@@ -250,8 +250,10 @@ export function createOrbit(gl: THREE.WebGLRenderer, label: string) {
     geometry,
     material,
     texture: band.texture,
-    /** shift of the text along the ribbon (in texture cycles, wrapped) for a given time */
-    shiftAt: (time: number) => ((time * BAND_SPEED) / tileLength()) % 1,
+    /** shift of the text along the ribbon (in texture cycles, wrapped) for a given time; `loop` (the film's recording,
+     *  hero/state.ts heroLoop): at the speed nearest its own that runs a whole number of its lengths in the loop */
+    shiftAt: (time: number, loop = 0) =>
+      (loop ? (time / loop) * Math.max(1, Math.round((loop * BAND_SPEED) / tileLength())) : (time * BAND_SPEED) / tileLength()) % 1,
     /** redraw once the orbit's font is in (the first paint may use the fallback face) */
     redraw() {
       band.draw();

@@ -48,6 +48,8 @@
  *   theme 'day'   — the light mode in paper tones, on the studio's «Денне світло» Базовий.
  */
 
+import { allowWebGL } from '@/lib/perf/mode';
+
 const hexToNormalizedRGB = (hex) => {
   hex = hex.replace('#', '');
   return [parseInt(hex.slice(0, 2), 16) / 255, parseInt(hex.slice(2, 4), 16) / 255, parseInt(hex.slice(4, 6), 16) / 255];
@@ -135,6 +137,8 @@ if (uLightMode > 0.5) {
 `;
 
 export function createSilk(host, { theme = 'dark' } = {}) {
+  // (LITE, lib/perf/mode: no WebGL; the callers carry on without the silk, as where the browser has none)
+  if (!allowWebGL()) return null;
   const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
   const canvas = document.createElement('canvas');
   canvas.className = 'pv-silk';

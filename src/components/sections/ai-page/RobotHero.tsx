@@ -31,9 +31,9 @@ const RAIN = [
  */
 export async function RobotHero() {
   // the question waits unseen for its condensed face (font-display: block, robot-hero.css): it comes with the page, both
-  // files (the giant word's «?» is in the Latin one)
-  preload("/fonts/sofia-sans-xc-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
-  preload("/fonts/sofia-sans-xc-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  // files of the question's own letters (the giant word's «?» is in the Latin one)
+  preload("/fonts/sofia-sans-xc-bot-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  preload("/fonts/sofia-sans-xc-bot-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const t = await getTranslations("ai");
   const locale = await getLocale();
   const leads = LEADS.map((n) => ({
@@ -138,7 +138,12 @@ export async function RobotHero() {
           </BotStory>
           {/* the head's place in the layout: the canvas sizes the head to it */}
           <div className="ai-bot__head" aria-hidden="true">
-            <RobotSlot words={{ tag: t("bot.tag"), leads }} film={`/img/ai/robot-film-${locale}.mp4`} />
+            <RobotSlot
+              words={{ tag: t("bot.tag"), leads }}
+              film={`/img/ai/robot-film-${locale}.mp4`}
+              deskFilm={`/img/ai/robot-desk-film-${locale}.mp4`}
+              deskStill={`/img/ai/robot-desk-${locale}.webp`}
+            />
           </div>
         </div>
 

@@ -58,7 +58,7 @@ export default async function AdsPage({ params }: PageProps<"/[locale]/reklama-i
       claim={t("foot.claim")}
     >
       <AdsHero facts={facts} />
-      <PageShell>
+      <PageShell skip="#case, .rk-pause, #kanaly, #analytics, #storinka, #terms, #price, #how, #faq, #contact">
         <AdsCase index={2} />
         <AdsPause />
         <AdsChannels index={3} facts={facts} />

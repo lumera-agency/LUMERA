@@ -16,7 +16,7 @@
  * Returns { isOn, destroy }: destroy() takes the ride down (the pin and its spacer, the listeners,
  * what it added to the markup), so it can start again on markup rendered anew.
  */
-import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
+import { gsap as GSAP, ScrollTrigger as ST, refreshSoon } from '@/lib/gsap';
 import { scrollToY } from '@/lib/scroll';
 import { initPaging } from '@/components/fx/scroll-paging/paging.js';
 import { topbarHeight } from '@/lib/css';
@@ -245,9 +245,8 @@ export function initRide({
       busy: () => skipping,
     });
 
-    const refresh = requestAnimationFrame(() => ScrollTrigger.refresh());
+    refreshSoon();
     return () => {
-      cancelAnimationFrame(refresh);
       paging.destroy();
       ScrollTrigger.removeEventListener('refreshInit', sizePanels);
       ride.style.removeProperty('--panel-w');
