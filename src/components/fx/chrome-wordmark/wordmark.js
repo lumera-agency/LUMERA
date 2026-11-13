@@ -12,7 +12,11 @@
  * Renders only while the footer is on screen; without WebGL the CSS text with a
  * static chrome gradient stays.
  *
- *   initWordmark({ reducedMotion, root, calm }) → { prepare(), setCalm(on), destroy() }
+ *   initWordmark({ reducedMotion, root, calm, step }) → { prepare(), setCalm(on), destroy() }
+ * step (default 1, the footer's): how many device px apart the edge's slope is read; letters larger than the footer's word
+ * pass their size over the word's, so the frost on the edge keeps the word's density (the 404, ChromeNumber).
+ * look (default 'chrome', the footer's): 'lux' is the premium shader (FRAG_LUX), the 404's.
+ * maxDpr (default 1.75, the footer's): the device-pixel ratio the metal is drawn at, at most; the 404 draws at 2 (crisper).
  * calm (LITE: the owner, 12 Nov 2026, «хватит картинки, но с линзой»): the metal stands as a picture, drawn once;
  * frames come only while the lens is out, its rim rippling on its own clock. setCalm(true) brings a running mark to
  * rest where it is (a page that goes LITE), without building it anew.
@@ -46,6 +50,8 @@ uniform float uTime;
 uniform float uRim;        // the lens's rim's clock: the metal's own, plus what ran while the metal stood (calm)
 uniform vec3 uLens;        // centre x, y and radius, device px (origin bottom-left)
 uniform float uSlope;      // turns the blurred edge into a slope
+uniform float uStep;       // how far apart (device px) the slope is read: 1 for the footer's word (its edge's fine frost);
+                           // larger letters read it as many times wider as they are larger, for the same frost (the 404)
 uniform vec4 uDrop;        // a drop fell in: x, y (device px, origin bottom-left), age (s), strength
 varying vec2 vUv;
 
@@ -110,12 +116,12 @@ void main() {
   vec2 q = vec2(fbm(p + vec2(0.0, t)), fbm(p + vec2(5.2, 1.3) - t));
   float flow = fbm(p + 2.1 * q + vec2(0.7 * t, -0.45 * t)) + ring * 0.4;
 
-  vec2 texel = 1.0 / uRes;
+  vec2 texel = uStep / uRes;
   float bl = texture2D(uBevel, vUv - vec2(texel.x, 0.0)).a;
   float br = texture2D(uBevel, vUv + vec2(texel.x, 0.0)).a;
   float bd = texture2D(uBevel, vUv - vec2(0.0, texel.y)).a;
   float bu = texture2D(uBevel, vUv + vec2(0.0, texel.y)).a;
-  vec2 slope = vec2(br - bl, bu - bd) * uSlope;
+  vec2 slope = vec2(br - bl, bu - bd) * uSlope / uStep;
   float edge = clamp(length(slope), 0.0, 1.0);
 
   float x = flow * 3.4 + dot(slope, vec2(0.55, 1.1)) * 1.4 + vUv.y * 0.35;
@@ -133,7 +139,127 @@ void main() {
   gl_FragColor = vec4(mix(col * m, lensCol, lens), mix(m, 1.0, lens));
 }`;
 
-export function initWordmark({ reducedMotion, root = document.querySelector('[data-wordmark]'), calm = false }) {
+/* The premium look (the 404's number; the owner, 13 Nov 2026: «ещё премиальнее»): the same inputs, the frost kept on a
+   smooth body (the slope read broad, plus what the fine read adds), a studio to reflect (deep cool black, a soft-box
+   with a hot line on its edge, a steel band), a key light's crisp highlight and broad sheen, a rim that catches the room
+   (fresnel), champagne in the swirls, rare glints in the frost, a
+   lively flow (as the footer's, larger swirls) and highlights that roll off instead of flattening. */
+export const FRAG_LUX = `
+precision highp float;
+uniform sampler2D uMask;   // the letters, sharp
+uniform sampler2D uBevel;  // the letters, blurred: a rounded edge
+uniform vec2 uRes;         // canvas size, device px
+uniform float uTime;
+uniform float uRim;        // the lens's rim's clock: the metal's own, plus what ran while the metal stood (calm)
+uniform vec3 uLens;        // centre x, y and radius, device px (origin bottom-left)
+uniform float uSlope;      // turns the blurred edge into a slope
+uniform float uStep;       // how far apart (device px) the slope is read: 1 for the footer's word (its edge's fine frost);
+                           // larger letters read it as many times wider as they are larger, for the same frost (the 404)
+uniform vec4 uDrop;        // a drop fell in: x, y (device px, origin bottom-left), age (s), strength
+varying vec2 vUv;
+
+float hash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+float fbm(vec2 p) {
+  float v = 0.0;
+  float a = 0.5;
+  mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
+  for (int i = 0; i < 4; i++) {
+    v += a * noise(p);
+    p = m * p;
+    a *= 0.5;
+  }
+  return v;
+}
+// the studio the metal reflects
+vec3 studio(float x) {
+  float s = fract(x);
+  vec3 c = mix(vec3(0.018, 0.02, 0.026), vec3(0.34, 0.36, 0.40), smoothstep(0.02, 0.20, s));
+  c = mix(c, vec3(0.985, 0.975, 0.95), smoothstep(0.306, 0.326, s));
+  c += vec3(0.5) * exp(-pow((s - 0.318) / 0.0055, 2.0));
+  c = mix(c, vec3(0.64, 0.66, 0.70), smoothstep(0.45, 0.53, s));
+  c = mix(c, vec3(0.06, 0.062, 0.07), smoothstep(0.70, 0.86, s));
+  return c;
+}
+
+void main() {
+  vec2 px = vUv * uRes;
+  float m = texture2D(uMask, vUv).a;
+
+  vec2 d = px - uLens.xy;
+  float ang = atan(d.y, d.x);
+  float rad = uLens.z * (1.0 + 0.022 * sin(ang * 5.0 + uRim * 1.6) + 0.016 * sin(ang * 3.0 - uRim * 2.1));
+  float lens = uLens.z > 0.5 ? 1.0 - smoothstep(rad - 1.5, rad + 1.5, length(d)) : 0.0;
+  if (m < 0.004 && lens < 0.004) {
+    gl_FragColor = vec4(0.0);
+    return;
+  }
+
+  vec2 dd = px - uDrop.xy;
+  float dist = length(dd);
+  float ring = 0.0;
+  if (uDrop.w > 0.0) {
+    float front = uDrop.z * uRes.y * 1.6;
+    ring = exp(-pow((dist - front) / (uRes.y * 0.09), 2.0)) * exp(-uDrop.z * 1.2) * uDrop.w;
+  }
+
+  // the liquid: as lively as the footer's, its swirls large and deep
+  vec2 p = px / uRes.y * 1.6 + normalize(dd + 1e-4) * ring * 0.12;
+  float t = uTime * 0.085;
+  vec2 pc = p * 0.85;
+  vec2 q = vec2(fbm(pc + vec2(0.0, t)), fbm(pc + vec2(5.2, 1.3) - t));
+  float flow = fbm(pc + 2.35 * q + vec2(0.75 * t, -0.5 * t)) + ring * 0.4;
+
+  // the body's slope read broad (smooth), the frost from the fine read on top of it
+  vec2 tx = uStep / uRes;
+  vec2 fine = vec2(texture2D(uBevel, vUv + vec2(tx.x, 0.0)).a - texture2D(uBevel, vUv - vec2(tx.x, 0.0)).a,
+                   texture2D(uBevel, vUv + vec2(0.0, tx.y)).a - texture2D(uBevel, vUv - vec2(0.0, tx.y)).a) * uSlope / uStep;
+  vec2 tw = tx * 4.0;
+  vec2 broad = vec2(texture2D(uBevel, vUv + vec2(tw.x, 0.0)).a - texture2D(uBevel, vUv - vec2(tw.x, 0.0)).a,
+                    texture2D(uBevel, vUv + vec2(0.0, tw.y)).a - texture2D(uBevel, vUv - vec2(0.0, tw.y)).a) * uSlope / (uStep * 4.0);
+  vec2 slope = broad + (fine - broad) * 0.85;
+  float edge = clamp(length(slope), 0.0, 1.0);
+
+  // the footer's bands, mapped as there
+  float x = flow * 3.9 + dot(slope, vec2(0.55, 1.1)) * 1.4 + vUv.y * 0.35;
+  vec3 col = studio(x);
+  // champagne, not orange, in the swirls
+  float warm = smoothstep(0.55, 0.8, fbm(p * 0.8 + q * 1.4 - vec2(t * 0.8, 0.0)));
+  col = mix(col, col * vec3(1.15, 0.97, 0.8) + vec3(0.035, 0.02, 0.0), warm * 0.6);
+  // a volume lit from above: the smooth body's normal
+  vec3 nb = normalize(vec3(-broad * 0.9, 1.0));
+  col *= mix(0.84, 1.06, smoothstep(-0.45, 0.45, nb.y));
+  // the key light's crisp highlight on the edges that face it, and a rim that catches the room
+  vec3 r = reflect(vec3(0.0, 0.0, -1.0), nb);
+  float rl = max(dot(r, normalize(vec3(-0.5, 0.65, 0.6))), 0.0);
+  col += vec3(1.0, 0.98, 0.94) * pow(rl, 220.0) * 0.95;
+  col += vec3(0.9, 0.92, 0.95) * pow(clamp(1.0 - nb.z, 0.0, 1.0), 2.5) * 0.18 * smoothstep(-0.2, 0.5, nb.y);
+  // the frost catching light (as the footer's), and rare glints in it
+  col += vec3(1.0, 0.97, 0.9) * smoothstep(0.55, 0.95, edge) * 0.18 * (0.5 + 0.5 * sin(x * 6.2832));
+  float h = hash(floor(px / 3.0));
+  float glint = pow(max(0.0, sin(uTime * 1.3 + h * 40.0)), 24.0);
+  col += vec3(1.0) * step(0.992, h) * glint * smoothstep(0.25, 0.8, edge) * 0.9;
+  col += vec3(1.0, 0.97, 0.9) * ring * 0.2;
+  col = col / (1.0 + max(col - 0.85, 0.0) * 0.8);
+
+  vec2 wob = (q - 0.5) * 10.0 / uRes;
+  float ml = texture2D(uMask, vUv + wob).a;
+  vec3 lensCol = mix(vec3(0.945, 0.925, 0.89), vec3(0.03), ml);
+
+  gl_FragColor = vec4(mix(col * m, lensCol, lens), mix(m, 1.0, lens));
+}`;
+
+export function initWordmark({ reducedMotion, root = document.querySelector('[data-wordmark]'), calm = false, step = 1, look = 'chrome', maxDpr = MAX_DPR }) {
   const text = root?.textContent.trim();
   if (!text) return { prepare: () => null, setCalm() {}, destroy() {} };
   // what has to be undone (added to as it starts); stopped: no more starting; calm: the metal stands (read each frame);
@@ -160,7 +286,7 @@ export function initWordmark({ reducedMotion, root = document.querySelector('[da
     near.disconnect();
     close.disconnect();
     window.removeEventListener('scroll', onScroll);
-    started = start(root, text, reducedMotion, run, atOnce).catch((error) => {
+    started = start(root, text, reducedMotion, run, atOnce, step, look, maxDpr).catch((error) => {
       root.classList.remove('is-live');
       console.warn('[wordmark] static fallback.', error);
     });
@@ -284,7 +410,7 @@ function stemOf(letter) {
 }
 
 /* atOnce: wanted on screen now, so no step waits for a later frame (the shader is compiled where it stands) */
-async function start(root, text, reducedMotion, run, atOnce) {
+async function start(root, text, reducedMotion, run, atOnce, step = 1, look = 'chrome', maxDpr = MAX_DPR) {
   let canvas = root.querySelector('canvas');
   if (released.has(canvas)) {
     const fresh = canvas.cloneNode(false);
@@ -307,7 +433,7 @@ async function start(root, text, reducedMotion, run, atOnce) {
   });
   const program = gl.createProgram();
   const vs = compile(gl, gl.VERTEX_SHADER, VERT);
-  const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+  const fs = compile(gl, gl.FRAGMENT_SHADER, look === 'lux' ? FRAG_LUX : FRAG);
   gl.attachShader(program, vs);
   gl.attachShader(program, fs);
   gl.linkProgram(program);
@@ -337,6 +463,7 @@ async function start(root, text, reducedMotion, run, atOnce) {
   const uRim = u('uRim');
   const uLens = u('uLens');
   const uSlope = u('uSlope');
+  gl.uniform1f(u('uStep'), step);
   const uDrop = u('uDrop');
   gl.uniform1i(u('uMask'), 0);
   gl.uniform1i(u('uBevel'), 1);
@@ -357,7 +484,7 @@ async function start(root, text, reducedMotion, run, atOnce) {
   const layout = () => {
     const width = root.clientWidth;
     if (!width) return;
-    dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
     paint.font = font(200);
     const probe = paint.measureText(text);
     const inkWidth = probe.actualBoundingBoxLeft + probe.actualBoundingBoxRight;
