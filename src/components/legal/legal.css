@@ -13,7 +13,25 @@ html.motion main[data-ai-page="legal"] .ai-hero__copy > :nth-child(3) { animatio
 html.motion main[data-ai-page="legal"] .ai-hero__copy > :nth-child(n + 4) { animation-delay: 0.24s; }
 html.motion main[data-ai-page="legal"] .ai-hero__visual { animation: ai-rise-in 0.9s var(--ease-out) 0.2s backwards; }
 
-.lg-hero { padding-bottom: clamp(3.5rem, 9vh, 6rem); }
+.lg-hero { isolation: isolate; padding-bottom: clamp(3.5rem, 9vh, 6rem); }
+
+/* the moving backdrop (backdrop/Backdrop.tsx): under the words, fading in once drawn, out towards the page below */
+.lg-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.lg-bg__canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 1.6s ease-out; }
+.lg-bg.is-on .lg-bg__canvas { opacity: 1; }
+.lg-bg[data-bg="streams"],
+.lg-bg[data-bg="relief"] {
+  /* down to the page below; quieter under the title (left) and under the contents (right) */
+  -webkit-mask-image: linear-gradient(180deg, #000 68%, transparent 100%), radial-gradient(60% 75% at 20% 47%, rgba(0, 0, 0, 0.3), #000 75%), radial-gradient(34% 60% at 84% 45%, rgba(0, 0, 0, 0.55), #000 100%);
+  -webkit-mask-composite: source-in, source-in;
+  mask-image: linear-gradient(180deg, #000 68%, transparent 100%), radial-gradient(60% 75% at 20% 47%, rgba(0, 0, 0, 0.3), #000 75%), radial-gradient(34% 60% at 84% 45%, rgba(0, 0, 0, 0.55), #000 100%);
+  mask-composite: intersect;
+}
+.lg-bg[data-bg="dots"] {
+  -webkit-mask-image: linear-gradient(180deg, transparent 26%, #000 46%, #000 84%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 26%, #000 46%, #000 84%, transparent 100%);
+}
+
 .lg-hero__title { max-width: 11ch; }
 .lg-hero .ai-hero__visual { justify-items: stretch; }
 
@@ -97,6 +115,34 @@ html.motion main[data-ai-page="legal"] .ai-hero__visual { animation: ai-rise-in 
   border: 1px solid rgba(246, 246, 243, 0.4);
 }
 .lg-rows li:first-child::before { top: calc(0.85em - 0.21875rem); }
+/* under the pointer (the owner, 13 Nov 2026): the row comes up, its node lights lime, and a lime line draws along the
+   hairline above it, as the contents' rows and the footer's do */
+.lg-rows li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--lime), rgb(218 255 2 / 0.15) 70%, transparent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.6s var(--ease-out);
+}
+.lg-rows li:first-child::after { display: none; }
+.lg-rows li,
+.lg-rows li b { transition: color var(--dur-fast); }
+.lg-rows li::before { transition: background-color 0.3s, border-color 0.3s, box-shadow 0.4s, transform 0.4s var(--ease-out); }
+@media (hover: hover) {
+  .lg-rows li:hover { color: var(--ink); }
+  .lg-rows li:hover::before {
+    background: var(--lime);
+    border-color: var(--lime);
+    box-shadow: 0 0 0 0.25rem rgb(218 255 2 / 0.1), 0 0 0.875rem 1px var(--signal-glow);
+    transform: scale(1.2);
+  }
+  .lg-rows li:hover::after { transform: scaleX(1); }
+}
 
 /* who answers for the data: label · value rows */
 .lg-facts { display: grid; margin: 0; border-top: 1px solid var(--line); }

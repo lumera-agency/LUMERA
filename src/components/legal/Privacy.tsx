@@ -3,6 +3,7 @@ import { CONTACTS, phoneText, realPhones, telHref } from "@/config/contacts";
 import { studioName } from "@/config/site";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiHref } from "@/components/ai/links";
+import { Backdrop } from "./backdrop/Backdrop";
 
 /*
  * «Політика конфіденційності»: what the site takes, why, where it goes, the cookies, how long, the visitor's rights.
@@ -38,6 +39,7 @@ export async function PrivacyHero() {
   const rows = ["short", ...PARTS, "ask"] as const;
   return (
     <section className="ai-hero lg-hero" id="top" aria-labelledby="lg-title">
+      <Backdrop />
       <div className="ai-hero__in">
         <div className="ai-hero__copy">
           <nav className="ai-crumbs" aria-label={c("crumbs.label")}>
