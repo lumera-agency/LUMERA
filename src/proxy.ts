@@ -5,6 +5,7 @@ export default createMiddleware(routing);
 
 export const config = {
   // everything but the API, Next internals, files with an extension and the share pictures (/uk/…/opengraph-image is
-  // their own address: the default locale's prefix is not redirected away there)
-  matcher: "/((?!api|_next|_vercel|.*opengraph-image|.*\\..*).*)",
+  // their own address: the default locale's prefix is not redirected away there). `api/`, not `api`: a page whose path
+  // only starts with «api» (a future article, say) still gets its locale.
+  matcher: "/((?!api/|_next|_vercel|.*opengraph-image|.*\\..*).*)",
 };

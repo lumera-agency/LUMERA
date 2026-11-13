@@ -29,5 +29,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale,
     messages: typesetMessages(withBrand({ ...main, ...ai, ...sites, ...ads })),
+    // On the server a missing message or argument stops the build instead of shipping its key as a page's title, its
+    // structured data or an llms.txt line (every page is prerendered); the browser's provider keeps its own fallback.
+    onError(error) {
+      throw error;
+    },
   };
 });

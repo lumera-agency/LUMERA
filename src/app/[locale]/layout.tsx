@@ -22,8 +22,13 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+/** Only uk and ru are pages: any other first segment is a 404 that renders nothing (the 13 Nov audit: a crafted
+ *  /<something with a dot> reached generateMetadata and came out with a canonical and og:url on a foreign host). */
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) notFound();
   const t = await getTranslations({ locale, namespace: "meta" });
   const path = locale === routing.defaultLocale ? "/" : `/${locale}`;
   // a sum in the title or the description ({landing} …) is the configurator engine's, as on the page (services/copy)
