@@ -7,10 +7,12 @@ import { TocToggle } from "./TocToggle";
 
 /*
  * «Політика конфіденційності»: what the site takes, why, where it goes, the cookies, how long, the visitor's rights.
- * Every statement is what the site does today (13 Nov 2026): the lead form (api/lead → the studio's Telegram chat, no
- * database), Vercel Web Analytics (no cookies), one cookie (NEXT_LOCALE, the language), the tab's own marks
- * (sessionStorage: the preloader, the light or full version, the place on a language switch), and nothing from another
- * host (the Content-Security-Policy refuses it). What only the owner can say is marked <todo> until he says it.
+ * Every statement is what the site does today (14 Nov 2026): the lead form (api/lead → the studio's Telegram chat, no
+ * database), Vercel Web Analytics (no cookies), at most one cookie (next-intl's NEXT_LOCALE, a session cookie: set on a
+ * language switch, or when the browser's language is not the page's), the tab's own marks (sessionStorage: the
+ * preloader, the light or full version, the place on a reload or a language switch, the page curtain, the hero film), and
+ * nothing from another host (the Content-Security-Policy refuses it). The words name no hosting company and no cookie
+ * (the owner, 14 Nov 2026); the owner's legal name (ФОП) goes back into «Хто ми» as its first fact once he gives it.
  */
 
 /** the policy's parts in reading order: the anchor is the messages' key (privacy.<key>) */
@@ -22,13 +24,11 @@ const email = CONTACTS.email;
 const tags = {
   email,
   b: (chunks: React.ReactNode) => <b>{chunks}</b>,
-  code: (chunks: React.ReactNode) => <code className="lg-code">{chunks}</code>,
   mail: (chunks: React.ReactNode) => (
     <a className="link" href={`mailto:${email}`}>
       {chunks}
     </a>
   ),
-  todo: (chunks: React.ReactNode) => <mark className="lg-todo">{chunks}</mark>,
 };
 
 /** 1 · the first screen: the name of the document, what it is about, its date, and the contents */
@@ -148,10 +148,6 @@ export async function PrivacyParts() {
       <Part id="who" label={t("nav.who")} title={t("who.title")}>
         <p className="lg-p">{t("who.p")}</p>
         <dl className="lg-facts">
-          <div>
-            <dt>{t("who.owner")}</dt>
-            <dd>{t.rich("who.ownerValue", tags)}</dd>
-          </div>
           <div>
             <dt>{t("who.mail")}</dt>
             <dd>
