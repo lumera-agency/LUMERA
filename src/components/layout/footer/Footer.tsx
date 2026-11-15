@@ -48,7 +48,7 @@ export async function Footer({ claim, links, cta }: { claim?: React.ReactNode; l
         <p className="footer__legal">
           {t("footer.legal")}
           {/* the privacy policy, from every page (the owner, 13 Nov 2026); the lens steps aside over it and it lights
-              up as the index's rows do (the owner, 15 Nov 2026: clear that the pointer is on a link) */}
+              up as the map's links do (the owner, 15 Nov 2026: clear that the pointer is on a link) */}
           <a className="footer__privacy" href={aiHref(locale, "/polityka-konfidentsiinosti")}>
             <span className="footer__privacy-t">{t("footer.privacy")}</span>
           </a>
