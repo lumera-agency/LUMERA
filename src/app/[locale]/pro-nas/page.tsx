@@ -13,9 +13,10 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/pro-nas"
 
 /**
  * «Про нас» — the studio's own page (the owner's brief of 26 Oct: it answers one doubt, «won't they vanish in a month?»).
- * The owner picked whole-page variant B, «Робочий стіл» (sections/about-page/pb/; 7 Nov, again 8 Nov): 1 the team's ID
- * cards with a photo on a rail, by the ECLO mark in 3D → 2 the desk with the five things the client gets, as real
- * things (the one light block) → 3 «Слово команди», the team's quote → 4 the request form. The FAQ, the prices and the cases are the main page's and the service pages';
+ * The owner picked whole-page variant B, «Робочий стіл» (sections/about-page/pb/; 7 Nov, again 8 Nov): 1 «Студія», the
+ * title by the ECLO mark in 3D, the studio's goal and two short paragraphs (no photos or cards, 15 Nov) → 2 the desk
+ * with the five things the client gets, as real things (the one light block) → 3 «Слово команди», the team's quote,
+ * its rules and the honest note on numbers → 4 the request form. The FAQ, the prices and the cases are the main page's and the service pages';
  * the footer carries the map of the site. Built from the sibling pages' kit (AdsShell's frame, the main page's
  * sections, card and form).
  */

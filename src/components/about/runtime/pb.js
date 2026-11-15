@@ -5,9 +5,6 @@
  *
  * The scenes, each on the page's chain pattern (pb.css: the CSS default is the final frame, .is-pre holds the start,
  * .is-play runs the CSS animations, each part at its own moment; what is on the screen at load is left as it is):
- * · «crew» (block 1, phones and small tablets ≤860, where the role cards stand one under another): a card still below
- *   the screen at load waits, then rises into place at 40% in view. Wider, the cards are all on the first screen and
- *   come up from the first paint (CSS only).
  * · «desk» (block 2): the five objects land, the markers sweep the plan's two findings, the same findings drop as pins
  *   on the layout and the ad, the test request arrives, the key tags swing, the stamp presses; the objects' key tabs
  *   shuffle as they land (React Bits' Shuffle, as the page's labels). Wide screens: one timeline at 30% in view.
@@ -29,7 +26,6 @@ export function start() {
   initLineEnds();
   if (!motion) return;
   const queue = makeQueue();
-  initCrew(queue);
   initDesk(queue);
   initWord(queue);
   initTagHover();
@@ -90,13 +86,6 @@ const play = (el) => {
   el.classList.remove('is-pre');
   el.classList.add('is-play');
 };
-
-/* ---------- 1 · the role cards on phones and small tablets (one under another): each one still below the screen at
-   load plays as it comes into view ---------- */
-function initCrew(queue) {
-  if (!window.matchMedia('(max-width: 860px)').matches) return;
-  $$(`${ROOT} .pb-role`).forEach((card) => whenSeen(card, 0.4, () => queue(card, play)));
-}
 
 /* ---------- 2 · the desk ---------- */
 function initDesk(queue) {

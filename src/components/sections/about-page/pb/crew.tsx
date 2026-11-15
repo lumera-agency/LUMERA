@@ -1,40 +1,9 @@
 /**
- * The team's three roles, shared by block 1 (the role cards, PbTeam) and block 3 (the signature, PbWord), their glyphs
- * and the studio's mark. No photos (the owner, 15 Nov: there will be none).
+ * The team's three roles (named in block 3's signature, PbWord) and the studio's mark. No photos, no role cards (the
+ * owner, 15 Nov).
  */
 
 export const ROLES = [1, 2, 3] as const;
-export type Role = (typeof ROLES)[number];
-
-/** each role's glyph on its card (thin line, no people): two speech bubbles (the first conversation), a
- *  route through three stops (a project from the first talk to the launch), the pen's nib over a screen (design and
- *  build); drawn on a 48-unit square */
-export const GLYPH: Record<Role, React.ReactNode> = {
-  1: (
-    <>
-      <path d="M8 13.5c0-3 2.4-5.5 5.5-5.5h13c3 0 5.5 2.5 5.5 5.5v7c0 3-2.5 5.5-5.5 5.5H18l-6 4.5v-4.6A5.5 5.5 0 0 1 8 20.5z" />
-      <path d="M36 19h3.5c2.5 0 4.5 2 4.5 4.5v6c0 2.5-2 4.5-4.5 4.5H39v4l-5.2-4H29c-2.5 0-4.5-2-4.5-4.5V30" />
-      <path d="M15 16.5h11M15 20.5h7" />
-    </>
-  ),
-  2: (
-    <>
-      <circle cx="10" cy="36" r="3.5" />
-      <circle cx="26" cy="15" r="3.5" />
-      <circle cx="40" cy="34" r="3.5" />
-      <path d="M12.5 33.5c3-6 7-12 11-16M28.5 17.5c3.5 4 6.5 8.5 9.4 13.6" strokeDasharray="0.1 3.2" />
-      <path d="M40 30.5V9.5M40 9.5h-7l2 3-2 3h7" />
-    </>
-  ),
-  3: (
-    <>
-      <rect x="6" y="9" width="36" height="25" rx="3" />
-      <path d="M6 15h36M18 40h12M24 34v6" />
-      <path d="m27 30.5 9.5-9.5 4.3 4.3-9.5 9.5-5.6 1.3z" />
-      <path d="m33.8 23.7 4.3 4.3" />
-    </>
-  ),
-};
 
 /** the studio's mark (public/img/logo-mark.svg), in the signature */
 export function Mark({ className }: { className: string }) {
