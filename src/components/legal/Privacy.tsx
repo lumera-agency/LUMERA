@@ -195,8 +195,7 @@ export async function PrivacyParts() {
       </Part>
 
       <Part id="rights" label={t("nav.rights")} title={t("rights.title")}>
-        <Rows ns="rights" n={5} />
-        <p className="lg-p lg-p--key">{t.rich("rights.how", tags)}</p>
+        <Rows ns="rights" n={4} />
       </Part>
 
       <Part id="safety" label={t("nav.safety")} title={t("safety.title")}>
