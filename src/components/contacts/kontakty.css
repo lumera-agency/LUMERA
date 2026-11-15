@@ -1,0 +1,142 @@
+/*
+ * «Контакти»: the inner pages' first screen (ai.css: .ai-hero, its crumbs) over «Сонар» (legal.css: the ground, the
+ * glass), the ways to reach us on a glass board at its right, then the main page's request block (contact.css), its form
+ * glass too. Lime only where the main page puts it: the drawn line under the pointer, the copied check, the grid's rings.
+ */
+
+.kt-hero__title { max-width: none; }
+.kt-hero__act { margin-top: clamp(1.5rem, 3.5vh, 2.25rem); }
+.kt-hero .ai-hero__lead { max-width: 33rem; }
+html.motion main.kt .ai-hero__copy > .kt-hero__act { animation-delay: 0.24s; }
+
+/* the board: the ways to reach us, rows as the contents' on the privacy page */
+.kt-board { width: 100%; max-width: 30rem; justify-self: end; padding: 1.25rem 1.5rem 0.75rem; }
+.kt-board__label { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.kt-board__list { margin: 0; padding: 0; list-style: none; }
+.kt-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 0.75rem; border-top: 1px solid var(--line); }
+.kt-row:last-child { border-bottom: 1px solid var(--line); }
+.kt-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--lime), rgb(218 255 2 / 0.15) 70%, transparent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.6s var(--ease-out);
+  pointer-events: none;
+}
+.kt-row__link {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) 1.125rem;
+  align-items: center;
+  column-gap: 0.875rem;
+  min-height: 4.5rem;
+  padding: 0.625rem 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+.kt-row__link:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 0.5rem; }
+.kt-row__ico {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgb(246 246 243 / 0.03);
+  color: var(--ink-soft);
+  transition: color 0.3s, border-color 0.3s, background-color 0.3s, box-shadow 0.4s;
+}
+.kt-row__ico .ico { width: 1.125rem; height: 1.125rem; fill: currentColor; }
+.kt-row__ico .ico__wave { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.kt-row__text { display: grid; gap: 0.25rem; min-width: 0; }
+.kt-row__k { font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+.kt-row__v { font-size: 1.125rem; line-height: 1.25; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kt-row__go { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0.4; transition: opacity var(--dur-fast), transform 0.4s var(--ease-out); }
+
+/* the copy button: the mark turns into a lime check, a note above it says it is done */
+.kt-copy {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color var(--dur-fast), border-color var(--dur-fast), background-color var(--dur-fast);
+}
+.kt-copy svg { grid-area: 1 / 1; width: 1.0625rem; height: 1.0625rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: opacity 0.25s, transform 0.35s var(--ease-out); }
+.kt-copy__ok { opacity: 0; transform: scale(0.6); color: #0a0a0a; }
+.kt-copy.is-done { border-color: var(--lime); background: var(--lime); }
+.kt-copy.is-done .kt-copy__ico { opacity: 0; transform: scale(0.6); }
+.kt-copy.is-done .kt-copy__ok { opacity: 1; transform: none; }
+.kt-copy__note {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.375rem);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  background: var(--ink);
+  color: #0a0a0a;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(0.25rem);
+  transition: opacity 0.2s, transform 0.3s var(--ease-out);
+}
+.kt-copy.is-done .kt-copy__note { opacity: 1; transform: none; }
+.kt-copy__note:empty { visibility: hidden; }
+.kt-copy:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+@media (hover: hover) {
+  .kt-row:hover::after { transform: scaleX(1); }
+  .kt-row:hover .kt-row__ico { color: var(--lime); border-color: rgb(218 255 2 / 0.45); background: rgb(218 255 2 / 0.06); box-shadow: 0 0 1.25rem -0.25rem rgb(218 255 2 / 0.35); }
+  .kt-row__link:hover .kt-row__go { opacity: 1; transform: translate(2px, -2px); }
+  .kt-copy:not(.is-done):hover { color: var(--ink); border-color: rgb(246 246 243 / 0.45); background: rgb(246 246 243 / 0.05); }
+}
+
+/* 2 · the request: the main page's block over the grid, its form a glass block as the policy's are; its words keep a
+   shade so a ring passing behind them never takes their edge */
+.kt .section--contact { padding-top: clamp(4rem, 10vh, 7rem); }
+.kt .contact__side { text-shadow: 0 0 0.75rem rgb(10 10 10 / 0.9), 0 0 0.25rem rgb(10 10 10 / 0.75); }
+.kt .lead-form.card {
+  border: 1px solid rgb(246 246 243 / 0.1);
+  background: linear-gradient(180deg, rgb(24 24 24 / 0.62), rgb(12 12 12 / 0.5));
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  backdrop-filter: blur(12px) saturate(1.2);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1.5rem 3.5rem -2rem rgb(0 0 0 / 0.75);
+}
+@media (hover: none) {
+  .kt .lead-form.card { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgb(14 14 14 / 0.86); }
+}
+
+/* a phone: the board under the words, full width */
+@media (max-width: 1023px) {
+  .kt-board { max-width: none; justify-self: stretch; }
+}
+@media (max-width: 700px) {
+  .kt-board { padding: 1rem 1.125rem 0.5rem; }
+  .kt-row__link { grid-template-columns: 2.5rem minmax(0, 1fr) 1rem; column-gap: 0.75rem; min-height: 4.25rem; }
+  .kt-row__ico { width: 2.5rem; height: 2.5rem; }
+  .kt-row__v { font-size: 1.0625rem; }
+}
+
+/* the request block's «what happens next» rows, as the main page has them (their rules live with block 5's, approach.css,
+   which this page does not load) */
+.kt .next { list-style: none; margin: var(--rhythm-m) 0 0; padding: 0; border-top: 1px solid var(--line); }
+.kt .next li { display: grid; grid-template-columns: var(--index-w) 1fr; align-items: baseline; padding: var(--row-pad-s) 0; border-bottom: 1px solid var(--line); }
+.kt .next li > span { font-family: var(--font-mono); font-weight: 400; font-size: var(--fs-label); letter-spacing: var(--track-num); font-variant-numeric: tabular-nums; color: var(--ink-mute); }
+.kt .next b { display: block; margin-bottom: 0.25rem; font-weight: 500; color: var(--ink); }
+.kt .next div { font-size: var(--fs-small); font-weight: 300; color: var(--ink-mute); text-wrap: balance; }
+
+/* a word that never breaks at its hyphen («e-mail») */
+.kt-nb { white-space: nowrap; }

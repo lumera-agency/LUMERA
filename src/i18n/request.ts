@@ -18,7 +18,7 @@ function withBrand(node: Messages): Messages {
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
   const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
-  // the main page's messages and, under their own namespaces (ai, case, asst, aiCommon, sites, ads, privacy), the AI pages' (messages/ai/)
+  // the main page's messages and, under their own namespaces (ai, case, asst, aiCommon, sites, ads, privacy, kontakty), the AI pages' (messages/ai/)
   // and «Дизайн і сайти»'s (messages/sites/)
   const main = (await import(`../messages/${locale}.json`)).default;
   const ai = glueNumbers((await import(`../messages/ai/${locale}.json`)).default);
@@ -28,9 +28,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
   const ads = glueNumbers((await import(`../messages/ads/${locale}.json`)).default);
   // «Політика конфіденційності» (/polityka-konfidentsiinosti): its own namespace (privacy), messages/privacy/
   const privacy = (await import(`../messages/privacy/${locale}.json`)).default;
+  // «Контакти» (/kontakty): its own namespace (kontakty), messages/kontakty/
+  const kontakty = (await import(`../messages/kontakty/${locale}.json`)).default;
   return {
     locale,
-    messages: typesetMessages(withBrand({ ...main, ...ai, ...sites, ...ads, ...privacy })),
+    messages: typesetMessages(withBrand({ ...main, ...ai, ...sites, ...ads, ...privacy, ...kontakty })),
     // On the server a missing message or argument stops the build instead of shipping its key as a page's title, its
     // structured data or an llms.txt line (every page is prerendered); the browser's provider keeps its own fallback.
     onError(error) {

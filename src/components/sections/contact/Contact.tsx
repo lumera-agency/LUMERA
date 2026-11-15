@@ -4,10 +4,10 @@ import { ContactClient } from "./ContactClient";
 import "./contact.css";
 
 /**
- * 8 · Заявка: what happens after the request, what the client gets, and the form (lead-form.js:
+ * 8 · Заявка (and 2 on the contacts page, /kontakty): what happens after the request, what the client gets, and the form (lead-form.js:
  * chips, validation, the plan from the configurator, sending to /api/lead).
  */
-export async function Contact() {
+export async function Contact({ index = 8 }: { index?: number } = {}) {
   const t = await getTranslations();
   return (
     <>
@@ -16,7 +16,7 @@ export async function Contact() {
           <div className="contact__side">
             <header className="s-head s-head--side">
               <p className="s-head__meta s-head__meta--hatch" data-sr="">
-                <span className="s-head__index">8</span>
+                <span className="s-head__index">{index}</span>
                 <span>{t("nav.contact")}</span>
               </p>
               <h2 className="s-head__title s-head__title--stone" id="contact-title" data-split="">
