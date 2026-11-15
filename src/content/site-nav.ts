@@ -27,6 +27,8 @@ export type SiteNavData = {
   /** the main page in this language: «/» or «/ru» */
   home: string;
   about: string | null;
+  /** «Контакти»: the contacts page (the owner, 15 Nov 2026: in the main page's header) */
+  kontakty: string;
   /** the main page's «Як працюємо» and «Ціни», from any page */
   approach: string;
   pricing: string;
@@ -41,6 +43,7 @@ export type SiteNavData = {
     cases: string;
     pricing: string;
     about: string;
+    kontakty: string;
     what: string;
     casesMore: string;
     calc: string;
@@ -156,6 +159,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
     approach: `${home}#approach`,
     pricing: `${home}#pricing`,
     about: SITE_NAV.about ? href("/pro-nas") : null,
+    kontakty: href("/kontakty"),
     services,
     cases: [
       adsCase(1, "ac"),
@@ -185,6 +189,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
       cases: t("nav.cases"),
       pricing: t("nav.pricing"),
       about: t("nav.about"),
+      kontakty: t("nav.kontakty"),
       what: t("what.meta"),
       casesMore: t("nav.casesMore"),
       calc: t("nav.calc"),

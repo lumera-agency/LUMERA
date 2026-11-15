@@ -19,7 +19,7 @@ const NAV_SHOWN = 1600;
 
 /**
  * The first screen's header: logo, «Послуги ⌄» (its panel drops under the header: NavPanel), «Як працюємо», «Ціни»,
- * «Про нас», UA · RU, the contact pill and the ghost CTA; on phones the burger opens the site menu (MenuSheet). The
+ * «Про нас», «Контакти» (the contacts page, the owner, 15 Nov 2026), UA · RU, the contact pill and the ghost CTA; on phones the burger opens the site menu (MenuSheet). The
  * owner, 5 Nov 2026: no «Кейси ⌄» of its own; the cases panel opens from the services panel's «Кейси клієнтів →», as
  * on the topbar.
  */
@@ -95,6 +95,11 @@ export function Header() {
                 </a>
               </li>
             )}
+            <li>
+              <a className="nav__link" href={nav.kontakty} data-navp-plain="" data-reveal="nav">
+                <RollText>{nav.labels.kontakty}</RollText>
+              </a>
+            </li>
           </ul>
           <span className="nav__divider" aria-hidden="true" data-reveal="nav" />
           <LangSwitch data-reveal="nav" />
