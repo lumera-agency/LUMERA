@@ -69,11 +69,15 @@ main.about[data-ai-page="about"] .pb-hero__lead { max-width: 40ch; margin-top: 1
 main.about[data-ai-page="about"] .pb-hero__down { margin-top: 1.5rem; }
 main.about[data-ai-page="about"] .pb-hero__side { display: flex; flex-direction: column; gap: clamp(1.75rem, 4vh, 2.75rem); min-width: 0; }
 
-/* «Студія»: the label, then the paragraph (the lead's size, the soft ink) */
-main.about[data-ai-page="about"] .pb-studio__k { margin: 0 0 0.875rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-main.about[data-ai-page="about"] .pb-studio__k::before { content: ""; display: inline-block; width: 0.375rem; height: 0.375rem; margin-right: 0.5rem; border-radius: 50%; background: var(--ember); vertical-align: 0.1em; }
+/* a text part's label (mono caps on an ember dot): «Студія», «Наші правила», «Чесно про цифри» */
+main.about[data-ai-page="about"] .pb-k { margin: 0 0 0.875rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-k::before { content: ""; display: inline-block; width: 0.375rem; height: 0.375rem; margin-right: 0.5rem; border-radius: 50%; background: var(--ember); vertical-align: 0.1em; }
+main.about[data-ai-page="about"] .pb-nb { white-space: nowrap; }
+
+/* «Студія»: the label, the goal (full ink), then two short paragraphs (the soft ink); all at the lead's size */
+main.about[data-ai-page="about"] .pb-studio__goal { max-width: 52ch; margin: 0 0 0.75rem; font-size: var(--fs-lead); font-weight: 400; line-height: 1.5; color: var(--ink); text-wrap: pretty; }
 main.about[data-ai-page="about"] .pb-studio__text { max-width: 58ch; margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.6; color: var(--ink-soft); text-wrap: pretty; }
-main.about[data-ai-page="about"] .pb-studio__nb { white-space: nowrap; }
+main.about[data-ai-page="about"] .pb-studio__text + .pb-studio__text { margin-top: 0.625rem; }
 
 /* the roles: three straight dark cards (the card's light and hairline under it, its shade a layer of its own for the
    hover); the role's glyph, the role, its duty, then what it does for the client, each line on a short ember dash */
@@ -126,6 +130,12 @@ main.about[data-ai-page="about"] .pb-role__more li::before { content: ""; positi
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__down { grid-column: 1 / span 5; grid-row: 4; justify-self: start; }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { grid-column: 1 / span 5; grid-row: 5; align-self: end; justify-self: start; width: min(100%, calc(100svh - 32rem), 24rem); margin-top: var(--card-gap); }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__side { grid-column: 7 / -1; grid-row: 1 / -1; align-self: stretch; justify-content: space-between; }
+}
+/* 1200 and wider on a low screen (the cards run past its foot): the mark right under the way down, whole on the first
+   screen, and the cards right under the paragraph, their tops in view */
+@media (min-width: 1200px) and (max-height: 860px) {
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { align-self: start; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__side { justify-content: flex-start; }
 }
 
 /* phones and small tablets (≤860): the title beside the mark, the lead, the way down, the paragraph, then the cards
@@ -652,6 +662,30 @@ main.about[data-ai-page="about"] .pb-say__roles li { min-width: 0; font-size: va
 @media (min-width: 1200px) {
   main.about[data-ai-page="about"] .pb-say__sel { grid-column: 1 / span 13; padding: calc(var(--m) * 0.5) calc(var(--m) * 0.5) calc(var(--m) * 0.5 + 0.125rem); }
   main.about[data-ai-page="about"] .pb-say__by { grid-column: 14 / -1; padding-bottom: 0.125rem; }
+}
+
+/* how the team keeps its word, under the mat, text only: «Наші правила» (each on a ruled line with an ember dash, as
+   ruled paper on the desk) and «Чесно про цифри» with its link. Phones: one under another; 861–1199: cols 1–5 and
+   6–8; 1200+: cols 1–9 and 11–16 */
+main.about[data-ai-page="about"] .pb-rules { display: grid; gap: var(--rhythm-m) var(--card-gap); margin-top: var(--rhythm-m); }
+main.about[data-ai-page="about"] .pb-rules__col { min-width: 0; }
+main.about[data-ai-page="about"] .pb-rules__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+main.about[data-ai-page="about"] .pb-rules__list li {
+  position: relative; padding: 0.875rem 0 0.875rem 1.5rem; border-bottom: 1px solid var(--line);
+  font-size: var(--fs-lead); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty;
+}
+main.about[data-ai-page="about"] .pb-rules__list li::before { content: ""; position: absolute; left: 0; top: calc(0.875rem + 0.72em); width: 0.625rem; height: 1px; background: var(--ember); }
+main.about[data-ai-page="about"] .pb-rules__p { max-width: 40ch; margin: 0 0 1rem; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-rules__link { font-size: var(--fs-small); }
+@media (min-width: 861px) and (max-width: 1199px) {
+  main.about[data-ai-page="about"] .pb-rules { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  main.about[data-ai-page="about"] .pb-rules__col { grid-column: 1 / span 5; }
+  main.about[data-ai-page="about"] .pb-rules__col--honest { grid-column: 6 / -1; padding-left: var(--card-gap); }
+}
+@media (min-width: 1200px) {
+  main.about[data-ai-page="about"] .pb-rules { grid-template-columns: repeat(16, minmax(0, 1fr)); }
+  main.about[data-ai-page="about"] .pb-rules__col { grid-column: 1 / span 9; }
+  main.about[data-ai-page="about"] .pb-rules__col--honest { grid-column: 11 / -1; }
 }
 
 /* the word's scene (runtime/pb.js, scene «word»): the selection comes on (its frame and its handles), then the marker

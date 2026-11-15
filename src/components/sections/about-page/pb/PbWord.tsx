@@ -1,5 +1,6 @@
 import { Fragment } from "react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { aiHref } from "@/components/ai/links";
 import { Mark, ROLES } from "./crew";
 
 type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
@@ -51,15 +52,21 @@ function Quote({ raw }: { raw: string }) {
  * full ink, the rest in a lighter one; once, as the quote comes into view, an ember marker stroke runs behind each key
  * phrase from its left, one phrase after another (21st.dev, Daniel Petho's «Text Highlighter»; runtime/pb.js, scene
  * «word»; the CSS default is the drawn stroke). Under the frame, the signature: the mark and «Команда ECLO», and the
- * three roles by name (no avatars, no photos).
+ * three roles by name (no avatars, no photos). Under the mat, text only: «Наші правила», five lines from the site's own
+ * terms (faq.a.1, the sites page's stages, the ads page's terms and faq.intro), and «Чесно про цифри» (the ads page's
+ * cases: screenshots without changed numbers, each with what the numbers do not show) with a link to them.
  *
  * The quote (about.pb.word.quote) is the main page's own lines, put together for this block at the owner's request:
  * the manifesto («Сайт працює, коли клієнти пишуть першими»: manifesto.glitch / .and / .mark), the chain's four links
  * as the whole way (the main page's chain of 3 Nov: Пошук → Сайт → Заявка → Звідки заявка) and the services' title («Сайт, реклама й
  * заявки в одному проєкті»: services.title).
  */
+/** «Наші правила»: five lines (about.pb.rules.1–5) */
+const RULES = [1, 2, 3, 4, 5] as const;
+
 export async function PbWord({ index }: { index: number }) {
   const t = await getTranslations("about");
+  const cases = `${aiHref(await getLocale(), "/reklama-i-analityka")}#case`;
   return (
     <section className="section pb-word" id="word" aria-labelledby="word-title">
       <div className="container pb-c">
@@ -95,6 +102,23 @@ export async function PbWord({ index }: { index: number }) {
               </ul>
             </figcaption>
           </figure>
+        </div>
+
+        {/* how the team keeps its word: the rules, then the honest note on the numbers (both text only) */}
+        <div className="pb-rules">
+          <div className="pb-rules__col" data-in="">
+            <h3 className="pb-k" id="rules-k">{t("pb.rules.k")}</h3>
+            <ul className="pb-rules__list" aria-labelledby="rules-k">
+              {RULES.map((n) => (
+                <li key={n}>{t(`pb.rules.${n}`)}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="pb-rules__col pb-rules__col--honest" data-in="">
+            <h3 className="pb-k">{t("pb.honest.k")}</h3>
+            <p className="pb-rules__p">{t("pb.honest.text")}</p>
+            <a className="link pb-rules__link" href={cases}>{t("pb.honest.link")}</a>
+          </div>
         </div>
       </div>
     </section>

@@ -4,6 +4,7 @@ import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import { PhoneIcon, TelegramIcon, ViberIcon } from "@/components/layout/site-nav/Contacts";
 import { getSiteNav } from "@/content/site-nav";
 import { aiRich as R } from "@/components/ai/rich";
+import { aiHref } from "@/components/ai/links";
 import "@/components/sections/contact/contact.css";
 
 /** The task chips of the main page's form, with the values /api/lead receives (as AboutContact has them) */
@@ -25,7 +26,8 @@ const TICK = (
 export async function PbContact({ index }: { index: number }) {
   const t = await getTranslations();
   const a = await getTranslations("about");
-  const nav = await getSiteNav(await getLocale());
+  const locale = await getLocale();
+  const nav = await getSiteNav(locale);
   const steps = [
     { b: t("contact.next.b.1"), s: t("contact.next.span.1") },
     { b: a("pb.next2"), s: t("contact.next.span.2") },
@@ -102,7 +104,10 @@ export async function PbContact({ index }: { index: number }) {
                 <span className="btn__label">{t("contact.btn.label")}</span>
                 <ArrowIcon />
               </button>
-              <p className="lead-form__note">{t("contact.lead-form.note")}</p>
+              {/* the main page's note, with who sees the request and the privacy policy (about.pb.data) */}
+              <p className="lead-form__note">
+                {a.rich("pb.data", { privacy: (chunks) => <a className="link" href={aiHref(locale, "/polityka-konfidentsiinosti")}>{chunks}</a> })}
+              </p>
               <p className="lead-form__fail" data-form-fail="" role="alert" tabIndex={-1} hidden>{t("contact.lead-form.fail")}</p>
               <p className="lead-form__fail" data-form-fail-server="" role="alert" tabIndex={-1} hidden>{t("contact.lead-form.fail-server")}</p>
             </div>

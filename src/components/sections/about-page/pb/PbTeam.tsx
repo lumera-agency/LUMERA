@@ -1,4 +1,5 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { aiHref } from "@/components/ai/links";
 import { PbMark } from "@/components/about/pb-3d/PbMark";
 import { splitWords } from "../words";
 import { GLYPH, ROLES } from "./crew";
@@ -19,9 +20,11 @@ const MORE = {
 
 /**
  * Variant B, 1 · Команда, the first screen: the title, the lead and the way down beside the studio's mark in chrome
- * (about/pb-3d: a live object on wide screens, its still elsewhere); then «Студія», a paragraph about the studio
- * (about.pb.studio.text: what the studio makes, from the site's own lines: meta.org, services.service.text.1 and .3,
- * why.sum.*, meta.description, faq.a.5, why.market.3; nothing the next blocks say), and the three roles as straight
+ * (about/pb-3d: a live object on wide screens, its still elsewhere); then «Студія»: the studio's goal (about.pb.studio.goal,
+ * from the AI page's «Вам лишається подзвонити» and the main page's «Беремося за весь шлях клієнта») and two short
+ * paragraphs about the studio (what it makes, this site as its own example, open prices, the ad money paid to Google
+ * directly, «якщо заявок мало, питання до нас»; every fact from the site's own lines: meta.org, services.*, the sites
+ * page's calm mode, the privacy page, faq.a.5, why.market.3; nothing the next blocks say), and the three roles as straight
  * cards: the role's glyph, the role, its duty and three lines of what it does for the client. No names, no faces, no
  * photos, no count (the owner, 15 Nov: no photos, no passes). Wide screens (1200+): the title, the way down and the
  * mark in cols 1–5; the paragraph and the cards in cols 7–16, the cards' feet on the mark's line; 861–1199: the title
@@ -32,6 +35,13 @@ const MORE = {
 export async function PbTeam() {
   const t = await getTranslations("about");
   const tm = await getTranslations();
+  /* the paragraph's tags: a hyphenated word that never breaks at its hyphen («AI-асистента»), the link to the main
+     page's calculator (its open prices) */
+  const calc = `${aiHref(await getLocale(), "/")}#pricing`;
+  const tags = {
+    nb: (chunks: React.ReactNode) => <span className="pb-nb">{chunks}</span>,
+    calc: (chunks: React.ReactNode) => <a className="link" href={calc}>{chunks}</a>,
+  };
   return (
     <section className="section pb-hero" id="team" aria-labelledby="team-title">
       <div className="container pb-c">
@@ -57,13 +67,10 @@ export async function PbTeam() {
           </div>
           <div className="pb-hero__side">
             <div className="pb-studio">
-              <p className="pb-studio__k">{t("pb.studio.k")}</p>
-              {/* a hyphenated word («AI-асистента») never breaks at its hyphen */}
-              <p className="pb-studio__text">
-                {t("pb.studio.text")
-                  .split(/([^\s-]+-[^\s-]+)/)
-                  .map((part, i) => (i % 2 ? <span className="pb-studio__nb" key={i}>{part}</span> : part))}
-              </p>
+              <p className="pb-k">{t("pb.studio.k")}</p>
+              <p className="pb-studio__goal">{t("pb.studio.goal")}</p>
+              <p className="pb-studio__text">{t.rich("pb.studio.text", tags)}</p>
+              <p className="pb-studio__text">{t.rich("pb.studio.text2", tags)}</p>
             </div>
             <ul className="pb-roles" aria-label={t("work.sign")}>
               {ROLES.map((n, i) => (
