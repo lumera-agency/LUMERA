@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { getTranslations } from "next-intl/server";
-import { GLYPH, Mark, PHOTOS, ROLES } from "./crew";
+import { Mark, ROLES } from "./crew";
 
 type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
 
@@ -51,12 +51,11 @@ function Quote({ raw }: { raw: string }) {
  * full ink, the rest in a lighter one; once, as the quote comes into view, an ember marker stroke runs behind each key
  * phrase from its left, one phrase after another (21st.dev, Daniel Petho's «Text Highlighter»; runtime/pb.js, scene
  * «word»; the CSS default is the drawn stroke). Under the frame, the signature: the mark and «Команда ECLO», and the
- * three roles, each on a round avatar that reads crew.tsx's PHOTOS (as the first screen's passes do; empty: the
- * role's glyph on the ember duotone).
+ * three roles by name (no avatars, no photos).
  *
  * The quote (about.pb.word.quote) is the main page's own lines, put together for this block at the owner's request:
  * the manifesto («Сайт працює, коли клієнти пишуть першими»: manifesto.glitch / .and / .mark), the chain's four links
- * as the whole way (why.link.1–4: Пошук → Сайт → Заявка → Звідки заявка) and the services' title («Сайт, реклама й
+ * as the whole way (the main page's chain of 3 Nov: Пошук → Сайт → Заявка → Звідки заявка) and the services' title («Сайт, реклама й
  * заявки в одному проєкті»: services.title).
  */
 export async function PbWord({ index }: { index: number }) {
@@ -90,22 +89,9 @@ export async function PbWord({ index }: { index: number }) {
                 <span>{t("work.sign")}</span>
               </p>
               <ul className="pb-say__roles">
-                {ROLES.map((n, i) => {
-                  const photo = PHOTOS[n];
-                  return (
-                    <li key={n} style={{ "--i": i } as CSSVars}>
-                      <span className={`pb-ava${photo ? " has-photo" : ""}`} aria-hidden="true">
-                        {photo ? (
-                          // eslint-disable-next-line @next/next/no-img-element -- a fixed round frame; the role is said beside it
-                          <img src={photo} width={96} height={96} alt="" loading="lazy" decoding="async" />
-                        ) : (
-                          <svg viewBox="0 0 48 48" focusable="false">{GLYPH[n]}</svg>
-                        )}
-                      </span>
-                      <span>{t(`team.${n}.role`)}</span>
-                    </li>
-                  );
-                })}
+                {ROLES.map((n, i) => (
+                  <li key={n} style={{ "--i": i } as CSSVars}>{t(`team.${n}.role`)}</li>
+                ))}
               </ul>
             </figcaption>
           </figure>

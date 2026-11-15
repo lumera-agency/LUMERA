@@ -24,9 +24,6 @@ type Props = {
   children: React.ReactNode;
 };
 
-/** Where the button back up steps aside: the request block and the footer (as on the ads page) */
-const TO_TOP_QUIET = ["#contact", ".footer"].join(", ");
-
 /** The faces the first screen is set in: fetched with the page, so the words never re-wrap once the font comes in */
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
 
@@ -49,7 +46,7 @@ export async function AboutShell({ nav, footerLinks, cta, barCta, children }: Pr
       </main>
       <Footer links={footerLinks} cta={cta} />
       <MenuSheet links={nav} cta={cta} home={home} />
-      <BackToTop label={t("footer.up.span")} quiet={TO_TOP_QUIET} />
+      <BackToTop label={t("footer.up.span")} />
       <AboutRuntime />
     </>
   );

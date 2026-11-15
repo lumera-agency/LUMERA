@@ -1,20 +1,12 @@
 /**
- * The team's three roles, shared by block 1 (the passes on the rail, PbTeam) and block 3 (the signature's avatars,
- * PbWord): their photos and their glyphs.
+ * The team's three roles, shared by block 1 (the role cards, PbTeam) and block 3 (the signature, PbWord), their glyphs
+ * and the studio's mark. No photos (the owner, 15 Nov: there will be none).
  */
 
 export const ROLES = [1, 2, 3] as const;
 export type Role = (typeof ROLES)[number];
 
-/**
- * The team's photos, one per role (the owner sends real ones; the same files serve the hero's passes and the quote's
- * signature). Put a path here, e.g. `1: "/img/about/team-1.jpg"`, and that role shows the photo everywhere on the page
- * (cover-cropped: the pass's 4:5 frame, the signature's round avatar); `null`: the finished empty frame. Nothing else
- * changes, every frame keeps its size either way.
- */
-export const PHOTOS: Record<Role, string | null> = { 1: null, 2: null, 3: null };
-
-/** each role's glyph in its empty photo frame (thin line, no people): two speech bubbles (the first conversation), a
+/** each role's glyph on its card (thin line, no people): two speech bubbles (the first conversation), a
  *  route through three stops (a project from the first talk to the launch), the pen's nib over a screen (design and
  *  build); drawn on a 48-unit square */
 export const GLYPH: Record<Role, React.ReactNode> = {
@@ -44,7 +36,7 @@ export const GLYPH: Record<Role, React.ReactNode> = {
   ),
 };
 
-/** the studio's mark (public/img/logo-mark.svg), in the passes' bands and the signature */
+/** the studio's mark (public/img/logo-mark.svg), in the signature */
 export function Mark({ className }: { className: string }) {
   return (
     <svg className={className} viewBox="0 0 329 329" aria-hidden="true" focusable="false">

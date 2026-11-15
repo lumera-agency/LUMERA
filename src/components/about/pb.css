@@ -6,12 +6,12 @@
 /*
  * «Робочий стіл»: the page as the studio's work surface. A mat of square modules (16 at 1200 and wider, 8 on tablets,
  * 4 on phones; gap var(--card-gap)) shows itself through dots at the modules' corners (the desk, the word) and ruler
- * ticks (the hero's rail, the mats' top edges). The objects snap to whole modules; rows may grow, so no text is ever
+ * ticks (the mats' top edges). The objects snap to whole modules; rows may grow, so no text is ever
  * clipped. Every colour is a token; five sizes (label, small, lead, h3, display), mono only in the labels.
  * Motion: transform and opacity only (the translate / rotate / scale properties), once each. The CSS default of every
  * part is its final frame; .is-pre holds its start (set by runtime/pb.js only on what is still below the screen),
- * .is-play runs it (each part's moment its own delay, fill backwards). The first screen's passes play in CSS from the
- * first paint. Reduced motion: the final frame. Hover: a mouse only.
+ * .is-play runs it (each part's moment its own delay, fill backwards). The first screen plays in CSS from the first
+ * paint. Reduced motion: the final frame. Hover: a mouse only.
  */
 
 /* ---------- the mat: its module (--m, from the block's own width), its pitch, its dots and its ruler ---------- */
@@ -42,11 +42,10 @@ main.about[data-ai-page="about"] .pb-mat {
   /* the dots end with the mat's last object (or its caption): no lone row in the padding under it */
   background-clip: content-box;
 }
-main.about[data-ai-page="about"] .pb-ruler,
-main.about[data-ai-page="about"] .pb-rail {
+main.about[data-ai-page="about"] .pb-ruler {
   background:
     linear-gradient(var(--pb-tick), var(--pb-tick)) 0 0 / 100% 1px no-repeat,
-    linear-gradient(90deg, var(--pb-tick) 0 1px, transparent 1px) var(--pb-tick-x, 0) 0 / calc(var(--pitch) * 4) 0.5rem repeat-x,
+    linear-gradient(90deg, var(--pb-tick) 0 1px, transparent 1px) 0 0 / calc(var(--pitch) * 4) 0.5rem repeat-x,
     linear-gradient(90deg, var(--pb-tick) 0 1px, transparent 1px) 0 0 / var(--pitch) 0.25rem repeat-x;
 }
 main.about[data-ai-page="about"] .pb-ruler { position: absolute; left: 0; right: 0; top: 0; height: 0.5rem; transform-origin: 0 50%; }
@@ -60,107 +59,53 @@ main.about[data-ai-page="about"] .pb-mat--desk { --pb-dot: var(--line-dark); --p
 }
 
 /* ==========================================================================
-   1 · Команда («Пропуска на рейке»): straight ID passes with a photo frame hang from a rail that is also a ruler; the
-   studio's mark in chrome beside them (about/pb-3d)
+   1 · Команда: the title beside the studio's mark in chrome (about/pb-3d), «Студія» (a paragraph about the studio)
+   and the three roles as straight cards; no photos, no passes (the owner, 15 Nov)
    ========================================================================== */
 main.about[data-ai-page="about"] .pb-hero { overflow-x: clip; padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); padding-bottom: var(--rhythm-l); }
 main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: minmax(0, 1fr); align-items: start; margin-bottom: 0; }
 main.about[data-ai-page="about"] .pb-hero__grid > * { grid-column: 1 / -1; }
 main.about[data-ai-page="about"] .pb-hero__lead { max-width: 40ch; margin-top: 1.25rem; text-wrap: balance; }
 main.about[data-ai-page="about"] .pb-hero__down { margin-top: 1.5rem; }
-main.about[data-ai-page="about"] .pb-crew { --pb-tick: var(--border-strong); position: relative; }
-main.about[data-ai-page="about"] .pb-crew__list { margin: 0; padding: 0; list-style: none; }
-main.about[data-ai-page="about"] .pb-pass { position: relative; display: flex; flex-direction: column; align-items: center; }
-/* the strap: at least the rail's drop; on wide screens it takes up what its pass leaves of the row, so every pass's
-   foot is on one line and a shorter pass hangs lower */
-main.about[data-ai-page="about"] .pb-pass__strap { display: block; flex: 1 0 var(--pb-strap); width: 0.75rem; min-height: var(--pb-strap); background: var(--ember); box-shadow: inset 0 0 0 1px var(--ember-deep); transform-origin: 50% 0; }
+main.about[data-ai-page="about"] .pb-hero__side { display: flex; flex-direction: column; gap: clamp(1.75rem, 4vh, 2.75rem); min-width: 0; }
 
-/* a pass: a dark card under its own light and hairline (so one never shows through another), its shade a layer of
-   its own below it (for the hover); the clip on its top edge, over the strap's end. It lies straight */
-main.about[data-ai-page="about"] .pb-pass__card {
-  --pad: clamp(0.75rem, 1.1vw, 1rem);
-  position: relative; isolation: isolate; align-self: stretch; display: flex; flex-direction: column;
-  margin-top: -0.25rem; padding: calc(var(--pad) + 0.25rem) var(--pad) 0; border-radius: var(--radius-md); transform-origin: 50% 0;
+/* «Студія»: the label, then the paragraph (the lead's size, the soft ink) */
+main.about[data-ai-page="about"] .pb-studio__k { margin: 0 0 0.875rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-studio__k::before { content: ""; display: inline-block; width: 0.375rem; height: 0.375rem; margin-right: 0.5rem; border-radius: 50%; background: var(--ember); vertical-align: 0.1em; }
+main.about[data-ai-page="about"] .pb-studio__text { max-width: 58ch; margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.6; color: var(--ink-soft); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-studio__nb { white-space: nowrap; }
+
+/* the roles: three straight dark cards (the card's light and hairline under it, its shade a layer of its own for the
+   hover); the role's glyph, the role, its duty, then what it does for the client, each line on a short ember dash */
+main.about[data-ai-page="about"] .pb-roles { display: grid; gap: var(--card-gap); margin: 0; padding: 0; list-style: none; }
+main.about[data-ai-page="about"] .pb-role { display: flex; min-width: 0; }
+main.about[data-ai-page="about"] .pb-role__card {
+  --pad: clamp(1rem, 1.3vw, 1.25rem);
+  position: relative; isolation: isolate; flex: 1; min-width: 0; padding: var(--pad); border-radius: var(--radius-md);
 }
-main.about[data-ai-page="about"] .pb-pass__card::before,
-main.about[data-ai-page="about"] .pb-pass__card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
-main.about[data-ai-page="about"] .pb-pass__card::before {
+main.about[data-ai-page="about"] .pb-role__card::before,
+main.about[data-ai-page="about"] .pb-role__card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+main.about[data-ai-page="about"] .pb-role__card::before {
   z-index: -1;
   background:
     radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--ink) 7%, transparent), transparent 70%),
     linear-gradient(180deg, color-mix(in srgb, var(--ink) 5%, var(--bg)), color-mix(in srgb, var(--ink) 2%, var(--bg)));
   box-shadow: inset 0 0 0 1px var(--border-strong), inset 0 1px 0 color-mix(in srgb, var(--ink) 14%, transparent);
 }
-main.about[data-ai-page="about"] .pb-pass__card::after { z-index: -2; box-shadow: 0 2rem 3rem -1rem var(--color-ink-dark), 0 0.5rem 1rem -0.5rem var(--color-ink-dark); opacity: 0.5; transition: opacity 0.28s var(--ease-out); }
-main.about[data-ai-page="about"] .pb-pass__clip { position: absolute; z-index: 1; left: 50%; top: -0.75rem; width: 1.75rem; height: 1.625rem; margin-left: -0.875rem; border-radius: 0.375rem; background: var(--bg); box-shadow: inset 0 0 0 1.5px var(--ink-mute); }
-main.about[data-ai-page="about"] .pb-pass__clip::after { content: ""; position: absolute; left: 0.375rem; right: 0.375rem; bottom: 0.3125rem; height: 0.375rem; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px var(--ink-mute); }
-/* the band: «Команда ECLO» and the mark on either side of the clip */
-main.about[data-ai-page="about"] .pb-pass__band { display: flex; align-items: center; justify-content: space-between; gap: 2.75rem; margin: 0 0 calc(var(--pad) * 0.75); font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); white-space: nowrap; }
-main.about[data-ai-page="about"] .pb-pass__band > span { order: -1; min-width: 0; overflow: hidden; text-overflow: clip; }
-main.about[data-ai-page="about"] .pb-pass__mark { flex: none; width: 0.875rem; height: 0.875rem; fill: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-role__card::after { z-index: -2; box-shadow: 0 2rem 3rem -1rem var(--color-ink-dark), 0 0.5rem 1rem -0.5rem var(--color-ink-dark); opacity: 0.5; transition: opacity 0.28s var(--ease-out); }
+main.about[data-ai-page="about"] .pb-role__glyph { display: block; width: 2.25rem; height: 2.25rem; margin: 0 0 1rem -0.125rem; overflow: visible; fill: none; stroke: var(--ember-ink); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-role__glyph * { vector-effect: non-scaling-stroke; }
+main.about[data-ai-page="about"] .pb-role__name { margin: 0; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
+main.about[data-ai-page="about"] .pb-role__d { margin: 0.375rem 0 0; font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-role__more { display: grid; gap: 0.375rem; margin: 0.875rem 0 0; padding: 0.875rem 0 0; list-style: none; border-top: 1px solid var(--line); }
+main.about[data-ai-page="about"] .pb-role__more li { position: relative; padding-left: 1.125rem; font-size: var(--fs-small); font-weight: 300; line-height: 1.38; color: var(--ink-mute); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-role__more li::before { content: ""; position: absolute; left: 0; top: 0.68em; width: 0.5rem; height: 1px; background: var(--ember); }
 
-/* the photo frame, 4:5. With a photo: the photo, cover-cropped. Empty: a duotone ground (an ember light from the top
-   left on the card's black) under a fine halftone screen, crop marks in its corners, the role's glyph in a seal, the
-   label «Фото» at its foot */
-main.about[data-ai-page="about"] .pb-pass__photo {
-  position: relative; overflow: hidden; aspect-ratio: 4 / 5; border-radius: calc(var(--radius-md) - 0.375rem);
-  background:
-    radial-gradient(90% 70% at 22% 12%, color-mix(in srgb, var(--ember) 30%, transparent), transparent 70%),
-    radial-gradient(80% 60% at 90% 100%, color-mix(in srgb, var(--ember-deep) 18%, transparent), transparent 70%),
-    linear-gradient(165deg, color-mix(in srgb, var(--ink) 9%, var(--bg)), var(--bg) 75%);
-  box-shadow: inset 0 0 0 1px var(--border-strong);
-}
-main.about[data-ai-page="about"] .pb-pass__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-main.about[data-ai-page="about"] .pb-pass__photo.has-photo::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--border-strong); pointer-events: none; }
-main.about[data-ai-page="about"] .pb-pass__empty { position: absolute; inset: 0; display: grid; place-items: center; }
-main.about[data-ai-page="about"] .pb-pass__empty::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, color-mix(in srgb, var(--ink) 11%, transparent) 0 0.55px, transparent 0.9px) 0 0 / 0.25rem 0.25rem; mask-image: linear-gradient(180deg, #000, transparent 85%); }
-main.about[data-ai-page="about"] .pb-pass__empty::after {
-  --c: var(--border-strong); --k: 0.75rem; --o: 0.625rem;
-  content: ""; position: absolute; inset: var(--o);
-  background:
-    linear-gradient(var(--c), var(--c)) 0 0 / var(--k) 1px, linear-gradient(var(--c), var(--c)) 0 0 / 1px var(--k),
-    linear-gradient(var(--c), var(--c)) 100% 0 / var(--k) 1px, linear-gradient(var(--c), var(--c)) 100% 0 / 1px var(--k),
-    linear-gradient(var(--c), var(--c)) 0 100% / var(--k) 1px, linear-gradient(var(--c), var(--c)) 0 100% / 1px var(--k),
-    linear-gradient(var(--c), var(--c)) 100% 100% / var(--k) 1px, linear-gradient(var(--c), var(--c)) 100% 100% / 1px var(--k);
-  background-repeat: no-repeat;
-}
-main.about[data-ai-page="about"] .pb-pass__seal {
-  position: relative; display: grid; place-items: center; width: 42%; aspect-ratio: 1; border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--ember) 16%, transparent), transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ember-ink) 42%, transparent), 0 0 0 0.4375rem color-mix(in srgb, var(--ember) 6%, transparent);
-}
-main.about[data-ai-page="about"] .pb-pass__seal svg { width: 58%; height: auto; overflow: visible; fill: none; stroke: var(--ember-ink); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-main.about[data-ai-page="about"] .pb-pass__seal svg * { vector-effect: non-scaling-stroke; }
-main.about[data-ai-page="about"] .pb-pass__ph { position: absolute; left: 1rem; bottom: 0.875rem; display: flex; align-items: center; gap: 0.4375rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-main.about[data-ai-page="about"] .pb-pass__ph::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--ember); }
-
-/* the role, its duty, what it does for the client (each line on a short ember dash), the code strip at the foot */
-main.about[data-ai-page="about"] .pb-pass__who { margin-top: var(--pad); }
-main.about[data-ai-page="about"] .pb-pass__role { margin: 0; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
-main.about[data-ai-page="about"] .pb-pass__d { margin: 0.375rem 0 0; font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
-main.about[data-ai-page="about"] .pb-pass__more { display: grid; gap: 0.375rem; margin: 0.75rem 0 0; padding: 0.75rem 0 0; list-style: none; border-top: 1px solid var(--line); }
-main.about[data-ai-page="about"] .pb-pass__more li { position: relative; padding-left: 1.125rem; font-size: var(--fs-small); font-weight: 300; line-height: 1.38; color: var(--ink-mute); text-wrap: pretty; }
-main.about[data-ai-page="about"] .pb-pass__more li::before { content: ""; position: absolute; left: 0; top: 0.68em; width: 0.5rem; height: 1px; background: var(--ember); }
-main.about[data-ai-page="about"] .pb-pass__code {
-  display: block; flex: none; height: 1.875rem; margin: auto calc(-1 * var(--pad)) 0; border-top: 1px solid var(--line);
-  border-radius: 0 0 calc(var(--radius-md) - 1px) calc(var(--radius-md) - 1px);
-  background:
-    repeating-linear-gradient(90deg, var(--ink-mute) 0 1px, transparent 1px 4px, var(--ink-mute) 4px 6px, transparent 6px 7px, var(--ink-mute) 7px 8px, transparent 8px 11px) var(--pad) 50% / 46% 0.75rem no-repeat,
-    repeating-linear-gradient(90deg, transparent 0 9px, var(--ink-mute) 9px 11px, transparent 11px 17px) var(--pad) 50% / 46% 0.75rem no-repeat;
-  opacity: 0.8;
-}
-/* the lines and the code strip keep a pass's gap between them, however tall a neighbour makes the row */
-main.about[data-ai-page="about"] .pb-pass__more { margin-bottom: var(--pad); }
-
-/* wide screens (861+): the passes in a row of three under (or beside) the title, hanging from the rail, each at its
-   own height with its foot on the row's line */
+/* wide screens (861+): the cards in a row of three, of one height */
 @media (min-width: 861px) {
-  main.about[data-ai-page="about"] .pb-rail { position: absolute; left: 0; right: calc(-1 * var(--gutter)); top: 0; height: 0.5rem; transform-origin: 0 50%; }
-  main.about[data-ai-page="about"] .pb-rail::before { content: ""; position: absolute; left: -0.25rem; top: -0.25rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 1px var(--ink-mute); }
-  main.about[data-ai-page="about"] .pb-crew__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--card-gap); }
-  main.about[data-ai-page="about"] .pb-pass { justify-content: flex-end; }
+  main.about[data-ai-page="about"] .pb-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-/* 861–1199: the title and the way down beside the mark, the rail across the content, the passes in a row under it */
+/* 861–1199: the title and the way down beside the mark, the paragraph and the cards under them */
 @media (min-width: 861px) and (max-width: 1199px) {
   main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: repeat(8, minmax(0, 1fr)); column-gap: var(--card-gap); }
   main.about[data-ai-page="about"] .pb-hero__grid > .s-head__title { grid-column: 1 / span 5; grid-row: 2; }
@@ -168,13 +113,10 @@ main.about[data-ai-page="about"] .pb-pass__more { margin-bottom: var(--pad); }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__down { grid-column: 1 / span 5; grid-row: 4; justify-self: start; }
   main.about[data-ai-page="about"] .pb-hero__grid > .s-head__meta { grid-row: 1; }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { grid-column: 6 / -1; grid-row: 2 / span 3; align-self: center; justify-self: end; width: min(100%, 15rem); margin-block: -2.5rem -1.5rem; }
-  main.about[data-ai-page="about"] .pb-hero__grid > .pb-crew { grid-row: 5; margin-top: 1.5rem; }
-  main.about[data-ai-page="about"] .pb-crew { --pb-strap: 2rem; }
-  main.about[data-ai-page="about"] .pb-rail { right: 0; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__side { grid-row: 5; margin-top: 3rem; }
 }
-/* 1200 and wider: the title, the lead, the way down and the mark in cols 1–5 (the label's line too); the rail goes on
-   from the label's line at col 6 out to the screen's edge (the block's one frame-break), a pass on every module and a
-   bit. The first screen is one composition: the passes' feet and the mark's foot on one line, inside the screen */
+/* 1200 and wider: the title, the lead, the way down and the mark in cols 1–5; the paragraph (from the label's line)
+   and the cards in cols 7–16, the cards' feet on the mark's foot, inside the screen */
 @media (min-width: 1200px) {
   main.about[data-ai-page="about"] .pb-hero { padding-top: calc(var(--topbar-h) + clamp(2rem, 5.5vh, 5rem)); }
   main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: repeat(16, minmax(0, 1fr)); grid-template-rows: auto auto auto auto 1fr; column-gap: var(--card-gap); }
@@ -183,14 +125,11 @@ main.about[data-ai-page="about"] .pb-pass__more { margin-bottom: var(--pad); }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__lead { grid-column: 1 / span 5; grid-row: 3; }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__down { grid-column: 1 / span 5; grid-row: 4; justify-self: start; }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { grid-column: 1 / span 5; grid-row: 5; align-self: end; justify-self: start; width: min(100%, calc(100svh - 32rem), 24rem); margin-top: var(--card-gap); }
-  main.about[data-ai-page="about"] .pb-hero__grid > .pb-crew { grid-column: 6 / -1; grid-row: 1 / -1; padding-top: calc(var(--fs-label) * 0.7); }
-  main.about[data-ai-page="about"] .pb-crew { --pb-strap: calc(var(--m) * 0.45); --pb-tick-x: var(--pitch); }
-  main.about[data-ai-page="about"] .pb-rail { top: calc(var(--fs-label) * 0.7); }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__side { grid-column: 7 / -1; grid-row: 1 / -1; align-self: stretch; justify-content: space-between; }
 }
 
-/* phones and small tablets (≤860): the rail stands up at the content's left edge (a ruler, its ticks to the right) and
-   the passes hang from it one under another on short straps, each compact: the photo beside the role and its duty, the
-   three lines under them (601–860: under the duty, beside the photo); nothing slides sideways */
+/* phones and small tablets (≤860): the title beside the mark, the lead, the way down, the paragraph, then the cards
+   one under another (601–860: the glyph beside the role, the lines beside the duty) */
 @media (max-width: 860px) {
   main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; }
   main.about[data-ai-page="about"] .pb-hero__grid > .s-head__meta { grid-row: 1; }
@@ -198,49 +137,16 @@ main.about[data-ai-page="about"] .pb-pass__more { margin-bottom: var(--pad); }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__lead { grid-column: 1; grid-row: 3; align-self: start; }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { grid-column: 2; grid-row: 2 / span 2; align-self: center; width: clamp(5.75rem, 26vw, 10.5rem); margin-block: -0.5rem; }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__down { grid-row: 4; justify-self: start; }
-  main.about[data-ai-page="about"] .pb-hero__grid > .pb-crew { grid-row: 5; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__side { grid-row: 5; margin-top: 2.5rem; }
   main.about[data-ai-page="about"] .pb-hero__lead { margin-top: 1rem; }
   main.about[data-ai-page="about"] .pb-hero__down { margin-top: 1.25rem; }
 }
-/* small tablets: the mark no taller than the title and the lead beside it */
+/* small tablets: the mark no taller than the title and the lead beside it; each card in two columns */
 @media (min-width: 601px) and (max-width: 860px) {
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { width: 8.5rem; margin-block: -1rem; }
-}
-@media (max-width: 860px) {
-  main.about[data-ai-page="about"] .pb-crew { --pb-arm: 1.5rem; margin-top: 2.25rem; }
-  main.about[data-ai-page="about"] .pb-rail {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 0.5rem; transform-origin: 50% 0;
-    background:
-      linear-gradient(var(--pb-tick), var(--pb-tick)) 0 0 / 1px 100% no-repeat,
-      linear-gradient(180deg, var(--pb-tick) 0 1px, transparent 1px) 0 0 / 0.5rem 6rem repeat-y,
-      linear-gradient(180deg, var(--pb-tick) 0 1px, transparent 1px) 0 0 / 0.25rem 1.5rem repeat-y;
-  }
-  main.about[data-ai-page="about"] .pb-rail::before { content: ""; position: absolute; left: -0.21875rem; top: -0.25rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 1px var(--ink-mute); }
-  main.about[data-ai-page="about"] .pb-crew__list { display: grid; gap: calc(var(--card-gap) * 1.5); }
-  main.about[data-ai-page="about"] .pb-pass { flex-direction: row; align-items: flex-start; }
-  /* the strap runs from the rail to the clip on the pass's left edge */
-  main.about[data-ai-page="about"] .pb-pass__strap { flex: none; width: calc(var(--pb-arm) + 0.25rem); height: 0.625rem; min-height: 0; margin-top: 1.4375rem; transform-origin: 0 50%; }
-  main.about[data-ai-page="about"] .pb-pass__card {
-    --pad: 1rem;
-    flex: 1; min-width: 0; display: grid; grid-template-columns: 42% minmax(0, 1fr); column-gap: 0.875rem; align-items: start;
-    margin: 0 0 0 -0.25rem; padding: var(--pad) var(--pad) 0; transform-origin: 0 50%;
-  }
-  /* the clip lies on the pass's left edge, the strap's end under it */
-  main.about[data-ai-page="about"] .pb-pass__clip { left: -0.5625rem; top: 1rem; width: 1.125rem; height: 1.5rem; margin-left: 0; border-radius: 0.3125rem; }
-  main.about[data-ai-page="about"] .pb-pass__clip::after { left: auto; right: 0.25rem; top: 0.3125rem; bottom: 0.3125rem; width: 0.3125rem; height: auto; }
-  main.about[data-ai-page="about"] .pb-pass__band { grid-column: 1 / -1; gap: 1rem; margin-bottom: 0.75rem; padding-left: 0.25rem; }
-  main.about[data-ai-page="about"] .pb-pass__photo { grid-column: 1; grid-row: 2; }
-  main.about[data-ai-page="about"] .pb-pass__who { grid-column: 2; grid-row: 2; margin-top: 0; }
-  main.about[data-ai-page="about"] .pb-pass__ph { left: 0.625rem; bottom: 0.5rem; }
-  main.about[data-ai-page="about"] .pb-pass__empty::after { --k: 0.5rem; --o: 0.4375rem; }
-  main.about[data-ai-page="about"] .pb-pass__more { grid-column: 1 / -1; }
-  main.about[data-ai-page="about"] .pb-pass__code { grid-column: 1 / -1; margin: 0 calc(-1 * var(--pad)); }
-}
-@media (min-width: 601px) and (max-width: 860px) {
-  main.about[data-ai-page="about"] .pb-pass__card { grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); grid-template-rows: auto auto 1fr auto; column-gap: 1.25rem; }
-  main.about[data-ai-page="about"] .pb-pass__photo { grid-row: 2 / span 2; }
-  main.about[data-ai-page="about"] .pb-pass__more { grid-column: 2; grid-row: 3; margin-bottom: 0; }
-  main.about[data-ai-page="about"] .pb-pass__code { margin-top: var(--pad); }
+  main.about[data-ai-page="about"] .pb-role__card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); grid-template-rows: auto auto 1fr; column-gap: 1.5rem; }
+  main.about[data-ai-page="about"] .pb-role__card > :not(.pb-role__more) { grid-column: 1; }
+  main.about[data-ai-page="about"] .pb-role__more { grid-column: 2; grid-row: 1 / -1; align-self: start; margin: 0; padding: 0 0 0 1.5rem; border-top: 0; border-left: 1px solid var(--line); }
 }
 
 /* the mark: its still (the scene's first frame) under the canvas, an ember pool of light under it on the mat; the
@@ -254,45 +160,27 @@ main.about[data-ai-page="about"] .pb-mark__gl-box > canvas { opacity: 0; transit
 main.about[data-ai-page="about"] .pb-mark.is-live .pb-mark__gl-box > canvas { opacity: 1; }
 main.about[data-ai-page="about"] .pb-mark.is-live .pb-mark__still { opacity: 0; transition: opacity 0.2s linear 0.5s; }
 
-/* the drop (wide screens, from the first paint, CSS only): the rail draws from its cap, the straps run down, each
-   pass falls on its clip, swings and settles straight (about 1.75 s); the mark comes up out of its light. Phones: the
-   rail draws down, each strap runs out to its pass and the pass slides in on it; what is below the screen at load
-   waits for its turn (runtime/pb.js: .is-pre, then .is-play as it comes into view) */
-@keyframes pb-draw-x { from { scale: 0 1; } }
-@keyframes pb-draw-y { from { scale: 1 0; } }
-@keyframes pb-drop {
-  0% { opacity: 0; translate: 0 -28px; rotate: -7deg; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-  35% { opacity: 1; translate: 0 0; rotate: 3.5deg; animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
-  62% { rotate: -1.6deg; animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
-  84% { rotate: 0.5deg; animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
-  100% { rotate: 0deg; }
-}
-@keyframes pb-slide { from { opacity: 0; translate: -0.875rem 0; } }
+/* the first screen comes in (wide screens, from the first paint, CSS only): the paragraph, then the cards one after
+   another rise into place; the mark comes up out of its light. Phones: what is below the screen at load waits for
+   its turn (runtime/pb.js: .is-pre, then .is-play as it comes into view) */
+@keyframes pb-up { from { opacity: 0; translate: 0 1.25rem; } }
 @keyframes pb-mark-in { from { opacity: 0; translate: 0 1.5rem; scale: 0.94; } }
 @media (prefers-reduced-motion: no-preference) {
   main.about[data-ai-page="about"] .pb-hero__obj { animation: pb-mark-in 1.1s var(--ease-out) 0.35s backwards; }
-}
-@media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
-  main.about[data-ai-page="about"] .pb-rail { animation: pb-draw-x 0.5s var(--ease-in-out) 0.25s backwards; }
-  main.about[data-ai-page="about"] .pb-pass__strap { animation: pb-draw-y 0.24s var(--ease-out) calc(0.45s + var(--i) * 0.1s) backwards; }
-  main.about[data-ai-page="about"] .pb-pass__card { animation: pb-drop 1s linear calc(0.55s + var(--i) * 0.1s) backwards; }
+  main.about[data-ai-page="about"] .pb-studio { animation: pb-up 0.7s var(--ease-out) 0.45s backwards; }
+  main.about[data-ai-page="about"] .pb-role__card { animation: pb-up 0.6s var(--ease-out) calc(0.65s + var(--i) * 0.1s) backwards; }
 }
 @media (max-width: 860px) and (prefers-reduced-motion: no-preference) {
-  main.about[data-ai-page="about"] .pb-rail { animation: pb-draw-y 0.7s var(--ease-in-out) 0.3s backwards; }
-  main.about[data-ai-page="about"] .pb-pass__strap { animation: pb-draw-x 0.22s var(--ease-out) calc(0.5s + var(--i) * 0.12s) backwards; }
-  main.about[data-ai-page="about"] .pb-pass__card { animation: pb-slide 0.5s var(--ease-out) calc(0.62s + var(--i) * 0.12s) backwards; }
-  main.about[data-ai-page="about"] .pb-pass.is-pre .pb-pass__strap { animation: none; scale: 0 1; }
-  main.about[data-ai-page="about"] .pb-pass.is-pre .pb-pass__card { animation: none; opacity: 0; translate: -0.875rem 0; }
-  main.about[data-ai-page="about"] .pb-pass.is-play .pb-pass__strap { animation: pb-draw-x 0.22s var(--ease-out) backwards; }
-  main.about[data-ai-page="about"] .pb-pass.is-play .pb-pass__card { animation: pb-slide 0.5s var(--ease-out) 0.12s backwards; }
+  main.about[data-ai-page="about"] .pb-role.is-pre .pb-role__card { animation: none; opacity: 0; translate: 0 1.25rem; }
+  main.about[data-ai-page="about"] .pb-role.is-play .pb-role__card { animation: pb-up 0.5s var(--ease-out) backwards; }
 }
-/* under the pointer: the pass lifts on its strap, its shade deepens; with reduced motion only the shade */
+/* under the pointer: the card lifts, its shade deepens; with reduced motion only the shade */
 @media (min-width: 861px) and (hover: hover) and (pointer: fine) {
-  main.about[data-ai-page="about"] .pb-pass:hover .pb-pass__card::after { opacity: 0.8; }
+  main.about[data-ai-page="about"] .pb-role:hover .pb-role__card::after { opacity: 0.8; }
 }
 @media (min-width: 861px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  main.about[data-ai-page="about"] .pb-pass__card { transition: translate 0.28s var(--ease-out); }
-  main.about[data-ai-page="about"] .pb-pass:hover .pb-pass__card { translate: 0 -4px; }
+  main.about[data-ai-page="about"] .pb-role__card { transition: translate 0.28s var(--ease-out); }
+  main.about[data-ai-page="about"] .pb-role:hover .pb-role__card { translate: 0 -4px; }
 }
 
 /* ==========================================================================
@@ -687,8 +575,7 @@ main.about[data-ai-page="about"] .pb-tag__in.is-swing { animation: pb-swing-s 0.
 
 /* ==========================================================================
    3 · Слово команди: the team's quote in a selection frame on the mat (dark ground: its dots and its ruler), the key
-   phrases under an ember marker, the signature beside or under it (the mark, «Команда ECLO», the three roles on their
-   avatars)
+   phrases under an ember marker, the signature beside or under it (the mark, «Команда ECLO», the three roles)
    ========================================================================== */
 main.about[data-ai-page="about"] .pb-word { overflow-x: clip; }
 /* the label alone: the mat's ruler right under it is its line */
@@ -702,7 +589,7 @@ main.about[data-ai-page="about"] .pb-mat--word {
 }
 main.about[data-ai-page="about"] .pb-say { display: grid; grid-template-columns: repeat(var(--pb-n), minmax(0, 1fr)); gap: calc(var(--card-gap) * 2) var(--card-gap); margin: 0; }
 /* the selection: a thin ember frame round the quote with a square handle on each corner (as a design tool selects a
-   text box), a fine halftone inside it, fading down (the reference's dot ground; B's photo frames' screen) */
+   text box), a fine halftone inside it, fading down (the reference's dot ground) */
 main.about[data-ai-page="about"] .pb-say__sel {
   position: relative; grid-column: 1 / -1; padding: clamp(1.25rem, calc(var(--m) * 0.5), 2.5rem);
 }
@@ -745,25 +632,12 @@ main.about[data-ai-page="about"] .pb-q__w:not(.is-end, .is-eol)::before { right:
   main.about[data-ai-page="about"] .pb-q p { font-size: var(--fs-display); line-height: 1.06; letter-spacing: -0.035em; }
 }
 
-/* the signature: the mark and «Команда ECLO», then the three roles, each on its round avatar (crew.tsx's PHOTOS; empty:
-   the role's glyph on the passes' ember duotone) */
+/* the signature: the mark and «Команда ECLO», then the three roles by name */
 main.about[data-ai-page="about"] .pb-say__by { grid-column: 1 / -1; display: grid; gap: 1rem; align-content: end; }
 main.about[data-ai-page="about"] .pb-say__team { display: flex; align-items: center; gap: 0.625rem; margin: 0; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; color: var(--ink); }
 main.about[data-ai-page="about"] .pb-say__mark { flex: none; width: 1.25rem; height: 1.25rem; fill: var(--ember); }
 main.about[data-ai-page="about"] .pb-say__roles { display: grid; gap: 0.625rem; margin: 0; padding: 0.875rem 0 0; list-style: none; border-top: 1px solid var(--line); }
-main.about[data-ai-page="about"] .pb-say__roles li { display: flex; align-items: center; gap: 0.75rem; min-width: 0; font-size: var(--fs-small); line-height: 1.35; color: var(--ink-soft); }
-main.about[data-ai-page="about"] .pb-ava {
-  position: relative; flex: none; display: grid; place-items: center; overflow: hidden; width: 2.5rem; height: 2.5rem; border-radius: 50%;
-  background:
-    radial-gradient(90% 80% at 25% 15%, color-mix(in srgb, var(--ember) 34%, transparent), transparent 75%),
-    linear-gradient(165deg, color-mix(in srgb, var(--ink) 9%, var(--bg)), var(--bg) 80%);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ember-ink) 36%, transparent);
-}
-main.about[data-ai-page="about"] .pb-ava svg { width: 58%; height: auto; overflow: visible; fill: none; stroke: var(--ember-ink); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-main.about[data-ai-page="about"] .pb-ava svg * { vector-effect: non-scaling-stroke; }
-main.about[data-ai-page="about"] .pb-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-main.about[data-ai-page="about"] .pb-ava.has-photo { box-shadow: none; }
-main.about[data-ai-page="about"] .pb-ava.has-photo::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--border-strong); }
+main.about[data-ai-page="about"] .pb-say__roles li { min-width: 0; font-size: var(--fs-small); line-height: 1.35; color: var(--ink-soft); }
 
 /* phones: the quote's frame close round it */
 @media (max-width: 600px) {

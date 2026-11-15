@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PbMark } from "@/components/about/pb-3d/PbMark";
 import { splitWords } from "../words";
-import { GLYPH, Mark, PHOTOS, ROLES } from "./crew";
+import { GLYPH, ROLES } from "./crew";
 
 type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
 
@@ -10,26 +10,24 @@ type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
 const MORE = {
   // Супровід: the main page's «Що буде далі», its first two steps (contact.next.*)
   1: ["contact.next.b.1", "contact.next.span.1", "contact.next.span.2"],
-  // Сайти, реклама, автоматизація: the plan's last check (approach.stage.checks.1.span.4), the chain's search and
-  // request links (why.sys.1, why.sys.3)
-  2: ["approach.stage.checks.1.span.4", "why.sys.1", "why.sys.3"],
+  // Сайти, реклама, автоматизація: the plan's last check (approach.stage.checks.1.span.4), the ads service's title
+  // (services.service.title.2) and the launch check on requests (prototype.checks.span.1)
+  2: ["approach.stage.checks.1.span.4", "services.service.title.2", "prototype.checks.span.1"],
   // Дизайн і розробка: the design and build stages' checks (approach.stage.checks.3.span.2, .3.span.3, .4.span.3)
   3: ["approach.stage.checks.3.span.2", "approach.stage.checks.3.span.3", "approach.stage.checks.4.span.3"],
 } as const;
 
 /**
- * Variant B, 1 · Команда, the first screen («Пропуска на рейке»): the team as three ID passes hanging from a rail that
- * is also a ruler (21st.dev's Team Lanyard Rail: its photo badges, without the names, the flip and the sway). Each
- * pass, straight: the band (the mark, «Команда ECLO»), the photo frame (crew.tsx's PHOTOS; empty: a finished duotone
- * frame with the role's glyph and «Фото»), the role, its duty and three lines of what it does for the client, a code
- * strip at the foot. No names, no faces, no count. Beside them the studio's mark in chrome (about/pb-3d: a live object
- * on wide screens, its still elsewhere). Wide screens (1200+): the title, the way down and the mark in cols 1–5, the
- * rail from the label's line (col 6) out to the screen's edge, the passes on it, their feet on one line (each strap as
- * long as its pass is short, so they hang at their own heights); 861–1199: the title beside the mark, the passes in a row under them; phones and small tablets (≤860):
- * the rail stands up at the content's left edge and the passes hang from it one under another, each compact (the
- * photo beside the role and its duty, the three lines under them). The passes drop and settle once (wide screens: from
- * the first paint, CSS only; phones: each as it comes into view, runtime/pb.js), the title rises out of its cut, the
- * lead's words come up.
+ * Variant B, 1 · Команда, the first screen: the title, the lead and the way down beside the studio's mark in chrome
+ * (about/pb-3d: a live object on wide screens, its still elsewhere); then «Студія», a paragraph about the studio
+ * (about.pb.studio.text: what the studio makes, from the site's own lines: meta.org, services.service.text.1 and .3,
+ * why.sum.*, meta.description, faq.a.5, why.market.3; nothing the next blocks say), and the three roles as straight
+ * cards: the role's glyph, the role, its duty and three lines of what it does for the client. No names, no faces, no
+ * photos, no count (the owner, 15 Nov: no photos, no passes). Wide screens (1200+): the title, the way down and the
+ * mark in cols 1–5; the paragraph and the cards in cols 7–16, the cards' feet on the mark's line; 861–1199: the title
+ * beside the mark, the paragraph and the cards in a row under them; phones and small tablets (≤860): one under
+ * another. The title rises out of its cut, the lead's words come up, the paragraph and the cards come up once (wide
+ * screens: from the first paint, CSS only; phones: each card as it comes into view, runtime/pb.js).
  */
 export async function PbTeam() {
   const t = await getTranslations("about");
@@ -57,50 +55,31 @@ export async function PbTeam() {
           <div className="pb-hero__obj">
             <PbMark />
           </div>
-          <div className="pb-crew">
-            {/* the rail (a ruler at the module pitch) */}
-            <span className="pb-rail" aria-hidden="true" />
-            <ul className="pb-crew__list" aria-label={t("work.sign")}>
-              {ROLES.map((n, i) => {
-                const role = t(`team.${n}.role`);
-                const photo = PHOTOS[n];
-                return (
-                  <li className="pb-pass" key={n} style={{ "--i": i } as CSSVars}>
-                    <span className="pb-pass__strap" aria-hidden="true" />
-                    <div className="pb-pass__card">
-                      <span className="pb-pass__clip" aria-hidden="true" />
-                      <p className="pb-pass__band" aria-hidden="true">
-                        <Mark className="pb-pass__mark" />
-                        <span>{t("work.sign")}</span>
-                      </p>
-                      <div className={`pb-pass__photo${photo ? " has-photo" : ""}`}>
-                        {photo ? (
-                          // eslint-disable-next-line @next/next/no-img-element -- a fixed 4:5 frame, as the sites page's pictures
-                          <img className="pb-pass__img" src={photo} width={800} height={1000} alt={role} decoding="async" />
-                        ) : (
-                          <span className="pb-pass__empty" aria-hidden="true">
-                            <span className="pb-pass__seal">
-                              <svg viewBox="0 0 48 48" focusable="false">{GLYPH[n]}</svg>
-                            </span>
-                            {/* about.pb.photo «Фото»: the frame's own label (the brief's word for it) */}
-                            <span className="pb-pass__ph">{t("pb.photo")}</span>
-                          </span>
-                        )}
-                      </div>
-                      <div className="pb-pass__who">
-                        <p className="pb-pass__role">{role}</p>
-                        <p className="pb-pass__d">{t(`team.${n}.d`)}</p>
-                      </div>
-                      <ul className="pb-pass__more">
-                        {MORE[n].map((k) => (
-                          <li key={k}>{tm(k).replace(/\.$/, "")}</li>
-                        ))}
-                      </ul>
-                      <span className="pb-pass__code" aria-hidden="true" />
-                    </div>
-                  </li>
-                );
-              })}
+          <div className="pb-hero__side">
+            <div className="pb-studio">
+              <p className="pb-studio__k">{t("pb.studio.k")}</p>
+              {/* a hyphenated word («AI-асистента») never breaks at its hyphen */}
+              <p className="pb-studio__text">
+                {t("pb.studio.text")
+                  .split(/([^\s-]+-[^\s-]+)/)
+                  .map((part, i) => (i % 2 ? <span className="pb-studio__nb" key={i}>{part}</span> : part))}
+              </p>
+            </div>
+            <ul className="pb-roles" aria-label={t("work.sign")}>
+              {ROLES.map((n, i) => (
+                <li className="pb-role" key={n} style={{ "--i": i } as CSSVars}>
+                  <div className="pb-role__card">
+                    <svg className="pb-role__glyph" viewBox="0 0 48 48" aria-hidden="true" focusable="false">{GLYPH[n]}</svg>
+                    <p className="pb-role__name">{t(`team.${n}.role`)}</p>
+                    <p className="pb-role__d">{t(`team.${n}.d`)}</p>
+                    <ul className="pb-role__more">
+                      {MORE[n].map((k) => (
+                        <li key={k}>{tm(k).replace(/\.$/, "")}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
           {/* the quiet way down to the form (a link, not a button: the page's one lime button is the form's) */}

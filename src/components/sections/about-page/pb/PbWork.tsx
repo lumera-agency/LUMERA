@@ -230,7 +230,7 @@ export async function PbWork({ index }: { index: number }) {
             </li>
 
             {/* C · Сайт: the test address, the one dark object; the site live in a browser, the test request arriving
-                as a Telegram notification (the main page's why.sys.3: the request comes to Telegram or a CRM) with the
+                as a Telegram notification (the main page's why.step.4: the request comes to Telegram or a CRM) with the
                 form's own fields (contact.field.label.*, a task chip), no one's data */}
             <li className="pb-obj pb-obj--test pb-obj--none" style={{ "--i": 2 } as CSSVars}>
               <div className="pb-obj__card">
@@ -275,7 +275,7 @@ export async function PbWork({ index }: { index: number }) {
               </div>
             </li>
 
-            {/* D · Реклама: the Google Ads report (the main page's ads demo words: services.ads.*, why.link.1): the
+            {/* D · Реклама: the Google Ads report (the main page's ads demo words: services.ads.*, start.route.1): the
                 campaign, its tabs with «Звіт» open, the requests by week as columns, the queries with their bars and
                 the words it never shows on; no digits anywhere. The findings pinned on the ads' tab and the queries */}
             <li className="pb-obj pb-obj--ads" style={{ "--i": 3 } as CSSVars}>
@@ -290,7 +290,7 @@ export async function PbWork({ index }: { index: number }) {
                       </span>
                       <span className="pb-rep__camp">
                         <i />
-                        {tm("why.link.1")} · {trade}
+                        {tm("start.route.1")} · {trade}
                       </span>
                     </p>
                     <p className="pb-rep__tabs">
