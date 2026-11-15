@@ -109,7 +109,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>
         {/* (over the footer's index the lens steps aside for the plain pointer: footer.css; the owner, 3 Nov) */}
-        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" quiet="[data-wordmark], .footer__index" size={110} grow={1.15} lensGrow={1.35} />
+        <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" quiet="[data-wordmark], .footer__index, .footer__privacy" size={110} grow={1.15} lensGrow={1.35} />
         <NextIntlClientProvider messages={clientMessages}>
           <SiteNavProvider value={siteNav}>{children}</SiteNavProvider>
         </NextIntlClientProvider>

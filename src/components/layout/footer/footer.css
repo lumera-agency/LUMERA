@@ -40,7 +40,9 @@
 @media (hover: hover) {
   .footer__up:hover { color: var(--ink); }
 }
-.footer__legal { margin: 0; }
+/* «© 2026 ECLO Studio» and the privacy policy on one line at every width (the owner, 15 Nov 2026: beside, not under);
+   wrapped only where a narrow phone has no room for both */
+.footer__legal { margin: 0; display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.5rem; row-gap: 0.25rem; }
 .footer__up { display: inline-flex; align-items: center; min-height: 2.75rem; }
 .footer__mark {
   position: relative;
@@ -77,7 +79,7 @@
 .footer__drop { position: absolute; left: 4%; top: 14%; width: 2.75rem; height: 2.75rem; transform: translate(-50%, -50%); }
 
 @media (min-width: 1101px) {
-  .footer__legal { grid-column: 1 / span 4; } /* the left edge, under nothing */
+  .footer__legal { grid-column: 1 / span 8; } /* the left edge, room for the © line and the policy */
   .footer__end { grid-column: 11 / -1; }
 }
 
@@ -97,9 +99,18 @@
 /* the word spans the mark: --mark-fit is its font size per width of the mark, measured off the word itself
    (fx/chrome-wordmark fitText); 0.284 is ECLO's own, for the first paint */
 .footer__mark-text { font-size: calc(100cqw * var(--mark-fit, 0.284)); }
-/* phones: the wordmark close under the last line (the desktop's rhythm left a gap) */
+/* phones: the wordmark close under the last line (the desktop's rhythm left a gap); the © line and the policy take the
+   first row, the languages and «Вгору» the second, at its two ends */
 @media (max-width: 600px) {
-  .footer__bottom { padding-bottom: 1.25rem; }
+  .footer__bottom { grid-template-columns: 1fr; row-gap: 0.25rem; padding-bottom: 1.25rem; }
+  .footer__legal { grid-column: 1; grid-row: 1; column-gap: 1rem; }
+  .footer__end { grid-column: 1; grid-row: 2; justify-self: stretch; justify-content: space-between; }
+  /* «UA» under the © line's first letter (its tap target keeps its width) */
+  .footer__end .lang > :first-child .lang__link { justify-content: flex-start; }
+}
+/* the narrowest phones: a closer gap keeps «Политика конфиденциальности» beside the © line at 390 px */
+@media (max-width: 400px) {
+  .footer__legal { column-gap: 0.625rem; }
 }
 
 /* the map of the site (FooterMap): four columns with a hairline between them, as the header's panel */
@@ -277,7 +288,17 @@
 @media (max-width: 860px) {
   .footer__index { grid-column: 1 / -1; padding-left: 0; box-shadow: none; }
 }
-/* the privacy policy beside the © line (the owner, 13 Nov 2026) */
-.footer__privacy { display: inline-flex; align-items: center; min-height: 2.75rem; margin-block: -0.875rem; margin-left: 1.5rem; color: var(--ink-mute); text-decoration: none; transition: color var(--dur-fast); }
-@media (hover: hover) { .footer__privacy:hover { color: var(--ink); } }
-@media (max-width: 1100px) { .footer__privacy { display: block; width: fit-content; min-height: 0; margin: 0.25rem 0 -0.375rem; padding-block: 0.375rem; line-height: 1.35; } }
+/* the privacy policy beside the © line (the owner, 13 Nov 2026). Over it the lens steps aside (layout's InvertCursor
+   `quiet`) and the hand comes back; it lights up as the map's links above do («Послуги», «Контакти»): lime, the words a
+   step to the right, no underline (the owner, 15 Nov 2026) */
+.footer__privacy { display: inline-flex; align-items: center; min-height: 2.75rem; margin-block: -0.875rem; color: var(--ink-mute); text-decoration: none; transition: color var(--dur-fast); }
+[data-invert-cursor] .footer__privacy,
+[data-invert-cursor] .footer__privacy * { cursor: pointer !important; }
+.footer__privacy-t { display: inline-block; transition: transform var(--dur) var(--ease-out); }
+.footer__privacy:focus-visible { color: var(--lime); outline: 2px solid var(--lime); outline-offset: 0.125rem; border-radius: 0.25rem; }
+.footer__privacy:focus-visible .footer__privacy-t { transform: translateX(0.25rem); }
+@media (hover: hover) {
+  .footer__privacy:hover { color: var(--lime); }
+  .footer__privacy:hover .footer__privacy-t { transform: translateX(0.25rem); }
+}
+@media (prefers-reduced-motion: reduce) { .footer__privacy-t { transition: none; } }
