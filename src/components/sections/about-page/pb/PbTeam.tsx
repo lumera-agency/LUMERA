@@ -10,9 +10,13 @@ type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
  * Variant B, 1 · Студія, the first screen: the title, the lead and the way down beside the studio's mark in chrome
  * (about/pb-3d: a live object on wide screens, its still elsewhere); under them the studio in words, as one editorial
  * row: the goal (about.pb.studio.goal, from the AI page's «Вам лишається подзвонити» and the main page's «Беремося за
- * весь шлях клієнта») at h3 size, and two short paragraphs (what the studio makes; the animation, 3D and second
- * language as on this site, open prices with a link to the calculator, the ad money paid to Google or Meta directly;
- * every fact from the site's own lines: meta.org, services.*, sites.faq, ads.terms; nothing the next blocks say). No
+ * весь шлях клієнта») at h3 size, and three short paragraphs: sites and ads (the formats, updating a site, Google,
+ * Facebook and Instagram, the source and cost of each request, ChatGPT and Gemini), the automation (what is still done
+ * by hand: requests to Telegram or a CRM, the robot that finds orders, gathers requests in one table and books
+ * clients, the AI assistant), and the look and the money (animation, 3D and a second language as on this site, open
+ * prices with a link to the calculator, ads and services paid directly); every fact from the site's own lines: meta.org,
+ * services.*, why.step.4, ads.price.ai.d, the AI page's hero, niche and offer, ai.terms, sites.faq; nothing the next
+ * blocks say. No
  * cards, names, faces, photos or counts (the owner, 15 Nov: no photos, no passes, no role cards).
  * Wide screens (1200+): the title, the lead and the way down in cols 1–10, the mark in cols 12–16 beside them; the goal
  * in cols 1–7, the paragraphs in cols 9–12 and 13–16. 861–1199: the same on 8 columns, the goal across, the paragraphs
@@ -66,8 +70,9 @@ export async function PbTeam() {
               <span className="visually-hidden">{goal}</span>
               <span aria-hidden="true">{streamChars(goal, 1100, 2400)}</span>
             </p>
-            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text", tags), 3100, 1600)}</p>
-            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text2", tags), 3900, 1800)}</p>
+            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text", tags), 3100, 1700)}</p>
+            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text2", tags), 4100, 1700)}</p>
+            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text3", tags), 5100, 1500)}</p>
           </div>
         </div>
       </div>

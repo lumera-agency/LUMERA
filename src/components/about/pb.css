@@ -73,8 +73,8 @@ main.about[data-ai-page="about"] .pb-k { margin: 0 0 0.875rem; font: 400 var(--f
 main.about[data-ai-page="about"] .pb-k::before { content: ""; display: inline-block; width: 0.375rem; height: 0.375rem; margin-right: 0.5rem; border-radius: 50%; background: var(--ember); vertical-align: 0.1em; }
 main.about[data-ai-page="about"] .pb-nb { white-space: nowrap; }
 
-/* the studio's row: the goal leads (h3, full ink), the paragraphs support it (the lead's size, the soft ink); a hairline
-   over the row closes the title's group above it. Phones: one under another */
+/* the studio's row: the goal leads (h3, full ink), the three paragraphs support it (the lead's size, the soft ink); a
+   hairline over the row closes the title's group above it. Phones: one under another */
 main.about[data-ai-page="about"] .pb-studio {
   display: grid; gap: 1rem var(--card-gap); align-items: start;
   margin-top: var(--rhythm-m); padding-top: var(--rhythm-s); border-top: 1px solid var(--line);
@@ -82,7 +82,7 @@ main.about[data-ai-page="about"] .pb-studio {
 main.about[data-ai-page="about"] .pb-studio__goal { max-width: 24em; margin: 0 0 0.5rem; font-size: var(--fs-h3); font-weight: 400; line-height: 1.2; letter-spacing: -0.02em; color: var(--ink); text-wrap: pretty; }
 main.about[data-ai-page="about"] .pb-studio__text { max-width: 62ch; margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.6; color: var(--ink-soft); text-wrap: pretty; }
 
-/* 861–1199: the title, the lead and the way down beside the mark; the goal across, the paragraphs side by side */
+/* 861–1199: the title, the lead and the way down beside the mark; the goal across, the paragraphs under it (cols 1–6) */
 @media (min-width: 861px) and (max-width: 1199px) {
   main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: auto auto auto auto 1fr auto; column-gap: var(--card-gap); }
   main.about[data-ai-page="about"] .pb-hero__grid > .s-head__meta { grid-row: 1; }
@@ -93,11 +93,10 @@ main.about[data-ai-page="about"] .pb-studio__text { max-width: 62ch; margin: 0; 
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-studio { grid-row: 6; }
   main.about[data-ai-page="about"] .pb-studio { grid-template-columns: repeat(8, minmax(0, 1fr)); }
   main.about[data-ai-page="about"] .pb-studio__goal { grid-column: 1 / -1; }
-  main.about[data-ai-page="about"] .pb-studio__text { grid-column: 1 / span 4; }
-  main.about[data-ai-page="about"] .pb-studio__text + .pb-studio__text { grid-column: 5 / -1; }
+  main.about[data-ai-page="about"] .pb-studio__text { grid-column: 1 / span 6; }
 }
 /* 1200 and wider: the title, the lead and the way down in cols 1–10, the mark beside them (cols 12–16); the goal in
-   cols 1–7, the paragraphs in cols 9–12 and 13–16, on the same 16 columns */
+   cols 1–7, the paragraphs one under another in cols 9–16, on the same 16 columns */
 @media (min-width: 1200px) {
   main.about[data-ai-page="about"] .pb-hero { padding-top: calc(var(--topbar-h) + clamp(2rem, 5.5vh, 5rem)); }
   main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: repeat(16, minmax(0, 1fr)); grid-template-rows: auto auto auto auto 1fr auto; column-gap: var(--card-gap); }
@@ -108,9 +107,8 @@ main.about[data-ai-page="about"] .pb-studio__text { max-width: 62ch; margin: 0; 
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { grid-column: 12 / -1; grid-row: 2 / span 4; align-self: start; justify-self: end; width: min(100%, 17rem); margin-block: -1.5rem 0; }
   main.about[data-ai-page="about"] .pb-hero__grid > .pb-studio { grid-row: 6; }
   main.about[data-ai-page="about"] .pb-studio { grid-template-columns: repeat(16, minmax(0, 1fr)); }
-  main.about[data-ai-page="about"] .pb-studio__goal { grid-column: 1 / span 7; grid-row: 1 / span 2; margin: 0; }
-  main.about[data-ai-page="about"] .pb-studio__text { grid-column: 9 / -1; grid-row: 1; }
-  main.about[data-ai-page="about"] .pb-studio__text + .pb-studio__text { grid-column: 9 / -1; grid-row: 2; }
+  main.about[data-ai-page="about"] .pb-studio__goal { grid-column: 1 / span 7; grid-row: 1 / span 3; margin: 0; }
+  main.about[data-ai-page="about"] .pb-studio__text { grid-column: 9 / -1; }
 }
 
 /* phones and small tablets (≤860): the title beside the mark, the lead, the way down, then the studio's row */
