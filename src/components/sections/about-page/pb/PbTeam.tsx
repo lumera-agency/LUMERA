@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { aiHref } from "@/components/ai/links";
 import { PbMark } from "@/components/about/pb-3d/PbMark";
 import { splitWords } from "../words";
+import { streamChars, streamWords } from "./stream";
 
 type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
 
@@ -16,14 +17,16 @@ type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
  * Wide screens (1200+): the title, the lead and the way down in cols 1–10, the mark in cols 12–16 beside them; the goal
  * in cols 1–7, the paragraphs in cols 9–12 and 13–16. 861–1199: the same on 8 columns, the goal across, the paragraphs
  * side by side under it. Phones (≤860): the title beside the mark, then one under another. The title rises out of its
- * cut, the lead's words come up; the studio's row rises once (wide screens: from the first paint; phones: as it comes
- * into view).
+ * cut, the lead's words come up, then the studio's words stream in (21st.dev's Animated Text, stream.tsx): the goal
+ * character by character, the paragraphs word by word, once, from the first paint (the row starts on the first
+ * screen at every width).
  */
 export async function PbTeam() {
   const t = await getTranslations("about");
   /* the paragraphs' tags: a hyphenated word that never breaks at its hyphen («AI-асистента»), the link to the main
      page's calculator (its open prices) */
   const calc = `${aiHref(await getLocale(), "/")}#pricing`;
+  const goal = t("pb.studio.goal");
   const tags = {
     nb: (chunks: React.ReactNode) => <span className="pb-nb">{chunks}</span>,
     calc: (chunks: React.ReactNode) => <a className="link" href={calc}>{chunks}</a>,
@@ -56,10 +59,15 @@ export async function PbTeam() {
             <span>{t("team.down")}</span>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v15M6 13.5l6 6 6-6" /></svg>
           </a>
-          <div className="pb-studio" data-in="">
-            <p className="pb-studio__goal">{t("pb.studio.goal")}</p>
-            <p className="pb-studio__text">{t.rich("pb.studio.text", tags)}</p>
-            <p className="pb-studio__text">{t.rich("pb.studio.text2", tags)}</p>
+          {/* the studio's words stream in (stream.tsx): the goal character by character once the title is up, then the
+              paragraphs word by word; the goal's letters are hidden from screen readers, which read its plain copy */}
+          <div className="pb-studio">
+            <p className="pb-studio__goal">
+              <span className="visually-hidden">{goal}</span>
+              <span aria-hidden="true">{streamChars(goal, 1100, 1700)}</span>
+            </p>
+            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text", tags), 2400, 1100)}</p>
+            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text2", tags), 3000, 1300)}</p>
           </div>
         </div>
       </div>
