@@ -2,27 +2,21 @@
 /*
  * The page's moving backdrop, one ground under the whole page (the owner, 13 Nov 2026: «полноценный единый фон … ты
  * как будто скроллишь, и этот фон продолжается»; the blocks over it are glass). Fixed to the screen and drawn there,
- * it rides with the scroll at a slower pace, so the ground runs on under the page. The default d «Сяйво» (glowing
- * fibres, after the owner's reference reel of 13 Nov 2026, in the ads page's language); still to compare, ?bg= in the
- * address: a «Потоки» (streams), b «Точки» (a field of dots), c «Рельєф» (contour lines); 0 none.
+ * it rides with the scroll at a slower pace, so the ground runs on under the page. The ground is «Сяйво» (glowing
+ * fibres, after the owner's reference reel of 13 Nov 2026, in the ads page's language: backdrop/aurora.ts); the
+ * other three tried on 13 Nov are gone with the owner's OK.
  *
  * Only where a graphics card draws the page and the page is FULL (lib/perf/mode): without one, or LITE, the page keeps
  * its plain dark ground. It starts once the browser is idle (never in the first paint's way), plays only while the
  * page's main part is in view (not under the footer) and the tab is shown, a still frame with reduced motion; the page
- * going LITE takes it down. Its code is fetched only for the backdrop shown.
+ * going LITE takes it down. Its code is fetched only when it starts.
  */
 import { useEffect, useRef } from "react";
 import { canRunFull, isLite, watchMode } from "@/lib/perf/mode";
 import type { Effect, Pointer } from "./types";
 
-type Kind = "aurora" | "streams" | "dots" | "relief" | "none";
-const PICK: Record<string, Kind> = { d: "aurora", a: "streams", b: "dots", c: "relief", "0": "none" };
-const DEFAULT: Kind = "aurora";
 /** frames a second, and fewer on a touch screen */
-const FPS: Record<Exclude<Kind, "none">, number> = { aurora: 45, streams: 50, dots: 40, relief: 30 };
-
-const load = (kind: Exclude<Kind, "none">) =>
-  kind === "aurora" ? import("./aurora") : kind === "streams" ? import("./streams") : kind === "dots" ? import("./dots") : import("./relief");
+const FPS = 45;
 
 export function Backdrop() {
   const box = useRef<HTMLDivElement>(null);
@@ -31,15 +25,11 @@ export function Backdrop() {
   useEffect(() => {
     const el = box.current;
     const cv = canvas.current;
-    // the choice in the address (read in the browser: the page itself is the same for everyone)
-    const asked = new URLSearchParams(window.location.search).get("bg");
-    const kind: Kind = (asked && PICK[asked]) || DEFAULT;
-    if (el) el.dataset.bg = kind;
-    if (!el || !cv || kind === "none" || isLite() || !canRunFull()) return;
+    if (!el || !cv || isLite() || !canRunFull()) return;
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const pointer: Pointer = { x: -9999, y: -9999, on: false };
-    const gap = 1000 / (fine ? FPS[kind] : Math.min(30, FPS[kind]));
+    const gap = 1000 / (fine ? FPS : Math.min(30, FPS));
     let effect: Effect | null = null;
     let alive = true;
     let frame = 0;
@@ -62,11 +52,7 @@ export function Backdrop() {
         last = 0;
       }
     };
-    const drawStill = () => {
-      // the streams need some steps to lay their trails; the others are one frame
-      const steps = kind === "streams" ? 120 : 1;
-      for (let i = 0; i < steps; i++) effect?.draw(4000 + i * 20, 20, window.scrollY);
-    };
+    const drawStill = () => effect?.draw(4000, 20, window.scrollY);
     // with reduced motion the still follows the scroll (a frame per scroll, no loop)
     const onScrollStill = () => {
       if (frame) return;
@@ -112,7 +98,7 @@ export function Backdrop() {
     const stopMode = watchMode(() => isLite() && stop());
 
     const start = () =>
-      load(kind).then((module) => {
+      import("./aurora").then((module) => {
         if (!alive) return;
         effect = module.create(cv, pointer);
         if (!effect) return;
@@ -142,7 +128,7 @@ export function Backdrop() {
   }, []);
 
   return (
-    <div ref={box} className="lg-bg" data-bg={DEFAULT} aria-hidden="true">
+    <div ref={box} className="lg-bg" aria-hidden="true">
       <canvas ref={canvas} className="lg-bg__canvas" />
     </div>
   );
