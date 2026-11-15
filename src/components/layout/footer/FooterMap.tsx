@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { getSiteNav } from "@/content/site-nav";
 import { MailIcon, PhoneIcon, TelegramIcon, ViberIcon } from "@/components/layout/site-nav/Contacts";
+import { aiHref } from "@/components/ai/links";
 import { FooterCases } from "./FooterCases";
 
 /**
@@ -10,12 +11,15 @@ import { FooterCases } from "./FooterCases";
  */
 export async function FooterMap() {
   const t = await getTranslations();
-  const nav = await getSiteNav(await getLocale());
+  const locale = await getLocale();
+  const nav = await getSiteNav(locale);
   const L = nav.labels;
   const studio = [
     { text: L.how, href: nav.approach },
     { text: L.pricing, href: nav.pricing },
     { text: t("nav.faq"), href: `${nav.home}#faq` },
+    // the contacts page (the owner, 15 Nov 2026): the form, the phones, the messengers and the mail in one place
+    { text: t("footer.map.contacts"), href: aiHref(locale, "/kontakty") },
     ...(nav.about ? [{ text: L.about, href: nav.about }] : []),
   ];
   return (

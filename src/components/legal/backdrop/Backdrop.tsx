@@ -2,9 +2,9 @@
 /*
  * The page's moving backdrop, one ground under the whole page (the owner, 13 Nov 2026: «полноценный единый фон … ты
  * как будто скроллишь, и этот фон продолжается»; the blocks over it are glass). Fixed to the screen and drawn there,
- * it rides with the scroll at a slower pace, so the ground runs on under the page. The ground is «Сяйво» (glowing
- * fibres, after the owner's reference reel of 13 Nov 2026, in the ads page's language: backdrop/aurora.ts); the
- * other three tried on 13 Nov are gone with the owner's OK.
+ * it rides with the scroll at a slower pace, so the ground runs on under the page. The privacy policy's ground is
+ * «Сяйво» (glowing fibres, after the owner's reference reel of 13 Nov 2026: backdrop/aurora.ts); the contacts page's
+ * is «Зорі» (deep space with meteors, the owner's pick of 15 Nov 2026 from nine trial grounds: backdrop/stars.ts).
  *
  * Only where a graphics card draws the page and the page is FULL (lib/perf/mode): without one, or LITE, the page keeps
  * its plain dark ground. It starts once the browser is idle (never in the first paint's way), plays only while the
@@ -13,12 +13,18 @@
  */
 import { useEffect, useRef } from "react";
 import { canRunFull, isLite, watchMode } from "@/lib/perf/mode";
-import type { Effect, Pointer } from "./types";
+import type { Create, Effect, Pointer } from "./types";
 
 /** frames a second, and fewer on a touch screen */
 const FPS = 45;
 
-export function Backdrop() {
+export type Ground = "aurora" | "stars";
+const GROUNDS: Record<Ground, () => Promise<{ create: Create }>> = {
+  aurora: () => import("./aurora"),
+  stars: () => import("./stars"),
+};
+
+export function Backdrop({ ground = "aurora" }: { ground?: Ground }) {
   const box = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -98,7 +104,7 @@ export function Backdrop() {
     const stopMode = watchMode(() => isLite() && stop());
 
     const start = () =>
-      import("./aurora").then((module) => {
+      GROUNDS[ground]().then((module) => {
         if (!alive) return;
         effect = module.create(cv, pointer);
         if (!effect) return;
@@ -125,7 +131,7 @@ export function Backdrop() {
       stopMode();
       stop();
     };
-  }, []);
+  }, [ground]);
 
   return (
     <div ref={box} className="lg-bg" aria-hidden="true">
