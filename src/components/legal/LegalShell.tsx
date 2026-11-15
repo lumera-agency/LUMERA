@@ -7,7 +7,7 @@ import { MenuSheet } from "@/components/layout/menu/MenuSheet";
 import { Footer } from "@/components/layout/footer/Footer";
 import { BackToTop } from "@/components/fx/back-to-top/BackToTop";
 import { aiHref } from "@/components/ai/links";
-import { Backdrop } from "./backdrop/Backdrop";
+import { Backdrop, type Ground } from "./backdrop/Backdrop";
 // the main page's header styles, the inner pages' kit (the first screen, the crumbs, the chips), then this page's own
 import "@/components/layout/header/header.css";
 import "@/components/ai/ai.css";
@@ -21,6 +21,10 @@ type Props = {
   footerLinks: readonly NavLink[];
   /** the request: the main page's form */
   cta: NavCta;
+  /** the moving ground: «Сяйво» (the policy) or «Зорі» (the contacts) */
+  ground?: Ground;
+  /** the page's own class on <main>, beside the shared ones */
+  page?: string;
   children: React.ReactNode;
 };
 
@@ -28,11 +32,11 @@ type Props = {
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
 
 /**
- * A document of the studio (the privacy policy) over one moving ground, in the main page's frame, as the AI, sites and ads pages are: the smooth
+ * A page of the studio (the privacy policy, the contacts) over one moving ground, in the main page's frame, as the AI, sites and ads pages are: the smooth
  * scroll, the topbar (on from the start: the first screen has no header of its own), the phone menu, the footer with
  * the chrome wordmark, the button back up. A page to read: no scenes, no runtime of its own, no sticky request bar.
  */
-export async function LegalShell({ nav, footerLinks, cta, children }: Props) {
+export async function LegalShell({ nav, footerLinks, cta, ground, page, children }: Props) {
   for (const font of FIRST_SCREEN_FONTS) preload(`/fonts/${font}.woff2`, { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const t = await getTranslations();
   // the logo leads to the main page in the page's language (/, /ru)
@@ -41,9 +45,9 @@ export async function LegalShell({ nav, footerLinks, cta, children }: Props) {
     <>
       <SmoothScroll />
       {/* one moving ground under the whole page, the blocks over it glass (backdrop/Backdrop.tsx) */}
-      <Backdrop />
+      <Backdrop ground={ground} />
       <Topbar always links={nav} cta={cta} home={home} />
-      <main id="main" className="ai lg" data-ai-page="legal">
+      <main id="main" className={page ? `ai lg ${page}` : "ai lg"} data-ai-page="legal">
         {children}
       </main>
       <Footer links={footerLinks} cta={cta} />

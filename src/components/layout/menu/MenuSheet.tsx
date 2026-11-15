@@ -201,6 +201,7 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     { text: L.how, href: local("#approach") },
     { text: L.pricing, href: local("#pricing") },
     ...(nav.about ? [{ text: L.about, href: nav.about }] : []),
+    { text: L.kontakty, href: nav.kontakty },
   ];
   return createPortal(
     <div ref={sheet} className="menu-sheet" id="site-menu" role="dialog" aria-modal="true" aria-label={t("nav.mobileLabel")} inert={!open}>
