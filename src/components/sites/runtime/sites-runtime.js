@@ -39,6 +39,8 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 const motion = !reducedMotion && !OG && typeof Element.prototype.animate === 'function';
 const phoneMQ = window.matchMedia('(max-width: 600px)');
 const narrowMQ = window.matchMedia('(max-width: 860px)');
+/** the page's phone layout (sites.css, sites-hero.css): narrow, or a phone on its side */
+const phoneLayoutMQ = window.matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)');
 /* The formats' page-long stills in AVIF where the browser decodes it, WebP elsewhere: each has its .avif beside its
    .webp, 28% lighter in all at the same look (12 Nov 2026: quality 60 against the WebP, no difference seen at 4x).
    Asked once, of a one-pixel picture */
@@ -354,7 +356,7 @@ function initSticky() {
 function initCover() {
   const hero = $('.ai-hero[data-cover]');
   if (!hero || OG || typeof ResizeObserver !== 'function') return;
-  const phone = window.matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)');
+  const phone = phoneLayoutMQ;
   const set = () => root.style.setProperty('--hero-h', `${hero.offsetHeight}px`);
   const pin = () => root.classList.toggle('ai-stick', !phone.matches);
   set();
@@ -531,6 +533,13 @@ function playBuild(scene) {
   const bands = $$('.st-build__b', build);
   const parts = $$('.ms [data-b]', desk);
   const phone = $('.st-show__phone', scene.el);
+  // a phone: straight to the sample's own first screen, then the phone, no six labelled blocks before it (the owner,
+  // 13 Nov 2026: «эта таблица не нужна, сразу просто следующее появление примера»; they held the block about 1.5 s)
+  if (phoneLayoutMQ.matches) {
+    parts.forEach((part, i) => slide(scene, part, 80 + i * 75, { distance: 18 }));
+    anim(scene, phone, [{ opacity: 0, transform: 'translate3d(0, 36px, 0)' }, { opacity: 1, transform: 'none' }], { duration: 800, delay: 600 });
+    return [];
+  }
   const T = 2350; // the bands' time on the screen
   anim(scene, build, [{ opacity: 1 }, { opacity: 1, offset: 0.82 }, { opacity: 0 }], { duration: T, easing: 'linear' });
   bands.forEach((band, i) => {

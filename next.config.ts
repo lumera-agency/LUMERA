@@ -96,6 +96,9 @@ const nextConfig: NextConfig = {
   // 6 Nov 2026: 0.6 to 1.4 s on a phone)
   experimental: {
     inlineCss: true,
+    // the 404 (app/global-not-found.tsx): the layout is under the language, so a 404 inside it came out as an empty
+    // shell drawn in the browser; Next.js's own file for this case renders it whole on the server
+    globalNotFound: true,
   },
   turbopack: {
     rules: {

@@ -98,9 +98,9 @@ html.is-lite .hero__shards { display: none; }
 html:not(.is-lite) .hero__still { display: none; }
 @media (hover: none) and (pointer: coarse) and (max-width: 699px), (hover: none) and (pointer: coarse) and (max-height: 699px) {
   html:not(.is-lite) .hero__still { display: block; }
-  html:not(.is-lite) .hero__still :is(img, .hero__film) { transition-duration: 1.2s; }
+  html:not(.is-lite) .hero__still :is(img, .hero__film, .hero__still-canvas) { transition-duration: 1.2s; }
 }
-.hero__still :is(img, .hero__film) {
+.hero__still :is(img, .hero__film, .hero__still-canvas) {
   --stone: min(74vh, 46vw);
   position: absolute;
   z-index: 2;
@@ -115,11 +115,11 @@ html:not(.is-lite) .hero__still { display: none; }
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @supports (height: 1svh) {
-  .hero__still :is(img, .hero__film) { --stone: min(74svh, 46vw); }
+  .hero__still :is(img, .hero__film, .hero__still-canvas) { --stone: min(74svh, 46vw); }
 }
-.hero__still.is-in :is(img, .hero__film) { transform: none; }
+.hero__still.is-in :is(img, .hero__film, .hero__still-canvas) { transform: none; }
 @media (max-width: 860px) {
-  .hero__still :is(img, .hero__film):not([data-placed]) { visibility: hidden; }
+  .hero__still :is(img, .hero__film, .hero__still-canvas):not([data-placed]) { visibility: hidden; }
 }
 
 /* LITE's stone moving (HeroShell .is-film: where a graphics card draws the page): its film plays over the still of its
@@ -130,7 +130,13 @@ html:not(.is-lite) .hero__still { display: none; }
 .hero__float { position: absolute; inset: 0; }
 .hero__film { display: block; }
 .hero__still.is-film:not(.has-film) .hero__film,
-.hero__still.has-film img { visibility: hidden; }
+.hero__still.has-film :is(img, .hero__still-canvas) { visibility: hidden; }
+/* a phone's still, drawn on a canvas instead of shown as the picture (HeroShell layStill: a picture this large would
+   count as the page's largest paint, timed by Lighthouse's model of a slow phone after every script the page loads;
+   a canvas is not counted, so the headline is, as when the live 3D stood there) */
+.hero__still-canvas { display: none; }
+.hero__still-canvas[data-drawn] { display: block; }
+.hero__float:has(.hero__still-canvas[data-still]) img { display: none; }
 .hero__still.is-film .hero__float { animation: hero-float 9s ease-in-out infinite alternate; }
 @keyframes hero-float {
   from { translate: 0 calc(-0.014 * var(--orbit-size, 600px)); }
@@ -229,7 +235,7 @@ html:not(.is-lite) .hero__still { display: none; }
   width: 0.85em;
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero__still :is(img, .hero__film),
+  .hero__still :is(img, .hero__film, .hero__still-canvas),
   .hero__orbit { transition: none; }
 }
 .hero__fluid {

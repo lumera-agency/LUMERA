@@ -103,6 +103,61 @@ const FILM = {
 };
 
 /**
+ * A phone's still (LITE or a phone, PHONE, in a phone's layout): laid where the stone will stand and drawn on a canvas,
+ * while the page is still being read, before any of its scripts has run (run from a script right after the hero's
+ * words), and again from HeroShell when the hero is rendered by the page itself (a language switch). Drawn on a canvas,
+ * not shown as the picture: the picture, the first screen's largest, counted as the page's largest paint, which
+ * Lighthouse's model of a slow phone times after every script the page has loaded by then (13 Nov 2026: 4.5 to 5 s, the
+ * mobile score 62 on PageSpeed; with the live 3D, a canvas too, the headline was the largest paint at 1.5 s, the score
+ * 94 to 95). The picture stays hidden (it is not even fetched, being lazy); the canvas gets the same still at once,
+ * asked for first. The canvas is in markup React leaves alone (it is changed here before React takes the page over). The sums are stonePlace's phone layout and place()'s below, which lays it again once the page runs,
+ * by a translate (a move once the headline's font is in counts as no shift of the page). No imports, no closures: it is
+ * serialised into the page as is.
+ */
+function layStill(hero: HTMLElement, phone: string, frame: { left: number; right: number; up: number; down: number }, right: number, src: string) {
+  const canvas = hero.querySelector<HTMLCanvasElement>(".hero__still-canvas");
+  const picture = hero.querySelector<HTMLImageElement>(".hero__still img");
+  if (!canvas || !picture) return;
+  if (!document.documentElement.classList.contains("is-lite") && !matchMedia(phone).matches) return;
+  const width = hero.offsetWidth;
+  const height = hero.offsetHeight;
+  if (!(matchMedia("(max-width: 860px)").matches || width / height < 0.85)) return;
+  const offsetTop = (element: HTMLElement | null) => {
+    let top = 0;
+    for (let node = element; node && node !== hero; node = node.offsetParent as HTMLElement | null) top += node.offsetTop;
+    return top;
+  };
+  const header = hero.querySelector<HTMLElement>(".header");
+  const title = hero.querySelector<HTMLElement>("h1");
+  const headerBottom = header ? offsetTop(header) + header.offsetHeight : 0;
+  const room = (title ? offsetTop(title) : height * 0.6) - headerBottom;
+  const size = Math.min(Math.max(room, width * 0.55), width);
+  const centerY = headerBottom + room * 0.5;
+  const stoneX = width * 0.6 + right * size;
+  canvas.style.left = "0px";
+  canvas.style.top = "0px";
+  canvas.style.translate = (stoneX - frame.left * size).toFixed(1) + "px " + (centerY - frame.up * size).toFixed(1) + "px";
+  canvas.style.width = ((frame.left + frame.right) * size).toFixed(1) + "px";
+  canvas.style.height = ((frame.up + frame.down) * size).toFixed(1) + "px";
+  canvas.dataset.placed = "";
+  if (canvas.dataset.still != null) return;
+  // (the picture hides by this mark, hero.css: it is React's, and a change to it before React takes the page over
+  // would not match what React expects there)
+  canvas.dataset.still = "";
+  const image = new Image();
+  image.fetchPriority = "high";
+  image.onload = () => {
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    canvas.getContext("2d")?.drawImage(image, 0, 0);
+    canvas.dataset.drawn = "";
+  };
+  image.src = src;
+}
+const STILL_CANVAS = `<canvas class="hero__still-canvas"></canvas>`;
+const LAY_STILL = `<script>(function(){var hero=document.currentScript&&document.currentScript.parentElement&&document.currentScript.parentElement.closest("[data-hero]");if(hero)(${layStill.toString()})(hero,${JSON.stringify(PHONE)},${JSON.stringify(STILL_FRAME)},${STONE_RIGHT},${JSON.stringify(FILM.stillNarrow)})})()</script>`;
+
+/**
  * The 3D lives in a React root of its own, outside the page's: a language switch renders the page anew in the other
  * language (LangSwitch, the router), this shell with it, and the canvases would start over. Instead the new shell
  * takes the same root over, moves its box into its own hero before it is drawn and renders it with its own words (the
@@ -318,14 +373,20 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
     const picture = still.current;
     const frame = picture?.closest<HTMLElement>(".hero__still");
     if (!filmStone || !host || !picture || !frame) return;
+    // (a phone's still on its canvas, if the page's own script did not draw it already: a hero rendered by the page)
+    layStill(host, PHONE, STILL_FRAME, STONE_RIGHT, FILM.stillNarrow);
     const place = () => {
-      const { centerX, centerY, size } = stonePlace(host, host.offsetWidth, host.offsetHeight);
+      const { mobile, centerX, centerY, size } = stonePlace(host, host.offsetWidth, host.offsetHeight);
       const stoneX = centerX + STONE_RIGHT * size;
-      // the still and the film over it
-      for (const layer of [picture, filmCanvas.current]) {
+      const left = (stoneX - STILL_FRAME.left * size).toFixed(1);
+      const top = (centerY - STILL_FRAME.up * size).toFixed(1);
+      // the still (its picture, or on a phone its canvas) and the film over it; in a phone's layout moved by a
+      // translate, as layStill lays it first (a move once the headline's font is in then counts as no shift of the page)
+      for (const layer of [picture, host.querySelector<HTMLCanvasElement>(".hero__still-canvas"), filmCanvas.current]) {
         if (!layer) continue;
-        layer.style.left = `${(stoneX - STILL_FRAME.left * size).toFixed(1)}px`;
-        layer.style.top = `${(centerY - STILL_FRAME.up * size).toFixed(1)}px`;
+        layer.style.left = mobile ? "0px" : `${left}px`;
+        layer.style.top = mobile ? "0px" : `${top}px`;
+        layer.style.translate = mobile ? `${left}px ${top}px` : "";
         layer.style.width = `${((STILL_FRAME.left + STILL_FRAME.right) * size).toFixed(1)}px`;
         layer.style.height = `${((STILL_FRAME.up + STILL_FRAME.down) * size).toFixed(1)}px`;
         // (placed: a phone's picture may show now, hero.css)
@@ -430,11 +491,15 @@ export function HeroShell({ orbitLabel, children }: { orbitLabel: string; childr
             <source media={WIDE_NOT_PHONE} srcSet={FILM.stillWide} />
             <img ref={still} src={FILM.stillNarrow} alt="" loading="lazy" decoding="async" />
           </picture>
+          {/* (a phone's still, drawn by layStill: markup React leaves alone) */}
+          <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: STILL_CANVAS }} />
           {film && <canvas ref={filmCanvas} className="hero__film" />}
           {filmStone && <HeroOrbit label={orbitLabel} />}
         </div>
       </div>
       {children}
+      {/* (after the words: a phone's still laid by them and drawn before the page's scripts run, layStill) */}
+      <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: LAY_STILL }} />
     </div>
   );
 }

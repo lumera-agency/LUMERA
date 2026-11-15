@@ -56,93 +56,97 @@ export async function Why() {
           <p className="s-head__intro" data-sr="">{t("why.intro")}</p>
         </header>
 
-        <div className="wv__body">
-          <WhyFigure />
-          {/* phones: the way as a row of the four steps; a tap on a step brings its card */}
-          <div className="wv__step">
-            <svg viewBox="0 0 320 56" aria-hidden="true" focusable="false">
-              <path className="wv__step-go" d={STEP_GO} />
-              <path className="wv__step-back" d={STEP_BACK} />
-              <path className="wv__step-arrow" d="M165 35.5l-5.5 4.5 5.5 4.5" />
-              <path className="wv__step-run wv__step-run--glow" pathLength={1} d={STEP_LOOP} />
-              <path className="wv__step-run" pathLength={1} d={STEP_LOOP} />
-            </svg>
-            {STEPS.map((n) => (
-              <button type="button" className="wv__step-n" data-go={n - 1} aria-label={t(`why.step.${n}.title`)} style={{ "--k": n - 1 } as React.CSSProperties} key={n}>
-                {n}
-              </button>
-            ))}
-          </div>
-          <div className="wv__loop">
-            <ol className="wv__links" role="list">
+        {/* (phones and tablets: as tall as the row's way sideways, so the body stays held while the page scrolls it,
+            WhyClient .is-ride; elsewhere a plain box) */}
+        <div className="wv__ride">
+          <div className="wv__body">
+            <WhyFigure />
+            {/* phones: the way as a row of the four steps; a tap on a step brings its card */}
+            <div className="wv__step">
+              <svg viewBox="0 0 320 56" aria-hidden="true" focusable="false">
+                <path className="wv__step-go" d={STEP_GO} />
+                <path className="wv__step-back" d={STEP_BACK} />
+                <path className="wv__step-arrow" d="M165 35.5l-5.5 4.5 5.5 4.5" />
+                <path className="wv__step-run wv__step-run--glow" pathLength={1} d={STEP_LOOP} />
+                <path className="wv__step-run" pathLength={1} d={STEP_LOOP} />
+              </svg>
               {STEPS.map((n) => (
-                // (it takes the keyboard's focus: on computers that lights its node, on phones brings its card)
-                <li className={`wv__link wv__link--${n}`} tabIndex={0} key={n}>
-                  {/* (numbers as 1, 2, 3, never 01: the owner's rule, 3 Nov 2026, said again for this block on 13 Nov:
-                      no large numeral before the title, the count on the rule «1 / 4») */}
-                  <div className="wv__card">
-                    <i className="wv__rule" data-k={`${n} / ${STEPS.length}`} aria-hidden="true" />
-                    <h3 className="wv__t">{t(`why.step.${n}.title`)}</h3>
-                    <p className="wv__p">{t(`why.step.${n}.text`)}</p>
-                    {n === 1 && (
-                      <figure className="wv__mock">
-                        <div className="wv__tbl">
-                          <table className="wv__table">
-                            <caption>{t("why.table.caption")}</caption>
-                            <thead>
-                              <tr>
-                                {THREE.map((c) => (
-                                  <th scope="col" key={c}>{t(`why.table.col.${c}`)}</th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {THREE.map((r) => (
-                                <tr key={r}>
-                                  <th scope="row">{cell(t(`why.table.row.${r}.name`), 0, 66)}</th>
-                                  <td>{cell(t(`why.table.row.${r}.price`), 1, [58, 50, 72][r - 1], true)}</td>
-                                  <td>{cell(t(`why.table.row.${r}.promise`), 2, [62, 90, 70][r - 1])}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                          {/* the demo's own parts (why-contour-fx.css): the price column's band, the line that
-                              reads the table, the mark that it is being read; then the lap's own reading line */}
-                          <i className="wv__col" aria-hidden="true" />
-                          <i className="wv__probe" aria-hidden="true" />
-                          <i className="wv__live" aria-hidden="true" />
-                          <i className="wv__scan" aria-hidden="true" />
-                        </div>
-                        <figcaption className="wv__out">
-                          <i className="wv__wash" aria-hidden="true" />
-                          <span className="wv__out-t">{t("why.table.out")}</span>
-                        </figcaption>
-                      </figure>
-                    )}
-                  </div>
-                </li>
+                <button type="button" className="wv__step-n" data-go={n - 1} aria-label={t(`why.step.${n}.title`)} style={{ "--k": n - 1 } as React.CSSProperties} key={n}>
+                  {n}
+                </button>
               ))}
-            </ol>
-            <p className="wv__back">
-              <svg className="wv__back-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5" />
-              </svg>
-              <span>{t("why.back")}</span>
-            </p>
-          </div>
-          {/* phones: back and on (the row is swept by the thumb as well) */}
-          <div className="wv__nav">
-            <i className="wv__nav-bar" aria-hidden="true" />
-            <button type="button" className="wv__nav-b" data-dir="-1" aria-label={t("why.nav.prev")}>
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M14.5 6l-6 6 6 6" />
-              </svg>
-            </button>
-            <button type="button" className="wv__nav-b" data-dir="1" aria-label={t("why.nav.next")}>
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M9.5 6l6 6-6 6" />
-              </svg>
-            </button>
+            </div>
+            <div className="wv__loop">
+              <ol className="wv__links" role="list">
+                {STEPS.map((n) => (
+                  // (it takes the keyboard's focus: on computers that lights its node, on phones brings its card)
+                  <li className={`wv__link wv__link--${n}`} tabIndex={0} key={n}>
+                    {/* (numbers as 1, 2, 3, never 01: the owner's rule, 3 Nov 2026, said again for this block on 13 Nov:
+                        no large numeral before the title, the count on the rule «1 / 4») */}
+                    <div className="wv__card">
+                      <i className="wv__rule" data-k={`${n} / ${STEPS.length}`} aria-hidden="true" />
+                      <h3 className="wv__t">{t(`why.step.${n}.title`)}</h3>
+                      <p className="wv__p">{t(`why.step.${n}.text`)}</p>
+                      {n === 1 && (
+                        <figure className="wv__mock">
+                          <div className="wv__tbl">
+                            <table className="wv__table">
+                              <caption>{t("why.table.caption")}</caption>
+                              <thead>
+                                <tr>
+                                  {THREE.map((c) => (
+                                    <th scope="col" key={c}>{t(`why.table.col.${c}`)}</th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {THREE.map((r) => (
+                                  <tr key={r}>
+                                    <th scope="row">{cell(t(`why.table.row.${r}.name`), 0, 66)}</th>
+                                    <td>{cell(t(`why.table.row.${r}.price`), 1, [58, 50, 72][r - 1], true)}</td>
+                                    <td>{cell(t(`why.table.row.${r}.promise`), 2, [62, 90, 70][r - 1])}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                            {/* the demo's own parts (why-contour-fx.css): the price column's band, the line that
+                                reads the table, the mark that it is being read; then the lap's own reading line */}
+                            <i className="wv__col" aria-hidden="true" />
+                            <i className="wv__probe" aria-hidden="true" />
+                            <i className="wv__live" aria-hidden="true" />
+                            <i className="wv__scan" aria-hidden="true" />
+                          </div>
+                          <figcaption className="wv__out">
+                            <i className="wv__wash" aria-hidden="true" />
+                            <span className="wv__out-t">{t("why.table.out")}</span>
+                          </figcaption>
+                        </figure>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <p className="wv__back">
+                <svg className="wv__back-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5" />
+                </svg>
+                <span>{t("why.back")}</span>
+              </p>
+            </div>
+            {/* phones: back and on (the row is swept by the thumb as well) */}
+            <div className="wv__nav">
+              <i className="wv__nav-bar" aria-hidden="true" />
+              <button type="button" className="wv__nav-b" data-dir="-1" aria-label={t("why.nav.prev")}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M14.5 6l-6 6 6 6" />
+                </svg>
+              </button>
+              <button type="button" className="wv__nav-b" data-dir="1" aria-label={t("why.nav.next")}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M9.5 6l6 6-6 6" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
