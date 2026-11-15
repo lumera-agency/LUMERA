@@ -18,7 +18,7 @@ import type { Create, Effect, Pointer } from "./types";
 /** frames a second, and fewer on a touch screen */
 const FPS = 45;
 
-export type Ground = "aurora" | "sonar" | "chrome" | "portal" | "light" | "flow";
+export type Ground = "aurora" | "sonar" | "chrome" | "portal" | "light" | "flow" | "hole" | "planet" | "trails" | "stars";
 const GROUNDS: Record<Ground, () => Promise<{ create: Create }>> = {
   aurora: () => import("./aurora"),
   sonar: () => import("./sonar"),
@@ -26,9 +26,14 @@ const GROUNDS: Record<Ground, () => Promise<{ create: Create }>> = {
   portal: () => import("./portal"),
   light: () => import("./light"),
   flow: () => import("./flow"),
+  hole: () => import("./hole"),
+  planet: () => import("./planet"),
+  trails: () => import("./trails"),
+  stars: () => import("./stars"),
 };
-/** the contacts page's trial while the owner picks its ground (15 Nov 2026): ?bg=sonar|chrome|portal|light|flow */
-const TRIAL: Ground[] = ["sonar", "chrome", "portal", "light", "flow"];
+/** the contacts page's trial while the owner picks its ground (15 Nov 2026): ?bg=sonar|chrome|portal|light|flow, and
+ *  the space ones he asked for next: hole|planet|trails|stars */
+const TRIAL: Ground[] = ["sonar", "chrome", "portal", "light", "flow", "hole", "planet", "trails", "stars"];
 const picked = (ground: Ground): Ground => {
   const asked = new URLSearchParams(window.location.search).get("bg") as Ground | null;
   return ground === "sonar" && asked && TRIAL.includes(asked) ? asked : ground;

@@ -33,6 +33,21 @@ float fbm(vec2 p) {
 }
 /** film grain, new every frame */
 float grain(vec2 at, float now) { return hash(at + fract(now * 0.0137) * 97.0) - 0.5; }
+/** a sky of stars on a grid (q and cell in screen heights): one star in some cells, its size, light, twinkle and tint
+ *  from the cell's hash; mostly silver, a few lime (the system) and a few warm (ember) */
+vec3 stars(vec2 q, float cell, float density, float px, float now) {
+  vec2 c = floor(q / cell);
+  float h = hash(c);
+  if (h > density) return vec3(0.0);
+  vec2 at = vec2(hash(c + 7.1), hash(c + 3.7)) * 0.8 + 0.1;
+  vec2 d = (q / cell - c - at) * cell;
+  float size = px * (0.55 + 1.5 * pow(hash(c + 1.3), 5.0));
+  float twinkle = 0.7 + 0.3 * sin(now * 0.001 * (0.5 + 2.2 * hash(c + 9.2)) + h * 40.0);
+  float light = exp(-dot(d, d) / (size * size)) * twinkle * (0.25 + 0.75 * pow(hash(c + 5.5), 2.0));
+  float tint = hash(c + 2.9);
+  vec3 colour = tint < 0.06 ? vec3(0.855, 1.0, 0.25) : (tint < 0.11 ? vec3(1.0, 0.72, 0.5) : vec3(0.93, 0.94, 0.97));
+  return colour * light;
+}
 `;
 
 /** the shader on the canvas; null where WebGL2 is missing or the shader does not build */
