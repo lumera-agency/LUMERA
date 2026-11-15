@@ -13,13 +13,26 @@
  */
 import { useEffect, useRef } from "react";
 import { canRunFull, isLite, watchMode } from "@/lib/perf/mode";
-import type { Effect, Pointer } from "./types";
+import type { Create, Effect, Pointer } from "./types";
 
 /** frames a second, and fewer on a touch screen */
 const FPS = 45;
 
-export type Ground = "aurora" | "sonar";
-const load = (ground: Ground) => (ground === "sonar" ? import("./sonar") : import("./aurora"));
+export type Ground = "aurora" | "sonar" | "chrome" | "portal" | "light" | "flow";
+const GROUNDS: Record<Ground, () => Promise<{ create: Create }>> = {
+  aurora: () => import("./aurora"),
+  sonar: () => import("./sonar"),
+  chrome: () => import("./chrome"),
+  portal: () => import("./portal"),
+  light: () => import("./light"),
+  flow: () => import("./flow"),
+};
+/** the contacts page's trial while the owner picks its ground (15 Nov 2026): ?bg=sonar|chrome|portal|light|flow */
+const TRIAL: Ground[] = ["sonar", "chrome", "portal", "light", "flow"];
+const picked = (ground: Ground): Ground => {
+  const asked = new URLSearchParams(window.location.search).get("bg") as Ground | null;
+  return ground === "sonar" && asked && TRIAL.includes(asked) ? asked : ground;
+};
 
 export function Backdrop({ ground = "aurora" }: { ground?: Ground }) {
   const box = useRef<HTMLDivElement>(null);
@@ -101,7 +114,7 @@ export function Backdrop({ ground = "aurora" }: { ground?: Ground }) {
     const stopMode = watchMode(() => isLite() && stop());
 
     const start = () =>
-      load(ground).then((module) => {
+      GROUNDS[picked(ground)]().then((module) => {
         if (!alive) return;
         effect = module.create(cv, pointer);
         if (!effect) return;
