@@ -19,7 +19,7 @@ import { PerfProbe } from "@/components/fx/lite/PerfProbe";
 import { EARLY_SCRIPT } from "@/lib/perf/early";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
-const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads"];
+const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads", "about"];
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

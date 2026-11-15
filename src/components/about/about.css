@@ -1,0 +1,88 @@
+/*
+ * «Про нас» (/pro-nas): the page's shared parts. The blocks themselves, «Робочий стіл» (the owner's pick of 7 Nov), are
+ * in pb.css. The kit (tokens, sections and heads, the card, the ivory block, buttons, topbar, footer) is the main
+ * page's and the AI pages' (styles/tokens.css, layout/page/page.css, ui/button, ai/ai.css).
+ * Every colour here is a token: the page has no value of its own. Type: five sizes (label, small, lead, h3, display; the
+ * buttons and the shared header, menu and footer aside); mono only in the labels.
+ * Effects, ported from React Bits and 21st.dev and rebuilt on CSS (transform and opacity only, each once, the CSS default
+ * the final frame): Vertical Cut Reveal (the title), Text Generate Effect (the first screen's lead), Shuffle (the
+ * labels), Animated Content (the parts coming in; runtime/about-runtime.js plays what waits for the screen).
+ */
+
+/* the AI pages' resets cover h2 and ol; the cards' titles are h3 */
+main.about h3 { margin: 0; }
+/* the page holds still at rest, as the sibling pages do: the grain's endless flicker and the hero's seam go */
+body:has(main[data-ai-page="about"]) :is(.page__grain, .page__bridge) { display: none; }
+
+/* ==========================================================================
+   The shared parts
+   ========================================================================== */
+
+/* [data-in]: a part that comes in once as it reaches the screen (runtime: initIn). Its CSS default is its final frame;
+   .is-pre holds the start (a short rise); --d staggers the ones arriving together */
+main.about [data-in] {
+  transition:
+    opacity 0.9s var(--ease-out) var(--d, 0s),
+    translate 0.9s var(--ease-out) var(--d, 0s),
+    rotate 0.9s var(--ease-out) var(--d, 0s),
+    scale 0.9s var(--ease-out) var(--d, 0s),
+    transform 0.6s var(--ease-out);
+}
+main.about [data-in].is-pre { opacity: 0; translate: 0 1.5rem; }
+
+/* (21st.dev's Vertical Cut Reveal) the first screen's title: each word rises out of its own cut, one after another,
+   from the first paint (the cut leaves room for the letters' marks above and below) */
+.about-cut { display: inline-block; overflow: clip; vertical-align: top; padding-block: 0.14em; margin-block: -0.14em; }
+.about-cut__w { display: inline-block; }
+@keyframes about-cut-in { from { translate: 0 115%; } }
+html.motion .about-cut__w { animation: about-cut-in 1s var(--ease-out) calc(0.1s + var(--i) * 0.07s) backwards; }
+
+/* (21st.dev's Text Generate Effect) a text's words come up one after another, once: the first screen's lead on wide
+   screens, from the first paint, once the title is up */
+@keyframes about-gen-in { from { opacity: 0; } }
+@media (min-width: 861px) {
+  html.motion .about-hero__lead .about-gen { animation: about-gen-in 0.7s var(--ease-out) calc(0.5s + var(--i) * 26ms) backwards; }
+}
+
+/* (React Bits' Shuffle) a block's label while its letters settle: each letter on a strip, its own on top (runtime:
+   initShuffle; the plain text comes back once they have) */
+.about-sh { display: inline-block; height: 1.5em; overflow: hidden; vertical-align: top; }
+.about-sh__s { display: block; }
+.about-sh__s > span { display: block; height: 1.5em; line-height: 1.5em; }
+
+/* the quiet way down to the request (the ads page's «ai-down»): the words in ink, the arrow in a ring that fills */
+.about-down { display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; margin-top: 1.25rem; font-size: var(--fs-lead); color: var(--ink); text-decoration: none; }
+.about-down svg { box-sizing: content-box; flex: none; width: 1rem; height: 1rem; padding: 0.625rem; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px var(--border-strong); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
+.about-down:is(:hover, :focus-visible) svg { color: var(--on-ink); background: var(--ink); box-shadow: none; transform: translateY(0.125rem); }
+
+/* the first screen's lead keeps its lines even */
+.about-hero__lead { text-wrap: balance; }
+
+/* ==========================================================================
+   4 · Заявка: the main page's form, the page's sizes in it
+   ========================================================================== */
+.about-lead { padding-bottom: var(--rhythm-section); }
+
+/* the form: a dark card on the line of the others; the page's sizes in it (16 or more in the fields, so iOS never zooms) */
+main.about .about-lead .lead-form.card { background: var(--color-ink-dark); border-color: var(--border-strong); }
+main.about .lead-form :is(.field label, .field legend, .field__hint, .field__err, .field__opt, .lead-form__note, .lead-form__fail) { font-size: var(--fs-small); }
+main.about .lead-form :is(input, textarea) { font-size: var(--fs-lead); }
+main.about .lead-form .chip span { font-size: var(--fs-small); }
+main.about .lead-form__done-title { font-size: var(--fs-h3); }
+main.about .lead-form__done p:last-child { font-size: var(--fs-lead); }
+main.about .lead-form__done .check--lg { border-color: var(--ink); background: var(--ink); box-shadow: none; }
+/* the page's one lime button: the form's «Надіслати заявку» (the sibling pages' first-screen lime) */
+main.about #contact .btn--primary { --btn-bg: var(--signal); --btn-ink: var(--on-ink); --btn-wave: var(--ink); --btn-glow: var(--signal-glow); }
+/* the footer's own request button would only repeat the form right above it (as on the ads page) */
+main[data-ai-page="about"] ~ .footer .footer__lead > .btn { display: none; }
+
+/* ==========================================================================
+   Narrower screens (the site's 860 / 600)
+   ========================================================================== */
+@media (max-width: 860px) {
+  .about-lead .lead-form { order: 3; margin-top: var(--rhythm-m); }
+}
+@media (max-width: 600px) {
+  main.about .about-lead .lead-form { padding: 1.25rem; }
+  main.about .lead-form textarea { min-height: 4.75rem; }
+}

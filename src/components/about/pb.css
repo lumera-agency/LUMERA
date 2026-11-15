@@ -1,0 +1,711 @@
+/* ==========================================================================
+   «Про нас», «Робочий стіл» (sections/about-page/pb/; whole-page variant B, the owner's pick of 7 Nov). Every rule is
+   scoped to main.about[data-ai-page="about"]; the page's shared parts (the parts coming in, the title's cut, the labels'
+   shuffle, the way down, the form's sizes) are in about.css
+   ========================================================================== */
+/*
+ * «Робочий стіл»: the page as the studio's work surface. A mat of square modules (16 at 1200 and wider, 8 on tablets,
+ * 4 on phones; gap var(--card-gap)) shows itself through dots at the modules' corners (the desk, the word) and ruler
+ * ticks (the mats' top edges). The objects snap to whole modules; rows may grow, so no text is ever
+ * clipped. Every colour is a token; five sizes (label, small, lead, h3, display), mono only in the labels.
+ * Motion: transform and opacity only (the translate / rotate / scale properties), once each. The CSS default of every
+ * part is its final frame; .is-pre holds its start (set by runtime/pb.js only on what is still below the screen),
+ * .is-play runs it (each part's moment its own delay, fill backwards). The first screen plays in CSS from the first
+ * paint. Reduced motion: the final frame. Hover: a mouse only.
+ */
+
+/* ---------- the mat: its module (--m, from the block's own width), its pitch, its dots and its ruler ---------- */
+main.about[data-ai-page="about"] {
+  --pb-n: 4;
+  --pb-tab: 1.75rem;
+  --pb-sway: cubic-bezier(0.37, 0, 0.63, 1);
+  --pb-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (min-width: 601px) { main.about[data-ai-page="about"] { --pb-n: 8; } }
+@media (min-width: 1200px) { main.about[data-ai-page="about"] { --pb-n: 16; } }
+main.about[data-ai-page="about"] .pb-c { container-type: inline-size; }
+main.about[data-ai-page="about"] .pb-c > * {
+  --m: calc((100cqw - (var(--pb-n) - 1) * var(--card-gap)) / var(--pb-n));
+  --pitch: calc(var(--m) + var(--card-gap));
+}
+main.about[data-ai-page="about"] :is(.pb-work, .pb-lead) { overflow-x: clip; }
+
+/* the dots sit in the gaps' crossings (anchored at column 1); the ruler on the mat's top edge: a tick at each
+   module, a longer one at every fourth */
+main.about[data-ai-page="about"] .pb-mat {
+  --pb-pt: var(--card-gap);
+  position: relative;
+  padding: var(--pb-pt) 0 calc(var(--m) * 0.5);
+  background-image: radial-gradient(circle, var(--pb-dot) 0 1.25px, transparent 1.75px);
+  background-size: var(--pitch) var(--pitch);
+  background-position: calc(var(--m) * 0.5) calc(var(--pb-pt) + var(--m) * 0.5);
+  /* the dots end with the mat's last object (or its caption): no lone row in the padding under it */
+  background-clip: content-box;
+}
+main.about[data-ai-page="about"] .pb-ruler {
+  background:
+    linear-gradient(var(--pb-tick), var(--pb-tick)) 0 0 / 100% 1px no-repeat,
+    linear-gradient(90deg, var(--pb-tick) 0 1px, transparent 1px) 0 0 / calc(var(--pitch) * 4) 0.5rem repeat-x,
+    linear-gradient(90deg, var(--pb-tick) 0 1px, transparent 1px) 0 0 / var(--pitch) 0.25rem repeat-x;
+}
+main.about[data-ai-page="about"] .pb-ruler { position: absolute; left: 0; right: 0; top: 0; height: 0.5rem; transform-origin: 0 50%; }
+main.about[data-ai-page="about"] .pb-mat--desk { --pb-dot: var(--line-dark); --pb-tick: color-mix(in srgb, var(--ink-dark) 32%, transparent); }
+
+/* the variant's heads on the mat's 16 columns (the intro over the desk's right column) */
+@media (min-width: 1200px) {
+  main.about[data-ai-page="about"] .pb-head { grid-template-columns: repeat(16, minmax(0, 1fr)); column-gap: var(--card-gap); }
+  main.about[data-ai-page="about"] .pb-head .s-head__title { grid-column: 1 / span 10; }
+  main.about[data-ai-page="about"] .pb-head .s-head__intro { grid-column: 12 / -1; }
+}
+
+/* ==========================================================================
+   1 · Студія: the title beside the studio's mark in chrome (about/pb-3d), then the studio in words as one editorial
+   row (the goal at h3 size, two short paragraphs at the lead's); no cards, no photos (the owner, 15 Nov)
+   ========================================================================== */
+main.about[data-ai-page="about"] .pb-hero { overflow-x: clip; padding-top: calc(var(--topbar-h) + clamp(2.5rem, 7vh, 5.5rem)); padding-bottom: var(--rhythm-l); }
+main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: minmax(0, 1fr); align-items: start; margin-bottom: 0; }
+main.about[data-ai-page="about"] .pb-hero__grid > * { grid-column: 1 / -1; }
+main.about[data-ai-page="about"] .pb-hero__lead { max-width: 40ch; margin-top: 1rem; text-wrap: balance; }
+main.about[data-ai-page="about"] .pb-hero__down { margin-top: 2rem; }
+
+/* a text part's label (mono caps on an ember dot): «Наші правила», «Чесно про цифри» */
+main.about[data-ai-page="about"] .pb-k { margin: 0 0 0.875rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-k::before { content: ""; display: inline-block; width: 0.375rem; height: 0.375rem; margin-right: 0.5rem; border-radius: 50%; background: var(--ember); vertical-align: 0.1em; }
+main.about[data-ai-page="about"] .pb-nb { white-space: nowrap; }
+
+/* the studio's row: the goal leads (h3, full ink), the three paragraphs support it (the lead's size, the soft ink); a
+   hairline over the row closes the title's group above it. Phones: one under another */
+main.about[data-ai-page="about"] .pb-studio {
+  display: grid; gap: 1rem var(--card-gap); align-items: start;
+  margin-top: var(--rhythm-m); padding-top: var(--rhythm-s); border-top: 1px solid var(--line);
+}
+main.about[data-ai-page="about"] .pb-studio__goal { max-width: 24em; margin: 0 0 0.5rem; font-size: var(--fs-h3); font-weight: 400; line-height: 1.2; letter-spacing: -0.02em; color: var(--ink); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-studio__text { max-width: 62ch; margin: 0; font-size: var(--fs-lead); font-weight: 300; line-height: 1.6; color: var(--ink-soft); text-wrap: pretty; }
+
+/* 861–1199: the title, the lead and the way down beside the mark; the goal across, the paragraphs under it (cols 1–6) */
+@media (min-width: 861px) and (max-width: 1199px) {
+  main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: auto auto auto auto 1fr auto; column-gap: var(--card-gap); }
+  main.about[data-ai-page="about"] .pb-hero__grid > .s-head__meta { grid-row: 1; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .s-head__title { grid-column: 1 / span 5; grid-row: 2; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__lead { grid-column: 1 / span 5; grid-row: 3; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__down { grid-column: 1 / span 5; grid-row: 4; justify-self: start; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { grid-column: 6 / -1; grid-row: 2 / span 4; align-self: start; justify-self: end; width: min(100%, 15rem); margin-block: -2.5rem -1.5rem; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-studio { grid-row: 6; }
+  main.about[data-ai-page="about"] .pb-studio { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  main.about[data-ai-page="about"] .pb-studio__goal { grid-column: 1 / -1; }
+  main.about[data-ai-page="about"] .pb-studio__text { grid-column: 1 / span 6; }
+}
+/* 1200 and wider: the title, the lead and the way down in cols 1–10, the mark beside them (cols 12–16); the goal in
+   cols 1–7, the paragraphs one under another in cols 9–16, on the same 16 columns */
+@media (min-width: 1200px) {
+  main.about[data-ai-page="about"] .pb-hero { padding-top: calc(var(--topbar-h) + clamp(2rem, 5.5vh, 5rem)); }
+  main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: repeat(16, minmax(0, 1fr)); grid-template-rows: auto auto auto auto 1fr auto; column-gap: var(--card-gap); }
+  main.about[data-ai-page="about"] .pb-hero__grid > .s-head__meta { grid-column: 1 / -1; grid-row: 1; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .s-head__title { grid-column: 1 / span 10; grid-row: 2; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__lead { grid-column: 1 / span 10; grid-row: 3; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__down { grid-column: 1 / span 10; grid-row: 4; justify-self: start; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { grid-column: 12 / -1; grid-row: 2 / span 4; align-self: start; justify-self: end; width: min(100%, 17rem); margin-block: -1.5rem 0; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-studio { grid-row: 6; }
+  main.about[data-ai-page="about"] .pb-studio { grid-template-columns: repeat(16, minmax(0, 1fr)); }
+  main.about[data-ai-page="about"] .pb-studio__goal { grid-column: 1 / span 7; grid-row: 1 / span 3; margin: 0; }
+  main.about[data-ai-page="about"] .pb-studio__text { grid-column: 9 / -1; }
+}
+
+/* phones and small tablets (≤860): the title beside the mark, the lead, the way down, then the studio's row */
+@media (max-width: 860px) {
+  main.about[data-ai-page="about"] .pb-hero__grid { grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .s-head__meta { grid-row: 1; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .s-head__title { grid-column: 1; grid-row: 2; align-self: end; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__lead { grid-column: 1; grid-row: 3; align-self: start; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { grid-column: 2; grid-row: 2 / span 2; align-self: center; width: clamp(5.75rem, 26vw, 10.5rem); margin-block: -0.5rem; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__down { grid-row: 4; justify-self: start; }
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-studio { grid-row: 5; }
+  main.about[data-ai-page="about"] .pb-hero__lead { margin-top: 1rem; }
+  main.about[data-ai-page="about"] .pb-hero__down { margin-top: 1.25rem; }
+  main.about[data-ai-page="about"] .pb-studio { margin-top: var(--rhythm-s); }
+}
+/* small tablets: the mark no taller than the title and the lead beside it */
+@media (min-width: 601px) and (max-width: 860px) {
+  main.about[data-ai-page="about"] .pb-hero__grid > .pb-hero__obj { width: 8.5rem; margin-block: -1rem; }
+}
+
+/* the mark: its still (the scene's first frame) under the canvas, an ember pool of light under it on the mat; the
+   canvas fades in over the still from the same pose, then the still goes */
+main.about[data-ai-page="about"] .pb-mark { position: relative; width: 100%; aspect-ratio: 1; pointer-events: none; }
+main.about[data-ai-page="about"] .pb-mark::before { content: ""; position: absolute; left: 8%; right: 8%; bottom: 2%; height: 22%; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--ember) 24%, transparent), transparent); }
+main.about[data-ai-page="about"] .pb-mark__still,
+main.about[data-ai-page="about"] .pb-mark__gl-box,
+main.about[data-ai-page="about"] .pb-mark__gl-box > canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+main.about[data-ai-page="about"] .pb-mark__gl-box > canvas { opacity: 0; transition: opacity 0.5s var(--ease-out); }
+main.about[data-ai-page="about"] .pb-mark.is-live .pb-mark__gl-box > canvas { opacity: 1; }
+main.about[data-ai-page="about"] .pb-mark.is-live .pb-mark__still { opacity: 0; transition: opacity 0.2s linear 0.5s; }
+
+/* the first screen comes in: the mark comes up out of its light (CSS, from the first paint); the studio's words stream
+   in (21st.dev's Animated Text, stream.tsx): each character of the goal, then each word of the paragraphs, fades in at
+   its own moment (--t, on the cursor's ease-out), in its own place, so nothing moves. Paused under the page curtain
+   (base.css); without html.motion (reduced motion) the text simply stands */
+@keyframes pb-mark-in { from { opacity: 0; translate: 0 1.5rem; scale: 0.94; } }
+@keyframes pb-tw-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: no-preference) {
+  main.about[data-ai-page="about"] .pb-hero__obj { animation: pb-mark-in 1.1s var(--ease-out) 0.35s backwards; }
+}
+html.motion main.about[data-ai-page="about"] .pb-tw { animation: pb-tw-in 0.24s linear var(--t) backwards; }
+
+/* ==========================================================================
+   2 · Як ми працюємо: the desk (the page's one light block)
+   ========================================================================== */
+main.about[data-ai-page="about"] .pb-rcpt { margin: 0 0 calc(var(--m) * 0.5 + 0.875rem); font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+main.about[data-ai-page="about"] .pb-desk {
+  display: grid;
+  grid-template-columns: repeat(var(--pb-n), minmax(0, 1fr));
+  grid-auto-rows: minmax(var(--m), auto);
+  gap: var(--card-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+main.about[data-ai-page="about"] .pb-obj { position: relative; display: flex; flex-direction: column; min-width: 0; padding-top: var(--pb-tab); }
+/* an object's paper: no background of its own (the paper and its shade are two layers under it, so the hover can lift
+   the shade alone), its key tab rising from its top-left edge like a folder's */
+main.about[data-ai-page="about"] .pb-obj__card { position: relative; isolation: isolate; flex: 1; display: flex; flex-direction: column; padding: 1.25rem; border-radius: 0.25rem var(--radius-md) var(--radius-md) var(--radius-md); color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-obj__card::before,
+main.about[data-ai-page="about"] .pb-obj__card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+main.about[data-ai-page="about"] .pb-obj__card::before { z-index: -1; background: var(--card-ivory); box-shadow: inset 0 0 0 1px var(--line-dark); }
+main.about[data-ai-page="about"] .pb-obj__card::after {
+  z-index: -2;
+  box-shadow: 0 2.5rem 4rem -2rem color-mix(in srgb, var(--ink-dark) 60%, transparent), 0 0.375rem 1rem -0.375rem color-mix(in srgb, var(--ink-dark) 45%, transparent);
+  opacity: 0.35;
+  transition: opacity 0.28s var(--ease-out);
+}
+main.about[data-ai-page="about"] .pb-tab {
+  position: absolute; left: 0; bottom: calc(100% - 1px); z-index: 1;
+  display: flex; align-items: center; height: var(--pb-tab); margin: 0; padding: 0 0.875rem;
+  border-radius: 0.5rem 0.5rem 0 0; background: var(--card-ivory); box-shadow: inset 1px 1px 0 var(--line-dark), inset -1px 0 0 var(--line-dark);
+  font: 400 var(--fs-label) / 1.5 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); white-space: nowrap;
+}
+main.about[data-ai-page="about"] .pb-obj__foot { margin-top: auto; }
+main.about[data-ai-page="about"] .pb-obj__h { font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink-dark); text-wrap: balance; }
+main.about[data-ai-page="about"] .pb-obj__d { margin: 0.375rem 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-pic { position: relative; }
+
+/* a tick in a box (the plan's findings, the notification's fields) */
+main.about[data-ai-page="about"] .pb-tick { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* A · the plan, a signed document on a clipboard: the board, its ink-dark clip rising half a module over the ruler (the
+   block's one frame-break), the white sheet: the letterhead, the client's line, the title and its summary, what is
+   found out as a two-column table (the heads, the contents), the stages on a chart, the signature and the stamp */
+main.about[data-ai-page="about"] .pb-obj--plan .pb-obj__card { padding: 0.625rem; }
+main.about[data-ai-page="about"] .pb-obj--plan .pb-obj__card::before { background: linear-gradient(160deg, color-mix(in srgb, var(--ink-dark) 9%, var(--ivory)), color-mix(in srgb, var(--ink-dark) 4%, var(--ivory))); }
+main.about[data-ai-page="about"] .pb-clip {
+  /* the bail's height: from the plate's top up to the ruler, and half a module over it */
+  --h: calc(var(--pb-tab) + var(--pb-pt) - 0.875rem + var(--m) * 0.5);
+  position: absolute; z-index: 2; left: 50%; top: -0.875rem; width: clamp(5rem, 36%, 7.5rem); height: 2.125rem; translate: -50% 0;
+  border-radius: 0.5rem 0.5rem 0.625rem 0.625rem; background: linear-gradient(180deg, color-mix(in srgb, var(--ivory) 16%, var(--ink-dark)), var(--ink-dark) 60%);
+  box-shadow: 0 0.75rem 1rem -0.5rem color-mix(in srgb, var(--ink-dark) 50%, transparent);
+}
+main.about[data-ai-page="about"] .pb-clip::before { content: ""; position: absolute; left: 50%; bottom: calc(100% - 0.25rem); width: 2.5rem; height: calc(var(--h) + 0.25rem); margin-left: -1.25rem; border: 3px solid var(--ink-dark); border-bottom: 0; border-radius: 1.25rem 1.25rem 0 0; }
+main.about[data-ai-page="about"] .pb-clip::after { content: ""; position: absolute; left: 0.625rem; right: 0.625rem; top: 0.5rem; height: 1px; background: var(--border-strong); }
+main.about[data-ai-page="about"] .pb-sheet {
+  --pad: clamp(1.125rem, 1.8vw, 1.75rem);
+  position: relative; isolation: isolate; flex: 1; display: flex; flex-direction: column; padding: 2.75rem var(--pad) var(--pad); border-radius: 0.25rem;
+  background: var(--card-ivory); box-shadow: inset 0 0 0 1px var(--line-dark), 0 1px 0.125rem color-mix(in srgb, var(--ink-dark) 10%, transparent), 0 0.75rem 1.5rem -1rem color-mix(in srgb, var(--ink-dark) 30%, transparent);
+}
+main.about[data-ai-page="about"] .pb-doc__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; padding-bottom: 0.875rem; border-bottom: 2px solid var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-doc__from { display: flex; align-items: center; gap: 0.5rem; margin: 0; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-doc__mark { flex: none; width: 1rem; height: 1rem; fill: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-doc__for { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 0.5rem; margin: 0; font-size: var(--fs-small); font-weight: 500; color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-doc__pill { padding: 0.0625rem 0.5rem; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px var(--line-dark); font-weight: 400; color: var(--ink-dark-soft); }
+main.about[data-ai-page="about"] .pb-doc__title { margin: 1.125rem 0 0; font-size: var(--fs-h3); font-weight: 500; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-doc__sum { margin: 0.5rem 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-doc__k { margin: 1.5rem 0 0; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+main.about[data-ai-page="about"] .pb-doc__list { margin: 0.5rem 0 0; border-top: 1px solid var(--line-dark); }
+main.about[data-ai-page="about"] .pb-doc__row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.375rem; padding: 0.875rem 0; border-bottom: 1px solid var(--line-dark); }
+main.about[data-ai-page="about"] .pb-doc__row dt { font-size: var(--fs-small); font-weight: 500; line-height: 1.4; color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-doc__row dd { margin: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-doc__finds { display: grid; gap: 0.4375rem; margin: 0; padding: 0; list-style: none; }
+main.about[data-ai-page="about"] .pb-doc__finds li { display: flex; align-items: flex-start; gap: 0.5rem; font-size: var(--fs-lead); line-height: 1.35; color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-doc__finds .pb-tick { margin-top: 0.2em; color: var(--ink-dark-soft); }
+/* a finding under the marker (21st.dev's Text Highlighter): a stroke behind each word, reaching over the space after
+   (ember at 28% on the paper, mixed solid, so two strokes meeting never show a seam) */
+main.about[data-ai-page="about"] .pb-find { color: inherit; background: none; }
+main.about[data-ai-page="about"] .pb-mk { position: relative; display: inline-block; }
+main.about[data-ai-page="about"] .pb-mk::before { content: ""; position: absolute; z-index: -1; left: -0.1em; right: -0.1em; top: 0.14em; bottom: 0.04em; border-radius: 0.125em; background: color-mix(in srgb, var(--ember) 28%, var(--card-ivory)); transform-origin: 0 50%; }
+main.about[data-ai-page="about"] .pb-mk:not(:last-child)::before { right: -0.4em; }
+/* the stages on a chart: each stage's name and its bar on a track with week lines, one after another (no dates) */
+main.about[data-ai-page="about"] .pb-gantt { display: grid; gap: 0.3125rem; margin: 0.25rem 0 0; padding: 0; list-style: none; }
+main.about[data-ai-page="about"] .pb-gantt li { display: grid; grid-template-columns: 5.75rem minmax(0, 1fr); align-items: center; column-gap: 0.625rem; min-height: 1.375rem; }
+main.about[data-ai-page="about"] .pb-gantt span { overflow: hidden; font-size: var(--fs-small); line-height: 1.3; color: var(--ink-dark-soft); white-space: nowrap; text-overflow: ellipsis; }
+main.about[data-ai-page="about"] .pb-gantt i {
+  position: relative; display: block; height: 100%; min-height: 1.375rem;
+  background: repeating-linear-gradient(90deg, var(--line-dark) 0 1px, transparent 1px 12.5%);
+}
+main.about[data-ai-page="about"] .pb-gantt i::after { content: ""; position: absolute; top: 0.3125rem; bottom: 0.3125rem; left: calc(var(--a) * 100%); width: calc(var(--l) * 100%); border-radius: 0.1875rem; background: var(--ink-dark); transform-origin: 0 50%; }
+main.about[data-ai-page="about"] .pb-gantt li:last-child i::after { background: var(--ember-deep); }
+/* the signature: the pen's line over «Команда ECLO» and the stamp pressed beside it */
+main.about[data-ai-page="about"] .pb-doc__sign { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-top: auto; padding-top: 1.75rem; }
+main.about[data-ai-page="about"] .pb-doc__pen { width: 7.5rem; height: 2.5rem; overflow: visible; fill: none; stroke: var(--ink-dark); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; border-bottom: 1px solid var(--line-dark); }
+main.about[data-ai-page="about"] .pb-doc__pen path { vector-effect: non-scaling-stroke; }
+/* the stamp: the team's sign in ink, a double frame, at a fixed tilt */
+main.about[data-ai-page="about"] .pb-stamp { position: relative; margin: 0 0.25rem 0.25rem 0; }
+main.about[data-ai-page="about"] .pb-stamp > span {
+  display: block; padding: 0.625rem 0.875rem; rotate: -6deg;
+  border-radius: 0.375rem; box-shadow: inset 0 0 0 1.5px var(--ember-deep), inset 0 0 0 3.5px var(--card-ivory), inset 0 0 0 4.5px var(--ember-deep);
+  font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ember-deep); white-space: nowrap;
+}
+/* the wide plan (1200+, as tall as two objects beside it): the table's heads in a column of their own, the stages'
+   chart at a reading size */
+@media (min-width: 1200px) {
+  main.about[data-ai-page="about"] .pb-doc__row { grid-template-columns: 7.25rem minmax(0, 1fr); column-gap: 1rem; padding: 1.125rem 0; }
+  main.about[data-ai-page="about"] .pb-gantt { gap: 0.375rem; }
+  main.about[data-ai-page="about"] .pb-gantt li,
+  main.about[data-ai-page="about"] .pb-gantt i { min-height: 1.75rem; }
+  main.about[data-ai-page="about"] .pb-gantt i::after { top: 0.5rem; bottom: 0.5rem; }
+}
+
+/* B · the layout on a design board: the computer's frame and the phone's over its right edge, both straight, each
+   with its name over it (as a design tool names its frames); the phone selected (an ember outline and handles) */
+main.about[data-ai-page="about"] .pb-lay { flex: 1; display: flex; flex-direction: column; justify-content: center; margin: 0 0 1.25rem; padding: 1rem 1rem 1.5rem; border-radius: 0.625rem; background: radial-gradient(circle, color-mix(in srgb, var(--ink-dark) 12%, transparent) 0 0.75px, transparent 1.25px) 0 0 / 0.75rem 0.75rem, color-mix(in srgb, var(--ink-dark) 4%, var(--ivory)); box-shadow: inset 0 0 0 1px var(--line-dark); }
+main.about[data-ai-page="about"] .pb-lay__set { position: relative; padding-right: 22%; }
+main.about[data-ai-page="about"] .pb-lay__k { margin: 0 0 0.375rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); white-space: nowrap; }
+main.about[data-ai-page="about"] .pb-lay__frame { position: relative; overflow: hidden; border-radius: 0.375rem; background: var(--ink-dark); box-shadow: 0 0 0 1px var(--line-dark), 0 1rem 1.75rem -1rem color-mix(in srgb, var(--ink-dark) 55%, transparent); }
+main.about[data-ai-page="about"] .pb-lay__frame img { display: block; width: 100%; height: auto; aspect-ratio: 900 / 516; }
+main.about[data-ai-page="about"] .pb-lay__ph { position: absolute; right: 0; bottom: -0.75rem; width: 27%; }
+main.about[data-ai-page="about"] .pb-lay__frame--ph { overflow: visible; padding: 0.25rem; border-radius: 1rem; background: var(--ink-dark); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink-dark) 40%, transparent), 0 1.25rem 2rem -1rem color-mix(in srgb, var(--ink-dark) 60%, transparent); }
+main.about[data-ai-page="about"] .pb-lay__frame--ph img { aspect-ratio: 300 / 556; border-radius: 0.8125rem; }
+/* the selection: an ember outline round the phone, a handle at each corner */
+main.about[data-ai-page="about"] .pb-lay__sel {
+  --hd: 0.4375rem;
+  position: absolute; inset: -0.375rem; border-radius: 1.25rem; box-shadow: 0 0 0 1px var(--ember-deep); pointer-events: none;
+  background:
+    linear-gradient(var(--card-ivory), var(--card-ivory)) 0 0 / var(--hd) var(--hd), linear-gradient(var(--card-ivory), var(--card-ivory)) 100% 0 / var(--hd) var(--hd),
+    linear-gradient(var(--card-ivory), var(--card-ivory)) 0 100% / var(--hd) var(--hd), linear-gradient(var(--card-ivory), var(--card-ivory)) 100% 100% / var(--hd) var(--hd);
+  background-repeat: no-repeat;
+}
+main.about[data-ai-page="about"] .pb-lay__sel::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background:
+    linear-gradient(var(--ember-deep), var(--ember-deep)) 0 0 / var(--hd) 1px, linear-gradient(var(--ember-deep), var(--ember-deep)) 0 0 / 1px var(--hd),
+    linear-gradient(var(--ember-deep), var(--ember-deep)) 100% 0 / var(--hd) 1px, linear-gradient(var(--ember-deep), var(--ember-deep)) 100% 0 / 1px var(--hd),
+    linear-gradient(var(--ember-deep), var(--ember-deep)) 0 100% / var(--hd) 1px, linear-gradient(var(--ember-deep), var(--ember-deep)) 0 100% / 1px var(--hd),
+    linear-gradient(var(--ember-deep), var(--ember-deep)) 100% 100% / var(--hd) 1px, linear-gradient(var(--ember-deep), var(--ember-deep)) 100% 100% / 1px var(--hd);
+  background-repeat: no-repeat;
+}
+
+/* a pin: an ember head (the client's own field) and a mono tag with the finding's words; its box is 60% of the picture
+   wide, so a long tag wraps to two lines inside the object */
+main.about[data-ai-page="about"] .pb-pin { position: absolute; z-index: 3; left: var(--x); top: var(--y); width: 60%; height: 0; pointer-events: none; }
+main.about[data-ai-page="about"] .pb-pin--l { left: auto; right: calc(100% - var(--x)); }
+main.about[data-ai-page="about"] .pb-pin__head { position: absolute; left: -0.375rem; top: -0.375rem; width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--ember); box-shadow: inset 0 0 0 1px var(--ember-deep), 0 0.3125rem 0.375rem -0.125rem color-mix(in srgb, var(--ink-dark) 40%, transparent); pointer-events: auto; }
+main.about[data-ai-page="about"] .pb-pin--l .pb-pin__head { left: auto; right: -0.375rem; }
+main.about[data-ai-page="about"] .pb-pin__head::after { content: ""; position: absolute; left: 0.1875rem; top: 0.1875rem; width: 0.1875rem; height: 0.1875rem; border-radius: 50%; background: var(--card-ivory); opacity: 0.6; }
+main.about[data-ai-page="about"] .pb-pin__tag {
+  position: absolute; top: 0.625rem; left: -0.125rem; width: max-content; max-width: 100%;
+  padding: 0.3125rem 0.5rem; border-radius: 0.25rem; background: var(--card-ivory);
+  box-shadow: inset 0 0 0 1px var(--line-dark), 0 0.5rem 1rem -0.5rem color-mix(in srgb, var(--ink-dark) 35%, transparent);
+  font: 400 var(--fs-label) / 1.35 var(--font-mono); letter-spacing: 0.01em; color: var(--ink-dark); text-wrap: balance; pointer-events: auto;
+}
+main.about[data-ai-page="about"] .pb-pin--l .pb-pin__tag { left: auto; right: -0.125rem; }
+
+/* C · the test site, the one dark object: a browser window (its address with the lock, the live site, the cursor on
+   the booking button) and the test request arriving over its corner as a Telegram notification */
+main.about[data-ai-page="about"] .pb-obj--test .pb-obj__card { color: var(--ink); }
+main.about[data-ai-page="about"] .pb-obj--test .pb-obj__card::before { background: linear-gradient(170deg, color-mix(in srgb, var(--ink) 6%, var(--ink-dark)), var(--ink-dark) 60%); box-shadow: none; }
+main.about[data-ai-page="about"] .pb-obj--test .pb-tab { background: var(--ink-dark); box-shadow: none; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-obj--test .pb-obj__h { color: var(--ink); }
+main.about[data-ai-page="about"] .pb-obj--test .pb-obj__d { color: var(--ink-soft); }
+main.about[data-ai-page="about"] .pb-win { margin: 0.25rem 0 1.25rem; padding-bottom: 3.25rem; }
+main.about[data-ai-page="about"] .pb-win__chrome { overflow: hidden; border-radius: 0.625rem; background: color-mix(in srgb, var(--ink) 8%, var(--ink-dark)); box-shadow: inset 0 0 0 1px var(--border-strong), 0 1.25rem 2rem -1.25rem var(--color-ink-dark); }
+main.about[data-ai-page="about"] .pb-win__bar { display: flex; align-items: center; gap: 0.625rem; margin: 0; padding: 0.5rem 0.625rem; border-bottom: 1px solid var(--line); }
+main.about[data-ai-page="about"] .pb-win__dots { flex: none; width: 2rem; height: 0.4375rem; background: radial-gradient(circle, var(--ink-mute) 0 2.5px, transparent 3px) 0 50% / 0.6875rem 100% repeat-x; }
+main.about[data-ai-page="about"] .pb-win__url { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 0.375rem; padding: 0.1875rem 0.625rem; border-radius: 0.375rem; background: color-mix(in srgb, var(--ink) 7%, transparent); font: 400 var(--fs-label) / 1.4 var(--font-mono); color: var(--ink-soft); white-space: nowrap; }
+main.about[data-ai-page="about"] .pb-win__url > span { overflow: hidden; text-overflow: ellipsis; }
+main.about[data-ai-page="about"] .pb-win__url svg,
+main.about[data-ai-page="about"] .pb-win__re { flex: none; width: 0.75rem; height: 0.75rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-win__view { position: relative; }
+main.about[data-ai-page="about"] .pb-win__view img { display: block; width: 100%; height: auto; aspect-ratio: 900 / 516; }
+/* the cursor on the site's booking button */
+main.about[data-ai-page="about"] .pb-win__cur { position: absolute; left: 89%; top: 4%; width: 0.875rem; height: auto; overflow: visible; fill: var(--ink-dark); stroke: var(--ink); stroke-width: 1.25; stroke-linejoin: round; filter: drop-shadow(0 0.125rem 0.125rem color-mix(in srgb, var(--ink-dark) 60%, transparent)); }
+/* the notification: the app (the paper plane, «Telegram»), the title «Тестова заявка» with a lime tick (the system's
+   result: the screen's one lime), the form's two fields ticked, the task chip */
+main.about[data-ai-page="about"] .pb-toast {
+  position: absolute; right: -0.25rem; bottom: 0; z-index: 2; width: min(16rem, 86%); margin: 0; padding: 0.75rem 0.875rem 0.875rem;
+  border-radius: 0.875rem; background: color-mix(in srgb, var(--ink) 13%, var(--ink-dark)); color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--border-strong), inset 0 1px 0 color-mix(in srgb, var(--ink) 18%, transparent), 0 1.5rem 2.5rem -1rem var(--color-ink-dark);
+}
+main.about[data-ai-page="about"] .pb-toast__app { display: flex; align-items: center; gap: 0.5rem; margin: 0; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-toast__ico { display: grid; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 0.375rem; background: var(--ink); }
+main.about[data-ai-page="about"] .pb-toast__ico svg { width: 0.8125rem; height: 0.8125rem; fill: none; stroke: var(--ink-dark); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-toast__t { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0.5rem 0 0; font-size: var(--fs-small); font-weight: 500; line-height: 1.3; color: var(--ink); }
+main.about[data-ai-page="about"] .pb-toast__ok { flex: none; display: grid; place-items: center; width: 1.125rem; height: 1.125rem; border-radius: 50%; background: var(--signal); }
+main.about[data-ai-page="about"] .pb-toast__ok svg { width: 0.6875rem; height: 0.6875rem; fill: none; stroke: var(--on-accent); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-toast__f { display: grid; gap: 0.25rem; margin: 0.5rem 0 0; padding: 0.5rem 0 0; list-style: none; border-top: 1px solid var(--line); }
+main.about[data-ai-page="about"] .pb-toast__f li { display: flex; align-items: center; gap: 0.4375rem; font-size: var(--fs-small); line-height: 1.35; color: var(--ink-soft); }
+main.about[data-ai-page="about"] .pb-toast__f .pb-tick { width: 0.875rem; height: 0.875rem; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-toast__chip { width: fit-content; margin: 0.5rem 0 0; padding: 0.125rem 0.625rem; border-radius: 62.4375rem; background: var(--ink); font-size: var(--fs-small); line-height: 1.4; color: var(--on-ink); }
+
+/* D · the Google Ads report: the campaign (a lamp, «Пошук · ваша послуга»), its tabs with «Звіт» open, the requests by
+   week as columns over a baseline, the queries each on its lamp with its bar, the two words it never shows on, struck */
+main.about[data-ai-page="about"] .pb-ad { margin: 0.25rem 0 1.25rem; }
+main.about[data-ai-page="about"] .pb-rep { padding: 0.875rem 0.875rem 0.625rem; border-radius: 0.625rem; background: var(--card-ivory); box-shadow: inset 0 0 0 1px var(--line-dark), 0 0.75rem 1.25rem -1rem color-mix(in srgb, var(--ink-dark) 40%, transparent); }
+main.about[data-ai-page="about"] .pb-rep__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.375rem 0.75rem; margin: 0; }
+main.about[data-ai-page="about"] .pb-rep__brand { display: inline-flex; align-items: center; gap: 0.4375rem; font-size: var(--fs-small); font-weight: 500; color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-rep__brand svg { width: 1rem; height: 1rem; fill: none; stroke: var(--ink-dark); stroke-width: 2.6; stroke-linecap: round; }
+main.about[data-ai-page="about"] .pb-rep__brand svg circle { fill: var(--ember-deep); stroke: none; }
+main.about[data-ai-page="about"] .pb-rep__camp { display: inline-flex; align-items: center; gap: 0.4375rem; padding: 0.125rem 0.625rem 0.125rem 0.5rem; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px var(--line-dark); font-size: var(--fs-small); color: var(--ink-dark-soft); }
+main.about[data-ai-page="about"] .pb-rep__camp i,
+main.about[data-ai-page="about"] .pb-rep__on { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ink-dark); box-shadow: 0 0 0 0.1875rem color-mix(in srgb, var(--signal) 85%, transparent); }
+main.about[data-ai-page="about"] .pb-rep__tabs { display: flex; gap: 1rem; margin: 0.75rem 0 0; border-bottom: 1px solid var(--line-dark); font-size: var(--fs-small); color: var(--ink-dark-mute); }
+main.about[data-ai-page="about"] .pb-rep__tabs span { padding: 0 0 0.4375rem; }
+main.about[data-ai-page="about"] .pb-rep__tabs .is-on { margin-bottom: -1px; border-bottom: 2px solid var(--ink-dark); font-weight: 500; color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-rep__k { margin: 0.75rem 0 0; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+main.about[data-ai-page="about"] .pb-rep__chart {
+  display: flex; align-items: flex-end; gap: 0.25rem; height: 3.25rem; margin: 0.5rem 0 0; padding-bottom: 1px;
+  background: linear-gradient(var(--line-dark), var(--line-dark)) 0 100% / 100% 1px no-repeat, repeating-linear-gradient(transparent 0 calc(1.0833rem - 1px), color-mix(in srgb, var(--ink-dark) 6%, transparent) calc(1.0833rem - 1px) 1.0833rem);
+}
+main.about[data-ai-page="about"] .pb-rep__chart i { flex: 1; height: calc(var(--h) * 100%); border-radius: 0.125rem 0.125rem 0 0; background: color-mix(in srgb, var(--ink-dark) 78%, transparent); transform-origin: 50% 100%; }
+main.about[data-ai-page="about"] .pb-rep__chart i:last-child { background: var(--ember-deep); }
+main.about[data-ai-page="about"] .pb-rep__table { display: grid; margin: 0.75rem 0 0; }
+main.about[data-ai-page="about"] .pb-rep__row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: center; column-gap: 0.75rem; min-height: 1.875rem; padding-block: 0.25rem; border-top: 1px solid var(--line-dark); font-size: var(--fs-small); color: var(--ink-dark); }
+main.about[data-ai-page="about"] .pb-rep__row--head { min-height: 1.625rem; border-top: 0; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); }
+main.about[data-ai-page="about"] .pb-rep__q { display: flex; align-items: center; gap: 0.5rem; min-width: 0; line-height: 1.3; overflow-wrap: break-word; }
+main.about[data-ai-page="about"] .pb-rep__on { width: 0.4375rem; height: 0.4375rem; box-shadow: 0 0 0 0.15625rem color-mix(in srgb, var(--signal) 85%, transparent); }
+main.about[data-ai-page="about"] .pb-rep__bar { display: block; height: 0.4375rem; border-radius: 62.4375rem; background: linear-gradient(90deg, var(--ink-dark), color-mix(in srgb, var(--ink-dark) 70%, transparent)); scale: var(--b) 1; transform-origin: 0 50%; }
+main.about[data-ai-page="about"] .pb-rep__row--off { color: var(--ink-dark-mute); }
+main.about[data-ai-page="about"] .pb-rep__row--off .pb-rep__q { text-decoration: line-through; text-decoration-color: var(--ink-dark-mute); }
+main.about[data-ai-page="about"] .pb-rep__no { flex: none; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ink-dark-mute); }
+main.about[data-ai-page="about"] .pb-rep__off { font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark-mute); white-space: nowrap; }
+
+/* E · the keys: a pin in the mat, the ring, the ember key (the client owns it), four access cards on the ring's cable
+   in two runs: each card's kind with its glyph, the domain's address, the owner «Ваш бренд», a contact chip */
+main.about[data-ai-page="about"] .pb-keys { --wire: var(--ink-dark-soft); --ring: 2.75rem; --mid: calc(0.25rem + var(--ring) / 2); display: flex; align-items: flex-start; min-height: 8.75rem; margin: 0.25rem 0 1.25rem; }
+main.about[data-ai-page="about"] .pb-keys__hang { position: relative; flex: none; width: 3.5rem; height: 8.75rem; }
+main.about[data-ai-page="about"] .pb-keys__pin { position: absolute; z-index: 1; left: 50%; top: 0; width: 0.625rem; height: 0.625rem; margin-left: -0.3125rem; border-radius: 50%; background: var(--ink-dark); box-shadow: 0 0.25rem 0.375rem -0.125rem color-mix(in srgb, var(--ink-dark) 40%, transparent); }
+main.about[data-ai-page="about"] .pb-keys__ring { position: absolute; left: 50%; top: 0.25rem; width: var(--ring); height: var(--ring); margin-left: calc(var(--ring) / -2); border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--wire); }
+main.about[data-ai-page="about"] .pb-keys__hang::after { content: ""; position: absolute; left: calc(50% + var(--ring) / 2 - 1px); right: -0.5rem; top: var(--mid); height: 1px; background: var(--wire); }
+main.about[data-ai-page="about"] .pb-keys__key { position: absolute; left: 50%; top: calc(var(--ring) - 0.125rem); width: 2rem; margin-left: -1rem; rotate: 4deg; transform-origin: 50% 0.25rem; }
+main.about[data-ai-page="about"] .pb-keys__key svg { display: block; width: 100%; height: auto; aspect-ratio: 24 / 60; fill: none; stroke: var(--ember-deep); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-keys__key svg * { vector-effect: non-scaling-stroke; }
+main.about[data-ai-page="about"] .pb-keys__tags {
+  position: relative; flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 0.625rem; row-gap: 0.875rem;
+  margin: var(--mid) 0 0 0.5rem; padding-left: 0.5rem;
+  background: linear-gradient(var(--wire), var(--wire)) 0 0 / 1px calc(50% + 0.4375rem) no-repeat;
+}
+main.about[data-ai-page="about"] .pb-tag { position: relative; display: block; min-width: 0; }
+main.about[data-ai-page="about"] .pb-tag::after { content: ""; position: absolute; left: -0.625rem; right: 0; top: 0; height: 1px; background: var(--wire); }
+main.about[data-ai-page="about"] .pb-tag:nth-child(odd)::after { left: -0.5rem; }
+main.about[data-ai-page="about"] .pb-tag__sw { position: relative; display: block; padding-top: 0.75rem; transform-origin: 50% 0; }
+main.about[data-ai-page="about"] .pb-tag__sw::before { content: ""; position: absolute; left: 50%; top: 0; width: 1px; height: 1rem; background: var(--wire); }
+main.about[data-ai-page="about"] .pb-tag__in {
+  position: relative; display: grid; gap: 0.125rem; min-height: 4.75rem; padding: 0.875rem 0.625rem 0.625rem; transform-origin: 50% -0.75rem;
+  border-radius: 0.5rem; background: linear-gradient(160deg, var(--card-ivory), color-mix(in srgb, var(--ink-dark) 4%, var(--card-ivory)));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink-dark) 18%, transparent), 0 0.5rem 0.875rem -0.5rem color-mix(in srgb, var(--ink-dark) 45%, transparent);
+  color: var(--ink-dark);
+}
+/* the punched slot at the card's top for the string */
+main.about[data-ai-page="about"] .pb-tag__in::before { content: ""; position: absolute; left: 50%; top: 0.3125rem; width: 1rem; height: 0.25rem; margin-left: -0.5rem; border-radius: 62.4375rem; box-shadow: inset 0 0 0 1px var(--wire); background: var(--ivory); }
+main.about[data-ai-page="about"] .pb-tag__top { display: flex; align-items: flex-start; gap: 0.375rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.25; }
+main.about[data-ai-page="about"] .pb-tag__top svg { flex: none; width: 1rem; height: 1rem; margin-top: 0.0625rem; fill: none; stroke: var(--ink-dark); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-tag__top span { min-width: 0; overflow-wrap: break-word; }
+main.about[data-ai-page="about"] .pb-tag__v { font: 400 var(--fs-label) / 1.4 var(--font-mono); color: var(--ink-dark-soft); overflow-wrap: anywhere; }
+main.about[data-ai-page="about"] .pb-tag__own { margin-top: auto; padding: 0.375rem 1.5rem 0 0; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ember-deep); }
+/* the contact chip, gold-less: an ink outline with its lines */
+main.about[data-ai-page="about"] .pb-tag__chip { position: absolute; right: 0.625rem; bottom: 0.6875rem; width: 1.125rem; height: 0.875rem; border-radius: 0.1875rem; background: linear-gradient(var(--line-dark), var(--line-dark)) 50% 0 / 1px 100% no-repeat, linear-gradient(var(--line-dark), var(--line-dark)) 0 50% / 100% 1px no-repeat, color-mix(in srgb, var(--ink-dark) 8%, var(--card-ivory)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink-dark) 28%, transparent); }
+
+/* the desk's grid: 16 modules (1200+), 8 (tablets), 4 (phones, one object under another) */
+@media (min-width: 1200px) {
+  main.about[data-ai-page="about"] .pb-obj--plan { grid-column: 1 / span 5; grid-row: 1 / span 8; }
+  main.about[data-ai-page="about"] .pb-obj--layout { grid-column: 6 / span 6; grid-row: 1 / span 4; }
+  main.about[data-ai-page="about"] .pb-obj--test { grid-column: 12 / span 5; grid-row: 1 / span 4; }
+  main.about[data-ai-page="about"] .pb-obj--ads { grid-column: 6 / span 6; grid-row: 5 / span 4; }
+  main.about[data-ai-page="about"] .pb-obj--keys { grid-column: 12 / span 5; grid-row: 5 / span 4; }
+  main.about[data-ai-page="about"] .pb-keys { flex: 1; }
+  main.about[data-ai-page="about"] .pb-tag__in { min-height: 7rem; }
+}
+/* tablets: two objects to a row in reading order (rows as tall as their content), the keys across the mat, their
+   picture beside the words */
+@media (min-width: 601px) and (max-width: 1199px) {
+  main.about[data-ai-page="about"] .pb-desk { grid-auto-rows: auto; }
+  main.about[data-ai-page="about"] .pb-obj { grid-column: span 4; }
+  main.about[data-ai-page="about"] .pb-obj--keys { grid-column: 1 / -1; }
+  main.about[data-ai-page="about"] .pb-obj--keys .pb-obj__card { flex-direction: row; align-items: flex-end; gap: var(--col-gap); }
+  main.about[data-ai-page="about"] .pb-obj--keys .pb-keys { flex: 1.6; margin-bottom: 0; }
+  main.about[data-ai-page="about"] .pb-obj--keys .pb-obj__foot { flex: 1; max-width: 26rem; }
+}
+@media (max-width: 600px) {
+  main.about[data-ai-page="about"] .pb-desk { grid-auto-rows: auto; }
+  main.about[data-ai-page="about"] .pb-obj { grid-column: 1 / -1; }
+  main.about[data-ai-page="about"] .pb-sheet { padding-top: 2.5rem; }
+}
+/* narrower objects: a pin whose tag wraps to two lines moves to its own place, clear of the other's */
+@media (max-width: 1199px) {
+  main.about[data-ai-page="about"] .pb-pin { top: var(--yp); }
+}
+/* phones: the layout's two pins at the board's top and foot, so the renders show between them */
+@media (max-width: 600px) {
+  main.about[data-ai-page="about"] .pb-obj--layout .pb-pin[data-find="1"] { top: 12%; }
+  main.about[data-ai-page="about"] .pb-obj--layout .pb-pin[data-find="2"] { top: 76%; }
+}
+
+/* the desk's scene («Выводы на булавках», runtime/pb.js): on wide screens one timeline for the whole desk (the objects
+   land in reading order, the markers sweep, the plan's bars run, the pins drop, the phone's frame comes down on the
+   board, the cursor goes to the button and the test request arrives, the report's columns and bars grow, the cards
+   swing, the stamp presses; about 2.8 s); on phones each object plays its own part as it comes in, one at a time */
+main.about[data-ai-page="about"] .pb-mat--desk {
+  --step: 110ms; --t-m1: 600ms; --t-m2: 760ms; --t-g: 900ms; --t-pb: 1250ms; --t-pd: 1450ms; --t-cur: 1350ms; --t-toast: 1750ms; --t-rep: 1300ms; --t-swing: 1900ms; --t-stamp: 2250ms;
+}
+@media (max-width: 600px) {
+  main.about[data-ai-page="about"] .pb-mat--desk {
+    --step: 0ms; --t-m1: 320ms; --t-m2: 480ms; --t-g: 600ms; --t-pb: 400ms; --t-pd: 460ms; --t-cur: 300ms; --t-toast: 700ms; --t-rep: 300ms; --t-swing: 340ms; --t-stamp: 1200ms;
+  }
+}
+@keyframes pb-land { from { opacity: 0; translate: 0 18px; rotate: 1.25deg; } }
+@keyframes pb-rise { from { opacity: 0; translate: 0 var(--rise, 12px); } }
+@keyframes pb-sweep { from { scale: 0 1; } }
+@keyframes pb-grow { from { scale: 1 0; } }
+@keyframes pb-bar { from { scale: 0 1; } }
+@keyframes pb-pin { from { opacity: 0; translate: 0 -14px; scale: 0.6; } }
+@keyframes pb-pop { from { opacity: 0; scale: 0.6; } }
+@keyframes pb-cur { from { translate: -2.5rem 2.75rem; } }
+@keyframes pb-stamp { 0% { opacity: 0; scale: 1.3; } 70% { opacity: 1; scale: 0.96; } }
+@keyframes pb-swing {
+  0% { rotate: -9deg; }
+  30% { rotate: 5deg; }
+  55% { rotate: -2.5deg; }
+  80% { rotate: 0.8deg; }
+  100% { rotate: 0deg; }
+}
+/* the start frames */
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-obj__card { opacity: 0; translate: 0 18px; rotate: 1.25deg; }
+main.about[data-ai-page="about"] .pb-mat.is-pre .pb-ruler { scale: 0 1; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-lay__ph { opacity: 0; translate: 0 -12px; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-mk::before { scale: 0 1; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-gantt i::after { scale: 0 1; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-pin { opacity: 0; translate: 0 -14px; scale: 0.6; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-win__cur { translate: -2.5rem 2.75rem; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-toast { opacity: 0; translate: 0 12px; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-toast__ok { scale: 0.6; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-rep__chart i { scale: 1 0; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-rep__bar { scale: 0 1; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-tag__sw { rotate: -9deg; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-keys__key { rotate: -2deg; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-stamp > span { opacity: 0; scale: 1.3; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-pre, .pb-obj.is-pre) .pb-doc__pen { opacity: 0; }
+/* the play */
+main.about[data-ai-page="about"] .pb-mat.is-play .pb-ruler { animation: pb-sweep 0.6s var(--ease-in-out) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-obj__card { animation: pb-land 0.46s var(--ease-out) calc(var(--i) * var(--step)) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-lay__ph { --rise: -12px; animation: pb-rise 0.46s var(--ease-out) calc(var(--i) * var(--step) + 120ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) [data-find="1"] .pb-mk::before { animation: pb-sweep 0.24s var(--ease-in-out) calc(var(--t-m1) + var(--w) * 70ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) [data-find="2"] .pb-mk::before { animation: pb-sweep 0.24s var(--ease-in-out) calc(var(--t-m2) + var(--w) * 70ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-gantt i::after { animation: pb-bar 0.36s var(--ease-out) calc(var(--t-g) + var(--g) * 90ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-obj--layout .pb-pin,
+main.about[data-ai-page="about"] .pb-obj--layout.is-play .pb-pin { animation: pb-pin 0.28s var(--pb-back) calc(var(--t-pb) + var(--k) * 90ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-obj--ads .pb-pin,
+main.about[data-ai-page="about"] .pb-obj--ads.is-play .pb-pin { animation: pb-pin 0.28s var(--pb-back) calc(var(--t-pd) + var(--k) * 90ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-win__cur { animation: pb-cur 0.5s var(--ease-out) var(--t-cur) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-toast { --rise: 12px; animation: pb-rise 0.36s var(--ease-out) var(--t-toast) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-toast__ok { animation: pb-pop 0.22s var(--pb-back) calc(var(--t-toast) + 0.3s) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-rep__chart i { animation: pb-grow 0.4s var(--ease-out) calc(var(--t-rep) + var(--c) * 30ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-rep__bar { animation: pb-bar 0.45s var(--ease-out) calc(var(--t-rep) + 300ms + var(--q) * 90ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-tag__sw { animation: pb-swing 0.7s var(--pb-sway) calc(var(--t-swing) + var(--k) * 50ms) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-keys__key { --a: 4deg; animation: pb-swing-key 0.65s var(--pb-sway) var(--t-swing) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-doc__pen { animation: pb-pop 0.3s var(--ease-out) calc(var(--t-stamp) - 0.25s) backwards; }
+main.about[data-ai-page="about"] :is(.pb-mat.is-play, .pb-obj.is-play) .pb-stamp > span { animation: pb-stamp 0.26s var(--ease-out) var(--t-stamp) backwards; }
+@keyframes pb-swing-key {
+  0% { rotate: -2deg; }
+  30% { rotate: 7.5deg; }
+  55% { rotate: 1.5deg; }
+  80% { rotate: 4.6deg; }
+  100% { rotate: 4deg; }
+}
+/* a touched card swings on its own (runtime/pb.js adds .is-swing on the pointer's entry, takes it off at the end) */
+@keyframes pb-swing-s { 30% { rotate: -5deg; } 65% { rotate: 2deg; } }
+main.about[data-ai-page="about"] .pb-tag__in.is-swing { animation: pb-swing-s 0.5s var(--pb-sway); }
+
+/* under the pointer (a mouse only): an object lifts, its shade deepens; a finding, on the plan or on a pin, lights its
+   two pins and fades what does not carry it */
+@media (hover: hover) and (pointer: fine) {
+  main.about[data-ai-page="about"] .pb-obj:hover .pb-obj__card::after { opacity: 0.6; }
+  main.about[data-ai-page="about"] .pb-desk:has([data-find]:hover) .pb-obj--none,
+  main.about[data-ai-page="about"] .pb-desk:has([data-find="1"]:hover) [data-find="2"],
+  main.about[data-ai-page="about"] .pb-desk:has([data-find="2"]:hover) [data-find="1"] { opacity: 0.45; }
+  main.about[data-ai-page="about"] .pb-pin__head,
+  main.about[data-ai-page="about"] .pb-pin__tag { cursor: default; }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  main.about[data-ai-page="about"] .pb-obj,
+  main.about[data-ai-page="about"] .pb-doc__finds li,
+  main.about[data-ai-page="about"] .pb-pin { transition: opacity 0.2s var(--ease-out), translate 0.2s var(--ease-out); }
+  main.about[data-ai-page="about"] .pb-obj__card { transition: translate 0.28s var(--ease-out); }
+  main.about[data-ai-page="about"] .pb-obj:hover .pb-obj__card { translate: 0 -6px; }
+  main.about[data-ai-page="about"] .pb-desk:has([data-find="1"]:hover) .pb-pin[data-find="1"],
+  main.about[data-ai-page="about"] .pb-desk:has([data-find="2"]:hover) .pb-pin[data-find="2"] { translate: 0 -3px; }
+}
+
+/* ==========================================================================
+   3 · Слово команди: the team's quote in a selection frame on the mat (dark ground: its dots and its ruler), the key
+   phrases under an ember marker, the signature beside or under it (the mark, «Команда ECLO», the three roles)
+   ========================================================================== */
+main.about[data-ai-page="about"] .pb-word { overflow-x: clip; }
+/* the label alone: the mat's ruler right under it is its line */
+main.about[data-ai-page="about"] .pb-head--word { margin-bottom: 0; }
+main.about[data-ai-page="about"] .pb-head--word .s-head__meta { margin-bottom: 0.875rem; }
+main.about[data-ai-page="about"] .pb-head--word .s-head__meta::after { visibility: hidden; }
+main.about[data-ai-page="about"] .pb-mat--word {
+  --pb-dot: var(--border-strong); --pb-tick: var(--border-strong); --pb-pt: calc(var(--m) * 0.5);
+  /* the selection's ember; the marker's: --ember-btn, the ember the site sets under white text (4.6:1) */
+  --sel: var(--ember); --mk: var(--ember-btn);
+}
+main.about[data-ai-page="about"] .pb-say { display: grid; grid-template-columns: repeat(var(--pb-n), minmax(0, 1fr)); gap: calc(var(--card-gap) * 2) var(--card-gap); margin: 0; }
+/* the selection: a thin ember frame round the quote with a square handle on each corner (as a design tool selects a
+   text box), a fine halftone inside it, fading down (the reference's dot ground) */
+main.about[data-ai-page="about"] .pb-say__sel {
+  position: relative; grid-column: 1 / -1; padding: clamp(1.25rem, calc(var(--m) * 0.5), 2.5rem);
+}
+main.about[data-ai-page="about"] .pb-say__sel::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ink) 9%, transparent) 0 0.6px, transparent 1px) 0 0 / 0.375rem 0.375rem;
+  mask-image: linear-gradient(180deg, #000, transparent 90%);
+}
+main.about[data-ai-page="about"] .pb-say__sel::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px var(--sel); pointer-events: none; }
+main.about[data-ai-page="about"] .pb-say__hd {
+  --hd: 0.5rem; --in: calc(var(--hd) - 2px);
+  position: absolute; z-index: 1; inset: calc(var(--hd) / -2 + 0.5px); pointer-events: none;
+  background:
+    linear-gradient(var(--bg), var(--bg)) 1px 1px / var(--in) var(--in),
+    linear-gradient(var(--bg), var(--bg)) calc(100% - 1px) 1px / var(--in) var(--in),
+    linear-gradient(var(--bg), var(--bg)) 1px calc(100% - 1px) / var(--in) var(--in),
+    linear-gradient(var(--bg), var(--bg)) calc(100% - 1px) calc(100% - 1px) / var(--in) var(--in),
+    linear-gradient(var(--sel), var(--sel)) 0 0 / var(--hd) var(--hd),
+    linear-gradient(var(--sel), var(--sel)) 100% 0 / var(--hd) var(--hd),
+    linear-gradient(var(--sel), var(--sel)) 0 100% / var(--hd) var(--hd),
+    linear-gradient(var(--sel), var(--sel)) 100% 100% / var(--hd) var(--hd);
+  background-repeat: no-repeat;
+}
+/* the quote: mixed weights, the key phrases in full ink and medium, the rest in the lighter ink and light; h3 on
+   phones, display from 861 */
+main.about[data-ai-page="about"] .pb-q { position: relative; isolation: isolate; margin: 0; }
+main.about[data-ai-page="about"] .pb-q p {
+  margin: 0; font-size: var(--fs-h3); font-weight: 300; font-variation-settings: "SHRP" 64; line-height: 1.16; letter-spacing: -0.025em;
+  color: var(--ink-mute); text-wrap: pretty;
+}
+main.about[data-ai-page="about"] .pb-q__key { font-weight: 500; color: var(--ink); background: none; }
+main.about[data-ai-page="about"] .pb-q__rest { font-weight: 300; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-q__nb { white-space: nowrap; }
+/* the marker: a stroke behind each word of a key phrase, reaching over the space after it (solid, so two strokes
+   meeting never show a seam), except at a phrase's end and a line's (runtime/pb.js marks the words that end a line) */
+main.about[data-ai-page="about"] .pb-q__w { position: relative; display: inline-block; }
+main.about[data-ai-page="about"] .pb-q__w::before { content: ""; position: absolute; z-index: -1; left: -0.1em; right: -0.1em; top: 0.1em; bottom: 0.02em; border-radius: 0.08em; background: var(--mk); transform-origin: 0 50%; }
+main.about[data-ai-page="about"] .pb-q__w:not(.is-end, .is-eol)::before { right: -0.34em; }
+@media (min-width: 861px) {
+  main.about[data-ai-page="about"] .pb-q p { font-size: var(--fs-display); line-height: 1.06; letter-spacing: -0.035em; }
+}
+
+/* the signature: the mark and «Команда ECLO», then the three roles by name */
+main.about[data-ai-page="about"] .pb-say__by { grid-column: 1 / -1; display: grid; gap: 1rem; align-content: end; }
+main.about[data-ai-page="about"] .pb-say__team { display: flex; align-items: center; gap: 0.625rem; margin: 0; font-size: var(--fs-lead); font-weight: 500; line-height: 1.3; color: var(--ink); }
+main.about[data-ai-page="about"] .pb-say__mark { flex: none; width: 1.25rem; height: 1.25rem; fill: var(--ember); }
+main.about[data-ai-page="about"] .pb-say__roles { display: grid; gap: 0.625rem; margin: 0; padding: 0.875rem 0 0; list-style: none; border-top: 1px solid var(--line); }
+main.about[data-ai-page="about"] .pb-say__roles li { min-width: 0; font-size: var(--fs-small); line-height: 1.35; color: var(--ink-soft); }
+
+/* phones: the quote's frame close round it */
+@media (max-width: 600px) {
+  main.about[data-ai-page="about"] .pb-say__sel { padding: 1.25rem 1.25rem 1.375rem; }
+}
+/* tablets: the roles in a row under the team's name */
+@media (min-width: 601px) and (max-width: 1199px) {
+  main.about[data-ai-page="about"] .pb-say__by { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: var(--col-gap); }
+  main.about[data-ai-page="about"] .pb-say__roles { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; padding: 0 0 0 var(--col-gap); border-top: 0; border-left: 1px solid var(--line); }
+}
+/* 1200 and wider: the quote across cols 1–13, the signature in the margin beside its foot (cols 14–16) */
+@media (min-width: 1200px) {
+  main.about[data-ai-page="about"] .pb-say__sel { grid-column: 1 / span 13; padding: calc(var(--m) * 0.5) calc(var(--m) * 0.5) calc(var(--m) * 0.5 + 0.125rem); }
+  main.about[data-ai-page="about"] .pb-say__by { grid-column: 14 / -1; padding-bottom: 0.125rem; }
+}
+
+/* how the team keeps its word, under the mat, text only: «Наші правила» (each on a ruled line with an ember dash, as
+   ruled paper on the desk) and «Чесно про цифри» with its link. Phones: one under another; 861–1199: cols 1–5 and
+   6–8; 1200+: cols 1–9 and 11–16 */
+main.about[data-ai-page="about"] .pb-rules { display: grid; gap: var(--rhythm-m) var(--card-gap); margin-top: var(--rhythm-m); }
+main.about[data-ai-page="about"] .pb-rules__col { min-width: 0; }
+main.about[data-ai-page="about"] .pb-rules__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+main.about[data-ai-page="about"] .pb-rules__list li {
+  position: relative; padding: 0.875rem 0 0.875rem 1.5rem; border-bottom: 1px solid var(--line);
+  font-size: var(--fs-lead); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty;
+}
+main.about[data-ai-page="about"] .pb-rules__list li::before { content: ""; position: absolute; left: 0; top: calc(0.875rem + 0.72em); width: 0.625rem; height: 1px; background: var(--ember); }
+main.about[data-ai-page="about"] .pb-rules__p { max-width: 40ch; margin: 0 0 1rem; font-size: var(--fs-lead); font-weight: 300; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+main.about[data-ai-page="about"] .pb-rules__link { font-size: var(--fs-small); }
+@media (min-width: 861px) and (max-width: 1199px) {
+  main.about[data-ai-page="about"] .pb-rules { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  main.about[data-ai-page="about"] .pb-rules__col { grid-column: 1 / span 5; }
+  main.about[data-ai-page="about"] .pb-rules__col--honest { grid-column: 6 / -1; padding-left: var(--card-gap); }
+}
+@media (min-width: 1200px) {
+  main.about[data-ai-page="about"] .pb-rules { grid-template-columns: repeat(16, minmax(0, 1fr)); }
+  main.about[data-ai-page="about"] .pb-rules__col { grid-column: 1 / span 9; }
+  main.about[data-ai-page="about"] .pb-rules__col--honest { grid-column: 11 / -1; }
+}
+
+/* the word's scene (runtime/pb.js, scene «word»): the selection comes on (its frame and its handles), then the marker
+   runs behind the key phrases from their left, one phrase after another, each word after the one before; the roles
+   come up beside the signature; about 2.2 s. The CSS default is the final frame (every stroke drawn) */
+main.about[data-ai-page="about"] .pb-mat--word { --t-mk: 380ms; --t-ph: 560ms; --t-w: 110ms; }
+@keyframes pb-on { from { opacity: 0; } }
+main.about[data-ai-page="about"] .pb-mat--word.is-pre .pb-say__hd { opacity: 0; }
+main.about[data-ai-page="about"] .pb-mat--word.is-pre .pb-say__sel::after { opacity: 0; }
+main.about[data-ai-page="about"] .pb-mat--word.is-pre .pb-q__w::before { scale: 0 1; }
+main.about[data-ai-page="about"] .pb-mat--word.is-pre :is(.pb-say__team, .pb-say__roles li) { opacity: 0; translate: 0 0.5rem; }
+main.about[data-ai-page="about"] .pb-mat--word.is-play .pb-say__hd { animation: pb-on 0.24s linear 0.12s backwards; }
+main.about[data-ai-page="about"] .pb-mat--word.is-play .pb-say__sel::after { animation: pb-on 0.24s linear 0.12s backwards; }
+main.about[data-ai-page="about"] .pb-mat--word.is-play .pb-q__w::before { animation: pb-sweep 0.3s var(--ease-out) calc(var(--t-mk) + var(--k) * var(--t-ph) + var(--w) * var(--t-w)) backwards; }
+main.about[data-ai-page="about"] .pb-mat--word.is-play .pb-say__team { --rise: 0.5rem; animation: pb-rise 0.4s var(--ease-out) 1.4s backwards; }
+main.about[data-ai-page="about"] .pb-mat--word.is-play .pb-say__roles li { --rise: 0.5rem; animation: pb-rise 0.4s var(--ease-out) calc(1.5s + var(--i) * 90ms) backwards; }
+
+
+/* ==========================================================================
+   4 · Заявка: the head, the form (the page's one lime), the slip and the business card, all straight
+   ========================================================================== */
+main.about[data-ai-page="about"] .pb-lead__grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+main.about[data-ai-page="about"] .pb-lead .pb-lead__form { grid-column: 1 / -1; order: 0; margin-top: var(--rhythm-m); }
+/* the slip's torn foot keeps the cards' gap to the business card under it */
+main.about[data-ai-page="about"] .pb-lead__aside { display: grid; gap: calc(var(--card-gap) + 0.4375rem) var(--card-gap); align-items: start; margin-top: var(--rhythm-l); }
+/* «Що буде далі»: dark paper with the receipt's torn foot; a tick on each step in place of its number */
+main.about[data-ai-page="about"] .pb-next { --paper: color-mix(in srgb, var(--ink) 6%, var(--bg)); position: relative; padding: 1.25rem 1.5rem 1.375rem; border-radius: var(--radius-md) var(--radius-md) 0 0; background: var(--paper); }
+main.about[data-ai-page="about"] .pb-next::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 0.4375rem; background: conic-gradient(from 135deg at 50% 0, var(--paper) 90deg, transparent 0) 0 0 / 0.875rem 100% repeat-x; }
+main.about[data-ai-page="about"] .pb-next__k { margin: 0 0 0.875rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-next__list { margin: 0; padding: 0; list-style: none; border-top: 1px dashed var(--border-strong); }
+main.about[data-ai-page="about"] .pb-next__list li { display: grid; grid-template-columns: 1rem minmax(0, 1fr); column-gap: 0.875rem; align-items: start; padding: 0.875rem 0; border-bottom: 1px dashed var(--border-strong); }
+main.about[data-ai-page="about"] .pb-next__list li:last-child { border-bottom: 0; padding-bottom: 0; }
+main.about[data-ai-page="about"] .pb-next__ok svg { display: block; width: 1rem; height: 1rem; margin-top: 0.2em; fill: none; stroke: var(--ink-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-next__list b { display: block; margin-bottom: 0.2rem; font-size: var(--fs-lead); font-weight: 500; line-height: 1.35; color: var(--ink); }
+main.about[data-ai-page="about"] .pb-next__list span { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-mute); }
+/* the contacts on a business card */
+main.about[data-ai-page="about"] .pb-card { display: flex; flex-direction: column; width: 100%; max-width: 23rem; aspect-ratio: 85 / 55; padding: 1.25rem 1.5rem 1.375rem; border-radius: var(--radius-md); background: var(--bg); box-shadow: inset 0 0 0 1px var(--border-strong); }
+main.about[data-ai-page="about"] .pb-card__k { margin: 0 0 0.5rem; font: 400 var(--fs-label) / 1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.about[data-ai-page="about"] .pb-card__tel { display: grid; margin: 0; padding: 0; list-style: none; }
+main.about[data-ai-page="about"] .pb-card__tel a { display: inline-flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; font-size: var(--fs-lead); font-variant-numeric: tabular-nums; color: var(--ink); text-decoration: none; }
+main.about[data-ai-page="about"] .pb-card__tel svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-card__chats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin: auto 0 0; padding-top: 0.75rem; }
+main.about[data-ai-page="about"] .pb-card__chats a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.75rem; border-radius: 62.4375rem; font-size: var(--fs-small); color: var(--ink); text-decoration: none; box-shadow: inset 0 0 0 1px var(--line); transition: background-color var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast); }
+main.about[data-ai-page="about"] .pb-card__chats svg { flex: none; width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+main.about[data-ai-page="about"] .pb-card__chats a:focus-visible { color: var(--on-ink); background: var(--ember); box-shadow: none; }
+@media (hover: hover) {
+  main.about[data-ai-page="about"] .pb-card__tel a:hover span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25em; }
+  main.about[data-ai-page="about"] .pb-card__chats a:hover { color: var(--on-ink); background: var(--ember); box-shadow: none; }
+}
+
+@media (min-width: 601px) and (max-width: 1199px) {
+  main.about[data-ai-page="about"] .pb-lead__aside { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1200px) {
+  main.about[data-ai-page="about"] .pb-lead__grid { grid-template-columns: repeat(16, minmax(0, 1fr)); grid-template-rows: auto 1fr; column-gap: var(--card-gap); }
+  main.about[data-ai-page="about"] .pb-lead__head { grid-column: 1 / span 6; grid-row: 1; }
+  /* the form rides along while the slip and the card go by (the main page's side does the same) */
+  main.about[data-ai-page="about"] .pb-lead .pb-lead__form { position: sticky; top: calc(var(--topbar-h) + 1.5rem); grid-column: 8 / -1; grid-row: 1 / span 2; margin-top: 0; }
+  main.about[data-ai-page="about"] .pb-lead__aside { grid-column: 1 / span 6; grid-row: 2; margin-top: var(--rhythm-s); }
+}
+@media (max-width: 600px) {
+  main.about[data-ai-page="about"] .pb-lead .pb-lead__form { padding: 1.25rem; }
+  main.about[data-ai-page="about"] .pb-next { padding: 1.125rem 1.25rem 1.25rem; }
+  main.about[data-ai-page="about"] .pb-card { padding: 1.125rem 1.25rem 1.25rem; }
+}

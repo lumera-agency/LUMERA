@@ -1,0 +1,126 @@
+import { Fragment } from "react";
+import { getLocale, getTranslations } from "next-intl/server";
+import { aiHref } from "@/components/ai/links";
+import { Mark, ROLES } from "./crew";
+
+type CSSVars = React.CSSProperties & Record<`--${string}`, string | number>;
+
+/** the quote cut into its plain runs and its key phrases (`<hl>…</hl>`), each key phrase into its words (so each word
+ *  carries its own stroke of the marker and the sweep follows any wrap); `k` counts the phrases, `w` the words in one.
+ *  The stop that follows a key phrase (its comma, colon, full stop) stays on its last word's line, outside the stroke */
+function Quote({ raw }: { raw: string }) {
+  const parts = raw.split(/(<hl>[\s\S]*?<\/hl>)/);
+  let k = 0;
+  return parts.map((part, p) => {
+    const hl = /^<hl>([\s\S]*)<\/hl>$/.exec(part);
+    if (!hl) {
+      // the stop already taken by the key phrase before it
+      const rest = p > 0 && /^<hl>/.test(parts[p - 1]) ? part.replace(/^[.,:;!?…»)]+/, "") : part;
+      return rest && <span className="pb-q__rest" key={p}>{rest}</span>;
+    }
+    const phrase = k++;
+    const stop = /^[.,:;!?…»)]+/.exec(parts[p + 1] ?? "")?.[0];
+    const words = hl[1].split(" ").filter(Boolean);
+    return (
+      <mark className="pb-q__key" key={p} style={{ "--k": phrase } as CSSVars}>
+        {words.map((w, i) => {
+          const end = i === words.length - 1;
+          const word = <span className={`pb-q__w${end ? " is-end" : ""}`} style={{ "--w": i } as CSSVars}>{w}</span>;
+          return (
+            <Fragment key={i}>
+              {i > 0 && " "}
+              {stop && end ? (
+                <span className="pb-q__nb">
+                  {word}
+                  <span className="pb-q__rest">{stop}</span>
+                </span>
+              ) : (
+                word
+              )}
+            </Fragment>
+          );
+        })}
+      </mark>
+    );
+  });
+}
+
+/**
+ * Variant B, 3 · Слово команди: the team's word, one quote on the mat (B's dots and ruler, dark ground) at display size
+ * on wide screens and h3 on phones, held in a thin ember selection frame with a square handle at each corner (21st.dev,
+ * Ali Imam's «dot-pattern» quote: its mixed weights, the frame and its handles on a dot ground). The key phrases in
+ * full ink, the rest in a lighter one; once, as the quote comes into view, an ember marker stroke runs behind each key
+ * phrase from its left, one phrase after another (21st.dev, Daniel Petho's «Text Highlighter»; runtime/pb.js, scene
+ * «word»; the CSS default is the drawn stroke). Under the frame, the signature: the mark and «Команда ECLO», and the
+ * three roles by name (no avatars, no photos). Under the mat, text only: «Наші правила», five lines from the site's own
+ * terms (faq.a.1, the sites page's stages, the ads page's terms and faq.intro), and «Чесно про цифри» (the ads page's
+ * cases: screenshots without changed numbers, each with what the numbers do not show) with a link to them.
+ *
+ * The quote (about.pb.word.quote) is the main page's own lines, put together for this block at the owner's request:
+ * the manifesto («Сайт працює, коли клієнти пишуть першими»: manifesto.glitch / .and / .mark), the chain's four links
+ * as the whole way (the main page's chain of 3 Nov: Пошук → Сайт → Заявка → Звідки заявка) and the services' title («Сайт, реклама й
+ * заявки в одному проєкті»: services.title).
+ */
+/** «Наші правила»: five lines (about.pb.rules.1–5) */
+const RULES = [1, 2, 3, 4, 5] as const;
+
+export async function PbWord({ index }: { index: number }) {
+  const t = await getTranslations("about");
+  const cases = `${aiHref(await getLocale(), "/reklama-i-analityka")}#case`;
+  return (
+    <section className="section pb-word" id="word" aria-labelledby="word-title">
+      <div className="container pb-c">
+        {/* the block's label, shown; its name for screen readers is the heading under it (the quote is the visual head) */}
+        <div className="s-head pb-head pb-head--word">
+          <p className="s-head__meta" aria-hidden="true">
+            <span className="s-head__index">{index}</span>
+            <span>{t("pb.word.meta")}</span>
+          </p>
+          <h2 className="visually-hidden" id="word-title">{t("pb.word.meta")}</h2>
+        </div>
+
+        <div className="pb-mat pb-mat--word" data-pb-word="">
+          <span className="pb-ruler" aria-hidden="true" />
+          <figure className="pb-say">
+            <div className="pb-say__sel">
+              <span className="pb-say__hd" aria-hidden="true" />
+              <blockquote className="pb-q">
+                <p>
+                  <Quote raw={t.raw("pb.word.quote") as string} />
+                </p>
+              </blockquote>
+            </div>
+            <figcaption className="pb-say__by">
+              <p className="pb-say__team">
+                <Mark className="pb-say__mark" />
+                <span>{t("work.sign")}</span>
+              </p>
+              <ul className="pb-say__roles">
+                {ROLES.map((n, i) => (
+                  <li key={n} style={{ "--i": i } as CSSVars}>{t(`team.${n}.role`)}</li>
+                ))}
+              </ul>
+            </figcaption>
+          </figure>
+        </div>
+
+        {/* how the team keeps its word: the rules, then the honest note on the numbers (both text only) */}
+        <div className="pb-rules">
+          <div className="pb-rules__col" data-in="">
+            <h3 className="pb-k" id="rules-k">{t("pb.rules.k")}</h3>
+            <ul className="pb-rules__list" aria-labelledby="rules-k">
+              {RULES.map((n) => (
+                <li key={n}>{t(`pb.rules.${n}`)}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="pb-rules__col pb-rules__col--honest" data-in="">
+            <h3 className="pb-k">{t("pb.honest.k")}</h3>
+            <p className="pb-rules__p">{t("pb.honest.text")}</p>
+            <a className="link pb-rules__link" href={cases}>{t("pb.honest.link")}</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
