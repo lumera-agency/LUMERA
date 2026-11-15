@@ -70,7 +70,7 @@ export default async function GlobalNotFound() {
         <RootKeep />
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>
-        <InvertCursor scope=".footer__top, .footer__bottom" quiet="[data-wordmark], .footer__index" size={110} grow={1.15} lensGrow={1.35} />
+        <InvertCursor scope=".footer__top, .footer__bottom" quiet="[data-wordmark], .footer__index, .footer__privacy" size={110} grow={1.15} lensGrow={1.35} />
         <NextIntlClientProvider locale={locale} messages={clientMessages}>
           <SiteNavProvider value={siteNav}>
             <Topbar always links={links.filter((l) => !l.href.endsWith("#services"))} cta={cta} home={home} />
