@@ -99,6 +99,8 @@
  * SOFTWARE.
  * ---------------------------------------------------------------------------------------------------------
  */
+import { allowWebGL } from '@/lib/perf/mode';
+
 export const meta = { theme: 'light', cube: 'light', bg: '#eae4da' };
 export const object3d = true;
 
@@ -120,8 +122,8 @@ const T = {
   sheet: { uk: 'Арк.', ru: 'Лист' },
   h1: { uk: ['Оберіть *фон.*', 'Усе інше вже в студії.'], ru: ['Выберите *фон.*', 'Всё остальное уже в студии.'] },
   h1en: ['Pick a *backdrop.*', 'Everything else is here.'],
-  sub: { uk: 'Три зали з денним світлом на Подолі. Від 600 ₴ за годину.', ru: 'Три зала с дневным светом на Подоле. От 600 ₴ в час.' },
-  suben: 'Three daylight studios on Podil. From ₴600 an hour.',
+  sub: { uk: 'Три зали з денним світлом на Подолі. Від 600 грн за годину.', ru: 'Три зала с дневным светом на Подоле. От 600 грн в час.' },
+  suben: 'Three daylight studios on Podil. From 600  UAHan hour.',
   bg: { uk: 'Фон', ru: 'Фон' },
   sw: { uk: ['Білий', 'Бетон', 'Чорний', 'Шавлія', 'Пісок', 'Глина'], ru: ['Белый', 'Бетон', 'Чёрный', 'Шалфей', 'Песок', 'Глина'] },
   plan: { uk: 'План залів', ru: 'План залов' },
@@ -149,12 +151,12 @@ const T = {
     ru: 'Администратор покажет залы и гримёрку. Ассистент поможет выставить свет, даже если вы пришли впервые.' },
   roles: { uk: [['Адміністратор', 'Покаже зали й гримерку'], ['Асистент зі світлом', 'Допоможе виставити світло']],
     ru: [['Администратор', 'Покажет залы и гримёрку'], ['Ассистент со светом', 'Поможет выставить свет']] },
-  faq: { uk: [['Скільки коштує година оренди?', 'Від 600 до 900 ₴. Ціна залежить від залу.'],
+  faq: { uk: [['Скільки коштує година оренди?', 'Від 600 до 900 грн. Ціна залежить від залу.'],
     ['Чи потрібна передоплата?', 'Так, 30%. Решту платите в день зйомки.'],
     ['Як забронювати зал?', 'Залиште заявку. Відповімо за 15 хвилин і підберемо зал і час.'],
     ['Яка площа залів?', 'Південь 80 м², Графіт 60 м², Мансарда 40 м².'],
     ['Чи можна знімати відео?', 'Так. Зал «Графіт» з темними стінами підходить для відео.']],
-  ru: [['Сколько стоит час аренды?', 'От 600 до 900 ₴. Цена зависит от зала.'],
+  ru: [['Сколько стоит час аренды?', 'От 600 до 900 грн. Цена зависит от зала.'],
     ['Нужна ли предоплата?', 'Да, 30%. Остальное в день съёмки.'],
     ['Как забронировать зал?', 'Оставьте заявку. Ответим за 15 минут и подберём зал и время.'],
     ['Какая площадь залов?', 'Юг 80 м², Графит 60 м², Мансарда 40 м².'],
@@ -347,7 +349,7 @@ const DRAWINGS = {
   },
 };
 
-// «900 ₴/год» → ['900', '₴/год']
+// «900 грн/год» → ['900', 'грн/год']
 const price = (p) => { const m = /^([\d\s]+?)\s*(\D.*)$/.exec(String(p)); return m ? [m[1].replace(/\s/g, ''), m[2]] : [String(p), '']; };
 // PixelTransition's grid over the halls' photo (columns × rows)
 const PXC = 12, PXR = 8;
@@ -1438,8 +1440,10 @@ function mountLens(site, ctx, { L, plan, still, phone, vp, dispose, seen, swatch
     try { tex?.dispose(); mat?.dispose(); scene?.children.forEach((m) => m.geometry?.dispose()); renderer?.dispose(); renderer?.forceContextLoss(); } catch { /* already lost */ }
   });
 
-  // three.js and the first frame, once the hero has been seen (the poster until then)
+  // three.js and the first frame, once the hero has been seen (the poster until then; in LITE, lib/perf/mode, the
+  // poster stays: no three.js, no WebGL there)
   seen(plan, async () => {
+    if (!allowWebGL()) return;
     const seenAt = performance.now();
     try {
       THREE = await import('three');

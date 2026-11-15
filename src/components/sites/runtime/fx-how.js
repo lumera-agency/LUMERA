@@ -40,12 +40,9 @@ export function mountHow({ motion }) {
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const q = (sel) => vp.querySelector(sel);
 
-  // phones take the 600-px copy of the design; both pictures load once the block is near
+  // both pictures load once the block is near (a phone's 600-px copy of the design is picked by the markup's <picture>,
+  // SitesHow.tsx)
   const imgs = [...vp.querySelectorAll('img')];
-  if (matchMedia('(max-width: 600px)').matches) {
-    const d = q('.st-bd__img');
-    if (d) d.src = d.getAttribute('src').replace(/(-s)?\.webp$/, '-s.webp');
-  }
   const near = new IntersectionObserver((es) => {
     if (!es.some((e) => e.isIntersecting)) return;
     near.disconnect();

@@ -37,14 +37,16 @@ html:lang(ru) main[data-ai-page="sites"] .st-hg { --hg-l1: 10.2; --hg-l2: 6.6; }
    a face's declared range are set with font-variation-settings (the files carry the whole axis: nothing new is fetched)
    ========================================================================== */
 /* the first screen's three faces under names of their own with font-display: block (the same files the page loads
-   anyway, the Cyrillic ones preloaded: nothing new is fetched): until a face has come its words wait unseen instead of
-   showing a stand-in face that would then be swapped and move them (with motion the entrance hides that moment anyway;
-   without motion this keeps the H1 still: a cold load without motion measured CLS 0.0027 before, ≤ 0.001 after, the
-   rest from the topbar and the lead) */
+   anyway, the Cyrillic ones preloaded; the serif a slim copy of its own, below): until a face has come its words wait
+   unseen instead of showing a stand-in face that would then be swapped and move them (a cold load measured CLS 0.0027
+   before, ≤ 0.001 after, the rest from the topbar and the lead) */
 @font-face { font-family: "St Hero Sans"; font-style: normal; font-weight: 100 900; font-display: block; src: url("/fonts/geologica-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
 @font-face { font-family: "St Hero Sans"; font-style: normal; font-weight: 100 900; font-display: block; src: url("/fonts/geologica-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-@font-face { font-family: "St Hero Serif"; font-style: italic; font-weight: 300 600; font-display: block; src: url("/fonts/sites/source-serif-4-italic-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "St Hero Serif"; font-style: italic; font-weight: 300 600; font-display: block; src: url("/fonts/sites/source-serif-4-italic-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+/* the serif's italic for the lead's last words (.st-hg__ser) and the t5 base's «Дизайн»: Source Serif 4 italic made
+   static at 400 and its optical size 24, the lead's own (10 Nov 2026: 13 + 20 KB in place of 88 + 127 KB; the clinic
+   sample keeps the whole files, sites-pv.css). Made from the Google subsets with fontTools, every character kept */
+@font-face { font-family: "St Hero Serif"; font-style: italic; font-weight: 400; font-display: block; src: url("/fonts/sites/source-serif-4-italic-400-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "St Hero Serif"; font-style: italic; font-weight: 400; font-display: block; src: url("/fonts/sites/source-serif-4-italic-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 @font-face { font-family: "St Hero Mono"; font-style: normal; font-weight: 400; font-display: block; src: url("/fonts/ibm-plex-mono-400-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
 @font-face { font-family: "St Hero Mono"; font-style: normal; font-weight: 400; font-display: block; src: url("/fonts/ibm-plex-mono-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 /* (20 Oct) «ДИЗАЙН» in Helvetica Neue Medium Italic on a computer: named by itself, as the system's own (a browser asked for
@@ -125,7 +127,7 @@ main[data-ai-page="sites"] .st-hg .ai-hero__actions { margin: 0 0 clamp(2rem, 4v
    Serif 4 italic (sites-pv.css @font-face); ember stays the H1's */
 .st-hg .st-hg__mani { max-width: none; font-size: clamp(1.25rem, 1.7vw, 1.625rem); font-weight: 300; line-height: 1.34; letter-spacing: -0.015em; color: var(--ink-soft); }
 .st-hg__nb { white-space: nowrap; }
-.st-hg__ser { font-family: "Source Serif 4", Georgia, serif; font-size: 1.08em; font-style: italic; font-weight: 400; letter-spacing: -0.01em; color: var(--ink); }
+.st-hg__ser { font-family: "St Hero Serif", "Source Serif 4", Georgia, serif; font-size: 1.08em; font-style: italic; font-weight: 400; letter-spacing: -0.01em; color: var(--ink); }
 /* clinic.css .cl-mani__pill */
 .st-hg__pill { display: inline-block; width: 1.9em; height: 0.78em; overflow: hidden; vertical-align: -0.04em; border-radius: 99em; background: #1c1c1c; }
 .st-hg__pill img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -157,18 +159,8 @@ html.motion main[data-ai-page="sites"] .st-hg .st-hg__mark { animation: st-hg-fa
 html.motion main[data-ai-page="sites"] .st-hg .st-hg__pill { animation: st-hg-pill 0.8s var(--ease-out) calc(0.62s + var(--i, 1) * 0.09s) backwards; }
 @keyframes st-hg-pill { from { opacity: 0; transform: scale(0.3); } }
 @keyframes st-hg-fade { from { opacity: 0; } }
-/* the H1: «Дизайн», «і» rise out of their masks; «розробка» comes in a letter at a time (55 ms a letter); «сайтів» rises
-   as it ends. Every part starts unseen for the first frames, so a face that lands a
-   frame late is never seen to move */
-html.motion main[data-ai-page="sites"] .st-hg .st-h1__m > .tone:not(.st-h1__code) { animation: st-h1-in 0.8s var(--ease-out) 0.1s backwards; }
-html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__i > .tone { animation-delay: 0.16s; }
-/* (5 Nov) the word whole, so its kerning holds: it opens from the left a letter's step at a time, once «Дизайн» and «і»
-   have nearly risen (7 Nov: begun at 0.36 s its first letter stood alone while they still rose, and read as a stall) */
-html.motion main[data-ai-page="sites"] .st-hg .st-h1__code { animation: st-h1-type calc(var(--n) * 0.055s) steps(var(--n), jump-start) 0.5s backwards; }
-@keyframes st-h1-type { from { clip-path: inset(-0.3em 100% -0.3em -0.3em); } to { clip-path: inset(-0.3em -0.3em -0.3em -0.3em); } }
-html.motion main[data-ai-page="sites"] .st-hg .st-h1__m.st-h1__s > .tone { animation-duration: 0.85s; animation-delay: calc(0.44s + var(--n) * 0.055s); }
-/* (from 1%, unseen: from 0 the browser took the words for their Largest Contentful Paint only once risen) */
-@keyframes st-h1-in { from { opacity: 0.01; transform: translateY(104%); } 25% { opacity: 1; } }
+/* the H1 has no entrance: its words are there whole from the first paint (the owner, 9 Nov 2026: rising out of masks
+   with «розробка» typed a letter at a time, half of the title stood cut and «лагает при загрузке») */
 
 /* ==========================================================================
    A phone (and a narrow tablet)
@@ -240,13 +232,63 @@ main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }
   .st-hg .ai-hero__rock { top: calc(50% - 1.4em); }
 }
 /* the droplet comes once, whole and moving (the owner, 6 Nov 2026: never the still first and the live one over it): the
-   still waits unseen and shows only where nothing will move (.is-still: reduced motion, Save-Data, no WebGL); the live
-   droplet (a computer) or its film (a phone, SitesDropletSlot) comes in with the still's own entrance once drawn */
-html.motion .st-hg .ai-hero__rock:not(.is-still) .ai-hero__stone { visibility: hidden; }
-.st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 1; animation: st-stone-in 0.9s var(--ease-out) both; }
-/* its entrance: a fade with a short rise, no scale (an object that grows on arrival reads as «it grows») */
-@keyframes st-stone-in { from { opacity: 0; transform: translateY(0.4em); } }
+   still waits unseen and shows only where nothing can move (.is-still: no WebGL; without scripts it simply stays);
+   the live droplet (a computer) or its film (a phone, SitesDropletSlot) comes in with the still's own entrance once
+   drawn, with reduced motion too */
+html.js .st-hg .ai-hero__rock:not(.is-still) .ai-hero__stone { visibility: hidden; }
+/* its entrance with reduced motion: a short fade in place, held at 0.4 s against the site's reduced motion rule
+   (base.css), which would cut it to a blink */
+.st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 1; animation: st-stone-in 0.4s var(--ease-out) both; }
+@keyframes st-stone-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .st-hg .ai-hero__rock.is-live .ai-hero__canvas { animation-duration: 0.4s !important; }
+}
 html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: st-stone-in; }
+/* with motion, a ripple (the owner's pick of five entrances, 13 Nov 2026: «5 вариант для капли», in place of the flight
+   at the viewer: «наезд мне не нравится уже»): two thin rings spread out from its middle, as on a liquid's surface,
+   while the droplet gathers out of a wide flat pool into its shape. It never grows on arrival, never rises from below
+   and has no overshoot (the owner, 10 Nov 2026). The same rules serve the live droplet and its film (both are
+   .ai-hero__canvas) and start with .is-live, so it keeps its place among the first screen's entrances after the
+   preloader. The rings lie behind the droplet (negative z-index inside the rock's own stacking context) and end unseen */
+html.motion .st-hg .ai-hero__rock::before,
+html.motion .st-hg .ai-hero__rock::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  top: 0;
+  width: 6em;
+  height: 6em;
+  translate: -50% -50%;
+  border: 1px solid rgb(246 246 243 / 0.5);
+  border-radius: 50%;
+  background: none;
+  box-shadow: 0 0 0.5em rgb(246 246 243 / 0.12), inset 0 0 0.5em rgb(246 246 243 / 0.08);
+  opacity: 0;
+  pointer-events: none;
+}
+html.motion .st-hg .ai-hero__rock.is-live::before { animation: st-drop-ring 1.3s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+html.motion .st-hg .ai-hero__rock.is-live::after { animation: st-drop-ring 1.3s cubic-bezier(0.2, 0.7, 0.3, 1) 0.18s both; }
+@keyframes st-drop-ring {
+  0% { opacity: 0; transform: scale(0.3); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+/* (the light blur softens the pool's edge as the owner saw it; Chrome plays a blur from the main thread, as it did the
+   flight's: without it the droplet's move ran on the compositor, traced 13 Nov 2026) */
+html.motion .st-hg .ai-hero__rock.is-live .ai-hero__canvas { animation: st-drop-condense 1.4s cubic-bezier(0.25, 0.8, 0.25, 1) both; }
+@keyframes st-drop-condense {
+  0% { opacity: 0; transform: scale(1.2, 0.74); filter: blur(6px); }
+  40% { opacity: 1; }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+/* a phone, upright or on its side: no ripple, the droplet simply fades in (the owner, 13 Nov 2026: «на телефоне сделай
+   обычное появление капли») */
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) {
+  html.motion .st-hg .ai-hero__rock.is-live::before,
+  html.motion .st-hg .ai-hero__rock.is-live::after { animation: none; }
+  html.motion .st-hg .ai-hero__rock.is-live .ai-hero__canvas { animation: st-stone-in 0.8s var(--ease-out) both; }
+}
 
 /* the corners' wrappers: their parts are the grid's items wherever the poster is not a sheet (below) */
 .st-hg .st-hg__corner { display: contents; }
@@ -257,9 +299,10 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
    picture is, centred, the room around it left as margin. --u is one unit across (and every size); down it may stretch
    up to a fifth (--v), so a squarer screen keeps less empty room; --ox / --oy are the sheet's margins inside the words'
    column. The words in Sofia Sans Extra Condensed 800, capitals: «ДИЗАЙН І РОЗРОБКА» across the top (2.41 em, its
-   baseline at 156), «САЙТІВ.» at the foot in ember (5.3 em, its baseline at 845; its em's baseline at 0.797); the
-   droplet's middle at 860 / 398, in front of both; the prices from 1190 across, 200 down. No formats and no button here
-   (the topbar has «Обговорити», the formats are block 2); the upright poster below keeps both
+   baseline at 156), «САЙТІВ.» smaller in ember on the right under it; the droplet's middle at 860 / 398, in front of
+   everything; the sample site «Ваш бренд» bottom left, the prices bottom right (the owner, 10 Nov 2026: the first
+   screen and what follows as one). No formats and no button here (the topbar has «Обговорити», the formats are
+   block 2); the upright poster below keeps both
    ========================================================================== */
 @media (min-width: 761px) and (min-aspect-ratio: 1/1) and (min-height: 501px) {
   main[data-ai-page="sites"] .st-hg {
@@ -267,19 +310,22 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
     --hg-h: calc(100svh - var(--topbar-h) - clamp(2rem, 6.6vh, 4.375rem) - 1.5 * var(--hg-pad));
     /* (5 Nov: a little more room between the topbar and «ДИЗАЙН І РОЗРОБКА») */
     padding-top: calc(var(--topbar-h) + clamp(2rem, 6.6vh, 4.375rem));
-    --u: min(calc(100cqi / 1810), calc(var(--hg-h) / 900));
+    /* (100cqi is the words' column, or, for the sample site beside it, the hero's inner box: the column is that box up
+       to 92rem, so both get the same unit) */
+    --u: min(calc(min(100cqi, 92rem) / 1810), calc(var(--hg-h) / 900));
     --v: min(calc(var(--hg-h) / 900), calc(var(--u) * 1.2));
     --ox: calc((100cqi - 1810 * var(--u)) / 2);
     --oy: calc((var(--hg-h) - 900 * var(--v)) / 2);
   }
   .st-hg .st-hg__grid { display: block; position: relative; height: var(--hg-h); min-height: 0; }
   .st-hg :is(.st-hg__corner--tl, .st-hg__acts) { display: none; }
-  /* the prices on the right, between the two lines: the format in the words' face, «від» and the sum in mono */
-  .st-hg .st-hg__corner--bl { display: block; position: absolute; z-index: 3; left: calc(var(--ox) + 1190 * var(--u)); top: calc(var(--oy) + 200 * var(--v)); width: calc(620 * var(--u)); }
-  .st-hg .st-hg__k--px { font-size: 0.75rem; }
-  .st-hg .st-hg__px { margin-top: 0.75rem; border-top: 1px solid rgb(246 246 243 / 0.3); font-size: clamp(0.9375rem, 1.15vw, 1.125rem); }
-  .st-hg .st-hg__pi { column-gap: 1rem; padding: 0.4375rem 0; border-bottom: 1px solid rgb(246 246 243 / 0.14); }
-  .st-hg .st-hg__pt { font: 700 clamp(1.5rem, 2.2vw, 2rem)/1 "St Hero XC", "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink); }
+  /* the prices bottom right, under «САЙТІВ.»: the format in the words' face, «від» and the sum in mono */
+  /* (sized in the sheet's units, so on a low screen they keep clear of «САЙТІВ.» above them) */
+  .st-hg .st-hg__corner--bl { display: block; position: absolute; z-index: 3; left: calc(var(--ox) + 1190 * var(--u)); top: calc(var(--oy) + 900 * var(--v) - 250 * var(--u)); width: calc(620 * var(--u)); }
+  .st-hg .st-hg__k--px { font-size: max(0.6875rem, 18 * var(--u)); }
+  .st-hg .st-hg__px { margin-top: calc(16 * var(--u)); border-top: 1px solid rgb(246 246 243 / 0.3); font-size: max(0.875rem, 26 * var(--u)); }
+  .st-hg .st-hg__pi { column-gap: 1rem; padding: calc(9 * var(--u)) 0; border-bottom: 1px solid rgb(246 246 243 / 0.14); }
+  .st-hg .st-hg__pt { font: 700 max(1.25rem, 46 * var(--u))/1 "St Hero XC", "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink); }
   .st-hg__pp b { font-weight: 500; color: var(--ink); }
   .st-hg__mark--tl,
   .st-hg__mark--bl { left: calc(var(--ox) - var(--gutter) * 0.5); }
@@ -308,13 +354,33 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   html:lang(uk) .st-hg :is(.st-h1__a, .st-h1__i, .st-h1__b) { top: calc(var(--oy) - 51 * var(--v)); font-size: 2.6em; }
   html:lang(uk) .st-hg .st-h1__i { left: calc(var(--ox) + 732 * var(--u)); }
   html:lang(uk) .st-hg .st-h1__b { left: calc(var(--ox) + 817 * var(--u)); }
-  .st-h1__s { left: calc(var(--ox) - 4 * var(--u)); top: calc(var(--oy) + 845 * var(--v) - 399 * var(--u)); font-size: 5em; letter-spacing: 0; color: var(--ember); }
+  /* «САЙТІВ.» smaller, right under the title on the right, so the sample site takes the bottom left corner (the owner,
+     10 Nov 2026: the first screen and what follows as one; the third of three settings) */
+  .st-h1__s { right: calc(var(--ox) - 2 * var(--u)); top: calc(var(--oy) + 450 * var(--v) - 207 * var(--u)); font-size: 2.6em; letter-spacing: 0; color: var(--ember); }
   .st-hg .st-h1 .st-h1__m .tone { color: inherit; font-style: inherit; }
   .st-hg .st-h1 .st-h1__s .hl { color: inherit; font-style: normal; }
   .st-h1__s .tone::after { content: "."; }
   /* the droplet: in front of both lines */
   .st-hg .st-hg__stone { position: absolute; grid-area: auto; left: calc(var(--ox) + 860 * var(--u)); top: calc(var(--oy) + 398 * var(--v)); width: 0; height: 0; margin: 0; z-index: 2; font-size: calc(790 / 9.4 * var(--u)); }
   .st-hg .ai-hero__rock { top: 50%; }
+  /* the sample site on a computer and a phone (it used to follow the poster, a screen of its own): the bottom left
+     corner, its foot on the sheet's foot. Placed in the same units from the hero's inner box (a size container here,
+     so its 100cqi is the box), in the words' row. Its scene plays as the page opens; no replay button on the sheet */
+  .st-hg .ai-hero__in { container-type: inline-size; }
+  /* the droplet over everything, the sample site too (the owner, 10 Nov 2026): the words' sheet is a layer of its own
+     (its size container makes it one), so the whole sheet goes above the sample site; it lets the pointer through to
+     the sample site under it (its tilt), the prices keep theirs */
+  .st-hg .st-hg__grid { z-index: 3; pointer-events: none; }
+  .st-hg .st-hg__corner--bl { pointer-events: auto; }
+  /* the room under the sheet the first screen keeps for the crosses: block 2 starts at the screen's foot */
+  main[data-ai-page="sites"] .st-hero.st-hg { padding-bottom: calc(1.5 * var(--hg-pad)); }
+  .st-hero.st-hg .ai-hero__visual { position: absolute; z-index: 2; grid-area: 1 / 1; left: var(--ox); top: calc(var(--oy) + 900 * var(--v) - 500 * var(--u)); width: calc(860 * var(--u)); margin: 0; padding: 0; display: block; }
+  .st-hg .st-show { width: 100%; aspect-ratio: 1100 / 640; }
+  .st-hg .st-show__replay { display: none; }
+  /* a little in perspective (the owner, 10 Nov 2026): the computer and the phone as one card turned toward the middle
+     of the screen. The rotate property, so the mouse's tilt (fx-page.js, an inline transform) still adds to it */
+  .st-hero.st-hg .ai-hero__visual { perspective: 1700px; perspective-origin: 80% 40%; }
+  .st-hg .st-show { rotate: 0.32 1 0 15deg; }
 }
 
 /* ==========================================================================
@@ -386,10 +452,11 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   /* a phone: the first screen is the words and the droplet, and at its foot the prices, then the button; the formats'
      line waits for block 2 (it says the same) */
   /* (room above «ДИЗАЙН»: «Й»'s breve rises above the caps, it must not reach the topbar) */
-  /* (the first screen in the small screen; the strip under it, under the browser's floating bar, stays empty, so the
-     sample site never shows there) */
+  /* (the first screen in the small screen; the sample site follows the button at its own margin, so its top may show
+     under the browser's floating bar on the first screen: the owner, 10 Nov 2026, a gap of about 110 pt rather than an
+     empty strip under the bar, «110 давай») */
   main[data-ai-page="sites"] .st-hg { --hg-h: calc(var(--screen-s) - var(--topbar-h) - 2.25rem); padding-top: calc(var(--topbar-h) + 1.5rem); }
-  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); margin-bottom: var(--screen-under); }
+  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
   /* the words and the droplet at the top, under the topbar */
   .st-hg .st-hg__title,
   .st-hg .st-hg__stone { grid-row: 1; align-self: start; }
@@ -400,6 +467,13 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
   .st-hg .st-hg__pi { padding: 0.4rem 0; }
   /* (the phone's old rule zeroes the actions' margins: this one is as strong) */
   main[data-ai-page="sites"] .st-hg .ai-hero__actions.st-hg__acts { grid-row: 5; margin: 2rem 0 0; }
+  /* (about 110 pt from the button to the sample site, more on an iPhone: there the sample starts below the screen's
+     foot, under Safari's floating bar, not seen on the first screen; the owner, 10 Nov 2026, «чтоб не видно было».
+     --screen-under counts the status bar too, which the page is not told (iPhone 18 Pro, measured: small 714, screen
+     874, the page seen to 812 under a 62 pt status bar): 2.75 rem off it hides the sample there by ~6 pt, about 130 pt
+     after the button, the least that hides it («слишком много»); an iPhone with a shorter status bar may show its
+     edge) */
+  main[data-ai-page="sites"] .st-hero .ai-hero__visual { margin-top: max(5.75rem, calc(var(--screen-under) - 2.75rem)); }
 }
 
 /* the words as a liquid (TitleFx.tsx): the canvas over the words, shown once it draws the same letters; the page's words
@@ -407,14 +481,5 @@ html.motion main[data-ai-page="sites"] .st-hg .ai-hero__stone { animation-name: 
 .st-h1fx { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0; }
 .st-h1fx.is-live { opacity: 1; }
 .st-hg__title.is-fx .st-h1 { visibility: hidden; }
-/* the soap bubble (SitesBubble.tsx): a layer over the whole first screen, over its words, its corners and the droplet
-   (the pinned first screen is a layer of its own: block 2 still slides over it) */
-/* (5 Nov: the first screen no longer pins, so the bubble rides a rail as tall as the whole hero, its first screen and
-   the sample site, the canvas sticking to the screen's top: it stays till block 2 comes in. The hero clips instead of
-   hiding its overflow: hidden would make it the sticky canvas' scroller) */
+/* (the hero clips its overflow rather than hiding it: hidden would make it a scroller of its own) */
 .st-hero.st-hg { overflow: clip; }
-.st-hg .st-bubble-rail { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
-.st-hg .st-bubble { position: sticky; top: 0; display: block; width: 100%; height: 100vh; height: 100svh; pointer-events: none; }
-/* a computer: the bubble is the pointer while it shows over the first screen (SitesBubble: is-bubble) */
-.st-hg.is-bubble,
-.st-hg.is-bubble * { cursor: none; }

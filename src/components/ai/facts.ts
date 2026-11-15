@@ -1,21 +1,15 @@
-import { PRICING, DEFAULT_CONFIG, calculateTimeline, money } from "@/components/sections/pricing/configurator/engine.js";
-import { STRINGS } from "@/components/sections/pricing/configurator/strings.js";
+import { PRICING, money } from "@/components/sections/pricing/configurator/engine.js";
 
-/** The ready-made parts' prices and launch times, as the main page's configurator gives them (one source of
- *  prices): the messages carry them as ICU arguments ({lead}, {crm}, {landing}, {leadWeeks}, {crmWeeks}). The
- *  launch times are the calculator's for a site that is already there. */
+/** The AI pages' sums the messages carry as ICU arguments: {landing} (the main page's configurator, one source for
+ *  the site) and {crm}, «Асистент із CRM — від …» (the AI-асистент case's questions). The main page's configurator
+ *  sold «CRM і AI-асистент» for $500 until 9 Nov 2026 (the owner: automation out of the configurator, its prices are
+ *  the AI page's); the case page keeps that sum as its «від». */
+const ASSISTANT_CRM_FROM = 500;
 export function aiFacts(locale: string) {
-  const strings = STRINGS[locale === "ru" ? "ru" : "uk"];
-  const weeks = (automation: "lead" | "crmAi") => {
-    const span = calculateTimeline({ ...DEFAULT_CONFIG, format: "existing", automation }) ?? { min: 1, max: 1 };
-    return strings.weeks(span.min, span.max).replace(/ /g, "\u00a0"); // a no-break space: «≈ 1 тиждень» never splits
-  };
+  void locale;
   return {
-    lead: money(PRICING.automation.lead.price) as string,
-    crm: money(PRICING.automation.crmAi.price) as string,
+    crm: money(ASSISTANT_CRM_FROM) as string,
     landing: money(PRICING.formats.landing.price) as string,
-    leadWeeks: weeks("lead"),
-    crmWeeks: weeks("crmAi"),
   };
 }
 export type AiFacts = ReturnType<typeof aiFacts>;

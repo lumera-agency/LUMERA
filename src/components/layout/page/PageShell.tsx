@@ -12,8 +12,14 @@ import { useSpotlight } from "@/components/fx/spotlight/useSpotlight";
 import { rememberPlace } from "@/lib/boot";
 import { routeAnchorLinks } from "@/lib/scroll";
 import { lockViewport } from "@/lib/viewport";
+import { heroGlow, onHeroGlow } from "@/lib/hero-glow";
+import { skipFarBlocks } from "@/lib/perf/far";
 
-export function PageShell({ children }: { children: React.ReactNode }) {
+/**
+ * `skip`: the page's blocks (selectors of children of the page) that are not rendered while far from the view, in FULL
+ * (lib/perf/far). Never a pinned block or one that holds a pin, nor one whose height changes as its parts load.
+ */
+export function PageShell({ children, skip }: { children: React.ReactNode; skip?: string }) {
   const page = useRef<HTMLDivElement>(null);
   const bridge = useRef<HTMLDivElement>(null);
   const bridgeGlow = useRef<HTMLSpanElement>(null);
@@ -34,42 +40,65 @@ export function PageShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // the blocks far from the view are not rendered (FULL)
+  useEffect(() => {
+    const el = page.current;
+    if (!el || !skip) return;
+    return skipFarBlocks([...el.querySelectorAll<HTMLElement>(skip)].filter((block) => block.parentElement === el));
+  }, [skip]);
+
   // the seam: the bridge draws the hero glow's light in page coordinates
   useEffect(() => {
     const hero = document.querySelector<HTMLElement>("[data-hero]");
     const glow = document.querySelector<HTMLElement>("[data-glow]");
     const el = page.current;
     if (!hero || !el || !bridge.current) return;
+    // measured once and on a resize: the hero's height, and the glow's centre where the CSS put it (in the hero's box,
+    // its lift taken off); after that only numbers (lib/hero-glow), never the boxes
+    let heroHeight = 0;
+    let measuredX = 0;
+    let measuredY = 0;
+    let placed = "";
+    const place = () => {
+      const target = bridgeGlow.current;
+      if (!target) return;
+      const centerX = Number.isNaN(heroGlow.centerX) ? measuredX : heroGlow.centerX;
+      const centerY = (Number.isNaN(heroGlow.centerY) ? measuredY : heroGlow.centerY) + heroGlow.lift - heroHeight;
+      const transform = `translate3d(${centerX.toFixed(1)}px, ${centerY.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      if (transform === placed) return;
+      placed = transform;
+      target.style.transform = transform;
+    };
     const sync = () => {
       const h = hero.getBoundingClientRect();
+      heroHeight = h.height;
       el.style.setProperty("--hero-h", `${h.height}px`);
       if (!glow || !bridgeGlow.current) return;
       const g = glow.getBoundingClientRect();
-      const x = g.left + g.width / 2 - h.left;
-      const y = g.top + g.height / 2 - h.bottom;
+      measuredX = g.left + g.width / 2 - h.left;
+      measuredY = g.top + g.height / 2 - h.top - heroGlow.lift;
       bridgeGlow.current.style.width = `${g.width}px`;
-      bridgeGlow.current.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      placed = "";
+      place();
     };
     sync();
     const ro = new ResizeObserver(sync);
     ro.observe(hero);
     if (matchMedia("(prefers-reduced-motion: reduce)").matches || !matchMedia("(hover: hover) and (pointer: fine)").matches) return () => ro.disconnect();
-    // the hero glow drifts with the pointer: follow it only while the seam is on screen
-    let frame = 0;
+    // the hero glow rides up with the hero's lift as the page scrolls: followed as its writers move it (in their own
+    // frame), only while the seam is on screen. No frame loop of its own: one running at rest had the page's thread
+    // restyle every CSS animation on every frame (lib/hero-glow)
     let visible = false;
-    const loop = () => {
-      sync();
-      frame = visible ? requestAnimationFrame(loop) : 0;
-    };
     const io = new IntersectionObserver((entries) => {
       visible = entries[entries.length - 1].isIntersecting;
-      if (visible && !frame) frame = requestAnimationFrame(loop);
+      if (visible) place();
     });
     io.observe(bridge.current);
+    const stopFollowing = onHeroGlow(() => visible && place());
     return () => {
       ro.disconnect();
       io.disconnect();
-      cancelAnimationFrame(frame);
+      stopFollowing();
     };
   }, []);
 
@@ -91,10 +120,17 @@ export function PageShell({ children }: { children: React.ReactNode }) {
         ease: "none",
         scrollTrigger: { trigger: el, start: "top 60%", end: "bottom 60%", scrub: true, onToggle: (self) => head.current?.classList.toggle("is-on", self.isActive) },
       });
-      for (const meta of el.querySelectorAll(".s-head__meta")) {
-        ScrollTrigger.create({ trigger: meta, start: "top 60%", onEnter: () => meta.classList.add("is-passed"), onLeaveBack: () => meta.classList.remove("is-passed") });
-      }
-      return () => io.disconnect();
+      // a section head's meta is passed once its top is above 60% of the screen (and again not, scrolled back above).
+      // An observer, not a trigger each (10 Nov 2026: seven of them looked at on every frame of every scroll); its
+      // area reaches far above the screen, so a jump past one counts as passing it
+      const passed = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle("is-passed", e.isIntersecting)), {
+        rootMargin: "100000px 0px -40% 0px",
+      });
+      el.querySelectorAll(".s-head__meta").forEach((meta) => passed.observe(meta));
+      return () => {
+        io.disconnect();
+        passed.disconnect();
+      };
     },
     { scope: page },
   );
@@ -144,7 +180,6 @@ export function PageShell({ children }: { children: React.ReactNode }) {
       <div className="page__bridge" data-bridge aria-hidden="true" ref={bridge}>
         <span className="page__bridge-glow" data-bridge-glow ref={bridgeGlow} />
       </div>
-      <div className="page__grain" aria-hidden="true" />
       <div className="spine" aria-hidden="true"><span className="spine__fill" data-spine ref={fill} /></div>
       <span className="spine__head" data-spine-head aria-hidden="true" ref={head} />
       {children}

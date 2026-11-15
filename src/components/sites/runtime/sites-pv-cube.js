@@ -21,6 +21,8 @@
  *       state, tier, canvas, debug }
  * Never throws: anything that fails leaves the poster.
  */
+import { allowWebGL } from '@/lib/perf/mode';
+
 const TAU = Math.PI * 2;
 const FOV = 25 * Math.PI / 180, TH = Math.tan(FOV / 2);
 const R = Math.sqrt(3); // the hull's bounding sphere (a corner of the unit cube)
@@ -232,7 +234,8 @@ const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { tim
 export function createCube(host, o = {}) {
   const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
   const auto = !o.tier || o.tier === 'auto';
-  const still = o.reducedMotion || o.saveData || o.tier === 'poster';
+  // (LITE, lib/perf/mode: the still, no WebGL)
+  const still = o.reducedMotion || o.saveData || o.tier === 'poster' || !allowWebGL();
   const st = {
     theme: o.theme || 'light', bg: o.bg || '#ebe8e1', poster: o.poster || {}, state: 'poster',
     tier: auto ? (touch ? 'medium' : 'high') : o.tier,

@@ -1,25 +1,19 @@
 /*
- * The AI page's own prices (the owner, 21 Oct 2026): the product line, the niches' «від» prices and the audit. For now
- * these prices live on this page only («поки міняємо тільки на цій сторінці, далі … і движок»): the main page's
- * configurator still has its own (Заявки в Telegram $100, CRM і AI-асистент $500). The landing's price and weeks are
- * still the engine's (one source for the site). The lineup, the niches, the price calculator and (phase 2) the losses
- * calculator read from here.
+ * The AI page's prices (the owner, 21 Oct 2026): the product line, the niches' «від» prices and the audit. Since 9 Nov
+ * 2026 (one price list on every page) the numbers live in the engine (PRICING.ai, PRICING.audit), which the main page's
+ * configurator offers too; this file keeps the page's own shape of them. The landing's price and weeks are the
+ * engine's as before. The lineup, the niches, the price calculator and (phase 2) the losses calculator read from here.
  */
 import { PRICING, money } from "@/components/sections/pricing/configurator/engine.js";
 
 export type Product = "search" | "sources" | "assistant" | "custom";
 
 /** price: null = «ціна після аудиту»; from: shown as «від $…» (the volume differs from business to business) */
-export const PRODUCTS: Record<Product, { price: number | null; from: boolean; weeks: [number, number] | null; monthly?: number; freeMonths?: number }> = {
-  search: { price: 800, from: true, weeks: [2, 3] },
-  sources: { price: 500, from: true, weeks: [1, 2] },
-  assistant: { price: 450, from: false, weeks: [1, 2], monthly: 90, freeMonths: 3 },
-  custom: { price: null, from: false, weeks: null },
-};
+export const PRODUCTS = PRICING.ai as Record<Product, { price: number | null; from: boolean; weeks: [number, number] | null; monthly?: number; freeMonths?: number }>;
 export const PRODUCT_ORDER: Product[] = ["search", "sources", "assistant", "custom"];
 
 /** the process audit: $150, 2–3 days, credited to the works if they are ordered */
-export const AUDIT = { price: 150, days: [2, 3] as [number, number] };
+export const AUDIT = PRICING.audit as { price: number; days: [number, number] };
 
 /** the niches' cards: the cheapest product that answers them */
 export const NICHES = [

@@ -1,62 +1,25 @@
-/* why: the block's shared parts. The chain itself is why-chain.css; here the glyphs (glyphs.tsx), the dots before
-   «Только страница» / «Система ECLO», and the two notes under the chain. */
+/* why: the block's head and the two notes under it. The contour itself is why-contour.css (its look) and
+   why-contour-fx.css (its motion). */
 
-.why {
-  --w5-mark: 0.4375rem;          /* the dot before a line */
-  --w5-glyph-w: 4.5rem;          /* the glyph: 72 × 44 on desktop (a 1 : 0.61 screen) */
-  --w5-glyph-h: 2.75rem;
-  --w5-glyph-gap: 1.25rem;
-}
 @media (min-width: 1101px) {
-  .why .s-head__title { grid-column: 1 / span 8; }
-  .why .s-head__intro { grid-column: 9 / -1; max-width: 34ch; }
+  .why .s-head__title { grid-column: 1 / span 9; }
+  .why .s-head__intro { grid-column: 10 / -1; max-width: 26ch; }
 }
-@media (max-width: 860px) {
-  .why { --w5-glyph-w: 3.5rem; --w5-glyph-h: 2.125rem; --w5-glyph-gap: 1rem; }
+@media (max-width: 1100px) {
+  .why .s-head__title { grid-column: 1 / -1; }
+  .why .s-head__intro { display: block; grid-column: 1 / -1; max-width: 34ch; margin-top: 1.125rem; }
 }
 @media (max-width: 700px) {
   .why .s-head { margin-bottom: var(--rhythm-s); }
-  .why .s-head__intro { display: none; }
-  .why { --w5-glyph-w: 2.75rem; --w5-glyph-h: 1.6875rem; --w5-glyph-gap: 0.875rem; }
 }
 
-/* the dot: a ring with a lit centre (lime for the system; why-chain.css greys it for the page alone) */
-.w5-mark { pointer-events: none; }
-.w5-mark--sys { width: var(--w5-mark); height: var(--w5-mark); }
-.w5-mark--sys::before,
-.w5-mark--sys b { content: ""; position: absolute; inset: 0; border-radius: 50%; }
-.w5-mark--sys::before { border: 1px solid rgba(246, 246, 243, 0.4); }
-.w5-mark--sys b { background: var(--signal); box-shadow: 0 0 0.625rem 1px var(--signal-glow); }
-
-/* the glyphs: hairline UI sketches, one lime accent each (lit while its link is on), their stories in why-orbit.js */
-.w5-glyph { display: block; width: var(--w5-glyph-w); height: var(--w5-glyph-h); pointer-events: none; }
-.w5-glyph svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.w5-glyph .g-l { fill: none; stroke: rgba(246, 246, 243, 0.5); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.w5-glyph .g-f { fill: rgba(246, 246, 243, 0.2); }
-.w5-glyph .g-f2 { fill: rgba(246, 246, 243, 0.58); }
-.w5-glyph .g-d { fill: rgba(246, 246, 243, 0.4); }
-.w5-glyph .g-ac { fill: rgba(246, 246, 243, 0.88); }
-.w5-glyph .g-on { fill: var(--signal); opacity: 0; }
-.w5-glyph .g-hl { fill: rgba(246, 246, 243, 0.07); opacity: 0; }
-.w5-glyph .g-ping { fill: none; stroke: var(--signal); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: 0; }
-.w5-glyph .g-caret { fill: rgba(246, 246, 243, 0.85); opacity: 0; }
-.w5-glyph :is(.g-q, .g-caret, .g-hl) { transform-box: fill-box; transform-origin: 0 50%; }
-.w5-glyph .g-bar { transform-box: fill-box; transform-origin: 50% 100%; }
-.w5-glyph :is(.g-dot, .g-ping, .g-b3, .g-b4, .g-card, .g-tag) { transform-box: fill-box; transform-origin: 50% 50%; }
-.w5-glyph :is(.g-on, .g-hl) { transition: opacity var(--dur-fast) ease; }
-@media (prefers-reduced-motion: reduce) {
-  .w5-glyph :is(.g-on, .g-hl) { transition: none; }
-}
-
-/* the two notes under the chain */
+/* the two notes under the contour */
 .w5-sum {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--col-gap);
-  /* its line right under the chain's last link, as the hairlines between the links (the owner, 4 Nov: the space there
-     read as double), the notes well below it */
   margin: 0;
-  padding: clamp(2.5rem, 6vh, 4rem) 0 0;
+  padding: clamp(1.75rem, 4vh, 2.75rem) 0 0;
   list-style: none;
   border-top: 1px solid var(--line);
 }
@@ -96,15 +59,9 @@
   .w5-sum__item { grid-column: 1 / -1; }
 }
 @media (max-width: 700px) {
-  .w5-sum { padding-top: 2.25rem; row-gap: 0.75rem; }
+  .w5-sum { row-gap: 0.75rem; }
   .w5-sum__head { display: inline; margin: 0; font-size: var(--fs-body); font-weight: 500; letter-spacing: 0; font-variation-settings: normal; }
   .w5-sum__head::after { content: ". "; }
   .w5-sum__text { display: inline; line-height: 1.5; }
   .w5-sum__item { text-wrap: pretty; }
-}
-
-@media (forced-colors: active) {
-  .w5-mark--sys b { background: CanvasText; box-shadow: none; }
-  .w5-glyph .g-on { fill: CanvasText; }
-  .w5-glyph .g-l { stroke: CanvasText; }
 }

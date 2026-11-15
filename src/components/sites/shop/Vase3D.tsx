@@ -404,6 +404,9 @@ export default function Vase3D({ col, onLive, onDrag }: { col: Col; onLive: () =
   return (
     <div className={`sh-gl${go ? " is-on" : ""}`} ref={box} aria-hidden="true">
       <Canvas
+        /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
+           root each time; the pointer is read from offsetX/Y, so the canvas' place on the page is never needed */
+        resize={{ scroll: false }}
         frameloop="demand"
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: false, toneMapping: THREE.NeutralToneMapping, powerPreference: "high-performance" }}

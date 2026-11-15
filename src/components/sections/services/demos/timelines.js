@@ -20,6 +20,7 @@
  */
 
 import { gsap as GSAP } from '@/lib/gsap';
+import { demoState, gates, gated, registerDemo } from './control.js';
 
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
@@ -39,21 +40,6 @@ export function boxIn(box, el) {
  *  `gate`: also wait for the stone (see `gates`); `active`: a service row only
  *  plays once its top has passed 45% of the viewport (it is the row being read),
  *  or at once when its chip was picked on a phone (`chosen`, see openDemos). */
-const demoState = new WeakMap(); // demo root → { tl, visible, held, active, chosen, done, sync }
-const gates = { split: true }; // closed while the stone still has to get there
-const gated = new Set();
-const regate = () => gated.forEach((state) => state.sync());
-document.addEventListener('journey:ready', (e) => {
-  // closed only if the stone's route has that moment and hasn't reached it yet
-  for (const name of Object.keys(gates)) gates[name] = !e.detail.cues?.includes(name) || e.detail.passed.includes(name);
-  regate();
-});
-for (const name of Object.keys(gates)) {
-  document.addEventListener(`journey:${name}`, () => {
-    gates[name] = true;
-    regate();
-  });
-}
 function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActive = false } = {}) {
   const gsap = GSAP;
   const row = el.closest('.service');
@@ -116,7 +102,7 @@ function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActi
       el.dispatchEvent(new CustomEvent('demo:rest', { bubbles: true })); // 3 · Послуги's switcher moves on (sections.js)
     });
   }
-  demoState.set(el, state);
+  registerDemo(el, state);
   el._demo = state; // look-dev from the console: document.querySelector('[data-demo]')._demo.tl
   if (gate) gated.add(state);
   let queued = 0;
@@ -159,37 +145,6 @@ function autoplay(el, tl, threshold = 0.35, { once = false, gate = null, rowActi
     row?.classList.remove('is-live');
   };
 }
-
-/** Hold (or release) the demos inside `container` — e.g. while a stacked row is covered. */
-export function holdDemos(container, held) {
-  for (const root of container.querySelectorAll('[data-demo]')) {
-    const state = demoState.get(root);
-    if (!state || state.held === held) continue;
-    state.held = held;
-    if (held) state.rewind(); // covered by the next row: it starts over when uncovered
-    state.sync();
-  }
-}
-
-/** 3 · Послуги on phones, a switcher with one service open at a time (sections.js initServiceTabs):
- *  only its clip may play. Closed (`open` false): held on its start frame — paused, nothing of it
- *  ticks. Opened: back to its start frame, measured afresh (from the layout it has now) and on again;
- *  `chosen` (its chip was picked) plays it as soon as it is in view, wherever it sits on the screen.
- *  Without motion the clips keep their rest frames and this does nothing. */
-export function openDemos(container, open, { chosen = false } = {}) {
-  for (const root of container.querySelectorAll('[data-demo]')) {
-    const state = demoState.get(root);
-    if (!state) continue;
-    state.held = !open;
-    state.chosen = open && chosen;
-    state.reset(open);
-    state.check?.();
-    state.sync();
-  }
-}
-
-/** A clip's timeline (3 · Послуги's switcher draws its progress on the chosen chip). */
-export const demoTimeline = (root) => demoState.get(root)?.tl ?? null;
 
 /** Function-based tween values are measured once; re-measure after layout changes.
  *  Only a new width counts: a phone's address bar sliding away mid-scroll changes the
@@ -258,8 +213,6 @@ function track(tl, root, beats, result) {
     .to(discs[last], { scale: 0, duration: 0.3, ease: E.leave }, result)
     .to([nums[last], labels[last]], { color: C.soft, duration: 0.3 }, result);
 }
-
-const REST_AT = 8.0; // clip 4 (SaaS) comes to rest here; the others name their own
 
 /* ---------- round 8 kit: no rolling text, captions, full-window scenes ---------- */
 /** Labels stacked in one cell (a host, a clock, a caption, a counter): the old one fades out,
@@ -506,7 +459,8 @@ function design(gsap, root, onDestroy) {
     .to(psTabs, { autoAlpha: 1, y: 0, duration: 0.3 }, 5.5)
     .to(gauge, { autoAlpha: 1, y: 0, duration: 0.4 }, 5.7)
     .to(arc, { strokeDashoffset: 1 - score / 100, duration: 1.6, ease: 'power2.out' }, 6.0)
-    .to(counter, { n: score, duration: 1.6, ease: 'power2.out', onUpdate: () => { num.textContent = String(Math.round(counter.n)); } }, 6.0)
+    // (a slow computer, html.is-lite: the score at once, not counted up)
+    .to(counter, { n: score, duration: 1.6, ease: 'power2.out', onUpdate: () => { num.textContent = String(document.documentElement.classList.contains('is-lite') ? score : Math.round(counter.n)); } }, 6.0)
     .to(num, { color: lime, duration: 0.3 }, 7.5);
   [6.9, 7.35, 7.8].forEach((t, k) => {
     tl.to(checks[k], { autoAlpha: 1, x: 0, duration: 0.3 }, t)
@@ -860,52 +814,7 @@ function leads(gsap, root) {
   return tl;
 }
 
-/* ---------- 4 · SaaS (v2): a product's main screen builds itself — first the wireframe (lime dashes
-   mark where each block goes), then the interface (the blocks fill in, the chart draws, the numbers
-   count up), then the release (an ember «Реліз v1.0» on the chart). The rest frame is the finished
-   dashboard with the release badge; the CSS default is that same frame. ---------- */
-function saas(gsap, root) {
-  const q = gsap.utils.selector(root);
-  const cap = q('.d-cap')[0];
-  const caps = q('.d-cap__set > b');
-  const boxes = q('.sa-box');
-  const line = q('.sa-line')[0];
-  const area = q('.sa-area')[0];
-  const badge = q('.sa-badge')[0];
-  const live = q('.sa-rows i');
-  const nums = q('.sa-num').map((el) => ({ el, to: Number(el.dataset.to) || 0, v: { n: 0 } }));
-  const fmt = (n) => Math.round(n).toLocaleString('uk-UA').replace(/ /g, ' ');
-  const tl = gsap.timeline({ paused: true, defaults: { ease: E.arrive } });
-  tl.set(boxes, { '--fill': 0, '--wf': 0 }, 0)
-    .set(line, { strokeDashoffset: 1 }, 0)
-    .set(area, { opacity: 0 }, 0)
-    .set(badge, { autoAlpha: 0, scale: 0.6, y: 6 }, 0)
-    .set(live, { scale: 0 }, 0)
-    .set(cap, { autoAlpha: 1 }, 0)
-    .set(caps, { autoAlpha: 0, y: 0 }, 0);
-  nums.forEach(({ el, v }) => tl.set(v, { n: 0, onComplete: () => { el.textContent = fmt(0); } }, 0));
-  track(tl, root, [0.4, 2.6, 5.4], 7.2);
-  // 1 · the prototype: where each block goes, drawn one after another
-  tl.to(boxes, { '--wf': 1, duration: 0.35, stagger: 0.14, ease: 'power2.out' }, 0.5);
-  caption(tl, caps, -1, 0, 0.6);
-  // 2 · the interface: the blocks fill in, the chart draws, the numbers count
-  tl.to(boxes, { '--fill': 1, duration: 0.45, stagger: 0.12 }, 2.7)
-    .to(boxes, { '--wf': 0, duration: 0.5, stagger: 0.12, ease: E.leave }, 3.0)
-    .to(line, { strokeDashoffset: 0, duration: 1.4, ease: E.camera }, 3.3)
-    .to(area, { opacity: 1, duration: 0.8, ease: E.camera }, 3.8);
-  nums.forEach(({ el, to, v }) => tl.to(v, { n: to, duration: 1.3, ease: 'power2.out', onUpdate: () => { el.textContent = fmt(v.n); } }, 3.2));
-  caption(tl, caps, 0, 1, 2.8);
-  // 3 · the release: the badge, and the clients' rows go live
-  tl.to(badge, { autoAlpha: 1, scale: 1, y: 0, duration: 0.5, ease: E.result }, 5.6)
-    .to(live, { scale: 1, duration: 0.3, stagger: 0.12, ease: E.result }, 5.9);
-  caption(tl, caps, 1, 2, 5.6);
-  tl.to(cap, { autoAlpha: 0, duration: 0.3, ease: E.leave }, 7.2)
-    .addLabel('rest', REST_AT);
-  return tl;
-}
-
-
-const BUILDERS = { design, ads, leads, saas };
+const BUILDERS = { design, ads, leads };
 
 /** The clips in the page now; destroy() stops them and takes off what they hung on the page
  *  (a language switch renders the block anew, and init runs again on the new one). */

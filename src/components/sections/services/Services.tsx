@@ -10,7 +10,7 @@ import { ServiceAutomation } from "./panels/ServiceAutomation";
 import "./services.css";
 import "./demos/demos.css";
 
-// no SaaS for now (the owner, 4 Nov: it was the fourth, panels/ServiceSaas)
+// no SaaS: the studio does not make them (the owner, 4 and 12 Nov; its panel, clip and texts are gone)
 const TABS = [1, 2, 3] as const;
 
 /**

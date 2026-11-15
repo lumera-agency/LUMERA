@@ -3,7 +3,7 @@
  * the thumbnails in c1 and the main photo in c2–c7 (a thumbnail wipes to its view; a pointer zooms the photo to 1.8 with
  * the origin at the pointer); the name and the price, the height, «Колір: Кобальт» with the swatches, the Number Field and
  * a full-width «У кошик» that opens the drawer, the perks; the accordion (Опис · Характеристики · Доставка); the upsell
- * «Набір із трьох — 1 590 ₴ · Додати набір». Phones: a swipe gallery with dots; the price and «У кошик» pinned to the
+ * «Набір із трьох — 1 590 грн · Додати набір». Phones: a swipe gallery with dots; the price and «У кошик» pinned to the
  * screen's foot once the buy row has gone up (ShopSite's pins).
  * Rebuilt from the public demos (behaviour only, no code taken): Product Detail Page · Mohammad Shehadeh · MIT ·
  * 21st.dev/@mohammadshehadeh/components/ecommerce-03 (the gallery, the swatches, the quantity, the accordion).

@@ -40,6 +40,7 @@
  */
 import { useEffect, useRef, type CSSProperties } from "react";
 import "./flux-lines.css";
+import { allowWebGL } from "@/lib/perf/mode";
 
 const MAX_COLORS = 8;
 const INTRO_SECONDS = 1.8;
@@ -320,7 +321,8 @@ export default function FluxLines({
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
-    const gl = canvas?.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
+    // (this site: LITE, lib/perf/mode, makes no context; flux-lines.css lays the lines' still picture instead)
+    const gl = allowWebGL() ? canvas?.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false }) : null;
     if (!container || !canvas || !gl) return undefined;
 
     const program = link(gl);

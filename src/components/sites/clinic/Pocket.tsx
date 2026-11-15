@@ -8,6 +8,7 @@
  */
 import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useEnv } from "./env";
+import { allowWebGL } from "@/lib/perf/mode";
 
 const ShadeGuide = lazy(() => import("./ShadeGuide"));
 
@@ -22,7 +23,8 @@ class Boundary extends Component<{ fallback: ReactNode; children: ReactNode }, {
 }
 
 function canGL() {
-  if (typeof window === "undefined" || typeof WebGL2RenderingContext === "undefined") return false;
+  // (LITE, lib/perf/mode: the still, no three.js and no WebGL)
+  if (typeof window === "undefined" || typeof WebGL2RenderingContext === "undefined" || !allowWebGL()) return false;
   const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
   if (nav.connection?.saveData === true) return false;
   return !(nav.deviceMemory != null && nav.deviceMemory <= 2);

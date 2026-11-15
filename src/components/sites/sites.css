@@ -5,6 +5,12 @@
  * main[data-ai-page="sites"] or the page's own st-* / ms-* / fx-* classes; the static page's header, footer, FAQ and
  * button rules are gone (the main page's components have their own).
  */
+/* the rolling digits (sites-rb.js), as sites-pv.css has them: the samples' styles come only with the page's script now,
+   and the formats' sums are in the page's HTML from the start (without these a sum shows its whole 0–9 strip) */
+.st-d { position: relative; display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: top; }
+.st-d > span { display: grid; }
+.st-d > span > i { display: block; height: 1em; font-style: normal; text-align: center; }
+
 /* ==================== from css/sites-page.css ==================== */
 /*
  * «Дизайн і сайти» (/dyzain-i-saity): this page's own layer over the AI pages' kit (css/ai-page.css, loaded first and
@@ -258,7 +264,10 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-stage__t { margin: 14px 0 0; font-size: clamp(1.75rem, 2.6vw, 2.6rem); font-weight: 300; line-height: 1.05; letter-spacing: -0.04em; color: #efebe3; text-wrap: balance; }
 .st-stage__m { margin: 12px 0 0; font: 400 13px/1.4 var(--font-mono); color: rgba(239, 235, 227, 0.7); }
 .st-stage__p { max-width: 38ch; margin: 16px 0 0; font-size: var(--fs-body); font-weight: 300; line-height: 1.55; color: rgba(239, 235, 227, 0.78); }
-.st-stage__inc { display: grid; gap: 9px; margin: 22px 0 0; padding: 18px 0 0; border-top: 1px solid rgba(239, 235, 227, 0.12); list-style: none; }
+.st-stage__inc { position: relative; display: grid; gap: 9px; margin: 22px 0 0; padding: 18px 0 0; list-style: none; }
+/* its rule as long as the description above (38ch in its face), not across the whole column: there it ran up to the
+   ruler's dots beside it and read as part of the ruler (the owner, 10 Nov 2026: «что это за линия серая») */
+.st-stage__inc::before { content: ""; position: absolute; left: 0; top: 0; width: min(100%, 38ch); height: 1px; font-size: var(--fs-body); font-weight: 300; background: rgba(239, 235, 227, 0.12); }
 .st-stage__inc li { position: relative; padding-left: 28px; font-size: var(--fs-body-s); font-weight: 300; line-height: 1.45; color: rgba(239, 235, 227, 0.78); }
 .st-stage__inc li::before { content: ""; position: absolute; left: 0; top: 0.12em; width: 18px; height: 18px; border-radius: 50%; background: var(--signal) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23111' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 12px no-repeat; }
 .st-stage__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 26px 0 0; }
@@ -267,11 +276,14 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-stage__wk { font: 400 13px/1 var(--font-mono); color: rgba(239, 235, 227, 0.7); }
 .st-stage__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 26px; }
 .st-stage__acts .st-ghost { flex: 1 0 100%; justify-content: flex-start; }
-.st-ghost { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; font: inherit; font-size: var(--fs-small); color: #efebe3; text-decoration: underline; text-decoration-color: rgba(226, 101, 42, 0.8); text-underline-offset: 4px; background: none; cursor: pointer; }
-.st-ghost svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* «Порахувати свій варіант»: no underline (the owner, 10 Nov 2026), the arrow in a ring as «Подивитися ціни» on the ads
+   page (.ai-down); the ring fills on hover */
+.st-ghost { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; font: inherit; font-size: var(--fs-small); color: #efebe3; text-decoration: none; background: none; cursor: pointer; }
+.st-ghost svg { box-sizing: content-box; flex: none; width: 14px; height: 14px; padding: 9px; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.35); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
 @media (hover: hover) {
-  .st-ghost:hover { color: var(--ember-ink); }
+  .st-ghost:hover svg { color: #0f0e0d; background: #efebe3; box-shadow: none; transform: translateY(2px); }
 }
+.st-ghost:focus-visible svg { color: #0f0e0d; background: #efebe3; box-shadow: none; }
 .st-more2 { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 8px 0 16px; border: 0; border-radius: 999px; font: 500 var(--fs-small)/1 var(--font-sans); color: #efebe3; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.18); cursor: pointer; transition: background-color var(--dur-fast); }
 .st-more2 i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: #0f0e0d; background: #efebe3; transition: transform var(--dur) var(--ease-out); }
 .st-more2 svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
@@ -308,7 +320,7 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-dev__phone::after { content: ""; position: absolute; left: 50%; top: 10px; width: 28%; height: 8px; border-radius: 6px; translate: -50% 0; background: #050505; }
 /* the ruler: the page's blocks in order; Лендінг+'s extra ones in ember */
 .st-ruler { position: relative; display: grid; align-content: start; gap: 6px; margin: 30px 0 0; padding: 0 0 0 14px; list-style: none; counter-reset: rl; }
-.st-ruler::before { content: ""; position: absolute; left: 3px; top: 4px; bottom: 4px; width: 1px; background: rgba(239, 235, 227, 0.16); }
+/* (no rail through the dots: it ran through the first letters instead, the owner, 10 Nov 2026) */
 .st-ruler li { counter-increment: rl; position: relative; font: 400 10.5px/1.25 var(--font-mono); color: rgba(239, 235, 227, 0.55); }
 .st-ruler li::before { content: ""; position: absolute; left: -14px; top: 0.35em; width: 7px; height: 7px; border-radius: 50%; background: #2a2826; box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.3); }
 .st-ruler li.is-add { color: var(--ember-ink); }
@@ -336,9 +348,9 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-get__list li::before { content: ""; position: absolute; left: 0; top: 0.1em; width: 18px; height: 18px; border-radius: 50%; background: var(--ink-dark) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23f1ece3' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 12px no-repeat; }
 .st-fmts__end { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 32px; margin-top: var(--rhythm-s); }
 .st-fmts__note { margin: 0; font-size: var(--fs-body-s); font-weight: 300; color: var(--ink-dark-soft); }
-.st-fmts__note .link { padding-block: 12px; color: var(--ink-dark); text-decoration-color: rgba(176, 70, 26, 0.7); }
+.st-fmts__note .link { padding-block: 12px; color: var(--ember-deep); }
 @media (hover: hover) {
-  .st-fmts__note .link:hover { color: var(--ember-deep); }
+  .st-fmts__note .link:hover { color: var(--ink-dark); }
 }
 .st-fmts__end .ai-replay { margin-left: auto; }
 
@@ -403,9 +415,6 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 /* the kit styles every span in the price line as its small label: not the digits */
 .st-sum .ai-calc__price b span { font: inherit; letter-spacing: inherit; text-transform: none; color: inherit; }
 .st-num { font-variant-numeric: tabular-nums; }
-.st-d { position: relative; display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: top; }
-.st-d > span { display: grid; }
-.st-d > span > i { display: block; height: 1em; font-style: normal; text-align: center; }
 .st-sum__more { margin: 14px 0 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-mute); }
 .st-sum .ai-calc__inc .ai-calc__note { margin: 0 0 16px; }
 
@@ -425,6 +434,17 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 /* ==========================================================================
    widths
    ========================================================================== */
+/* a wide screen: the sample larger and its block list further left (the owner, 10 Nov 2026: «сделай пример больше, а
+   текст чуть левее»): the art takes more of the card and reaches into the gap before it and the card's right padding */
+@media (min-width: 1181px) {
+  .st-dev { margin: 0 -20px 0 -14px; }
+}
+/* (from 1400 px the text has room to spare: below it a narrower column wrapped the list and ran the description up to
+   the dots) */
+@media (min-width: 1400px) {
+  .st-stage { grid-template-columns: minmax(0, 4.6fr) minmax(0, 7.4fr); }
+  .st-dev { margin-left: -30px; }
+}
 @media (max-width: 1180px) {
   .st-stage { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
   .st-ruler { display: none; }
@@ -579,29 +599,12 @@ html:not(.motion) .st-build { display: none; }
 /* the configurator sized its frame from the summary card beside it (--side-rest, set on .cfg): here, from the screen;
    there is no tray of lead add-ons on this page (--tray 0) */
 .st-pvw { --side-rest: calc(var(--topbar-h) + 140px); box-shadow: 0 50px 90px -50px rgba(0, 0, 0, 0.95); }
-@media (min-width: 701px) { .st-pvw { --tray: 0px; } }
+/* (both classes: the samples' sites-pv.css now comes after this file, with the page's script, and sets .pvw's --tray and
+   --vph itself; as .pvw alone these lost to it) */
+@media (min-width: 701px) { .pvw.st-pvw { --tray: 0px; } }
 .st-pv .st-stage__end { align-items: flex-start; }
 .st-pv .st-stage__note { max-width: 52ch; }
 
-.pv-lp__incl { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.2cqw; }
-.pv-lp__tile { display: grid; align-content: start; gap: 1cqw; padding: 1.6cqw; border-radius: 1.2cqw; background: var(--pv-surface); box-shadow: 0 0.5cqw 1.6cqw rgba(20, 20, 20, 0.05), inset 0 0 0 1px var(--pv-line); }
-.pv-lp__tile b { font-size: 1.15cqw; font-weight: 600; line-height: 1.3; }
-.pv-lp__ico { display: grid; place-items: center; width: 3cqw; height: 3cqw; border-radius: 50%; background: var(--pv-soft); color: var(--pv-ink); }
-.pv-lp__ico svg { width: 1.6cqw; height: 1.6cqw; }
-.pv-lp__work { padding: 0.9cqw 0.9cqw 1.6cqw; }
-.pv-lp__shot { aspect-ratio: 4 / 3; border-radius: 0.9cqw; overflow: hidden; }
-.pv-lp__shot > .pv-room { width: 100%; height: 100%; }
-.pv-lp__work > b,
-.pv-lp__work > span { padding-inline: 0.7cqw; }
-.pv-lp__qs { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--pv-line); }
-.pv-lp__q { position: relative; display: grid; gap: 0.6cqw; padding: 1.5cqw 4cqw 1.5cqw 0; border-bottom: 1px solid var(--pv-line); }
-.pv-lp__q b { font-size: 1.4cqw; font-weight: 500; line-height: 1.3; }
-.pv-lp__q span { font-size: 1.12cqw; line-height: 1.5; color: var(--pv-muted); }
-.pv-lp__x { position: absolute; right: 0.6cqw; top: 1.7cqw; width: 1.3cqw; height: 1.3cqw; }
-.pv-lp__x::before,
-.pv-lp__x::after { content: ""; position: absolute; left: 0; top: 50%; width: 100%; height: 1.5px; margin-top: -0.75px; background: currentColor; }
-.pv-lp__q:not(.is-on) .pv-lp__x::after { rotate: 90deg; }
-.pv-lp--map .pv-h2 { margin-bottom: 0.6cqw; }
 /* under the sample: its blocks as a row of names; Лендінг+'s extra ones in ember with a + */
 .st-pv__map { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 16px; row-gap: 8px; padding: 2px 0 4px; }
 .st-pv__k { margin: 0; font: 400 var(--fs-label)/1.4 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; white-space: nowrap; color: var(--ink-mute); }
@@ -616,15 +619,11 @@ html:not(.motion) .st-build { display: none; }
 }
 @media (max-width: 600px) {
   /* a phone shows more of the sample: a taller frame (the samples have their own phone composition) */
-  .st-pvw { --vph: 120cqw; }
+  .pvw.st-pvw { --vph: 120cqw; }
   .st-pv .st-stage__end { flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; }
 }
 
 /* the two Авторський samples: a small switch over the frame (only with Авторський) */
-/* StarBorder («Анімація») on the samples' main button: its light is drawn by children positioned absolutely; without a
-   positioned button it spread over the whole block on «Тиша після підпису». The button holds it now */
-.pv-btn.rb-star { position: relative; isolation: isolate; }
-
 /* ==========================================================================
    the sample in the visitor's hands (js/sites-pv-fx.js): the pill over the frame's bottom edge. Before the click it
    says what the visitor can do (on a pointer: while the pointer is over the frame; on touch: always); after it, it
@@ -633,34 +632,6 @@ html:not(.motion) .st-build { display: none; }
 .st-pvw { position: relative; }
 /* (the pill's own rules: sites-pv.css, which the main page's configurator loads too) */
 
-/* ==========================================================================
-   the whole screen (owner, 18 Oct: on a phone the sample is small to scroll in its frame; js/sites-pv.js). The frame's
-   bar carries «На весь екран» (on a phone the pill offers it too); the frame then covers the screen, moved to <body>,
-   the page under it still; «Закрити» or Esc put it back
-   ========================================================================== */
-.pvw__full { position: relative; flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 1.5rem; padding: 0 0.625rem 0 0.5rem; border: 0; border-radius: 999px; background: rgba(246, 246, 243, 0.1); color: #f6f6f3; font: 400 0.6563rem/1 var(--pv-mono); white-space: nowrap; cursor: pointer; transition: background-color 0.2s ease; }
-.pvw__full::after { content: ""; position: absolute; inset: -8px -4px; }
-.pvw__full svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.pvw__full:focus-visible { outline: 2px solid #f6f6f3; outline-offset: 2px; }
-@media (hover: hover) and (pointer: fine) { .pvw__full:hover { background: rgba(246, 246, 243, 0.2); } }
-.pvw__mark { right: calc(var(--full-w, 0px) + 1.25rem); }
-@media (max-width: 600px) {
-  .pvw__chrome { justify-content: space-between; }
-  .pvw__url { display: none; }
-  .pvw__full { height: 1.375rem; font-size: 0.625rem; }
-  /* in the frame only the corners: the pill under the sample says it in words */
-  .pvw:not(.is-full) .pvw__full { width: 1.75rem; padding: 0; justify-content: center; }
-  .pvw:not(.is-full) .pvw__full span { display: none; }
-}
-/* on a phone the pill's offer: the same corners as the bar's button */
-.pvw__you.is-full-ask::before { width: 12px; height: 12px; border-radius: 0; box-shadow: none; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10'/%3E%3C/svg%3E") center / contain no-repeat; }
-html.pv-full, html.pv-full body { overflow: hidden; }
-html.pv-full :is(.to-top, .ai-sticky, .st-sumbar) { visibility: hidden; }
-.pvw.is-full { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; max-width: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; overscroll-behavior: none; }
-.pvw.is-full .pvw__chrome { flex: none; height: calc(2.75rem + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); touch-action: none; }
-.pvw.is-full .pvw__full { height: 1.875rem; padding: 0 0.875rem 0 0.75rem; font-size: 0.75rem; background: rgba(246, 246, 243, 0.14); }
-.pvw.is-full .pv-vp { flex: 1 1 auto; min-height: 0; height: auto; }
-.pvw.is-full .pvw__you { bottom: calc(14px + env(safe-area-inset-bottom)); }
 
 /* iOS 26 Safari: a fixed bar docked to the bottom edge makes Safari fill the strip under its own toolbar with the bar's
    colour (the owner saw an ember band under the iPhone's toolbar, 15 Oct: the kit's .ai-sticky sits at bottom: 0 with
@@ -675,6 +646,12 @@ body:has(main[data-ai-page="sites"]) .ai-sticky:not(.is-on) { visibility: hidden
 body:has(main[data-ai-page="sites"]) .ai-sticky.is-on { visibility: visible; transition: transform 0.45s var(--ease-out), opacity 0.3s, visibility 0s; }
 body:has(main[data-ai-page="sites"]) .st-sumbar:not(.is-on) { visibility: hidden; transform: translateY(8px); transition: opacity 0.35s var(--ease-out), transform 0.45s var(--ease-out), visibility 0s linear 0.45s; }
 body:has(main[data-ai-page="sites"]) .st-sumbar.is-on { visibility: visible; transition: opacity 0.35s var(--ease-out), transform 0.45s var(--ease-out), visibility 0s; }
+/* phones: the request bar and the button back up on one line, as on the AI pages (the owner, 10 Nov 2026: the button
+   used to step aside over the bar and was gone for most of the page) */
+@media (max-width: 600px) {
+  body:has(main[data-ai-page="sites"]) .ai-sticky { padding: 0 calc(1rem + 2.875rem + 0.5rem) 0 1rem; }
+  body:has(main[data-ai-page="sites"]) .to-top { bottom: calc(14px + env(safe-area-inset-bottom)); }
+}
 
 /* ==================== from css/sites-fx-page.css ==================== */
 /*
@@ -799,7 +776,7 @@ body:has(main[data-ai-page="sites"]) .st-sumbar.is-on { visibility: visible; tra
 .st-fan__vp img { position: absolute; left: 0; top: 0; display: block; width: 100%; height: auto; min-height: 100%; object-fit: cover; object-position: 50% 0; opacity: 0; transition: transform 0.7s var(--ease-out); }
 .st-fan__vp img.is-under { z-index: 1; opacity: 1; }
 .st-fan__vp img.is-top { z-index: 2; opacity: 1; }
-.st-fan__vd { position: absolute; z-index: 3; left: 14px; bottom: 14px; max-width: calc(100% - 28px); margin: 0; padding: 9px 14px; border-radius: 12px; font: 400 13px/1.4 var(--font-sans); color: #efebe3; background: rgba(15, 14, 13, 0.84); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.14); text-wrap: balance; }
+.st-fan__vd { position: absolute; z-index: 3; left: 14px; bottom: 14px; max-width: calc(100% - 28px); margin: 0; padding: 9px 14px; border-radius: 12px; font: 400 13px/1.4 var(--font-sans); color: #efebe3; background: rgba(15, 14, 13, 0.94); box-shadow: inset 0 0 0 1px rgba(239, 235, 227, 0.14); text-wrap: balance; }
 .st-fan__vd:empty { display: none; }
 @media (max-width: 600px) {
   .st-fan__view { border-radius: 10px; }
@@ -1055,10 +1032,13 @@ html:not(.motion) .faq__item::after { transition: none; }
 .st-hw-end__g { margin: 0; font-size: var(--fs-h4); font-weight: 300; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink-dark); }
 .st-hw-end__g b { font-weight: 400; color: var(--ember-deep); }
 .st-hw-end__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 26px; }
-.st-hw-end__calc { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-small); color: var(--ink-dark); text-decoration-color: rgba(176, 70, 26, 0.7); }
+/* to the calculator: the arrow in a ring, as «Порахувати свій варіант» (.st-ghost), in the ivory's dark */
+.st-hw-end__calc { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: var(--fs-small); color: var(--ink-dark); text-decoration: none; }
+.st-hw-end__calc svg { box-sizing: content-box; flex: none; width: 14px; height: 14px; padding: 9px; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, transform 0.4s var(--ease-out); }
 @media (hover: hover) {
-  .st-hw-end__calc:hover { color: var(--ember-deep); }
+  .st-hw-end__calc:hover svg { color: var(--ivory, #fcfcfa); background: var(--ink-dark); box-shadow: none; transform: translateY(2px); }
 }
+.st-hw-end__calc:focus-visible svg { color: var(--ivory, #fcfcfa); background: var(--ink-dark); box-shadow: none; }
 .st-hw-end__note { margin: 12px 0 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-dark-mute); }
 
 /* the entrance (scene «how»): the board rises, the plan's boxes tick one by one */
@@ -1181,10 +1161,8 @@ main[data-ai-page="sites"] .faq__item[id] { scroll-margin-top: calc(var(--topbar
 
 /* S-12: every control on the page is at least 44 px to a finger (the hit area, where the drawn control is smaller: a
    transparent ::after centred on it) */
-.pvw__full::after { inset: calc(50% - 22px) min(-4px, calc(50% - 22px)); }
 /* (the frame clips its bar: on a touch screen the bar itself is 44 px, so «На весь екран» gets its whole height) */
 @media (pointer: coarse) { .pvw.st-pvw:not(.is-full) .pvw__chrome { height: 44px; } }
-.pvw__you::after { inset: calc(50% - 22px) 0; }
 main[data-ai-page="sites"] .ai-pick::after { inset: calc(50% - 22px) 0; }
 .st-show__replay { min-height: 44px; }
 .st-hseg__o::after { content: ""; position: absolute; inset: calc(50% - 22px) 0; }
@@ -1201,8 +1179,7 @@ main[data-ai-page="sites"] .ai-pick::after { inset: calc(50% - 22px) 0; }
   .st-hw__h,
   .st-hw-time__calc,
   .st-bd__sl,
-  main[data-ai-page="sites"] .ai-pick,
-  .pvw__full { font-size: 12px; }
+  main[data-ai-page="sites"] .ai-pick { font-size: 12px; }
   .st-hw-list[data-fold] .st-hw__more { font-size: 12px; }
 }
 

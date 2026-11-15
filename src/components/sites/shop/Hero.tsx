@@ -14,6 +14,7 @@ import { useEnv, useIn } from "./env";
 import { useShop } from "./store";
 import { PRODUCTS, type Col, type Shot } from "./products";
 import { money } from "./copy";
+import { allowWebGL } from "@/lib/perf/mode";
 
 const Vase3D = lazy(() => import("./Vase3D"));
 
@@ -29,7 +30,8 @@ class Boundary extends Component<{ fallback: ReactNode; children: ReactNode }, {
 
 /** WebGL2, no Save-Data, enough memory (else the photo, whose swatches still work) */
 function canGL() {
-  if (typeof window === "undefined" || typeof WebGL2RenderingContext === "undefined") return false;
+  // (LITE, lib/perf/mode: the still, no three.js and no WebGL)
+  if (typeof window === "undefined" || typeof WebGL2RenderingContext === "undefined" || !allowWebGL()) return false;
   const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
   if (nav.connection?.saveData === true) return false;
   return !(nav.deviceMemory != null && nav.deviceMemory <= 2);

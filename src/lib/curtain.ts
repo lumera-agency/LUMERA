@@ -37,9 +37,23 @@ export function curtainFree() {
   return new Promise<void>((resolve) => waiting.add(resolve));
 }
 
-/** The curtain starts to lift: the page's entrance may play. At once when there is none. */
+/** The page's entrance may play: the curtain starts to lift and the preloader has let the page go (html.is-loading
+ *  off, as its sheet starts to fade: a visit's first page has it, fx/preloader). At once where there is neither. */
 export function whenCurtainLifts() {
-  return curtainDown() ? lift : Promise.resolve();
+  return Promise.all([curtainDown() ? lift : Promise.resolve(), preloaderLetGo()]).then(() => {});
+}
+
+function preloaderLetGo() {
+  const root = document.documentElement;
+  if (!root.classList.contains("is-loading")) return Promise.resolve();
+  return new Promise<void>((resolve) => {
+    const watch = new MutationObserver(() => {
+      if (root.classList.contains("is-loading")) return;
+      watch.disconnect();
+      resolve();
+    });
+    watch.observe(root, { attributes: true, attributeFilter: ["class"] });
+  });
 }
 
 /** (PageCurtain, as the lift starts) */

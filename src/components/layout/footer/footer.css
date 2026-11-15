@@ -26,6 +26,9 @@
   align-items: center;
   margin-top: var(--rhythm-l);
   padding-top: 1.25rem;
+  /* the room above the wordmark is this row's own (it was the mark's margin): the footer's pointer lens works over it,
+     up to the mark, where the mark's lens takes over (fx/chrome-wordmark, the owner, 12 Nov 2026) */
+  padding-bottom: var(--rhythm-m);
   border-top: 1px solid var(--line);
   font-size: var(--fs-caption);
   color: var(--ink-mute);
@@ -41,7 +44,6 @@
 .footer__up { display: inline-flex; align-items: center; min-height: 2.75rem; }
 .footer__mark {
   position: relative;
-  margin-top: var(--rhythm-m);
   -webkit-user-select: none;
   user-select: none;
   touch-action: pan-y;
@@ -61,7 +63,17 @@
   background-clip: text;
 }
 .footer__mark.is-live .footer__mark-text { position: absolute; visibility: hidden; }
-.footer__mark-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+/* (its top and height set by wordmark.js: it reaches above the mark, where the pointer stays the row's) */
+.footer__mark-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+/* LITE without a graphics card (Wordmark puts data-still on the mark; LITE with one keeps the effect, calm): a still of
+   the live chrome in the mark's place, cut to the letters. The room above and below it is the live mark's own (its
+   lens's): 0.12 of the letters' height and 14px; the letters are 0.2106 as high as they are wide (the picture's
+   shape), so 0.0253 of the mark's width. No lens there: the pointer stays. */
+.footer__mark-still { display: none; }
+.footer__mark[data-still] .footer__mark-still { display: block; margin-block: calc(100cqw * 0.0253 + 14px); }
+.footer__mark-still img { display: block; width: 100%; height: auto; }
+.footer__mark[data-still] :is(.footer__mark-text, .footer__mark-canvas) { display: none; }
+.footer__mark[data-still] { cursor: auto; }
 .footer__drop { position: absolute; left: 4%; top: 14%; width: 2.75rem; height: 2.75rem; transform: translate(-50%, -50%); }
 
 @media (min-width: 1101px) {
@@ -87,7 +99,7 @@
 .footer__mark-text { font-size: calc(100cqw * var(--mark-fit, 0.284)); }
 /* phones: the wordmark close under the last line (the desktop's rhythm left a gap) */
 @media (max-width: 600px) {
-  .footer__mark { margin-top: 1.25rem; }
+  .footer__bottom { padding-bottom: 1.25rem; }
 }
 
 /* the map of the site (FooterMap): four columns with a hairline between them, as the header's panel */

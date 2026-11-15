@@ -7,13 +7,15 @@
  */
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { isLite } from "@/lib/lite";
 
 export function TextFill({ as = "p", className, children, start = "top 82%", end = "bottom 48%" }: { as?: "p" | "div" | "span" | "h2" | "h3"; className?: string; children: string; start?: string; end?: string }) {
   const ref = useRef<HTMLElement>(null);
   const Tag = as as "p";
   useGSAP(
     () => {
-      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // (a slow computer, lib/lite: lit at once, as with reduced motion)
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches || isLite()) {
         gsap.set(ref.current!.querySelectorAll(".w"), { opacity: 1 });
         return;
       }

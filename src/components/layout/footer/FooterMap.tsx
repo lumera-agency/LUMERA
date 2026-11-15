@@ -1,6 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { getSiteNav } from "@/content/site-nav";
-import { PhoneIcon, TelegramIcon, ViberIcon } from "@/components/layout/site-nav/Contacts";
+import { MailIcon, PhoneIcon, TelegramIcon, ViberIcon } from "@/components/layout/site-nav/Contacts";
 import { FooterCases } from "./FooterCases";
 
 /**
@@ -58,6 +58,12 @@ export async function FooterMap() {
             </li>
           ))}
         </ul>
+        {/* the studio's mail (the owner, 12 Nov 2026: shown on the site, as the structured data names it), a line of its
+            own under the phones, in their face */}
+        <a className="footer__link footer__link--phone footer__link--mail" href={nav.contacts.email.href}>
+          <MailIcon />
+          <span>{nav.contacts.email.text}</span>
+        </a>
         <div className="footer__chats">
           <a href={nav.contacts.telegram} target="_blank" rel="noopener" aria-label={L.telegram}>
             <TelegramIcon />

@@ -7,17 +7,17 @@ import { SitesDropletSlot } from "@/components/sites/hero-fx/SitesDropletSlot";
 import type { SitesFacts } from "@/components/sites/facts";
 import { HeroFlux } from "@/components/sites/hero-fx/HeroFlux";
 import { TitleFx } from "@/components/sites/hero-fx/TitleFx";
-import { SitesBubble } from "@/components/sites/hero-fx/SitesBubble";
 
 /**
  * 1 · the first screen, «Плакат». On a computer (the owner's pick of five settings, 5 Nov 2026) «ДИЗАЙН І РОЗРОБКА»
- * across the top, «САЙТІВ.» large in ember at the foot, both in Sofia Sans Extra Condensed, the droplet of liquid metal
- * between and in front of them (the still, then the live droplet: SitesDropletSlot), the three prices on the right
- * (from the engine: data-fprice); no formats and no button there, the topbar has «Обговорити». Upright (a phone, a tablet
- * held upright) the poster of 20 Oct as it was: the words round the droplet, the formats' lead (a tablet), the prices
- * and the button. No numbers on the labels or the prices (the owner, 5 Nov). Below: the sample site «Ваш бренд» on a
- * computer and a phone, assembled block by block once (scene «build»). No longer pinned: block 2 scrolls in after it,
- * it does not slide over it (the owner, 5 Nov 2026). Rules: sites-hero.css.
+ * across the top, «САЙТІВ.» in ember on the right under it, both in Sofia Sans Extra Condensed, the droplet of liquid
+ * metal in front of everything (the still, then the live droplet: SitesDropletSlot), the sample site «Ваш бренд» bottom
+ * left and the three prices bottom right (from the engine: data-fprice); no formats and no button there, the topbar has
+ * «Обговорити». Upright (a phone, a tablet held upright) the poster of 20 Oct as it was: the words round the droplet,
+ * the formats' lead (a tablet), the prices and the button, the sample site under them. No numbers on the labels or the
+ * prices (the owner, 5 Nov). The sample site is assembled block by block once (scene «build»). On a computer block 2
+ * slides over the pinned first screen again (the owner, 10 Nov 2026: data-cover, sites-runtime initCover); on a phone
+ * it scrolls in after it. Rules: sites-hero.css.
  */
 const FORMATS = [
   { key: "landing", name: "hg.f1" },
@@ -27,15 +27,22 @@ const FORMATS = [
 
 export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
-  // the lead's italic face is fetched with the page: the line never re-wraps when it arrives
-  preload("/fonts/sites/source-serif-4-italic-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
-  // the computer's words wait unseen for their face (font-display: block): it comes with the page
+  // the lead's italic face is fetched with the page where the lead shows (the sheet: a phone on its side, a tablet
+  // upright; hidden on an upright phone and on the computer's poster, sites-hero.css): the line never re-wraps when it
+  // arrives, and nowhere else is it fetched for nothing
+  const sheet = "(max-width: 760px) and (orientation: landscape), (min-width: 761px) and (max-aspect-ratio: 999/1000), (orientation: landscape) and (max-height: 500px)";
+  for (const script of ["cyrillic", "latin"]) {
+    preload(`/fonts/sites/source-serif-4-italic-400-${script}.woff2`, { as: "font", type: "font/woff2", crossOrigin: "anonymous", media: sheet });
+  }
+  // the computer's words wait unseen for their face (font-display: block): it comes with the page, both files («сайтів.»'s
+  // full stop is in the Latin one)
   preload("/fonts/sofia-sans-xc-cyrillic.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  preload("/fonts/sofia-sans-xc-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const label = (text: string, area: string) => (
     <p className={`st-hg__k st-hg__k--${area}`} aria-hidden="true">{text}</p>
   );
   return (
-    <section className="ai-hero ai-hero--center st-hero st-hg" id="top" aria-labelledby="st-title">
+    <section className="ai-hero ai-hero--center st-hero st-hg" id="top" aria-labelledby="st-title" data-cover="">
       <div className="ai-hero__bg" aria-hidden="true"><HeroFlux tone="mono" still /></div>
       <div className="ai-hero__in">
         <div className="ai-hero__copy st-hg__grid">
@@ -53,7 +60,7 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
             <div className="ai-hero__rock">
               <i className="ai-hero__glow" />
               {/* the still: the droplet at rest, at the canvas' size and framing (square, centred on the body: 720 and 1072 px);
-                  shown only where nothing moves (reduced motion, Save-Data, no WebGL: sites-hero.css, .is-still), so it
+                  shown only where nothing can move (no WebGL: sites-hero.css, .is-still), so it
                   is asked for last; sizes ≈ the canvas' width (11.6 em of --hg-st), never below 0 on a low screen */}
               <img
                 className="ai-hero__stone"
@@ -93,30 +100,33 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
         </div>
         <Show t={t} />
       </div>
-      {/* the soap bubble over the first screen (decoration): after the pointer, on a phone floating by itself */}
-      <SitesBubble />
     </section>
   );
 }
 
 /*
- * The H1 (hero.title: «<line>Дизайн і розробка</line> <line><hl>сайтів</hl></line>»): its four words, each in a mask
- * it rises out of, set per screen by sites-hero.css (.st-h1); «розробка» comes in letter by letter. The screen reader
- * gets the plain sentence (.visually-hidden), the set words are aria-hidden.
+ * The H1 (hero.title: «<line>Дизайн і розробка</line> <line><hl>сайтів</hl></line>»): its four words, each set per
+ * screen by sites-hero.css (.st-h1), there from the first paint. The screen reader gets the plain sentence
+ * (.visually-hidden), the set words are aria-hidden.
  */
 function Title({ raw }: { raw: string }) {
   const lines = [...raw.matchAll(/<line>(.*?)<\/line>/g)].map((match) => match[1]);
   const [design, and, ...rest] = (lines[0] ?? "").split(/\s+/); // «Дизайн» «і» «розробка» (\s also takes a no-break space)
   const key = (lines[1] ?? "").replace(/<\/?hl>/g, "");
-  // one word, not a span a letter: the face's kerning holds (the reveal steps a letter at a time instead, sites-hero.css)
+  // one word, not a span a letter: the face's kerning holds
   const code = rest.join(" ");
   return (
     <>
       <span className="visually-hidden">{`${lines[0] ?? ""} ${key}`}</span>
-      <span className="st-h1" aria-hidden="true" style={{ "--n": [...code].length } as React.CSSProperties}>
-        <span className="st-h1__m st-h1__a"><span className="tone">{design}</span></span>
-        <span className="st-h1__m st-h1__i"><span className="tone">{and}</span></span>
-        <span className="st-h1__m st-h1__b"><span className="tone st-h1__code">{code}</span></span>
+      {/* lang: the face's own letterforms on both pages. Its Russian ones (locl for RUS: «Д» flat on top) showed only
+          here, never in TitleFx's canvas (a canvas draws without a language), so «Д» changed shape the moment the
+          canvas took the words over (the owner, 10 Nov 2026). Hidden from screen readers: it sets only the shapes */}
+      <span className="st-h1" aria-hidden="true" lang="uk">
+        {/* (the spaces between the words keep the page's text readable for search engines and AI; the grid and the
+            absolutely placed words draw nothing for them) */}
+        <span className="st-h1__m st-h1__a"><span className="tone">{design}</span></span>{" "}
+        <span className="st-h1__m st-h1__i"><span className="tone">{and}</span></span>{" "}
+        <span className="st-h1__m st-h1__b"><span className="tone st-h1__code">{code}</span></span>{" "}
         <span className="st-h1__m st-h1__s"><span className="tone"><em className="hl">{key}</em></span></span>
       </span>
     </>

@@ -15,6 +15,7 @@ import { Bento } from "@/components/sections/ai-case/Bento";
 import { Decide } from "@/components/sections/ai-case/Decide";
 import { Manager } from "@/components/sections/ai-case/Manager";
 import { Fit } from "@/components/sections/ai-case/Fit";
+import { PageJsonLd } from "@/components/seo/graph";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/keisy/poshuk-zamovlen">) {
   const { locale } = await params;
@@ -66,6 +67,7 @@ export default async function CasePage({ params }: PageProps<"/[locale]/keisy/po
         />
         <AiContact index={9} placeholder={t("aiCommon.form.manual.ph")} />
       </PageShell>
+      <PageJsonLd locale={locale} path="/keisy/poshuk-zamovlen" meta="case.meta" about="ai" crumbs={[{ name: t("aiCommon.nav.ai"), path: "/ai-avtomatyzatsiia" }, { name: t("case.crumb"), path: "/keisy/poshuk-zamovlen" }]} faq={faq} />
     </AiShell>
   );
 }

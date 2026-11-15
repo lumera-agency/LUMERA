@@ -1,6 +1,4 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { studioName } from "@/config/site";
-import { Preloader } from "@/components/fx/preloader/Preloader";
 import { SmoothScroll } from "@/components/fx/smooth-scroll/SmoothScroll";
 import { Topbar } from "@/components/layout/topbar/Topbar";
 import { MenuSheet } from "@/components/layout/menu/MenuSheet";
@@ -16,6 +14,8 @@ import { Approach } from "@/components/sections/approach/Approach";
 import { Pricing } from "@/components/sections/pricing/Pricing";
 import { Faq } from "@/components/sections/faq/Faq";
 import { Contact } from "@/components/sections/contact/Contact";
+import { mainFaqItems } from "@/components/sections/faq/items";
+import { PageJsonLd } from "@/components/seo/graph";
 
 /**
  * The page: the blocks in reading order (v2): 1 the first screen → 2 what we do → 3 the services →
@@ -28,18 +28,12 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const t = await getTranslations();
   return (
     <>
-      {/* the main page's own: the AI pages (ads land there) open without it */}
-      <Preloader
-        brand={studioName}
-        note={t("preloader.note")}
-        words={t("preloader.words")}
-        stages={t("preloader.stages")}
-      />
       <SmoothScroll />
       <main>
         <Hero />
         <Topbar />
-        <PageShell>
+        {/* (not the services, the approach or the prices: pinned, or growing as the configurator comes in) */}
+        <PageShell skip="#what, #manifesto, #why, #faq, #contact">
           <What />
           <Services />
           <Manifesto />
@@ -49,11 +43,13 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <Faq />
           <Contact />
         </PageShell>
+        {/* the studio, the site, this page and its questions for search engines and AI */}
+        <PageJsonLd locale={locale} path="/" meta="meta" faq={await mainFaqItems()} />
       </main>
       <Footer />
       <MenuSheet />
-      {/* steps aside over the ride's HUD and arrows, the configurator's preview, price card and bars, and the footer (it has its own link up) */}
-      <BackToTop label={t("footer.up.span")} quiet=".ride.is-on .ride__hud, .ride.is-on .ride__arrow, .cfg-bar, .cfg-sheet, .pvw, .cfg-sum, .footer" />
+      {/* steps aside over block 4's arrows (phones), the ride's HUD and arrows, the configurator's preview and price card, and the footer (it has its own link up); rises over the bar */}
+      <BackToTop label={t("footer.up.span")} />
     </>
   );
 }

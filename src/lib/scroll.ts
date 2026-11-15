@@ -4,6 +4,7 @@
  * browser's smooth scroll. One place, so a button, a link and the wheel never fight over the page.
  */
 import type Lenis from "lenis";
+import { layoutPending, settleLayout } from "@/lib/perf/sections";
 
 let lenis: Lenis | null = null;
 export const setLenis = (instance: Lenis | null) => void (lenis = instance);
@@ -12,8 +13,12 @@ export const getLenis = () => lenis;
 export function scrollToY(y: number, { immediate = false, duration = 1.1 } = {}) {
   const top = Math.max(0, Math.round(y));
   const reduced = typeof window !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (lenis) lenis.scrollTo(top, { immediate: immediate || reduced, duration });
-  else window.scrollTo({ top, behavior: immediate || reduced ? "instant" : "smooth" });
+  if (lenis) {
+    // (Lenis learns the page's height a moment after it changes; a place asked for right after a block has mounted,
+    // the prices before a kept place is restored, would be cut off at the height it still remembers: measured anew)
+    lenis.resize();
+    lenis.scrollTo(top, { immediate: immediate || reduced, duration });
+  } else window.scrollTo({ top, behavior: immediate || reduced ? "instant" : "smooth" });
 }
 
 let jumping = false;
@@ -21,10 +26,12 @@ let jumping = false;
  * To a far place without the run there (a glide through the whole page would play every block on
  * the way): the page dims to its own black, jumps, and comes up again where it lands.
  */
-export function fadeJumpTo(y: number, { dim = 380, rise = 750 } = {}) {
+export function fadeJumpTo(place: number | (() => number), { dim = 380, rise = 750, ready }: { dim?: number; rise?: number; ready?: Promise<unknown> } = {}) {
   if (jumping) return;
+  // (`place` as a function is asked once the page is dark and `ready` has resolved: where the block is by then)
+  const y = () => (typeof place === "function" ? place() : place);
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduced || !document.body.animate) return scrollToY(y, { immediate: true });
+  if (reduced || !document.body.animate) return void Promise.resolve(ready).then(() => scrollToY(y(), { immediate: true }));
   jumping = true;
   const veil = document.createElement("div");
   veil.setAttribute("aria-hidden", "true");
@@ -33,8 +40,9 @@ export function fadeJumpTo(y: number, { dim = 380, rise = 750 } = {}) {
   document.body.append(veil);
   veil
     .animate([{ opacity: 0 }, { opacity: 1 }], { duration: dim, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "forwards" })
-    .finished.then(() => {
-      scrollToY(y, { immediate: true });
+    .finished.then(() => ready)
+    .then(() => {
+      scrollToY(y(), { immediate: true });
       return new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
     })
     .then(() => veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: rise, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" }).finished)
@@ -53,6 +61,9 @@ export function blockY(el: Element) {
 /** To a block on the page: a glide when it is near, a dim and jump when it is far (a long run
  *  through the whole page would play every block on the way). */
 export function goToBlock(el: Element) {
+  // a part of the page above the block that is still to come and will change the page's height (lib/perf/sections):
+  // started now, the block's place measured once it is in, under the dim
+  if (layoutPending(el)) return fadeJumpTo(() => blockY(el), { ready: settleLayout(el) });
   const y = blockY(el);
   const screens = Math.abs(y - window.scrollY) / window.innerHeight;
   if (screens > 3) return fadeJumpTo(y);

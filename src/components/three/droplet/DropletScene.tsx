@@ -14,8 +14,13 @@ import { Resume } from "@/components/three/lib/Resume";
 import { createDropletMaterial, createDropletUniforms, type DropletUniforms } from "./material";
 import { BODY_CENTER, DROPLET, VIEW_H } from "./shape";
 import { useDropletGeometry } from "./use-droplet-geometry";
+import { DROPLET_PHOTOS } from "./droplet-prefetch";
 
-const PHOTO = ["/img/droplet/form-photo.webp", "/img/droplet/form-photo-smooth.webp", "/img/droplet/form-photo-zone.png"];
+const PHOTO = DROPLET_PHOTOS;
+// the photo into the loader's cache as soon as this chunk is in, so the body never suspends on it: a boundary that waits
+// on a load shows its fallback first, and React then holds the content back ~300 ms (its fallback throttle), so the
+// droplet came that much later (measured, 10 Nov 2026)
+useLoader.preload(THREE.TextureLoader, PHOTO);
 const FOV = 18;
 const CAMERA_Z = VIEW_H / 2 / Math.tan((FOV / 2) * (Math.PI / 180));
 const MAX_TILT_X = 0.11;
@@ -43,9 +48,12 @@ export default function DropletScene({ active, interactive, awake, roll = 0, mir
   const tilt = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
   const uniforms = useMemo(() => createDropletUniforms(), []);
-  const geometry = useDropletGeometry(); // built while the photo loads
+  const geometry = useDropletGeometry(); // built while the photo loads (both started early: droplet-prefetch)
   return (
     <Canvas
+      /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
+         root each time; the pointer is read from offsetX/Y, so the canvas' place on the page is never needed */
+      resize={{ scroll: false }}
       // MSAA anti-aliases the outline (the surface is opaque); full DPR up to 2: the look lives on the photo's sharpness
       dpr={[1, maxDpr]}
       frameloop={active ? "always" : "never"}

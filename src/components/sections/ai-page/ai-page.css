@@ -214,7 +214,4 @@ main[data-ai-page="ai"] .ai-sec:not(.section--ivory):has(+ .section--ivory) { pa
   html.ai-stick main[data-ai-page="ai"] .ai-hero[data-cover] :is(.ai-hero__in, .ai-hero__bg) { animation: none; }
 }
 
-/* ---------- links in the text: no underline (the owner, 5 Nov 2026), ember on the dark, deeper on the ivory ---------- */
-main[data-ai-page="ai"] .link { text-decoration: none; color: var(--ember-ink); transition: color var(--dur-fast); }
-main[data-ai-page="ai"] .section--ivory .link { color: var(--ember-deep); }
-@media (hover: hover) { main[data-ai-page="ai"] .link:hover { color: var(--ink); } main[data-ai-page="ai"] .section--ivory .link:hover { color: var(--ink-dark); } }
+/* (links in the text: ember on the dark, deeper on the ivory, every page: ui/button/button.css .link) */

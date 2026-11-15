@@ -88,6 +88,11 @@
   background: var(--lime) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d0d0d' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17 17 7M8.5 7H17v8.5'/></svg>") center / 0.875rem no-repeat;
   transition: transform 0.5s var(--ease-out);
 }
+/* while the list comes in (WhatList: GSAP moves the names and the pills by their transform) their own transitions are
+   off: on the same transform a transition chased each frame's new place 0.6 to 0.8 s behind it, so the names trailed
+   GSAP by up to 21 px and their rise came out late and soft (the owner, 13 Nov 2026: «чуть лагает»). Back with .is-in,
+   for the hover */
+.what__list:not(.is-in) :is(.what__name-in, .what__go) { transition: none; }
 .what__list.is-in .what__go::after { animation: what-go-ring 1.6s var(--ease-out) both; }
 .what__list.is-in .what__item:nth-child(2) .what__go::after { animation-delay: 0.25s; }
 .what__list.is-in .what__item:nth-child(3) .what__go::after { animation-delay: 0.5s; }

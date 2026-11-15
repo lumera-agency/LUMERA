@@ -8,10 +8,15 @@ import { LogoSprite } from "@/components/ui/logo/LogoSprite";
 import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
 import { SiteNavProvider } from "@/components/layout/site-nav/SiteNavProvider";
 import { getSiteNav } from "@/content/site-nav";
+import { PRICES } from "@/components/sections/services/copy";
 import "../globals.css";
 import "@/components/layout/page/page.css";
 import { RootKeep } from "@/components/layout/RootKeep";
 import { PageCurtain } from "@/components/fx/page-curtain/PageCurtain";
+import { Preloader } from "@/components/fx/preloader/Preloader";
+import { PreloaderRelease } from "@/components/fx/preloader/PreloaderRelease";
+import { PerfProbe } from "@/components/fx/lite/PerfProbe";
+import { EARLY_SCRIPT } from "@/lib/perf/early";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads", "about"];
@@ -20,22 +25,30 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+/** Only uk and ru are pages: any other first segment is a 404 that renders nothing (the 13 Nov audit: a crafted
+ *  /<something with a dot> reached generateMetadata and came out with a canonical and og:url on a foreign host). */
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) notFound();
   const t = await getTranslations({ locale, namespace: "meta" });
   const path = locale === routing.defaultLocale ? "/" : `/${locale}`;
+  // a sum in the title or the description ({landing} …) is the configurator engine's, as on the page (services/copy)
+  const title = t("title", PRICES);
+  const description = t("description", PRICES);
   return {
     // every page's canonical, hreflang and og:url are paths: they resolve against the site's address (config/site)
     metadataBase: new URL(siteUrl),
     robots: allowIndexing ? undefined : { index: false, follow: false },
-    title: t("title"),
-    description: t("description"),
+    title,
+    description,
     alternates: { canonical: path, languages: { uk: "/", ru: "/ru", "x-default": "/" } },
     openGraph: {
       type: "website",
       siteName: studioName,
-      title: t("title"),
-      description: t("description"),
+      title,
+      description,
       url: path,
       locale: locale === "ru" ? "ru_RU" : "uk_UA",
       alternateLocale: locale === "ru" ? ["uk_UA"] : ["ru_RU"],
@@ -55,18 +68,17 @@ export const viewport: Viewport = {
   themeColor: "#0a0a0a",
 };
 
-/* Runs before first paint: the intro's start states are hidden only when JS and motion are on
-   (styles/base.css), and come back by themselves after 3.5 s should a script fail; while the preloader is still up
-   they wait for it (up to 10 s): shown under it, the headline would be seen whole as the sheet fades, then hidden and
-   played in by the intro (23 Oct). Reached through the page curtain (fx/page-curtain: a link from another page of the
-   site, just now) the page comes up under it, html.is-curtain; should no script lift it, it goes after 6 s */
-const EARLY = `(function(r){try{history.scrollRestoration='manual'}catch(e){}r.classList.add('js');if(!matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('motion');try{var c=+sessionStorage.getItem('eclo:curtain');sessionStorage.removeItem('eclo:curtain');var n=performance.getEntriesByType('navigation')[0];if(r.classList.contains('motion')&&Date.now()-c<8000&&(!n||n.type==='navigate')){r.classList.add('is-curtain');setTimeout(function(){r.classList.remove('is-curtain')},6000)}}catch(e){}var t=Date.now();setTimeout(function f(){if(document.querySelector('[data-preloader]')&&Date.now()-t<10000)return setTimeout(f,250);r.classList.add('is-ready')},3500)})(document.documentElement)`;
-
 /* Chrome fetches a page of the site while the pointer rests on its link, so the next page is in by the time the curtain
    has covered this one (the studio's /lab left out) */
 const PREFETCH = JSON.stringify({
   prefetch: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/lab*" } }, { not: { href_matches: "/ru/lab*" } }] }, eagerness: "moderate" }],
 });
+
+/* Vercel Web Analytics (the owner, 12 Nov 2026): no cookies, so no consent banner; it shows the pages and where the
+   visitors came from (Google, chatgpt.com, perplexity.ai). Vercel serves its script under /_vercel/insights once
+   Analytics is on in the project, so only the production build asks for it (locally and on previews it is a 404).
+   Deferred: it waits for the page and costs the first screen nothing. */
+const ANALYTICS = process.env.VERCEL_ENV === "production" ? `<script defer src="/_vercel/insights/script.js"></script>` : "";
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
@@ -82,11 +94,18 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
     <html lang={locale} suppressHydrationWarning>
       <head />
       <body>
-        {/* EARLY as the body's first markup, not a React <script>: it runs as the page is parsed, before anything is
+        {/* the early script (lib/perf/early.ts: the page's mode, the intro's guard) as the body's first markup, not a React <script>: it runs as the page is parsed, before anything is
             drawn, and a render in the browser (a language switch) neither runs it again nor warns about a script tag */}
-        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY}</script><script type="speculationrules">${PREFETCH}</script>` }} />
+        <div style={{ display: "contents" }} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `<script>${EARLY_SCRIPT}</script><script type="speculationrules">${PREFETCH}</script>${ANALYTICS}` }} />
+        {/* the preloader on whichever page a visit starts (the owner, 12 Nov 2026: ads lead to every part of the site);
+            later pages of the visit come up without it (its own clock decides). The home page's start-up leads it out
+            (hero/useBoot), any other page's once it has loaded (PreloaderRelease) */}
+        <Preloader brand={studioName} note={t("preloader.note")} words={t("preloader.words")} />
+        <PreloaderRelease />
         <PageCurtain />
         <RootKeep />
+        {/* the page's own measures; a FULL page that stays slow goes LITE (lib/perf/monitor.ts) */}
+        <PerfProbe />
         <LogoSprite />
         <a className="skip-link" href="#main">{t("skip")}</a>
         {/* (over the footer's index the lens steps aside for the plain pointer: footer.css; the owner, 3 Nov) */}

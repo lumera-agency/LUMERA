@@ -41,6 +41,15 @@ export function PhoneIcon() {
   );
 }
 
+/** The envelope, solid like the others, its flap cut through (the footer's mail line, 12 Nov 2026) */
+export function MailIcon() {
+  return (
+    <svg className="ico ico--mail" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path fillRule="evenodd" d="M4.2 4.8h15.6c1 0 1.8.8 1.8 1.8v10.8c0 1-.8 1.8-1.8 1.8H4.2c-1 0-1.8-.8-1.8-1.8V6.6c0-1 .8-1.8 1.8-1.8Zm.1 2.6 7.7 5.5 7.7-5.5v2l-7.7 5.5-7.7-5.5v-2Z" />
+    </svg>
+  );
+}
+
 const INTENT = 150;
 const GRACE = 220;
 

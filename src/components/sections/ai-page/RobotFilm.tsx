@@ -8,21 +8,31 @@
 import { useEffect, useRef } from "react";
 import { playAlphaFilm } from "@/components/fx/alpha-film/alpha-film";
 
-/** Where the film was recorded (a screen 402 px wide, where the table's words all fit): the head's slot, and the
- *  film's frame from above the antennas to the table's foot, in that screen's css px. Recorded again, these change. */
-const RECORDED = { headWidth: 273.36, headCenter: 201, frameWidth: 402, frameHeight: 637, fromHeadTop: -152.09 };
+/** Where a film was recorded: the head's slot, and the film's frame around it, in that screen's css px. Recorded
+ *  again, these change. */
+export type Recorded = { headWidth: number; headCenter: number; frameWidth: number; frameHeight: number; fromHeadTop: number };
 
-/** A recorded frame (the film's, or the still's: robot-still.webp, the same frame) laid over the screen where the live
- *  scene would draw it: the head on its slot, scaled with it. Kept so on every resize; returns its stop. */
-export function keepOnHead(frame: HTMLElement, host: HTMLElement, slot: HTMLElement) {
+/** A phone's film (a screen 402 px wide, where the table's words all fit): from above the antennas to the table's
+ *  foot, the table in it. */
+export const RECORDED: Recorded = { headWidth: 273.36, headCenter: 201, frameWidth: 402, frameHeight: 637, fromHeadTop: -152.09 };
+
+/** A computer's film, LITE's (lib/lite; the owner, 11 Nov 2026: a film there, not a still): the robot, its hands and
+ *  the card it reads, recorded at 1440 × 900 over one round of 19.2 s (tools/record-film.mjs robot, in the optimization
+ *  folder); the table is the page's own. The frame's left, top and bottom edges fade out, where the cards leave for the
+ *  table and come in. */
+export const RECORDED_DESK: Recorded = { headWidth: 517, headCenter: 537.5, frameWidth: 912, frameHeight: 540, fromHeadTop: -45 };
+
+/** A recorded frame (a film's, or its still's) laid over the screen where the live scene would draw it: the head on
+ *  its slot, scaled with it. Kept so on every resize; returns its stop. */
+export function keepOnHead(frame: HTMLElement, host: HTMLElement, slot: HTMLElement, recorded: Recorded = RECORDED) {
   const place = () => {
     const room = host.getBoundingClientRect();
     const head = slot.getBoundingClientRect();
-    const scale = head.width / RECORDED.headWidth;
-    frame.style.left = `${head.left + head.width / 2 - room.left - RECORDED.headCenter * scale}px`;
-    frame.style.top = `${head.top - room.top + RECORDED.fromHeadTop * scale}px`;
-    frame.style.width = `${RECORDED.frameWidth * scale}px`;
-    frame.style.height = `${RECORDED.frameHeight * scale}px`;
+    const scale = head.width / recorded.headWidth;
+    frame.style.left = `${head.left + head.width / 2 - room.left - recorded.headCenter * scale}px`;
+    frame.style.top = `${head.top - room.top + recorded.fromHeadTop * scale}px`;
+    frame.style.width = `${recorded.frameWidth * scale}px`;
+    frame.style.height = `${recorded.frameHeight * scale}px`;
   };
   place();
   const resized = new ResizeObserver(place);
@@ -31,7 +41,7 @@ export function keepOnHead(frame: HTMLElement, host: HTMLElement, slot: HTMLElem
   return () => resized.disconnect();
 }
 
-export function RobotFilm({ host, slot, src, onFail }: { host: HTMLElement; slot: HTMLElement; src: string; onFail: () => void }) {
+export function RobotFilm({ host, slot, src, onFail, recorded = RECORDED }: { host: HTMLElement; slot: HTMLElement; src: string; onFail: () => void; recorded?: Recorded }) {
   const layer = useRef<HTMLDivElement>(null);
   const failRef = useRef(onFail);
   useEffect(() => {
@@ -45,12 +55,23 @@ export function RobotFilm({ host, slot, src, onFail }: { host: HTMLElement; slot
     canvas.className = "ai-bot__film";
     box.append(canvas);
 
-    const stopPlacing = keepOnHead(canvas, host, slot);
+    const stopPlacing = keepOnHead(canvas, host, slot, recorded);
 
     const stop = playAlphaFilm({
       canvas,
       src,
       watch: host,
+      // held while the next block covers the pinned first screen (.is-under, ai-runtime.js): the film is on screen
+      // all the while and would play on, unseen
+      hold: (set) => {
+        const screen = host.closest(".ai-hero");
+        if (!screen) return () => {};
+        const tell = () => set(screen.classList.contains("is-under"));
+        const classes = new MutationObserver(tell);
+        classes.observe(screen, { attributes: true, attributeFilter: ["class"] });
+        tell();
+        return () => classes.disconnect();
+      },
       // drawn: the robot and the table come in together (robot-hero.css)
       onShown: () => host.classList.add("is-film", "is-live"),
       onFail: () => failRef.current(),
@@ -61,7 +82,7 @@ export function RobotFilm({ host, slot, src, onFail }: { host: HTMLElement; slot
       canvas.remove();
       host.classList.remove("is-film");
     };
-  }, [host, slot, src]);
+  }, [host, slot, src, recorded]);
 
   return <div ref={layer} className="ai-bot__canvas" aria-hidden="true" />;
 }

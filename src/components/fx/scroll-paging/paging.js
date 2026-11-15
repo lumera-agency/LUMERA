@@ -56,6 +56,9 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
 
   const onWheel = (e) => {
     if (e.ctrlKey || e.lenisStopPropagation) return; // pinch zoom, or another paging took it
+    // something that scrolls by itself has the wheel (a dialog, a list, the prices' sample: data-lenis-prevent, as for
+    // Lenis); the owner, 9 Nov 2026: a wheel up over the sample at the prices' top took the page back to «Підхід»
+    if (e.target instanceof Element && e.target.closest('dialog, [data-lenis-prevent]')) return;
     const list = stops();
     if (!list || list.length < 2) return;
     const first = list[0];
@@ -115,7 +118,23 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
 
   // the keyboard and the scrollbar: a scroll that rests between two stops settles on the nearer one
   let restTimer = 0;
+  // the wheel is held on the page's own thread only near the pinned stretch (12 Nov 2026): while a wheel listener that
+  // may cancel the scroll is on, every scroll of the page waits for the page's scripts (a slow computer showed every
+  // other frame torn); elsewhere the browser scrolls on its own thread. A screen around it: on the way in it is on
+  let holding = false;
+  let scoping = 0;
+  const scope = () => {
+    scoping = 0;
+    const list = stops();
+    const y = window.scrollY;
+    const near = Boolean(list && list.length >= 2 && y >= list[0] - window.innerHeight && y <= list[list.length - 1] + window.innerHeight);
+    if (near === holding) return;
+    holding = near;
+    if (near) window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+    else window.removeEventListener('wheel', onWheel, { capture: true });
+  };
   const onScroll = () => {
+    if (!scoping) scoping = requestAnimationFrame(scope);
     clearTimeout(restTimer);
     restTimer = window.setTimeout(() => {
       if (paging || busy() || reducedMotion || performance.now() - lastWheel < 600) return;
@@ -128,7 +147,7 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
     }, 200);
   };
 
-  window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+  scope();
   window.addEventListener('scroll', onScroll, { passive: true });
   return {
     glideTo,
@@ -136,6 +155,7 @@ export function initPaging({ stops, sideways = false, busy = () => false, durati
     destroy() {
       window.removeEventListener('wheel', onWheel, { capture: true });
       window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(scoping);
       clearTimeout(restTimer);
       clearTimeout(glideTimer);
     },

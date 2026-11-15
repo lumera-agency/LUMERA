@@ -184,7 +184,7 @@ export const NOTE_AT = 7;
 export const shotOf = (p: Product, c: Col | null): Shot => p.shots[c && p.shots[c] ? c : p.cols[0]] as Shot;
 export const firstCol = (p: Product) => p.cols[0];
 
-/** the cart as the Кошик part shows it first: Келих «Корона», Кобальт × 2; Ваза «Грань», Малина × 1 (2 470 ₴) */
+/** the cart as the Кошик part shows it first: Келих «Корона», Кобальт × 2; Ваза «Грань», Малина × 1 (2 470 грн) */
 export type Line = { pid: string; col: Col; qty: number };
 export const CART0: readonly Line[] = [
   { pid: "korona", col: "kobalt", qty: 2 },

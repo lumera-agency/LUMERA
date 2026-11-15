@@ -5,7 +5,11 @@
  * together by a small shader. It plays only while `watch` can be seen and the tab is shown. `onFail`: the browser will
  * not start it by itself (an iPhone in Low Power Mode), the file failed, there is no WebGL, or the film is there and on
  * screen yet no frame comes (a browser keeping it still without a word): the caller then brings its live scene.
+ * In both modes (lib/perf/mode.ts allowFilm): in LITE the films stand in for the live scenes.
+ * `hold`: the caller's own reason to keep it still (the first screen covered by the block that slides over it: the
+ * film is on screen all the while, so the observer alone would let it play, and draw, unseen).
  */
+import { allowFilm } from "@/lib/perf/mode";
 
 const VERTEX = `attribute vec2 aPos;
 varying vec2 vUv;
@@ -31,11 +35,13 @@ type Options = {
   /** its first frame drawn */
   onShown: () => void;
   onFail: () => void;
+  /** tells the film to hold (true) or go on (false); returns its stop */
+  hold?: (set: (held: boolean) => void) => () => void;
 };
 
 /** Plays the film; returns its stop. */
-export function playAlphaFilm({ canvas, src, watch, onShown, onFail }: Options) {
-  const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
+export function playAlphaFilm({ canvas, src, watch, onShown, onFail, hold }: Options) {
+  const gl = allowFilm() ? canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false }) : null;
   if (!gl) {
     onFail();
     return () => {};
@@ -104,9 +110,10 @@ export function playAlphaFilm({ canvas, src, watch, onShown, onFail }: Options) 
   next();
 
   let onScreen = true;
+  let held = false;
   const sync = () => {
     if (stopped) return;
-    if (onScreen && !document.hidden) {
+    if (onScreen && !held && !document.hidden) {
       video.play().catch(() => {
         if (!shown && !stopped) onFail();
       });
@@ -117,6 +124,10 @@ export function playAlphaFilm({ canvas, src, watch, onShown, onFail }: Options) 
     sync();
   });
   seen.observe(watch);
+  const stopHold = hold?.((now) => {
+    held = now;
+    sync();
+  });
   document.addEventListener("visibilitychange", sync);
   const broken = () => !shown && !stopped && onFail();
   video.addEventListener("error", broken);
@@ -125,7 +136,7 @@ export function playAlphaFilm({ canvas, src, watch, onShown, onFail }: Options) 
   const watchStall = () => {
     clearTimeout(stalled);
     stalled = window.setTimeout(() => {
-      if (!shown && onScreen && !document.hidden) broken();
+      if (!shown && onScreen && !held && !document.hidden) broken();
     }, 2500);
   };
   video.addEventListener("canplay", watchStall);
@@ -135,6 +146,7 @@ export function playAlphaFilm({ canvas, src, watch, onShown, onFail }: Options) 
     stopped = true;
     if (!perFrame) cancelAnimationFrame(loop);
     seen.disconnect();
+    stopHold?.();
     document.removeEventListener("visibilitychange", sync);
     video.removeEventListener("error", broken);
     video.removeEventListener("canplay", watchStall);

@@ -81,6 +81,26 @@
 .process__lane,
 .process__run { display: none; }
 .process__stone { display: none; }
+/* LITE's stone (StageStills): its five poses stacked in the canvas's own box, whole; the stage's one shown. A change
+   turns and hops like the live stone between two stages: the new pose comes up from below, turned a little back, as
+   the old one rises and turns on (from above when the deck is scrolled back). Opacity and transform only. */
+.process__stone--still img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: translate3d(0, 6%, 0) rotate(-9deg) scale(0.94);
+  transition: opacity 0.35s ease-out, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.process__stone--still img.is-on { opacity: 1; transform: none; transition: opacity 0.45s ease-out 0.08s, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1); }
+.process__stone--still img:not(.is-on) { transform: translate3d(0, -6%, 0) rotate(9deg) scale(0.94); }
+.process__stone--still.is-back img:not(.is-on) { transform: translate3d(0, 6%, 0) rotate(-9deg) scale(0.94); }
+@media (prefers-reduced-motion: reduce) {
+  .process__stone--still img { transition: none; }
+}
 .next { list-style: none; margin: var(--rhythm-m) 0 0; padding: 0; border-top: 1px solid var(--line); }
 .next li { display: grid; grid-template-columns: var(--index-w) 1fr; padding: var(--row-pad-s) 0; border-bottom: 1px solid var(--line); }
 .next li > span { font-size: var(--fs-label); font-variant-numeric: tabular-nums; color: var(--ink-mute); padding-top: 0.25em; }

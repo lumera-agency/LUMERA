@@ -1,17 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import * as THREE from "three";
-import type { InflateResponse } from "./inflate.worker";
+import { dropletBody } from "./droplet-prefetch";
 
-/** The droplet's body, built once in a Web Worker, with the baked deformation fields as attributes; null until it lands
- *  (the still under the canvas covers the wait). */
+/** The droplet's body, built once in a Web Worker (droplet-prefetch: the page's slot starts it before this chunk is
+ *  even in), with the baked deformation fields as attributes; null until it lands. */
 export function useDropletGeometry(): THREE.BufferGeometry | null {
   const [geometry, setGeometry] = useState<THREE.BufferGeometry | null>(null);
   useEffect(() => {
-    const worker = new Worker(new URL("./inflate.worker.ts", import.meta.url));
+    let gone = false;
     let built: THREE.BufferGeometry | null = null;
-    worker.onmessage = (e: MessageEvent<InflateResponse>) => {
-      const { mesh, fields, width, outer } = e.data;
+    void dropletBody().then(({ mesh, fields, width, outer }) => {
+      if (gone) return;
       const geo = new THREE.BufferGeometry();
       geo.setAttribute("position", new THREE.BufferAttribute(mesh.positions, 3));
       geo.setAttribute("normal", new THREE.BufferAttribute(mesh.normals, 3));
@@ -27,11 +27,9 @@ export function useDropletGeometry(): THREE.BufferGeometry | null {
       geo.computeBoundingSphere();
       built = geo;
       setGeometry(geo);
-      worker.terminate();
-    };
-    worker.postMessage(null);
+    });
     return () => {
-      worker.terminate();
+      gone = true;
       built?.dispose();
     };
   }, []);

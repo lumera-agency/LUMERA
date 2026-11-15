@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { ConsoleFx, type ConsoleLine } from "./ConsoleFx";
+import { ConsoleFxLater } from "./ConsoleFxLater";
 import "./robot-console.css";
 
 /** the day's start counts: the four places (Telegram, CRM, the table, the schedule), then the three metrics */
@@ -59,9 +60,10 @@ function Line({ time, l }: { time: string; l: ConsoleLine }) {
  * dark console of the robot at work. The request at the head of the queue, a lime packet down a straight track through
  * «читає · розбирає · передає», a curve to where it goes lights, that place's dot turns ember and its count ticks, a log
  * line slides in and the day's counters roll (ConsoleFx). The markup is the still (reduced motion): P1 on its way to
- * Telegram, the three lines before it, the start counts.
+ * Telegram, the three lines before it, the start counts. `later`: a console not on screen as the page starts (the home
+ * page's configurator), its conductor's code fetched once it is drawn (ConsoleFxLater).
  */
-export async function RobotConsole() {
+export async function RobotConsole({ later = false }: { later?: boolean } = {}) {
   const t = await getTranslations("ai");
   const line = (n: number): ConsoleLine => ({
     src: t(`console.log.${n}.src`),
@@ -70,9 +72,10 @@ export async function RobotConsole() {
     resS: t(`console.log.${n}.resS`),
   });
   const log = N.map(line);
+  const Conductor = later ? ConsoleFxLater : ConsoleFx;
   return (
     <div className="ai-console">
-      <ConsoleFx lines={log}>
+      <Conductor lines={log}>
         <div className="ai-console__fig" role="img" aria-label={t("console.label")} data-rv="">
           <div className="ai-console__tilt" aria-hidden="true">
             <div className="ai-console__box" data-p="1">
@@ -183,7 +186,7 @@ export async function RobotConsole() {
             </span>
           </div>
         </div>
-      </ConsoleFx>
+      </Conductor>
     </div>
   );
 }

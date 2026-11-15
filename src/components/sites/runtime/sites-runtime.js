@@ -19,6 +19,12 @@ import { getLenis } from '@/lib/scroll';
 import { SPRING, slideIn, rollNumber } from './sites-rb.js';
 import { spotlight, initTilt, mountGlide, beam, beamOnView, deltaChip } from './fx-page.js';
 import { mountHow } from './fx-how.js';
+// the samples' own styles come with this script, which builds the samples, as the main page's configurator has them
+// (10 Nov 2026: in the page's HTML they were most of its 322 KB, twice over, the CSS inlined and again in React's data,
+// for blocks a screen or more below; their few rules for the page itself are copied into sites.css: the rolling digits)
+import '../sites-pv.css';
+import '../clinic/clinic.css';
+import '../shop/shop.css';
 
 /** The words the page writes (the page's language, from the server: SitesRuntime's `strings`, the static page's keys). */
 let words = {};
@@ -33,6 +39,17 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 const motion = !reducedMotion && !OG && typeof Element.prototype.animate === 'function';
 const phoneMQ = window.matchMedia('(max-width: 600px)');
 const narrowMQ = window.matchMedia('(max-width: 860px)');
+/** the page's phone layout (sites.css, sites-hero.css): narrow, or a phone on its side */
+const phoneLayoutMQ = window.matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)');
+/* The formats' page-long stills in AVIF where the browser decodes it, WebP elsewhere: each has its .avif beside its
+   .webp, 28% lighter in all at the same look (12 Nov 2026: quality 60 against the WebP, no difference seen at 4x).
+   Asked once, of a one-pixel picture */
+const stillFormat = new Promise((resolve) => {
+  const probe = new Image();
+  probe.onload = () => resolve(probe.width === 1 ? 'avif' : 'webp');
+  probe.onerror = () => resolve('webp');
+  probe.src = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADrbWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAAAAAAAOcGl0bQAAAAAAAQAAAB5pbG9jAAAAAEQAAAEAAQAAAAEAAAETAAAAFwAAAChpaW5mAAAAAAABAAAAGmluZmUCAAAAAAEAAGF2MDFDb2xvcgAAAABqaXBycAAAAEtpcGNvAAAAFGlzcGUAAAAAAAAAAQAAAAEAAAAQcGl4aQAAAAADCAgIAAAADGF2MUOBAAwAAAAAE2NvbHJuY2x4AAEADQAGgAAAABdpcG1hAAAAAAAAAAEAAQQBAoMEAAAAH21kYXQSAAoFGAAGBCAyDBgACiiihAAAsBKamA==';
+});
 const fineMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const EASE_IO = 'cubic-bezier(0.65, 0, 0.35, 1)';
@@ -68,7 +85,8 @@ function readEngine(e) {
         price: n(P.formats[f].price),
         weeks: [n(P.formats[f].weeks[0]), n(P.formats[f].weeks[1])],
         design: [n(per(P.design.custom.price, f)), n(per(P.design.custom.weeks, f))],
-        motion: [n(per(P.advancedMotion.price, f)), n(per(P.advancedMotion.weeks, f))],
+        // animation is in every format's price (14 Oct here, 9 Nov in the engine too): nothing to add
+        motion: [0, 0],
         lang: [n(per(P.secondLanguage.price, f)), n(per(P.secondLanguage.weeks, f))],
       };
     } catch { /* this format keeps its fallback */ }
@@ -121,6 +139,7 @@ async function boot() {
   initFaq();
   initSticky();
   initToTop();
+  initCover();
   initScenes();
   initDialogs();
   initCalc();
@@ -283,17 +302,11 @@ function initFaq() {
 // comes or goes between two scroll events tells it
 const nudgeToTop = () => window.dispatchEvent(new Event('scroll'));
 
-/* ---------- (QA 19 Oct, S-02) the button back up steps aside over the page's controls in its corner (SitesShell's quiet
-   list: the questions, the form, block 2's tabs and buttons, the price card…). On narrow screens and phones on their
-   side block 3's controls run from edge to edge, so all of block 3 is marked (data-quiet). The button checks itself
-   only on a scroll, so a change of the page without one (an answer opens, «Що входить у ціну» opens and moves the
-   price's button, another format) asks it again ---------- */
+/* ---------- the button back up steps aside over the page's controls in its corner (SitesShell's quiet list: the
+   questions, the form, block 2's tabs and buttons, the price card…) and rises over the bars. It checks itself only on a
+   scroll, so a change of the page without one (an answer opens, «Що входить у ціну» opens and moves the price's
+   button, another format) asks it again ---------- */
 function initToTop() {
-  const narrow = window.matchMedia('(max-width: 860px), (max-width: 932px) and (max-height: 500px)');
-  const block3 = $('#design');
-  const mark = () => block3?.toggleAttribute('data-quiet', narrow.matches);
-  mark();
-  narrow.addEventListener('change', () => { mark(); nudgeToTop(); });
   let queued = 0;
   const later = () => {
     if (!queued) queued = requestAnimationFrame(() => { queued = 0; nudgeToTop(); });
@@ -336,6 +349,45 @@ function initSticky() {
   });
   ends.forEach((el) => io.observe(el));
   phoneMQ.addEventListener('change', update);
+}
+
+/* ---------- 1 → 2 · the formats slide over the first screen again (the owner, 10 Nov 2026; off since 5 Nov), not on a
+   phone (the same day: there the page simply scrolls on). CSS: html.ai-stick, a first screen marked data-cover (ai.css) ---------- */
+function initCover() {
+  const hero = $('.ai-hero[data-cover]');
+  if (!hero || OG || typeof ResizeObserver !== 'function') return;
+  const phone = phoneLayoutMQ;
+  const set = () => root.style.setProperty('--hero-h', `${hero.offsetHeight}px`);
+  const pin = () => root.classList.toggle('ai-stick', !phone.matches);
+  set();
+  pin();
+  new ResizeObserver(set).observe(hero);
+  phone.addEventListener('change', pin);
+  hideUnder(hero);
+}
+
+/* the first screen out of sight once the next block has covered it whole (past its rounded top too): its 3D, its
+   blurs and its canvases are then neither drawn nor put together by the browser on every frame of the rest of the page
+   (10 Nov 2026: «на рабочем компьютере сильно лагает»). CSS: .ai-hero[data-cover].is-under (ai.css) */
+function hideUnder(hero) {
+  const over = hero.nextElementSibling;
+  if (!over || typeof ResizeObserver !== 'function') return;
+  let top = 0;
+  let hidden = null;
+  let raf = 0;
+  const measure = () => { top = over.getBoundingClientRect().top + window.scrollY; };
+  const check = () => {
+    raf = 0;
+    const now = root.classList.contains('ai-stick') && window.scrollY > top + 48;
+    if (now === hidden) return;
+    hidden = now;
+    hero.classList.toggle('is-under', now);
+  };
+  const again = () => { measure(); check(); };
+  again();
+  new ResizeObserver(again).observe(document.body);
+  addEventListener('resize', again);
+  addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
 }
 
 /* ==========================================================================
@@ -481,6 +533,13 @@ function playBuild(scene) {
   const bands = $$('.st-build__b', build);
   const parts = $$('.ms [data-b]', desk);
   const phone = $('.st-show__phone', scene.el);
+  // a phone: straight to the sample's own first screen, then the phone, no six labelled blocks before it (the owner,
+  // 13 Nov 2026: «эта таблица не нужна, сразу просто следующее появление примера»; they held the block about 1.5 s)
+  if (phoneLayoutMQ.matches) {
+    parts.forEach((part, i) => slide(scene, part, 80 + i * 75, { distance: 18 }));
+    anim(scene, phone, [{ opacity: 0, transform: 'translate3d(0, 36px, 0)' }, { opacity: 1, transform: 'none' }], { duration: 800, delay: 600 });
+    return [];
+  }
   const T = 2350; // the bands' time on the screen
   anim(scene, build, [{ opacity: 1 }, { opacity: 1, offset: 0.82 }, { opacity: 0 }], { duration: T, easing: 'linear' });
   bands.forEach((band, i) => {
@@ -875,7 +934,8 @@ function mountSamples() {
   const host = $('[data-pv]');
   if (!host || !pvModule || !strings) return null;
   try {
-    return pvModule.mountPreview(host, { t: strings, lang: lang(), assets: PV_ASSETS, reducedMotion: !motion, phone: phoneMQ.matches, labels: { take: t('sites.pv.take', 'Гортайте й натискайте самі'), auto: t('sites.pv.auto', 'Автопрокрутка'), full: t('sites.pv.full', 'На весь екран'), close: t('sites.pv.close', 'Закрити') }, full: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
+    // (a slow computer, html.is-lite: the sample site holds still, its entrances and loops are not needed to read it)
+    return pvModule.mountPreview(host, { t: strings, lang: lang(), assets: PV_ASSETS, reducedMotion: !motion || document.documentElement.classList.contains('is-lite'), phone: phoneMQ.matches, labels: { take: t('sites.pv.take', 'Гортайте й натискайте самі'), auto: t('sites.pv.auto', 'Автопрокрутка'), full: t('sites.pv.full', 'На весь екран'), close: t('sites.pv.close', 'Закрити') }, full: true, onFull: (on) => { const l = getLenis(); if (on) l?.stop(); else l?.start(); } });
   } catch (error) {
     console.warn('[samples] the sample sites are not available.', error);
     host.closest('[data-pv-box]')?.setAttribute('hidden', '');
@@ -897,13 +957,18 @@ function initTabs() {
   // audit: the first still came twice, 0.5 MB more, 1.3 MB in Russian). (QA 19 Oct, S-20) So do narrow tablets and
   // phones on their side, up to 860 px: the same copies, the open format's first, another's as its tab is pressed
   const phone = narrowMQ.matches;
-  for (const img of $$('.st-dev__img[data-src]', room)) {
-    const desk = img.closest('.st-dev__desk');
-    img.src = phone && desk ? img.dataset.src.replace(/\.webp$/, '-s.webp') : img.dataset.src;
-  }
-  // on a computer every still starts loading once block 2 is within a screen, so a tab never opens on an empty window;
-  // on a phone only the open format's (the phone audit: all ten, 2.2 MB, came at the page's load), and another
-  // format's as its tab is pressed (the blurred stand-in covers the moment)
+  void stillFormat.then((format) => {
+    for (const img of $$('.st-dev__img[data-src]', room)) {
+      const desk = img.closest('.st-dev__desk');
+      const still = phone && desk ? img.dataset.src.replace(/\.webp$/, '-s.webp') : img.dataset.src;
+      img.src = still.replace(/\.webp$/, `.${format}`);
+    }
+  });
+  // the open format's stills start loading once block 2 is within a screen. On a computer the other formats' follow
+  // once block 2 itself shows, and a tab's own as the pointer comes onto it: all of them at block 2's approach came
+  // with the page's load (block 2 is a screen down), about 1.1 MB the first screen never shows (10 Nov 2026). On a
+  // phone another format's as its tab is pressed (the phone audit: all ten, 2.2 MB, came at the page's load). The
+  // blurred stand-in covers the moment either way
   const stills = $$('.st-stage img', room);
   const eager = (imgs) => { for (const img of imgs) img.loading = 'eager'; };
   const stageImgs = (f) => $$(`.st-stage[data-fmt="${f}"] img`, room);
@@ -912,16 +977,27 @@ function initTabs() {
     if (!es.some((e) => e.isIntersecting)) return;
     near.disconnect();
     near2 = true;
-    eager(phone ? stageImgs(state.format) : stills);
+    eager(stageImgs(state.format));
   }, { rootMargin: '900px 0px' });
   near.observe(room);
   if (phone) {
     for (const b of buttons) b.addEventListener('pointerdown', () => { if (near2) eager(stageImgs(b.dataset.tab)); }, { passive: true });
+  } else {
+    const shown = new IntersectionObserver((es) => {
+      if (!es.some((e) => e.isIntersecting)) return;
+      shown.disconnect();
+      eager(stills);
+    });
+    shown.observe(room);
+    for (const b of buttons) b.addEventListener('pointerenter', () => eager(stageImgs(b.dataset.tab)), { passive: true });
   }
   // (15 Oct) Safari paints a page-long image inside a moving layer tile by tile and falls behind the scroll: the window
   // showed black, then the blurred stand-in. Each still is shown as a column of slices instead, each slice its own
-  // small layer (under 2 000 device px), painted before the scroll starts; the <img> stays for decode() only
-  for (const img of $$('.st-dev__img', room)) sliceStill(img);
+  // small layer (under 2 000 device px), painted before the scroll starts; the <img> stays for decode() only. (Sliced
+  // once its address is chosen: the slices draw that address)
+  void stillFormat.then(() => {
+    for (const img of $$('.st-dev__img', room)) sliceStill(img);
+  });
   // the rulers: the pictured sample's blocks in order (the round-6 Базовий designs), Лендінг+'s extra ones marked
   for (const ol of $$('[data-ruler]', room)) {
     const plus = ol.dataset.ruler === 'landingPlus';

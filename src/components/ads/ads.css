@@ -13,7 +13,7 @@
 :root:has(main[data-ai-page="ads"]) { --bg: #000; }
 body:has(main[data-ai-page="ads"]) { background: #000; }
 body:has(main[data-ai-page="ads"]) :is(.page, .footer) { background: #000; }
-body:has(main[data-ai-page="ads"]) :is(.page__grain, .page__bridge) { display: none; }
+body:has(main[data-ai-page="ads"]) .page__bridge { display: none; }
 /* (no weight: a class on the element always wins; 20 Oct, the reset had outranked .rk-facts' margin) */
 :where(main[data-ai-page="ads"]) :where(ul) { margin: 0; padding: 0; list-style: none; }
 :where(main[data-ai-page="ads"]) :where(h3) { margin: 0; }
@@ -87,6 +87,13 @@ main[data-ai-page="ads"] .rk-hero .ai-hero__bg {
 .rk-fib { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .rk-fib::before { content: ""; position: absolute; inset: 0; background: radial-gradient(46% 50% at 62% 56%, rgba(120, 170, 40, 0.12), rgba(120, 170, 40, 0.04) 55%, transparent 100%); }
 .rk-fib__gl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+/* LITE (lib/lite): the fibres as a still picture of themselves (tools/capture-canvas.mjs in the optimization folder),
+   no canvas drawn; fetched only there (a background of a rule that matches in LITE alone) */
+html.is-lite .rk-fib__gl, html.is-lite .rk-fib__origin { display: none; }
+html.is-lite .rk-fib { background: url("/img/ads/fibers-d.webp") center / cover no-repeat; }
+@media (max-width: 760px) {
+  html.is-lite .rk-fib { background-image: url("/img/ads/fibers-m.webp"); }
+}
 .rk-fib__origin { position: absolute; left: 0; top: 0; width: 180px; height: 180px; margin: -90px 0 0 -90px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.7), rgba(214, 245, 120, 0.42) 28%, rgba(198, 240, 60, 0.14) 58%, transparent 100%); opacity: 0; mix-blend-mode: screen; will-change: transform, opacity; }
 main[data-ai-page="ads"] .rk-hero .ai-hero__copy { position: relative; }
 main[data-ai-page="ads"] .rk-hero .ai-hero__copy::before { content: ""; position: absolute; inset: -22% -16% -22% -14%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.32) 55%, transparent 100%); pointer-events: none; }
@@ -95,7 +102,7 @@ main[data-ai-page="ads"] .rk-hero :is(.ai-hero__title, .ai-hero__lead) { text-sh
 /* the way of a request: one window of frosted glass (the owner's reference, 5 Nov: the lines pass behind it, blurred),
    the networks on top, the lines, the site, the week's requests */
 .rk-fl { display: grid; justify-items: end; gap: 0.375rem; width: min(38rem, 100%); justify-self: end; }
-.rk-fl__win { --ln: rgba(246, 246, 243, 0.2); width: 100%; padding: 0.875rem 1rem 1rem; border-radius: 1.5rem; text-align: left; background: linear-gradient(160deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.035) 46%, rgb(255 255 255 / 0.06)), rgba(14, 16, 14, 0.72); -webkit-backdrop-filter: blur(28px) saturate(1.15); backdrop-filter: blur(28px) saturate(1.15); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.9); }
+.rk-fl__win { --ln: rgba(246, 246, 243, 0.2); width: 100%; padding: 0.875rem 1rem 1rem; border-radius: 1.5rem; text-align: left; background: linear-gradient(160deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.035) 46%, rgb(255 255 255 / 0.06)), rgb(14 16 14 / 0.94); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 3.75rem 5.625rem -2.5rem rgba(0, 0, 0, 0.9); }
 .rk-fl__top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0 0 0.75rem; font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
 main.ai .rk-fl__src { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
 .rk-fl__src li { padding: 0 0.25rem; }
@@ -744,26 +751,43 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
 .rk-cs-num { display: inline-flex; align-items: baseline; gap: 0.375rem; }
 .rk-cs-num__was { font: 400 0.75rem/1.2 var(--font-mono); letter-spacing: 0; color: var(--ink-dark-mute); text-decoration-thickness: 1px; }
 .rk-cs-num__now { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.rk-cs-num__approx { margin-right: 0.12em; font-weight: 200; opacity: 0.55; }
-.rk-cs-num__unit { margin-left: 0.18em; font-size: 0.42em; font-weight: 400; letter-spacing: 0; }
+.rk-cs-num__approx { margin-right: 0.16em; font-weight: 200; opacity: 0.55; }
+/* (0.18em of its own small size glued «грн» to the number, the owner, 10 Nov 2026) */
+.rk-cs-num__unit { margin-left: 0.45em; font-size: 0.42em; font-weight: 400; letter-spacing: 0; }
+/* a counting number (AdsCases CountUp): the final one holds the width, the running one lies over it, flush right. Without
+   html.motion (reduced motion) only the final one shows */
+.rk-cs-count { display: inline-grid; justify-items: end; }
+.rk-cs-count > * { grid-area: 1 / 1; }
+.rk-cs-count__run { display: none; }
+html.motion .rk-cs-count__run { display: block; }
+html.motion .rk-cs-count__end { color: transparent; }
+/* the running digits (data-n, from «0») are drawn here, so the page's text holds only the final number (AdsCases CountUp) */
+.rk-cs-count__run::before { content: attr(data-n); }
+/* all three cases and every screenshot are in the HTML; the ones not chosen stay hidden (their own display would win
+   over the browser's [hidden] rule) */
+.rk-cs-facts[hidden],
+.rk-cs-win[hidden],
+.rk-cs-win__in[hidden] { display: none; }
 /* the cards: the name and «Кейс 2» on the left, the price large on the right with what it is under it; the chosen one
    dark with its price in ember */
 .rk-cs__cards { display: grid; gap: 0.5rem; }
-.rk-cs-card { display: grid; grid-template-columns: minmax(0, 1fr) auto 1.25rem; grid-template-rows: auto auto; align-items: center; column-gap: 0.875rem; padding: clamp(0.5rem, 1.2vh, 0.875rem) 1rem; border: 0; border-radius: 1rem; text-align: left; color: var(--ink-dark); background: #fff; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1); cursor: pointer; transition: box-shadow 0.25s, background-color 0.25s, color 0.25s, transform 0.25s var(--ease-out); }
+/* the name and the price on one baseline, the case's number and what the price is for on the line under them (the name
+   used to sit between the two lines and floated against the price, the owner, 10 Nov 2026) */
+.rk-cs-card { display: grid; grid-template-columns: minmax(0, 1fr) auto 1.25rem; grid-template-rows: auto auto; align-items: baseline; column-gap: 1.25rem; row-gap: 0.25rem; padding: clamp(0.5rem, 1.2vh, 0.875rem) 1rem; border: 0; border-radius: 1rem; text-align: left; color: var(--ink-dark); background: #fff; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.1); cursor: pointer; transition: box-shadow 0.25s, background-color 0.25s, color 0.25s, transform 0.25s var(--ease-out); }
 @media (hover: hover) {
   .rk-cs-card:hover { box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transform: translateX(2px); }
   .rk-cs-card:hover .rk-cs-card__go svg { transform: translateX(3px); }
 }
 .rk-cs-card:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; }
-.rk-cs-card__n { grid-row: 1 / span 2; display: grid; gap: 0.25rem; font-size: 1rem; font-weight: 500; }
-.rk-cs-card__n small { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: 0.04em; color: var(--ink-dark-mute); }
-.rk-cs-card__v { justify-self: end; font-size: clamp(1.625rem, min(2.6vw, 4.2vh), 2.5rem); font-weight: 500; line-height: 1; letter-spacing: -0.04em; }
-.rk-cs-card__k { grid-column: 2; justify-self: end; margin-top: 0.125rem; font-size: 0.75rem; color: var(--ink-dark-mute); }
-.rk-cs-card__go { grid-column: 3; grid-row: 1 / span 2; }
+.rk-cs-card__n { grid-area: 1 / 1; min-width: 0; font-size: 1rem; font-weight: 500; line-height: 1.25; }
+.rk-cs-card__tag { grid-area: 2 / 1; justify-self: start; font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: 0.04em; color: var(--ink-dark-mute); }
+.rk-cs-card__v { grid-area: 1 / 2; justify-self: end; font-size: clamp(1.625rem, min(2.6vw, 4.2vh), 2.5rem); font-weight: 500; line-height: 1; letter-spacing: -0.04em; }
+.rk-cs-card__k { grid-area: 2 / 1 / 3 / 3; justify-self: end; font-size: 0.75rem; line-height: 1.2; color: var(--ink-dark-mute); }
+.rk-cs-card__go { grid-column: 3; grid-row: 1 / span 2; align-self: center; }
 .rk-cs-card__go svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s var(--ease-out); }
 .rk-cs-card[aria-selected="true"] { color: var(--ivory); background: var(--ink-dark); box-shadow: 0 1rem 2rem -1.25rem rgba(15, 14, 13, 0.6); transform: none; cursor: default; }
 .rk-cs-card[aria-selected="true"] .rk-cs-card__v { color: var(--ember); }
-.rk-cs-card[aria-selected="true"] :is(.rk-cs-card__n small, .rk-cs-card__k) { color: rgba(246, 246, 243, 0.6); }
+.rk-cs-card[aria-selected="true"] :is(.rk-cs-card__tag, .rk-cs-card__k) { color: rgba(246, 246, 243, 0.6); }
 .rk-cs-card[aria-selected="true"] .rk-cs-card__go { visibility: hidden; }
 /* the case's three numbers (the owner, 6 Nov: the client must see them): each with its lime mark, the number running
    up from zero with a lime highlighter swept under it as the case comes */
@@ -775,7 +799,10 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
 .rk-cs-dl__ico { display: grid; place-items: center; flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--lime); }
 .rk-cs-dl__ico svg { width: 1rem; height: 1rem; fill: none; stroke: var(--ink-dark); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .rk-cs-dl dd { font-size: clamp(1.375rem, 3.1vh, 2.25rem); font-weight: 500; line-height: 1.1; letter-spacing: -0.03em; text-align: right; }
-.rk-cs-dl .rk-cs-num__now { padding: 0 0.2em; background: linear-gradient(100deg, transparent 0.25em, rgb(218 255 2 / 0.9) 0.3em, rgb(218 255 2 / 0.9) calc(100% - 0.3em), transparent calc(100% - 0.25em)) 0 88% / 0% 58% no-repeat; animation: rk-cs-mark 0.7s var(--ease-out) 0.35s forwards; }
+.rk-cs-dl .rk-cs-num__now { padding: 0 0.2em; background: linear-gradient(100deg, transparent 0.25em, rgb(218 255 2 / 0.9) 0.3em, rgb(218 255 2 / 0.9) calc(100% - 0.3em), transparent calc(100% - 0.25em)) 0 88% / 100% 58% no-repeat; }
+/* the highlighter sweeps in with the count, each time the number comes into view (data-run, AdsCases) */
+html.motion .rk-cs-dl .rk-cs-num__now { background-size: 0% 58%; }
+html.motion .rk-cs-dl .rk-cs-num__now[data-run] { animation: rk-cs-mark 0.7s var(--ease-out) 0.35s forwards; }
 @keyframes rk-cs-mark { to { background-size: 100% 58%; } }
 .rk-cs-how { font-size: clamp(0.875rem, 1.8vh, 1.0625rem); line-height: 1.5; color: var(--ink-dark-soft); text-wrap: pretty; }
 .rk-cs-how b { font-weight: 500; color: var(--ink-dark); }
@@ -854,7 +881,6 @@ main[data-ai-page="ads"] #case { --cs-top: clamp(2rem, 5.5vh, 3.5rem); --cs-foot
 }
 @media (prefers-reduced-motion: reduce) {
   .rk-cs-facts, .rk-cs-win { animation: none; }
-  .rk-cs-dl .rk-cs-num__now { animation-duration: 0.01s; animation-delay: 0s; }
 }
 
 /* the first screen from 901 to 1100 px: still side by side, the words in five columns, the way of a request in seven */
@@ -1171,6 +1197,9 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
 .rk-cur__trail--m { display: none; }
 .rk-cur__td--a { fill: rgb(154 138 132 / 0.55); }
 .rk-cur__td--b { fill: rgb(240 138 82 / 0.7); }
+/* the trail comes in a dot at a time (ads-runtime drawTrail) */
+.rk-cur__trail.is-drawing .rk-cur__td { opacity: 0; transition: opacity 0.12s ease-out; }
+.rk-cur__trail.is-drawing .rk-cur__td.is-in { opacity: 1; }
 .rk-cur__cur { z-index: 13; }
 .rk-cur__cur i { position: absolute; left: 0; top: 0; display: block; width: calc(var(--u) * 1.3); transform-origin: 0 0; }
 .rk-cur__cur svg { display: block; width: 100%; fill: #f6f6f3; stroke: #000; stroke-width: 1; stroke-linejoin: round; filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.6)); }
@@ -1237,8 +1266,6 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
   .rk-pc--featured { order: -1; margin-bottom: 1.25rem; }
   .rk-pc:not(.rk-pc--featured) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "top sum" "more more" "foot foot"; align-items: start; row-gap: 0; column-gap: 1rem; padding: 1rem 0 0.25rem; border-radius: 0; background: none; box-shadow: none; border-top: 1px solid var(--line); }
   .rk-pc:not(.rk-pc--featured):last-child { border-bottom: 1px solid var(--line); }
-  /* (a row is no glass: the cards' frost blurred the aurora behind each row into a box of its own) */
-  .rk-pc:not(.rk-pc--featured) { -webkit-backdrop-filter: none; backdrop-filter: none; }
   .rk-pc:not(.rk-pc--featured) > .rk-pc__top { grid-area: top; flex-direction: column; align-items: flex-start; justify-content: start; gap: 0.375rem; }
   .rk-pc:not(.rk-pc--featured) .rk-pc__t { font-size: 1.125rem; }
   .rk-pc:not(.rk-pc--featured) > .rk-pc__sum { grid-area: sum; justify-self: end; gap: 0.375rem; }
@@ -1282,10 +1309,12 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
    on the other, the rows alternating. The ticks as rows between hairlines; the price a plain line, its sum the largest
    of the foot */
 .rk-card { position: relative; isolation: isolate; }
-.rk-card__media { overflow: hidden; outline: 0; background: linear-gradient(160deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.035) 46%, rgb(255 255 255 / 0.06)), rgba(14, 16, 14, 0.72); -webkit-backdrop-filter: blur(28px) saturate(1.15); backdrop-filter: blur(28px) saturate(1.15); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 3rem 5rem -3rem rgba(0, 0, 0, 0.9); }
+.rk-card__media { overflow: hidden; outline: 0; background: linear-gradient(160deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.035) 46%, rgb(255 255 255 / 0.06)), rgb(14 16 14 / 0.94); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 3rem 5rem -3rem rgba(0, 0, 0, 0.9); }
 .rk-card__media .ai-sheet__bar { border-bottom-color: rgba(255, 255, 255, 0.08); }
-.rk-card::before { content: ""; position: absolute; left: 6%; top: 4%; z-index: -1; width: 70%; height: 22rem; border-radius: 50%; background: radial-gradient(closest-side, rgb(160 210 60 / 0.22), rgb(90 242 217 / 0.08) 60%, transparent); filter: blur(30px); pointer-events: none; }
-.rk-card[data-ch="meta"]::before { left: auto; right: 6%; background: radial-gradient(closest-side, rgb(123 92 255 / 0.22), rgb(90 242 217 / 0.08) 60%, transparent); }
+/* (the light without a blur filter: the box grown by the blur's reach and the light fading out on rounded stops, as
+   the 30 px blur spread it; 10 Nov 2026) */
+.rk-card::before { content: ""; position: absolute; left: calc(6% - 3.75rem); top: calc(4% - 3.75rem); z-index: -1; width: calc(70% + 7.5rem); height: 29.5rem; border-radius: 50%; background: radial-gradient(closest-side, rgb(160 210 60 / 0.21), rgb(90 242 217 / 0.08) 45%, rgb(90 242 217 / 0.04) 62%, rgb(90 242 217 / 0.014) 80%, transparent 100%); pointer-events: none; }
+.rk-card[data-ch="meta"]::before { left: auto; right: calc(6% - 3.75rem); background: radial-gradient(closest-side, rgb(123 92 255 / 0.21), rgb(90 242 217 / 0.08) 45%, rgb(90 242 217 / 0.04) 62%, rgb(90 242 217 / 0.014) 80%, transparent 100%); }
 .rk-checks { align-self: stretch; gap: 0; border-top: 1px solid var(--line); }
 .rk-checks li { padding: 0.625rem 0 0.625rem 2rem; border-bottom: 1px solid var(--line); transition: color 0.25s; }
 .rk-checks li::before { top: 0.75rem; transition: transform 0.35s var(--ease-out), box-shadow 0.35s; }
@@ -1349,12 +1378,21 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
 .rk-prices { position: relative; isolation: isolate; }
 /* (the aurora reaches past the row's sides: the block clips it, or the page would scroll sideways) */
 main[data-ai-page="ads"] #price { overflow-x: clip; }
-.rk-prices::before { content: ""; position: absolute; inset: -10% -4%; z-index: -1; background: radial-gradient(30% 50% at 20% 40%, rgb(160 210 60 / 0.3), transparent 70%), radial-gradient(28% 45% at 55% 60%, rgb(90 242 217 / 0.2), transparent 70%), radial-gradient(30% 50% at 85% 35%, rgb(123 92 255 / 0.25), transparent 70%); filter: blur(30px); animation: rk-pc-aurora 16s ease-in-out infinite alternate; pointer-events: none; }
-@keyframes rk-pc-aurora { to { transform: translate(2%, -3%) scale(1.06); filter: blur(30px) hue-rotate(-12deg); } }
-.rk-pc { background: linear-gradient(160deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.03) 50%, rgb(255 255 255 / 0.06)), rgb(12 13 12 / 0.55); -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1), 0 2rem 3rem -2rem rgb(0 0 0 / 0.8); }
+/* (the glow behind the prices: soft stops instead of a blur, and still: the light look for everyone, the owner, 10 Nov 2026) */
+.rk-prices::before { content: ""; position: absolute; inset: -10% -4%; z-index: -1; background: radial-gradient(30% 50% at 20% 40%, rgb(160 210 60 / 0.3), rgb(160 210 60 / 0.15) 35%, rgb(160 210 60 / 0.057) 57%, rgb(160 210 60 / 0.019) 67%, rgb(160 210 60 / 0.005) 76%, transparent 83%), radial-gradient(28% 45% at 55% 60%, rgb(90 242 217 / 0.2), rgb(90 242 217 / 0.1) 35%, rgb(90 242 217 / 0.038) 57%, rgb(90 242 217 / 0.013) 67%, rgb(90 242 217 / 0.003) 76%, transparent 83%), radial-gradient(30% 50% at 85% 35%, rgb(123 92 255 / 0.25), rgb(123 92 255 / 0.125) 35%, rgb(123 92 255 / 0.048) 57%, rgb(123 92 255 / 0.016) 67%, rgb(123 92 255 / 0.004) 76%, transparent 83%); pointer-events: none; }
+.rk-pc { background: linear-gradient(160deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.03) 50%, rgb(255 255 255 / 0.06)), rgb(12 13 12 / 0.94); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1), 0 2rem 3rem -2rem rgb(0 0 0 / 0.8); }
 .rk-pc--featured { box-shadow: inset 0 0 0 1.5px rgb(218 255 2 / 0.8), 0 2rem 3rem -2rem rgb(0 0 0 / 0.8); }
 @media (hover: hover) {
   .rk-pc:hover { transform: translateY(-6px); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25), 0 2.5rem 4rem -2rem rgb(160 210 60 / 0.35); }
   .rk-pc--featured:hover { box-shadow: inset 0 0 0 1.5px var(--lime), 0 2.5rem 4rem -2rem rgb(160 210 60 / 0.45); }
 }
-@media (prefers-reduced-motion: reduce) { .rk-prices::before { animation: none; } }
+/* the folded part keeps the form's gap between its fields on every screen */
+main[data-ai-page="ads"] .ai-fmore__body { display: grid; gap: inherit; }
+
+/* phones: the request as on the AI page (the owner, 5 Nov): two fields and the button, the note and the site behind one
+   line (FormMore); the two lines above the button go, «Що ви отримуєте» stands under the form, as the AI page's terms */
+@media (max-width: 600px) {
+  main.ai .rk-sure { display: none; }
+  main.ai #contact .rk-get { display: block; margin-top: 2rem; }
+  main[data-ai-page="ads"] .lead-form .field__hint { display: none; }
+}

@@ -111,3 +111,32 @@ html.pl-done .preloader { display: none; }
 .preloader__typing > i { width: 0.24em; height: 0.24em; border-radius: 50%; background: var(--pl-lime); opacity: 0.25; }
 
 @keyframes preloader-fallback { to { visibility: hidden; } }
+
+/* LITE: a lime line along the foot of the screen, its whole width, while the first screen loads under the sheet
+   (Preloader.tsx; the owner, 12 Nov 2026: at the bottom, the screen's width, a little thicker to be seen). It fills by
+   one transform animation the compositor runs on its own, slowing towards nine tenths; the sheet fades once the page
+   is in */
+.preloader[data-pl-lite] { will-change: auto; transition: opacity 0.3s ease; }
+.preloader[data-pl-lite][data-pl-out] { opacity: 0; }
+.preloader__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  overflow: hidden;
+  background: rgb(218 255 2 / 0.14);
+}
+.preloader__line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--pl-lime);
+  transform-origin: left center;
+  transform: scaleX(0.05);
+  animation: preloader-line 1.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+@keyframes preloader-line { to { transform: scaleX(0.9); } }
+@media (prefers-reduced-motion: reduce) {
+  .preloader__line::after { animation: none; transform: scaleX(0.6); }
+}

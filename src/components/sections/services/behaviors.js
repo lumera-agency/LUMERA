@@ -7,7 +7,7 @@
  * the block goes (a language switch renders it anew).
  */
 import { gsap as GSAP, ScrollTrigger as ST } from '@/lib/gsap';
-import { holdDemos, openDemos, demoTimeline } from './demos/timelines.js';
+import { holdDemos, openDemos, whenDemo } from './demos/control.js';
 import { topbarHeight } from '@/lib/css';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -179,10 +179,12 @@ function initServiceTabs(reducedMotion, signal) {
       // the chosen chip fills as its clip plays to its rest frame (a tween in the clip's own timeline,
       // so it pauses, rewinds and replays with it)
       bars = true;
+      // (the clip may come later than the switcher: ServicesClient)
       panels.forEach((p, k) => {
         const bar = $('.service-tab__bar', tabs[k]);
-        const tl = demoTimeline($('[data-demo]', p));
-        if (bar && tl && tl.labels.rest !== undefined) tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: tl.labels.rest, ease: 'none', immediateRender: false }, 0);
+        whenDemo($('[data-demo]', p), (tl) => {
+          if (bar && tl.labels.rest !== undefined) tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: tl.labels.rest, ease: 'none', immediateRender: false }, 0);
+        });
       });
     }
     // the clips change only when the switcher does (a wide screen from the start: untouched)

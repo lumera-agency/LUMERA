@@ -8,6 +8,7 @@
  */
 import { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { isLite } from "@/lib/lite";
 
 type Part = { text: string; className?: string };
 
@@ -35,7 +36,8 @@ export function BlurText({
   useGSAP(
     () => {
       const el = ref.current;
-      if (!el) return;
+      // (a slow computer, lib/lite: the words simply there; each word's blur was drawn from script)
+      if (!el || isLite()) return;
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const words = el.querySelectorAll<HTMLElement>(".blur-text__w");

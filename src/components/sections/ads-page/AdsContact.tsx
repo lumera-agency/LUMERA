@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { ContactClient } from "@/components/sections/contact/ContactClient";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import { aiRich as R } from "@/components/ai/rich";
+import { FormMore } from "@/components/ai/FormMore";
 import "@/components/sections/contact/contact.css";
 
 /**
@@ -85,28 +86,31 @@ export async function AdsContact({ index }: { index: number }) {
             <p className="field__hint" id="f-contact-hint">{t("contact.field.hint")}</p>
             <p className="field__err" id="f-contact-err" hidden>{a("form.err2")}</p>
           </div>
-          <div className="field">
-            <label htmlFor="f-note">
-              <span>{a("form.note")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
-            </label>
-            <div className="ai-picks" role="group" aria-label={a("form.chips")}>
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button className="ai-pick" type="button" aria-pressed="false" key={n}>{a(`form.chip.${n}`)}</button>
-              ))}
-            </div>
-            <textarea id="f-note" name="note" rows={3} placeholder={a("form.ph")}></textarea>
-          </div>
-          {/* the site the ads will lead to: /api/lead sends it as «Сайт: …». Phones fold it under «+ Додати сайт» (the
-              owner, 28 Oct: fewer fields on a phone); wider screens open it (runtime: initFolds), its line hidden there */}
-          <details className="rk-site-fold" data-fold="" open>
-            <summary>{a("form.addSite")} <span className="field__opt">{t("contact.field.opt")}</span></summary>
+          {/* phones: two fields and the button; the note, the picks and the site wait behind one line (FormMore, as on the AI page) */}
+          <FormMore label={a("form.more")}>
             <div className="field">
-              <label htmlFor="f-site">
-                <span>{a("form.site")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
+              <label htmlFor="f-note">
+                <span>{a("form.note")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
               </label>
-              <input id="f-site" name="site" type="text" inputMode="url" autoComplete="url" placeholder="vash-sait.ua" />
+              <div className="ai-picks" role="group" aria-label={a("form.chips")}>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button className="ai-pick" type="button" aria-pressed="false" key={n}>{a(`form.chip.${n}`)}</button>
+                ))}
+              </div>
+              <textarea id="f-note" name="note" rows={3} placeholder={a("form.ph")}></textarea>
             </div>
-          </details>
+            {/* the site the ads will lead to: /api/lead sends it as «Сайт: …». Phones fold it under «+ Додати сайт» (the
+                owner, 28 Oct: fewer fields on a phone); wider screens open it (runtime: initFolds), its line hidden there */}
+            <details className="rk-site-fold" data-fold="" open>
+              <summary>{a("form.addSite")} <span className="field__opt">{t("contact.field.opt")}</span></summary>
+              <div className="field">
+                <label htmlFor="f-site">
+                  <span>{a("form.site")}</span> <span className="field__opt">{t("contact.field.opt")}</span>
+                </label>
+                <input id="f-site" name="site" type="text" inputMode="url" autoComplete="url" placeholder="vash-sait.ua" />
+              </div>
+            </details>
+          </FormMore>
           {/* phones: the steps and the promises stand under the form, so the two that matter sit above its button */}
           <ul className="rk-sure">
             <li>{a("form.sure.1")}</li>

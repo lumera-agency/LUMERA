@@ -194,22 +194,6 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
     });
   };
 
-  /** SaaS has no page: on the main page its panel in the services block (the ride takes it when it runs). */
-  const goSaas = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!onMain) return void menu.set(false);
-    e.preventDefault();
-    menu.set(false);
-    requestAnimationFrame(() => {
-      const event = new CustomEvent("services:go", { detail: { id: "svc-4" }, cancelable: true });
-      if (!document.dispatchEvent(event)) return;
-      const panel = document.getElementById("svc-4");
-      const target = panel?.offsetParent ? panel : document.getElementById("services");
-      if (!target) return;
-      scrollToY(target.getBoundingClientRect().top + window.scrollY, { immediate: true });
-      focusBlock(target);
-    });
-  };
-
   if (!mounted) return null;
   const L = nav.labels;
   const local = (hash: string) => (onMain ? hash : `${nav.home}${hash}`);
@@ -260,9 +244,9 @@ export function MenuSheet({ links, cta, home }: { links?: readonly NavLink[]; ct
                 <li key={s.n} className="menu-sheet__item" data-current={own === i ? "" : undefined}>
                   <a
                     className="menu-sheet__svc"
-                    href={s.path === null && onMain ? "#svc-4" : s.href}
+                    href={s.href}
                     aria-current={own === i ? "page" : undefined}
-                    onClick={s.path === null ? goSaas : (e) => go(e, s.href)}
+                    onClick={(e) => go(e, s.href)}
                   >
                     <span className="menu-sheet__name">
                       <span>{s.short}</span>

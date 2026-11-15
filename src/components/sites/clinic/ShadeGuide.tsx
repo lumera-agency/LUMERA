@@ -239,6 +239,9 @@ export default function ShadeGuide({ vp }: { vp: HTMLElement }) {
   return (
     <div className={`cl-gl${go ? " is-on" : ""}`} ref={box}>
       <Canvas
+        /* not measured again on every scroll (react-use-measure's default): the page's scroll would re-render the scene's
+           root each time; the pointer is read from offsetX/Y, so the canvas' place on the page is never needed */
+        resize={{ scroll: false }}
         frameloop="demand"
         dpr={[1, 1.5]}
         gl={{ alpha: true, antialias: true, powerPreference: "low-power", toneMapping: THREE.NeutralToneMapping }}

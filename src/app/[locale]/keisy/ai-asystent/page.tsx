@@ -13,6 +13,7 @@ import { AsstHero } from "@/components/sections/ai-asst/AsstHero";
 import { Schedule } from "@/components/sections/ai-asst/Schedule";
 import { Admin } from "@/components/sections/ai-asst/Admin";
 import { Fit } from "@/components/sections/ai-asst/Fit";
+import { PageJsonLd } from "@/components/seo/graph";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/keisy/ai-asystent">) {
   const { locale } = await params;
@@ -70,6 +71,7 @@ export default async function AssistantPage({ params }: PageProps<"/[locale]/kei
         />
         <AiContact index={6} placeholder={t("asst.form.ph")} />
       </PageShell>
+      <PageJsonLd locale={locale} path="/keisy/ai-asystent" meta="asst.meta" about="ai" crumbs={[{ name: t("aiCommon.nav.ai"), path: "/ai-avtomatyzatsiia" }, { name: t("asst.crumb"), path: "/keisy/ai-asystent" }]} faq={faq} />
     </AiShell>
   );
 }

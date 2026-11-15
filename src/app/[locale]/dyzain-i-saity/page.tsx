@@ -10,8 +10,9 @@ import { SitesHero } from "@/components/sections/sites-page/SitesHero";
 import { SitesFormats } from "@/components/sections/sites-page/SitesFormats";
 import { SitesPrice } from "@/components/sections/sites-page/SitesPrice";
 import { SitesHow } from "@/components/sections/sites-page/SitesHow";
-import { SitesFaq } from "@/components/sections/sites-page/SitesFaq";
+import { SitesFaq, sitesFaqItems } from "@/components/sections/sites-page/SitesFaq";
 import { SitesContact } from "@/components/sections/sites-page/SitesContact";
+import { PageJsonLd } from "@/components/seo/graph";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/dyzain-i-saity">) {
   const { locale } = await params;
@@ -56,6 +57,8 @@ export default async function SitesPage({ params }: PageProps<"/[locale]/dyzain-
             scenes and none, and GSAP warned «target not found» on the empty list. One empty, unseen mark keeps it quiet */}
         <i data-sr="" hidden aria-hidden="true" />
       </PageShell>
+      {/* the studio, the service with its prices and the questions for search engines and AI */}
+      <PageJsonLd locale={locale} path="/dyzain-i-saity" meta="sites.meta" service="sites" faq={await sitesFaqItems(facts)} />
     </SitesShell>
   );
 }

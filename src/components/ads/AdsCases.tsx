@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- the account's screenshots are shown as they are, never re-encoded (the client's numbers stay pixel for pixel) */
 import { useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/button/Button";
+import { isLite } from "@/lib/lite";
 
 type Ring = { left: number; top: number; width: number; height: number };
 export type CaseShot = { id: string; src: string; w: number; h: number; rings?: Ring[]; label: string; alt: string };
@@ -22,45 +23,97 @@ export type CaseView = {
 };
 export type CasesText = { index: number; nav: string; title: React.ReactNode; intro: string; cta: string; site: string; before: string; swipe: string };
 
-/** a number, its «≈» and its unit smaller; «before → after» with the old one struck through */
+/** a number, its «≈» and its unit smaller; «before → after» with the old one struck through. With `count` it runs up
+ *  from zero each time it comes into view whole after it has left the screen (the owner, 10 Nov 2026: the numbers count
+ *  when the block is seen, not when the page opens) */
 function Num({ text, count = false }: { text: string; count?: boolean }) {
   const [was, now] = text.includes(" → ") ? text.split(" → ") : [null, text];
   const match = now.match(/^(≈\s*)?(.+?)(\s*(?:грн|%))?$/);
   const body = match?.[2] ?? now;
+  const holder = useRef<HTMLSpanElement>(null);
+  const rounds = useRounds(holder, count);
   return (
-    <span className="rk-cs-num">
+    <span className="rk-cs-num" ref={holder}>
       {was && <s className="rk-cs-num__was">{was}</s>}
-      <span className="rk-cs-num__now">
+      {/* (a new round starts the count and the highlighter afresh) */}
+      <span className="rk-cs-num__now" data-run={rounds > 0 || undefined} key={rounds}>
         {match?.[1] && <span className="rk-cs-num__approx">≈</span>}
-        {count ? <CountUp value={body} /> : body}
+        {count ? <CountUp value={body} run={rounds > 0} /> : body}
         {match?.[3] && <small className="rk-cs-num__unit">{match[3].trim()}</small>}
       </span>
     </span>
   );
 }
 
-/** a number that runs up from zero when it appears (the owner, 6 Nov: the client must see the numbers), written as the
- *  message writes it (a space between thousands, a comma before the decimals); still with reduced motion */
-function CountUp({ value }: { value: string }) {
-  const target = Number(value.replace(/[\s ]/g, "").replace(",", "."));
-  const decimals = value.includes(",") ? value.split(",")[1].length : 0;
-  const [shown, setShown] = useState(value);
+/** how many times the element has come into view whole after being off the screen (0: not yet) */
+function useRounds(target: React.RefObject<HTMLElement | null>, on: boolean) {
+  const [rounds, setRounds] = useState(0);
   useEffect(() => {
-    if (!Number.isFinite(target) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const element = target.current;
+    if (!on || !element) return;
+    let armed = true;
+    // (told at 95 % as well as at whole: Safari lays out to fractions of a pixel, and a number that never comes to 100 %
+    // in view never crossed the only threshold there was, so it stood at 0, 13 Nov 2026, «Обращений» on an iPhone)
+    const watch = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) armed = true;
+        else if (armed && entry.intersectionRatio >= 0.95) {
+          armed = false;
+          setRounds((done) => done + 1);
+        }
+      },
+      { threshold: [0, 0.95, 1] },
+    );
+    watch.observe(element);
+    return () => watch.disconnect();
+  }, [target, on]);
+  return rounds;
+}
+
+/** the number as the message writes it: a space between thousands, a comma before the decimals */
+const writeNumber = (value: number, decimals: number) => {
+  const [whole, fraction] = value.toFixed(decimals).split(".");
+  return whole.replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0") + (fraction ? `,${fraction}` : "");
+};
+
+/** a number that runs up from zero once `run` (the owner, 6 Nov: the client must see the numbers). The final number
+ *  stays in the line, unseen, so the line never changes width while it runs and a screen reader reads only it; with
+ *  reduced motion (no html.motion) the final number simply shows (ads.css) */
+function CountUp({ value, run }: { value: string; run: boolean }) {
+  const target = Number(value.replace(/[\s\u00a0\u202f]/g, "").replace(",", "."));
+  const decimals = value.includes(",") ? value.split(",")[1].length : 0;
+  // the running digits written straight into their span, not through React state: a state set on every frame had React
+  // render the cases block again on each frame of the count (10 Nov 2026)
+  const runner = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const out = runner.current;
+    if (!run || !out || !Number.isFinite(target)) return;
+    // (a slow computer, lib/lite: the number at once, not counted up)
+    if (isLite()) {
+      out.textContent = writeNumber(target, decimals);
+      return;
+    }
     const start = performance.now();
     const DURATION = 900;
     let frame = 0;
+    let written = "";
     const tick = (time: number) => {
       const progress = Math.min(1, (time - start) / DURATION);
-      const eased = 1 - (1 - progress) ** 3;
-      const [whole, fraction] = (target * eased).toFixed(decimals).split(".");
-      setShown(whole.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + (fraction ? `,${fraction}` : ""));
+      const next = writeNumber(target * (1 - (1 - progress) ** 3), decimals);
+      if (next !== written) out.dataset.n = written = next;
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [target, decimals]);
-  return <>{shown}</>;
+  }, [run, target, decimals]);
+  // the running digits live in data-n and are drawn by CSS (ads.css): the span never holds text, so the page's text has
+  // only the final number, before and after the count (a search engine or an AI reads «196», not «1960» or «196196»)
+  return (
+    <span className="rk-cs-count">
+      <span className="rk-cs-count__end">{value}</span>
+      <span className="rk-cs-count__run" aria-hidden="true" data-n={writeNumber(0, decimals)} ref={runner} />
+    </span>
+  );
 }
 
 const metric = (c: CaseView, key: CaseMetric["key"]) => c.metrics.find((m) => m.key === key)!;
@@ -76,7 +129,7 @@ const STAT_ICON: Record<"n" | "cr" | "spend", React.ReactNode> = {
  *  plainly one to follow), the screenshot as large as the room allows (top left, as in the account), who and when and
  *  the note on the numbers at its foot. One column (phones) shows the screenshot wider than the window, so its figures
  *  stay readable: it scrolls sideways and opens on the ringed cells (without rings on its middle, where the figures are) */
-function Window({ c, text }: { c: CaseView; text: CasesText }) {
+function Window({ c, text, hidden }: { c: CaseView; text: CasesText; hidden: boolean }) {
   const [shot, setShot] = useState(0);
   const [panned, setPanned] = useState(false);
   const pan = useRef<HTMLDivElement>(null);
@@ -98,7 +151,7 @@ function Window({ c, text }: { c: CaseView; text: CasesText }) {
     return () => sized.disconnect();
   }, [current]);
   return (
-    <figure className="rk-cs-win">
+    <figure className="rk-cs-win" hidden={hidden}>
       <div className="rk-cs-win__bar">
         <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
         <span className="rk-cs-win__host">ads.google.com</span>
@@ -118,12 +171,15 @@ function Window({ c, text }: { c: CaseView; text: CasesText }) {
       <div className="rk-cs-win__body" data-panned={panned || undefined}>
         {/* (the scroller is only a box in one column; on a computer it gives way and the screenshot fits the window) */}
         <div className="rk-cs-win__pan" ref={pan} onScroll={(event) => Math.abs(event.currentTarget.scrollLeft - opened.current) > 8 && setPanned(true)}>
-          <span className="rk-cs-win__in" style={{ "--ar": current.w / current.h, "--w": current.w } as React.CSSProperties} key={`${c.id}-${current.id}`}>
-            <img src={current.src} width={current.w} height={current.h} alt={current.alt} loading="lazy" decoding="async" />
-            {current.rings?.map((ring, index) => (
-              <span className="rk-cs-ring" aria-hidden="true" key={index} style={{ left: `${ring.left}%`, top: `${ring.top}%`, width: `${ring.width}%`, height: `${ring.height}%` }} />
-            ))}
-          </span>
+          {/* every screenshot is in the HTML with its alt (the figures in it), the ones not chosen hidden */}
+          {c.shots.map((s, index) => (
+            <span className="rk-cs-win__in" hidden={index !== shot} style={{ "--ar": s.w / s.h, "--w": s.w } as React.CSSProperties} key={`${c.id}-${s.id}`}>
+              <img src={s.src} width={s.w} height={s.h} alt={s.alt} loading="lazy" decoding="async" />
+              {s.rings?.map((ring, n) => (
+                <span className="rk-cs-ring" aria-hidden="true" key={n} style={{ left: `${ring.left}%`, top: `${ring.top}%`, width: `${ring.width}%`, height: `${ring.height}%` }} />
+              ))}
+            </span>
+          ))}
         </div>
         <span className="rk-cs-win__hint" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M8 7.5 3.5 12 8 16.5M16 7.5l4.5 4.5-4.5 4.5M4 12h16" /></svg>
@@ -146,7 +202,6 @@ function Window({ c, text }: { c: CaseView; text: CasesText }) {
  */
 export function AdsCases({ cases, text }: { cases: CaseView[]; text: CasesText }) {
   const [active, setActive] = useState(0);
-  const c = cases[active];
   /** the arrow keys move between the cases while a card has the focus */
   const keys = (event: React.KeyboardEvent) => {
     const step = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 0;
@@ -177,27 +232,35 @@ export function AdsCases({ cases, text }: { cases: CaseView[]; text: CasesText }
               onClick={() => setActive(index)}
               key={item.id}
             >
-              <span className="rk-cs-card__n"><small>{text.nav} {index + 1}</small>{item.name}</span>
-              <span className="rk-cs-card__v"><Num text={item.tab.v} /></span>
+              {/* (read as before: the case's number first; the grid puts it under the name) */}
+              <span className="rk-cs-card__tag">{text.nav} {index + 1}</span>
+              <span className="rk-cs-card__n">{item.name}</span>
+              <span className="rk-cs-card__v"><Num text={item.tab.v} count /></span>
               <span className="rk-cs-card__k">{item.tab.k}</span>
               <span className="rk-cs-card__go" aria-hidden="true"><ArrowRight /></span>
             </button>
           ))}
         </div>
-        <div className="rk-cs-facts" role="tabpanel" aria-labelledby={`case-${c.id}`} key={c.id}>
-          <dl className="rk-cs-dl">
-            {(["n", "cr", "spend"] as const).map((key) => (
-              <div key={key}>
-                <dt><span className="rk-cs-dl__ico" aria-hidden="true"><svg viewBox="0 0 24 24">{STAT_ICON[key]}</svg></span>{metric(c, key).k}</dt>
-                <dd><Num text={metric(c, key).v} count /></dd>
-              </div>
-            ))}
-          </dl>
-          <p className="rk-cs-how">{c.how}</p>
-        </div>
+        {/* all three cases are in the HTML (search engines and AI do not click tabs: the 13 Nov audit), the ones not
+            chosen hidden; showing one again replays its entrance as a fresh mount did */}
+        {cases.map((item, index) => (
+          <div className="rk-cs-facts" role="tabpanel" aria-labelledby={`case-${item.id}`} hidden={index !== active} key={item.id}>
+            <dl className="rk-cs-dl">
+              {(["n", "cr", "spend"] as const).map((key) => (
+                <div key={key}>
+                  <dt><span className="rk-cs-dl__ico" aria-hidden="true"><svg viewBox="0 0 24 24">{STAT_ICON[key]}</svg></span>{metric(item, key).k}</dt>
+                  <dd><Num text={metric(item, key).v} count /></dd>
+                </div>
+              ))}
+            </dl>
+            <p className="rk-cs-how">{item.how}</p>
+          </div>
+        ))}
         <div className="rk-cs-end"><ButtonLink href="#contact" variant="primary">{text.cta}</ButtonLink></div>
       </div>
-      <Window c={c} text={text} key={c.id} />
+      {cases.map((item, index) => (
+        <Window c={item} text={text} hidden={index !== active} key={item.id} />
+      ))}
     </div>
   );
 }

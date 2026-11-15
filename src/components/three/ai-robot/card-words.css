@@ -1,0 +1,12 @@
+/* The request card's words over the robot's canvas (card-words.ts): laid out on the face's 900 × 516 grid as the
+   texture painted them (card-style.ts), then mapped onto the face by a transform each frame */
+.bot-cards { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.bot-card { position: absolute; left: 0; top: 0; width: 900px; height: 516px; transform-origin: 0 0; visibility: hidden; white-space: nowrap; }
+.bot-card > * { position: absolute; display: block; }
+.bot-card__dot { left: 57px; top: 65px; width: 30px; height: 30px; border-radius: 50%; }
+.bot-card__via { left: 102px; top: 65px; font: 500 34px/34px var(--font-mono); letter-spacing: 4px; }
+.bot-card__tag { right: 54px; top: 56px; height: 52px; padding: 0 17px 0 20px; border-radius: 26px; font: 500 28px/52px var(--font-mono); letter-spacing: 3px; }
+.bot-card__who { left: 58px; top: 172px; max-width: 784px; overflow: hidden; font: 600 80px/80px var(--font-sans); }
+.bot-card__msg { left: 58px; top: 295px; max-width: 784px; overflow: hidden; text-overflow: ellipsis; font: 400 50px/50px var(--font-sans); }
+.bot-card__rule { left: 58px; top: 404px; width: 784px; height: 2px; }
+.bot-card__time { left: 58px; top: 436px; font: 400 32px/32px var(--font-mono); }

@@ -50,6 +50,15 @@ declare global {
 }
 export const loader = () => (typeof window === "undefined" ? undefined : window.ecloLoader);
 
+/**
+ * Resolves once the preloader's roll has played; at once where there is none (the page reached again in the visit) or it
+ * has long played (a language switch: still before the paint). The pinned blocks' scroll animations are set up only then:
+ * ScrollTrigger lays the page out again as each is made and takes the pinned blocks out and back in, thousands of lines
+ * of text, and doing that during the roll held its frames (11 Nov 2026, a processor 4 times slower: 449 layouts in 3 s).
+ * Under the sheet nothing of it shows; the page is let go only after the roll.
+ */
+export const afterRoll = (): Promise<void> => loader()?.rolled ?? Promise.resolve();
+
 /** Back where the visitor was after a language switch (layout/lang-switch). */
 export function restoreScroll() {
   try {
@@ -110,6 +119,19 @@ export function jumpToHash() {
   }, 4000);
   window.setTimeout(again, 600);
   return true;
+}
+
+/**
+ * Whether the visitor is about to be put somewhere on the page (a language switch, a reload or back, a link to a
+ * block): the parts that change the page's height are then started before the place is measured (settleLayout).
+ */
+export function placeKept() {
+  try {
+    if (sessionStorage.getItem("eclo:lang-scroll") != null) return true;
+    const by = arrivedBy();
+    if ((by === "reload" || by === "back_forward") && sessionStorage.getItem(PLACE_KEY)) return true;
+  } catch {}
+  return Boolean(location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1))));
 }
 
 const PLACE_KEY = "eclo:place";

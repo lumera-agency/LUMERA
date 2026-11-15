@@ -59,24 +59,46 @@ export function Topbar({ links, cta, always = false, home }: { links?: readonly 
     const page = document.querySelector("[data-page]");
     if (!page) return;
     let queued = 0;
+    // (the page's place in the document and the line it crosses are measured when they can change, not each frame:
+    // the box and the root's styles read after the scroll's own writes had the browser recompute styles and layout
+    // again on every frame of a scroll; 10 Nov 2026)
+    let pageTop = 0;
+    let line = 0;
+    const measure = () => {
+      pageTop = page.getBoundingClientRect().top + window.scrollY;
+      line = topbarHeight() + dpx(8);
+    };
+    let shown: boolean | null = null;
     const check = () => {
       queued = 0;
-      const show = page.getBoundingClientRect().top <= topbarHeight() + dpx(8);
+      const show = pageTop - window.scrollY <= line;
+      // (React only when it changes: a state set on every frame, even to the same value, still cost a render pass)
+      if (show === shown) return;
+      shown = show;
       lastShown = show;
       setVisible(show);
     };
     const queue = () => {
       if (!queued) queued = requestAnimationFrame(check);
     };
+    const remeasure = () => {
+      measure();
+      queue();
+    };
+    measure();
     queue();
+    // the page moves down or up as what is above it changes size (the hero, its fonts and pictures coming in)
+    const sized = new ResizeObserver(remeasure);
+    sized.observe(document.body);
     window.addEventListener("scroll", queue, { passive: true });
-    window.addEventListener("resize", queue);
-    window.addEventListener("pageshow", queue);
+    window.addEventListener("resize", remeasure);
+    window.addEventListener("pageshow", remeasure);
     return () => {
       cancelAnimationFrame(queued);
+      sized.disconnect();
       window.removeEventListener("scroll", queue);
-      window.removeEventListener("resize", queue);
-      window.removeEventListener("pageshow", queue);
+      window.removeEventListener("resize", remeasure);
+      window.removeEventListener("pageshow", remeasure);
     };
   }, [always]);
 

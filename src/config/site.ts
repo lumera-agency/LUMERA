@@ -12,6 +12,9 @@ export const siteUrl = url.replace(/\/+$/, "");
 /** Search engines stay out (the header in next.config, the meta tag in the layout) until the launch sets this to "true" */
 export const allowIndexing = process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
 export const brandName = "ECLO";
+/** Other spellings people use for the name: the structured data lists them as the studio's alternateName (the owner,
+ *  12 Nov 2026: «Екло») */
+export const brandAltNames = ["Екло"];
 /** The name as the titles, the © line and the logo's mono line carry it */
 export const studioName = `${brandName} Studio`;
 export const locales = ["uk", "ru"] as const;

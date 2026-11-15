@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element -- the stills and the board's pictures are set, swapped and sliced by the page's script (runtime) */
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich as R } from "@/components/ai/rich";
@@ -62,11 +61,24 @@ export async function SitesHow() {
                 </div>
                 {/* 3–5 · the design (it wipes in over the scheme) */}
                 <div className="st-bd__l st-bd__l--d" data-l="d">
-                  <div className="st-bd__wipe"><div className="st-bd__wipe-in"><img className="st-bd__img" width="1200" height="750" alt="" loading="lazy" decoding="async" src={t("img.how.d")} /></div></div>
+                  <div className="st-bd__wipe"><div className="st-bd__wipe-in">
+                    {/* AVIF where the browser takes it (a third lighter, 12 Nov 2026), a phone the 600-px copy */}
+                    <picture>
+                      <source type="image/avif" media="(max-width: 600px)" srcSet={t("img.how.d").replace(/\.webp$/, "-s.avif")} />
+                      <source type="image/avif" srcSet={t("img.how.d").replace(/\.webp$/, ".avif")} />
+                      <source media="(max-width: 600px)" srcSet={t("img.how.d").replace(/\.webp$/, "-s.webp")} />
+                      <img className="st-bd__img" width="1200" height="750" alt="" loading="lazy" decoding="async" src={t("img.how.d")} />
+                    </picture>
+                  </div></div>
                 </div>
                 <div className="st-bd__l st-bd__l--p" data-l="p">
                   <span className="st-bd__tag st-bd__tag--d">{t("how.tag.d")}</span>
-                  <div className="st-bd__ph"><img width="300" height="600" alt="" loading="lazy" decoding="async" src={t("img.how.m")} /></div>
+                  <div className="st-bd__ph">
+                    <picture>
+                      <source type="image/avif" srcSet={t("img.how.m").replace(/\.webp$/, ".avif")} />
+                      <img width="300" height="600" alt="" loading="lazy" decoding="async" src={t("img.how.m")} />
+                    </picture>
+                  </div>
                   <span className="st-bd__tag st-bd__tag--m">{t("how.tag.m")}</span>
                 </div>
                 {/* 4 · the test address: a click, your edits */}
@@ -200,7 +212,7 @@ export async function SitesHow() {
           <p className="st-hw-end__g">{t.rich("how.guarantee", R)}</p>
           <div className="st-hw-end__acts">
             <ButtonLink href="#contact" variant="primary" data-how-cta="">{t("calc.send")}</ButtonLink>
-            <a className="link st-hw-end__calc" href="#design">{t("how.calc")}</a>
+            <a className="st-hw-end__calc" href="#design"><span>{t("how.calc")}</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v15M6 13.5l6 6 6-6" /></svg></a>
           </div>
           <p className="st-hw-end__note">{t("how.cta.note")}</p>
         </div>

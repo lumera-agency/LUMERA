@@ -136,15 +136,16 @@
 :is(.page, .topbar, .footer) .btn--primary { --btn-bg: var(--ember); --btn-ink: var(--on-ink); --btn-wave: #f6f6f3; --btn-glow: rgb(210 86 28 / 0.6); }
 :is(.page, .topbar, .footer) :is(.btn--ghost, .btn--line) { --btn-fill: var(--ember); --btn-fill-ink: var(--on-ink); }
 
-/* a link in running text: underlined in its own colour, faint (an ember line read as an error) */
+/* a link in running text: no underline (the owner, 5 and 10 Nov 2026), ember and a little heavier than the words
+   around; deeper ember on the ivory. Hover takes the text's own colour */
 .link {
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-decoration-color: color-mix(in srgb, currentColor 38%, transparent);
-  text-underline-offset: 0.25em;
-  transition: text-decoration-color var(--dur-fast), color var(--dur-fast);
+  font-weight: 500;
+  color: var(--ember-ink);
+  text-decoration: none;
+  transition: color var(--dur-fast);
 }
+.section--ivory .link { color: var(--ember-deep); }
 @media (hover: hover) {
-  .link:hover { text-decoration-color: currentColor; }
+  .link:hover { color: var(--ink); }
+  .section--ivory .link:hover { color: var(--ink-dark); }
 }

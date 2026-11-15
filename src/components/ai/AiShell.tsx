@@ -13,6 +13,7 @@ import { AiSprite } from "./parts";
 // the topbar's links and UA · RU are styled with the main page's header (its first screen); ai.css goes last
 import "@/components/layout/header/header.css";
 import "./ai.css";
+import "./ai-own.css";
 
 type Props = {
   /** which page (CSS scope): ai, case, asst */
@@ -36,9 +37,6 @@ type Props = {
  * its own), phone menu, footer with the chrome wordmark and the button back up; the page's own behaviour on top
  * (AiRuntime). On phones the request button stays at hand once the first screen has passed (.ai-sticky).
  */
-/** Where the button back up steps aside, as on the main page (the owner, 30 Oct 2026): the footer, plus the two places
- *  that send a request, where a stray tap must never take the page away */
-const TO_TOP_QUIET = ".footer, .ai-calc__send, .lead-form";
 /** The faces the first screen is set in: fetched with the page, so the words never re-wrap once the font comes in
  *  (the main page hides that moment under its preloader; these pages have none) */
 const FIRST_SCREEN_FONTS = ["geologica-cyrillic", "geologica-latin", "ibm-plex-mono-400-cyrillic"];
@@ -66,7 +64,7 @@ export async function AiShell({ page, nav, footerLinks, cta, barCta, claim, stri
       <Footer claim={claim} links={footerLinks} cta={cta} />
       <MenuSheet links={nav} cta={cta} home={home} />
       {/* the main page's button; on phones the request bar leaves it room (ai.css) */}
-      <BackToTop label={t("footer.up.span")} quiet={TO_TOP_QUIET} />
+      <BackToTop label={t("footer.up.span")} />
       <AiRuntime strings={strings} />
     </>
   );

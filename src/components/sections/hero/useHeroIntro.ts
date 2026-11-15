@@ -8,19 +8,33 @@
  */
 import { gsap, SplitText } from "@/lib/gsap";
 import { heroState } from "@/components/three/hero/state";
+import { isLite } from "@/lib/lite";
 
 const LIT = 2.3; // when the sheen crosses the headline (.is-lit, hero.css)
 
 export function playIntro(hero: HTMLElement) {
   const root = document.documentElement;
   const q = (s: string) => hero.querySelectorAll<HTMLElement>(s);
+  // a slow computer (lib/lite): the first screen comes in at once, all of it in one short fade (the owner, 12 Nov 2026:
+  // «чтоб всё появлялось одновременно»: one after another, over 3 s, it read as the page still loading after the
+  // loading line), the headline whole, no lines split and slid in, no sheen (the owner, 11 Nov 2026: «для слабых компов
+  // отключай анимацию текста»)
+  if (isLite()) {
+    const all = [...q("[data-rule]"), ...q('[data-reveal="nav"]'), ...q("[data-title]"), ...q('[data-reveal="cta"]'), ...q('[data-reveal="step"]')];
+    const lite = gsap.timeline({ delay: 0.05 });
+    lite
+      .from(all, { autoAlpha: 0, duration: 0.4, ease: "power2.out" }, 0)
+      .from(q("[data-rail-track]"), { scaleX: 0, transformOrigin: "0% 50%", duration: 0.5, ease: "power2.out" }, 0)
+      .call(() => hero.querySelector("[data-rail]")?.classList.add("is-live"), undefined, 0.5);
+    root.classList.add("is-ready");
+    return { timeline: lite, dispose: () => {} };
+  }
   const tl = gsap.timeline({ defaults: { ease: "expo.out" }, delay: 0.1 });
 
   tl.from(q("[data-rule]"), { scaleX: 0, duration: 1.6, ease: "expo.inOut" }, 0)
     .from(q('[data-reveal="nav"]'), { autoAlpha: 0, y: -12, duration: 1.1, stagger: 0.06 }, 0.2)
     .to(heroState, { stoneIntro: 1, duration: 3.0, ease: "expo.out" }, 0.45)
     .to(heroState, { ringProgress: 1, duration: 2.0, ease: "expo.inOut" }, 1.0)
-    .to(heroState, { shards: 1, duration: 2.4, ease: "power2.out" }, 1.0)
     .to(heroState, { dots: 1, duration: 1.0, ease: "power2.out" }, 2.4);
 
   const title = hero.querySelector<HTMLElement>("[data-title]")!;

@@ -7,7 +7,10 @@ import * as THREE from "three";
 import type { BotLead } from "./shared";
 
 /** the source's colour on a card */
-const SOURCE: Record<string, string> = { Instagram: "#e1306c", Telegram: "#2aa3e0" };
+export const CARD_SOURCE: Record<string, string> = { Instagram: "#e1306c", Telegram: "#2aa3e0" };
+const SOURCE = CARD_SOURCE;
+/** the face's grid: its texture's pixels, and the page's words laid out on the same (card-words.ts) */
+export const FACE_GRID = { width: 900, height: 516 };
 
 type Ink = { name: string; message: string; source: string; time: string; rule: string; pill: string; pillInk: string; shadow?: string };
 
@@ -17,7 +20,8 @@ export type CardStyle = {
   bodyOpacity: number;
   /** the slab's thickness, against the base one */
   depth: number;
-  paint: (context: CanvasRenderingContext2D, lead: BotLead, tag: string) => void;
+  /** the face; `withWords` false: the glass alone, its words are the page's text over it (card-words.ts) */
+  paint: (context: CanvasRenderingContext2D, lead: BotLead, tag: string, withWords?: boolean) => void;
 };
 
 function outline(context: CanvasRenderingContext2D, inset: number, radius: number) {
@@ -95,16 +99,33 @@ function sheen(context: CanvasRenderingContext2D, strength: number) {
   context.fill();
 }
 
+/** the frost's grain by face size and strength, painted once and laid on every card */
+const frostGrains = new Map<string, HTMLCanvasElement>();
+
 /** a fine frost: dense pale grain, so the glass reads matte (frosted), not clear */
 function frost(context: CanvasRenderingContext2D, alpha: number) {
   const { width, height } = context.canvas;
+  // (9000 specks drawn on each card, each with its colour parsed from a string, took 120 to 130 ms of the AI page's
+  // load at 4x CPU: three cards, painted twice. One grain on a layer of its own, drawn over the glass, is the same
+  // picture: specks laid over each other and then over the glass add up as specks laid on the glass one by one)
+  const key = `${width}x${height}:${alpha}`;
+  let grain = frostGrains.get(key);
+  if (!grain) {
+    grain = document.createElement("canvas");
+    grain.width = width;
+    grain.height = height;
+    const grainContext = grain.getContext("2d")!;
+    grainContext.fillStyle = "#ffffff";
+    for (let speck = 0; speck < 9000; speck++) {
+      grainContext.globalAlpha = alpha * Math.random();
+      grainContext.fillRect(Math.random() * width, Math.random() * height, 1.5, 1.5);
+    }
+    frostGrains.set(key, grain);
+  }
   context.save();
   outline(context, 3, 46);
   context.clip();
-  for (let speck = 0; speck < 9000; speck++) {
-    context.fillStyle = `rgba(255, 255, 255, ${alpha * Math.random()})`;
-    context.fillRect(Math.random() * width, Math.random() * height, 1.5, 1.5);
-  }
+  context.drawImage(grain, 0, 0);
   context.restore();
 }
 
@@ -131,6 +152,9 @@ const WHITE_INK: Ink = {
   pillInk: "#0f0e0d",
 };
 
+/** the glass card's ink, on its texture and as the page's words over it */
+export const CARD_INK: Ink = { ...WHITE_INK, message: "rgba(255, 255, 255, 0.72)" };
+
 export function makeCardStyle(mirror: THREE.Texture): CardStyle {
   // dark frosted glass (the mockup): a smoked veil with a lime-to-teal glow under a fine frost, a thin light edge,
   // brightest along the top
@@ -138,7 +162,7 @@ export function makeCardStyle(mirror: THREE.Texture): CardStyle {
     body: new THREE.MeshPhysicalMaterial({ color: 0x1b1b1d, metalness: 0, roughness: 0.6, clearcoat: 1, clearcoatRoughness: 0.5, transparent: true, envMap: mirror, envMapIntensity: 0.6, depthWrite: false }),
     bodyOpacity: 0.6,
     depth: 1,
-    paint: (context, lead, tag) => {
+    paint: (context, lead, tag, withWords = true) => {
       const { width, height } = context.canvas;
       context.clearRect(0, 0, width, height);
       const veil = context.createLinearGradient(0, 0, 0, height);
@@ -151,7 +175,7 @@ export function makeCardStyle(mirror: THREE.Texture): CardStyle {
       frost(context, 0.09);
       sheen(context, 0.1);
       rim(context, [[0, "rgba(255, 255, 255, 0.55)"], [0.4, "rgba(255, 255, 255, 0.14)"], [1, "rgba(255, 255, 255, 0.26)"]], 3);
-      words(context, lead, tag, { ...WHITE_INK, message: "rgba(255, 255, 255, 0.72)" });
+      if (withWords) words(context, lead, tag, CARD_INK);
     },
   };
 }

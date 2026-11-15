@@ -421,54 +421,6 @@
 @media (max-width: 400px) {
   :lang(ru) .demo-steps__step { gap: 0.1875rem; }
 }
-.demo--saas { --glow: rgba(218, 255, 2, 0.12); }
-.sa { position: absolute; inset: 0 0 calc(var(--d-band) * 0.55); display: grid; grid-template-columns: 24% minmax(0, 1fr); color: var(--ink); }
-.sa-box { position: relative; }
-.sa-box > * { opacity: var(--fill, 1); }
-.sa-box::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 1px dashed rgba(218, 255, 2, 0.75); opacity: var(--wf, 0); pointer-events: none; }
-.sa-side { display: grid; align-content: start; gap: 0.5em; padding: var(--d-inset) 0.8em; border-right: 1px solid rgba(246, 246, 243, 0.08); font-size: var(--d-label); color: var(--ink-mute); }
-.sa-side::after { inset: 0.5em; border-radius: 0.5em; }
-.sa-logo { display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.5em; font-size: var(--d-body); font-weight: 500; color: var(--ink); white-space: nowrap; }
-.sa-logo i { flex: none; width: 1em; height: 1em; border-radius: 0.3em; background: var(--lime); }
-.sa-nav { display: flex; align-items: center; gap: 0.55em; padding: 0.35em 0.45em; border-radius: 0.4em; white-space: nowrap; }
-.sa-nav i { flex: none; width: 0.8em; height: 0.8em; border-radius: 0.25em; background: rgba(246, 246, 243, 0.16); }
-.sa-nav.is-on { color: var(--ink); background: rgba(246, 246, 243, 0.05); }
-.sa-nav.is-on i { background: var(--lime); }
-.sa-main { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 0.7em; min-height: 0; padding: var(--d-inset) var(--d-inset) 0.4em; }
-.sa-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6em; }
-.sa-kpi { padding: 0.6em 0.75em; border-radius: 0.5em; background: rgba(246, 246, 243, 0.04); }
-.sa-kpi p { margin: 0; overflow: hidden; font-size: var(--d-label); color: var(--ink-mute); white-space: nowrap; text-overflow: ellipsis; }
-.sa-kpi b { display: block; margin-top: 0.15em; font-size: calc(var(--d-cap) * 1.3); font-weight: 400; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.sa-kpi em { font-family: var(--font-mono); font-size: var(--d-label); font-style: normal; color: var(--lime); }
-.sa-chart { min-height: 0; border-radius: 0.5em; padding: 0.6em 0.75em; background: rgba(246, 246, 243, 0.03); overflow: hidden; }
-.sa-chart p { margin: 0; font-size: var(--d-label); color: var(--ink-mute); }
-.sa-chart svg { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 68%; overflow: visible; }
-.sa-area { fill: rgba(218, 255, 2, 0.12); stroke: none; }
-.sa-line { fill: none; stroke: var(--lime); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 0; }
-.sa-badge {
-  position: absolute;
-  right: 0.75em;
-  top: 0.55em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45em;
-  padding: 0.3em 0.75em;
-  border-radius: 62.4375rem;
-  font-family: var(--font-mono);
-  font-size: var(--d-label);
-  color: #fff;
-  background: var(--ember);
-  box-shadow: 0 0.5rem 1.25rem -0.5rem rgba(210, 86, 28, 0.8);
-}
-.sa-badge i { width: 0.5em; height: 0.5em; border-radius: 50%; background: #fff; }
-.sa-rows { display: grid; gap: 0.3em; border-radius: 0.4em; }
-.sa-rows p { display: grid; grid-template-columns: 1.4fr 1fr auto; align-items: center; gap: 0.6em; margin: 0; padding: 0.35em 0.6em; border-radius: 0.4em; font-size: var(--d-label); color: var(--ink-soft); background: rgba(246, 246, 243, 0.03); }
-.sa-rows i { width: 0.55em; height: 0.55em; border-radius: 50%; background: var(--lime); }
-@container demo (max-width: 520px) {
-  .sa { grid-template-columns: minmax(0, 1fr); }
-  .sa-side { display: none; }
-  .sa-rows { display: none; }
-}
 @keyframes fd-float { 50% { transform: translateY(-0.45em); } }
 /* ---------- 1 · Дизайн і розробка (design): the first screen, PageSpeed, the details ---------- */
 .dn :is(.dn-site, .dn-speed) { visibility: hidden; }

@@ -20,7 +20,6 @@ export default function SitesDroplet({ host }: { host: HTMLElement }) {
   // hero), the still is turned and mirrored by the same
   const [roll] = useState(() => (-parseFloat(getComputedStyle(host).getPropertyValue("--droplet-roll")) || 0) * (Math.PI / 180));
   const [mirror] = useState(() => parseFloat(getComputedStyle(host).getPropertyValue("--droplet-mirror")) < 0);
-  const [maxDpr] = useState(() => (matchMedia("(pointer: coarse)").matches ? 1.5 : 2));
 
   useEffect(() => {
     const el = box.current;
@@ -68,7 +67,7 @@ export default function SitesDroplet({ host }: { host: HTMLElement }) {
 
   return (
     <div ref={box} className="ai-hero__canvas" aria-hidden="true">
-      <DropletScene active={visible} interactive={interactive} awake={awake} roll={roll} mirror={mirror} maxDpr={maxDpr} onReady={takeOver} />
+      <DropletScene active={visible} interactive={interactive} awake={awake} roll={roll} mirror={mirror} maxDpr={1} /* (one pixel per CSS pixel: the light look for everyone, the owner, 10 Nov 2026) */ onReady={takeOver} />
     </div>
   );
 }

@@ -5,6 +5,7 @@
  */
 import { PRICING, money, applyBundle, calculateProject } from "@/components/sections/pricing/configurator/engine.js";
 import { STRINGS } from "@/components/sections/pricing/configurator/strings.js";
+import { PRODUCTS } from "@/components/sections/ai-page/prices";
 
 const once = (id: string) => calculateProject(applyBundle(id)).once as number;
 
@@ -17,8 +18,11 @@ export const PRICES: Record<string, string> = Object.fromEntries(
     corporate: PRICING.formats.corporate.price,
     ads: PRICING.growth.googleAds.price,
     mgmt: PRICING.adsManagement.monthly,
-    lead: PRICING.automation.lead.price,
-    crm: PRICING.automation.crmAi.price,
+    // automation (the owner, 9 Nov: out of the configurator, the requests in Telegram in every site's price): the AI
+    // page's prices, its cheapest product as the «від» (as in the header and the footer) and the assistant
+    auto: Math.min(...Object.values(PRODUCTS).flatMap((p) => (p.price ? [p.price] : []))),
+    assistant: PRODUCTS.assistant.price,
+    assistantMonthly: PRODUCTS.assistant.monthly,
     ecommerce: PRICING.formats.ecommerce.price,
     adsAi: PRICING.growth.googleAdsAi.price,
     designL: PRICING.design.custom.price.landing,
@@ -27,6 +31,8 @@ export const PRICES: Record<string, string> = Object.fromEntries(
     three: PRICING.threeDHero.price,
   }).map(([k, v]) => [k, money(v as number) as string]),
 );
+/** the assistant's months of support in its price («перші 3 місяці»): a count, not a sum */
+PRICES.free = String(PRODUCTS.assistant.freeMonths);
 
 type T = (key: string, values?: Record<string, string>) => string;
 
