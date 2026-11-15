@@ -277,3 +277,7 @@
 @media (max-width: 860px) {
   .footer__index { grid-column: 1 / -1; padding-left: 0; box-shadow: none; }
 }
+/* the privacy policy beside the © line (the owner, 13 Nov 2026) */
+.footer__privacy { display: inline-flex; align-items: center; min-height: 2.75rem; margin-block: -0.875rem; margin-left: 1.5rem; color: var(--ink-mute); text-decoration: none; transition: color var(--dur-fast); }
+@media (hover: hover) { .footer__privacy:hover { color: var(--ink); } }
+@media (max-width: 1100px) { .footer__privacy { display: block; width: fit-content; min-height: 0; margin: 0.25rem 0 -0.375rem; padding-block: 0.375rem; line-height: 1.35; } }
