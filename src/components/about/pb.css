@@ -151,7 +151,7 @@ main.about[data-ai-page="about"] .pb-mark.is-live .pb-mark__still { opacity: 0; 
 @media (prefers-reduced-motion: no-preference) {
   main.about[data-ai-page="about"] .pb-hero__obj { animation: pb-mark-in 1.1s var(--ease-out) 0.35s backwards; }
 }
-html.motion main.about[data-ai-page="about"] .pb-tw { animation: pb-tw-in 0.16s linear var(--t) backwards; }
+html.motion main.about[data-ai-page="about"] .pb-tw { animation: pb-tw-in 0.24s linear var(--t) backwards; }
 
 /* ==========================================================================
    2 · Як ми працюємо: the desk (the page's one light block)

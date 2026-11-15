@@ -64,10 +64,10 @@ export async function PbTeam() {
           <div className="pb-studio">
             <p className="pb-studio__goal">
               <span className="visually-hidden">{goal}</span>
-              <span aria-hidden="true">{streamChars(goal, 1100, 1700)}</span>
+              <span aria-hidden="true">{streamChars(goal, 1100, 2400)}</span>
             </p>
-            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text", tags), 2400, 1100)}</p>
-            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text2", tags), 3000, 1300)}</p>
+            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text", tags), 3100, 1600)}</p>
+            <p className="pb-studio__text">{streamWords(t.rich("pb.studio.text2", tags), 3900, 1800)}</p>
           </div>
         </div>
       </div>
