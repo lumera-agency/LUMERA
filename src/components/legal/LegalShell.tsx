@@ -21,7 +21,7 @@ type Props = {
   footerLinks: readonly NavLink[];
   /** the request: the main page's form */
   cta: NavCta;
-  /** the moving ground: «Сяйво» (the policy) or «Сонар» (the contacts) */
+  /** the moving ground: «Сяйво» (the policy) or «Зорі» (the contacts) */
   ground?: Ground;
   /** the page's own class on <main>, beside the shared ones */
   page?: string;

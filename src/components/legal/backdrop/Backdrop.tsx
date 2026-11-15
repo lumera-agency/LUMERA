@@ -4,7 +4,7 @@
  * как будто скроллишь, и этот фон продолжается»; the blocks over it are glass). Fixed to the screen and drawn there,
  * it rides with the scroll at a slower pace, so the ground runs on under the page. The privacy policy's ground is
  * «Сяйво» (glowing fibres, after the owner's reference reel of 13 Nov 2026: backdrop/aurora.ts); the contacts page's
- * is «Сонар» (a dot grid that signals cross as rings, after 21st.dev's Sonar Grid, 15 Nov 2026: backdrop/sonar.ts).
+ * is «Зорі» (deep space with meteors, the owner's pick of 15 Nov 2026 from nine trial grounds: backdrop/stars.ts).
  *
  * Only where a graphics card draws the page and the page is FULL (lib/perf/mode): without one, or LITE, the page keeps
  * its plain dark ground. It starts once the browser is idle (never in the first paint's way), plays only while the
@@ -18,25 +18,10 @@ import type { Create, Effect, Pointer } from "./types";
 /** frames a second, and fewer on a touch screen */
 const FPS = 45;
 
-export type Ground = "aurora" | "sonar" | "chrome" | "portal" | "light" | "flow" | "hole" | "planet" | "trails" | "stars";
+export type Ground = "aurora" | "stars";
 const GROUNDS: Record<Ground, () => Promise<{ create: Create }>> = {
   aurora: () => import("./aurora"),
-  sonar: () => import("./sonar"),
-  chrome: () => import("./chrome"),
-  portal: () => import("./portal"),
-  light: () => import("./light"),
-  flow: () => import("./flow"),
-  hole: () => import("./hole"),
-  planet: () => import("./planet"),
-  trails: () => import("./trails"),
   stars: () => import("./stars"),
-};
-/** the contacts page's trial while the owner picks its ground (15 Nov 2026): ?bg=sonar|chrome|portal|light|flow, and
- *  the space ones he asked for next: hole|planet|trails|stars */
-const TRIAL: Ground[] = ["sonar", "chrome", "portal", "light", "flow", "hole", "planet", "trails", "stars"];
-const picked = (ground: Ground): Ground => {
-  const asked = new URLSearchParams(window.location.search).get("bg") as Ground | null;
-  return ground === "sonar" && asked && TRIAL.includes(asked) ? asked : ground;
 };
 
 export function Backdrop({ ground = "aurora" }: { ground?: Ground }) {
@@ -119,7 +104,7 @@ export function Backdrop({ ground = "aurora" }: { ground?: Ground }) {
     const stopMode = watchMode(() => isLite() && stop());
 
     const start = () =>
-      GROUNDS[picked(ground)]().then((module) => {
+      GROUNDS[ground]().then((module) => {
         if (!alive) return;
         effect = module.create(cv, pointer);
         if (!effect) return;

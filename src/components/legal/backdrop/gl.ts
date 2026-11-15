@@ -1,6 +1,6 @@
 /*
- * The grounds' shared part: one triangle over the whole screen drawn by a fragment shader, the noise the shaders draw
- * with, and the form's «sent» signal (lead-form.js shows the form's sent state) for the grounds that answer it.
+ * The shader grounds' shared part: one triangle over the whole screen drawn by a fragment shader, and the noise, grain
+ * and stars the shaders draw with.
  */
 
 export const VERTEX = `#version 300 es
@@ -33,20 +33,26 @@ float fbm(vec2 p) {
 }
 /** film grain, new every frame */
 float grain(vec2 at, float now) { return hash(at + fract(now * 0.0137) * 97.0) - 0.5; }
-/** a sky of stars on a grid (q and cell in screen heights): one star in some cells, its size, light, twinkle and tint
- *  from the cell's hash; mostly silver, a few lime (the system) and a few warm (ember) */
+/** a sky of stars on a grid (q and cell in screen heights, px one CSS pixel in them): one star in some cells, a crisp
+ *  point with a faint halo, the brightest with a fine cross of light (only where the cells are large enough for it);
+ *  its size, light, twinkle and tint from the cell's hash: mostly silver, a few lime (the system), a few warm (ember) */
 vec3 stars(vec2 q, float cell, float density, float px, float now) {
   vec2 c = floor(q / cell);
   float h = hash(c);
   if (h > density) return vec3(0.0);
-  vec2 at = vec2(hash(c + 7.1), hash(c + 3.7)) * 0.8 + 0.1;
+  vec2 at = vec2(hash(c + 7.1), hash(c + 3.7)) * 0.7 + 0.15;
   vec2 d = (q / cell - c - at) * cell;
-  float size = px * (0.55 + 1.5 * pow(hash(c + 1.3), 5.0));
-  float twinkle = 0.7 + 0.3 * sin(now * 0.001 * (0.5 + 2.2 * hash(c + 9.2)) + h * 40.0);
-  float light = exp(-dot(d, d) / (size * size)) * twinkle * (0.25 + 0.75 * pow(hash(c + 5.5), 2.0));
+  float big = pow(hash(c + 1.3), 5.0);
+  float size = px * (0.5 + 0.8 * big);
+  float twinkle = 0.8 + 0.2 * sin(now * 0.001 * (0.5 + 2.2 * hash(c + 9.2)) + h * 40.0);
+  float bright = (0.4 + 0.6 * pow(hash(c + 5.5), 1.5)) * twinkle;
+  float dd = dot(d, d);
+  float light = exp(-dd / (size * size)) + 0.1 * exp(-dd / (size * size * 10.0));
+  float g = step(0.05, cell) * smoothstep(0.3, 0.6, big);
+  light += g * 0.45 * (exp(-d.x * d.x / (px * px * 0.16)) * exp(-abs(d.y) / (px * 2.6)) + exp(-d.y * d.y / (px * px * 0.16)) * exp(-abs(d.x) / (px * 2.6)));
   float tint = hash(c + 2.9);
-  vec3 colour = tint < 0.06 ? vec3(0.855, 1.0, 0.25) : (tint < 0.11 ? vec3(1.0, 0.72, 0.5) : vec3(0.93, 0.94, 0.97));
-  return colour * light;
+  vec3 colour = tint < 0.06 ? vec3(0.855, 1.0, 0.25) : (tint < 0.11 ? vec3(1.0, 0.72, 0.5) : vec3(0.95, 0.96, 0.99));
+  return colour * light * bright;
 }
 `;
 
@@ -80,15 +86,4 @@ export function screenShader(canvas: HTMLCanvasElement, fragment: string) {
   gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
   gl.clearColor(0, 0, 0, 0);
   return { gl, at: (name: string) => gl.getUniformLocation(program, name) };
-}
-
-/** calls back with the form's box (CSS px on the screen) when a request has been sent; returns the unwatch */
-export function watchSent(sent: (box: DOMRect) => void) {
-  const done = document.querySelector<HTMLElement>("[data-form-done]");
-  if (!done) return () => {};
-  const watch = new MutationObserver(() => {
-    if (!done.hidden) sent((done.closest("form") ?? done).getBoundingClientRect());
-  });
-  watch.observe(done, { attributes: true, attributeFilter: ["hidden"] });
-  return () => watch.disconnect();
 }

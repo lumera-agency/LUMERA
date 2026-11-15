@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/kontakty
 /**
  * «Контакти» (the owner, 15 Nov 2026: the form, the mail, the phones, every way to reach us; the main page's parts, a
  * premium ground after 21st.dev): 1 the first screen with the ways to reach us → 2 the main page's request block, over
- * «Сонар», a dot grid that signals cross as rings. Linked from every page's footer (its «Студія» column).
+ * «Зорі», deep space with meteors (his pick of the space grounds). Linked from every page's footer (its «Студія» column).
  */
 export default async function KontaktyPage({ params }: PageProps<"/[locale]/kontakty">) {
   const { locale } = await params;
@@ -31,7 +31,7 @@ export default async function KontaktyPage({ params }: PageProps<"/[locale]/kont
     { href: home, text: t("kontakty.nav.home"), bar: false },
   ];
   return (
-    <LegalShell ground="sonar" page="kt" nav={nav} footerLinks={[...nav.slice(0, 2), { href: home, text: studioName }]} cta={{ href: "#contact", text: t("cta.discuss") }}>
+    <LegalShell ground="stars" page="kt" nav={nav} footerLinks={[...nav.slice(0, 2), { href: home, text: studioName }]} cta={{ href: "#contact", text: t("cta.discuss") }}>
       <KontaktyHero />
       <PageShell>
         <Contact index={2} />
