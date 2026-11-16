@@ -264,7 +264,8 @@
     border-radius: var(--radius);
     transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
   }
-  .service-tab .svc-pick__name { font-size: var(--fs-body-s); line-height: 1.25; }
+  /* the name keeps clear of the ember dot in the tab's top right corner (the dot plus a breath): a long name goes onto a second line instead of under it */
+  .service-tab .svc-pick__name { padding-right: 1.125rem; font-size: var(--fs-body-s); line-height: 1.25; }
   .service-tab .svc-pick__price { grid-column: 2; font-size: var(--fs-label); }
   .service-tab .svc-pick__price::before { position: absolute; top: 0.9375rem; right: 0.75rem; }
   .service-tab[aria-selected="true"] { border-color: rgba(246, 246, 243, 0.42); background: rgba(246, 246, 243, 0.04); }
