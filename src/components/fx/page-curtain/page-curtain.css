@@ -17,3 +17,25 @@ html.is-curtain .page-curtain { visibility: visible; pointer-events: auto; }
   html:is(.is-curtain, .is-leaving),
   html:is(.is-curtain, .is-leaving) body { background: #0a0a0a; }
 }
+
+/* Safari on an iPhone ends a fixed layer at its bars and shows the page itself in the strips under them, the curtain's
+   own run below the screen included: the page being left stayed there while the next one loaded (the owner's iPhone,
+   15 Nov 2026, the ads page's lights under the toolbar). So the page being left gets a black frame round the screen as
+   an ordinary layer of the page, which Safari does draw there: a box the size of the screen, put where the screen is
+   (PageCurtain), black outside it, fading in with the curtain */
+.page-curtain__frame { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .page-curtain__frame {
+    display: block;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    z-index: 9000;
+    box-shadow: 0 0 0 50vh #0a0a0a;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  /* once black, the page goes too: a scroll while the next one loads brings nothing of it under the bars (the curtain
+     and the frame stay, shown by their own style) */
+  html.is-left body { visibility: hidden; }
+}

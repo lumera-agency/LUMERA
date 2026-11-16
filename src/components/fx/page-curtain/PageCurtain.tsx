@@ -22,15 +22,23 @@ const REVEAL = { duration: 450, easing: "cubic-bezier(0.33, 1, 0.68, 1)" };
 
 export function PageCurtain() {
   const ref = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sheet = ref.current;
-    if (!sheet) return;
+    const frame = frameRef.current;
+    if (!sheet || !frame) return;
     const root = document.documentElement;
     let leaving = false;
     let stuck = 0;
     let gone = false;
     let moving: Animation | null = null;
+    let framing: Animation | null = null;
+    const unframe = () => {
+      framing?.cancel();
+      framing = null;
+      Object.assign(frame.style, { visibility: "", top: "", height: "" });
+    };
     const play = (animation: Animation | null) => {
       moving?.cancel();
       moving = animation;
@@ -49,7 +57,8 @@ export function PageCurtain() {
       curtainLifting();
       requestAnimationFrame(() =>
         requestAnimationFrame(() => {
-          root.classList.remove(CURTAIN, "is-leaving");
+          root.classList.remove(CURTAIN, "is-leaving", "is-left");
+          unframe();
           void play(sheet.animate([{ opacity: 1 }, { opacity: 0 }], { ...REVEAL, fill: "both" })).then((done) => {
             if (!done) return;
             Object.assign(sheet.style, { visibility: "", pointerEvents: "" });
@@ -63,6 +72,12 @@ export function PageCurtain() {
     // before an animation's first or after its last never shows the black at once
     const cover = () => {
       Object.assign(sheet.style, { opacity: "0", visibility: "visible", pointerEvents: "auto" });
+      // the frame for the strips under Safari's bars (page-curtain.css; laid out on touch screens only). The body is not
+      // positioned, so its containing block is the first screen at the document's top: the screen is scrollY down
+      if (frame.offsetParent) {
+        Object.assign(frame.style, { top: `${window.scrollY}px`, height: `${window.innerHeight}px`, visibility: "visible" });
+        framing = frame.animate([{ opacity: 0 }, { opacity: 1 }], { ...DARKEN, fill: "forwards" });
+      }
       return play(sheet.animate([{ opacity: 0 }, { opacity: 1 }], { ...DARKEN, fill: "both" })).then((done) => {
         if (done) {
           sheet.style.opacity = "";
@@ -94,6 +109,7 @@ export function PageCurtain() {
       root.classList.add("is-leaving");
       void cover().then((done) => {
         if (!done) return;
+        root.classList.add("is-left");
         try {
           sessionStorage.setItem(CURTAIN_KEY, String(Date.now()));
         } catch {}
@@ -119,6 +135,7 @@ export function PageCurtain() {
       gone = true;
       clearTimeout(stuck);
       moving?.cancel();
+      framing?.cancel();
       window.removeEventListener("click", onClick);
       window.removeEventListener("pageshow", onShow);
       window.removeEventListener("pagehide", onHide);
@@ -126,6 +143,9 @@ export function PageCurtain() {
   }, []);
 
   return (
-    <div className="page-curtain" aria-hidden="true" ref={ref} />
+    <>
+      <div className="page-curtain" aria-hidden="true" ref={ref} />
+      <div className="page-curtain__frame" aria-hidden="true" ref={frameRef} />
+    </>
   );
 }
