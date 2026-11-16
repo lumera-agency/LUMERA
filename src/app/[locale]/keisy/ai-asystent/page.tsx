@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/keisy/ai
 }
 
 /**
- * The assistant example (a beauty salon, «Приклад» everywhere; fictional data): 1 the booking chat → 2 how the time
+ * The salon client's case (a real client, the owner, 16 Nov 2026; the chat's names and times stay illustrative: «Дані
+ * умовні» over the pictures): 1 the booking chat → 2 how the time
  * is found → 3 what goes to the administrator → 4 who else it suits → 5 questions, the client case → 6 the request.
  */
 export default async function AssistantPage({ params }: PageProps<"/[locale]/keisy/ai-asystent">) {
