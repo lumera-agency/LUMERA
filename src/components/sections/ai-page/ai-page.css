@@ -58,11 +58,8 @@ main[data-ai-page="ai"] .ai-tasks__list { margin: var(--rhythm-l) 0 0; padding: 
 /* a task: its picture on the left (cols 1–6), its words on the right (8–12), a hairline between the rows */
 main[data-ai-page="ai"] .ai-task { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: center; padding-block: var(--rhythm-s); border-top: 1px solid var(--ai-frame); }
 main[data-ai-page="ai"] .ai-task__demo { grid-column: 1 / span 6; }
-/* the three windows one height: a 2.5 rem bar over 19 rem of picture */
+/* the tasks' windows, one height while their panes stand side by side (demo-window.css; narrow ones as they need) */
 main[data-ai-page="ai"] .ai-task__demo .ai-demo { height: 21.5rem; border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--ai-frame), 0 2.5rem 5rem -2.5rem #000; }
-/* the scenes were drawn for a card: in a window they are larger (zoom; their height before it, 19 rem after) */
-main[data-ai-page="ai"] .ai-task__demo .ai-svc__art--crm { zoom: 1.3; height: 14.6rem; padding-inline: 1.5rem; }
-main[data-ai-page="ai"] .ai-task__demo .ai-svc__art--mail { zoom: 1.35; height: 14.07rem; }
 main[data-ai-page="ai"] .ai-task__text { grid-column: 8 / -1; display: grid; justify-items: start; }
 main[data-ai-page="ai"] .ai-task__k { display: flex; gap: 0.75rem; color: var(--ink-mute); }
 main[data-ai-page="ai"] .ai-task__k span:first-child { color: var(--lime); }
@@ -89,12 +86,9 @@ main[data-ai-page="ai"] .ai-task__go { margin-top: 1.25rem; }
   main[data-ai-page="ai"] :is(.ai-tasks__lead, .ai-tasks__console, .ai-task__demo, .ai-task__text) { grid-column: 1 / -1; }
   main[data-ai-page="ai"] .ai-tasks__console { margin-top: 2rem; }
   main[data-ai-page="ai"] .ai-task__text { margin-top: 1.75rem; }
-  main[data-ai-page="ai"] .ai-task__demo .ai-svc__art--crm { zoom: 1.1; height: 13.6rem; padding-inline: 1rem; }
-  main[data-ai-page="ai"] .ai-task__demo .ai-svc__art--mail { zoom: 1.1; height: 13.6rem; }
-  main[data-ai-page="ai"] .ai-task__demo .ai-demo { height: 17.5rem; }
 }
 
-/* the window of the first task's picture (SearchDemo; its own parts are search-demo.css) */
+/* the window of a task's picture (SearchDemo, InboxDemo, AssistantDemo: demo-window.css and their own files) */
 main[data-ai-page="ai"] .ai-demo { display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-md); color: var(--ink); background: #0b0b0b; }
 
 /* ---------- 4 · Кейс (ivory): the client, the morning before and after as two table rows, the full case ---------- */

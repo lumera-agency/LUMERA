@@ -296,9 +296,6 @@ function initScenes() {
     sched: playSched,
     strip: playStrip,
     'svc-tg': playSvcTg,
-    'svc-crm': playSvcCrm,
-    'svc-mail': playSvcMail,
-    'svc-flow': playSvcFlow,
   };
   for (const el of $$('[data-scene]')) {
     const play = defs[el.dataset.scene];
@@ -620,35 +617,6 @@ function playSvcTg(scene) {
   anim(scene, $('.ai-mf__btn', el), [{ transform: 'none' }, { transform: 'scale(0.84)' }, { transform: 'none' }], { duration: 440, delay: 260, easing: EASE_IO });
   anim(scene, $('.ai-mp', el), [{ opacity: 0, transform: 'translateY(-16px) scale(0.96)' }, { opacity: 1, transform: 'none' }], { duration: 600, delay: 640 });
   anim(scene, $('.ai-mp__dot', el), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: 1100 });
-}
-
-function playSvcCrm(scene) {
-  const el = scene.el;
-  anim(scene, $('.ai-mb--in', el), [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: 200 });
-  anim(scene, $('.ai-mb--bot', el), [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: 900 });
-  anim(scene, $('.ai-mc', el), [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 440, delay: 1550 });
-  anim(scene, $('.ai-mc i', el), [{ transform: 'scale(0.2)' }, { transform: 'none' }], { duration: 360, delay: 1650 });
-}
-
-function playSvcMail(scene) {
-  const el = scene.el;
-  anim(scene, $('.ai-mm', el), [{ opacity: 0, transform: 'translateX(-12px)' }, { opacity: 1, transform: 'none' }], { duration: 520, delay: 180 });
-  anim(scene, $('.ai-mt__row', el), [{ opacity: 0, transform: 'translateX(-10px)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: 850 });
-  anim(scene, $('.ai-mt__bar', el), [{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: 320, delay: 960 });
-}
-
-function playSvcFlow(scene) {
-  const el = scene.el;
-  $$('.ai-mfl__s:first-child .ai-mfl__n i', el).forEach((bar, k) => {
-    anim(scene, bar, [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 340, delay: 150 + k * 90 });
-  });
-  const steps = $$('.ai-mfl__s', el).slice(1);
-  steps.forEach((step, i) => {
-    const t0 = 560 + i * 650;
-    anim(scene, $('.ai-mfl__seg b', step), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 420, delay: t0, easing: EASE_IO });
-    anim(scene, $('.ai-mfl__n', step), [{ opacity: 0.25, transform: 'scale(0.8)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: t0 + 330 });
-    anim(scene, $('.ai-mfl__c', step), [{ opacity: 0.35 }, { opacity: 1 }], { duration: 420, delay: t0 + 330 });
-  });
 }
 
 /* ---------- AI page · 3 · a card whose scene has played plays it again when the pointer comes in ---------- */

@@ -1,18 +1,25 @@
 import { getTranslations } from "next-intl/server";
-import { SearchRun } from "./SearchRun";
+import { DemoRun } from "./DemoRun";
+import { DemoSteps } from "./DemoSteps";
+import { part, type Flight } from "./demo-beats";
+import "./demo-window.css";
 import "./search-demo.css";
 
 /*
  * «Пошук замовлень», the first task's picture in block 3 (Niches): how the robot finds orders, from the case's own
  * morning (case.ad.*, the decisions of case.decide, the manager's message of case.tg; no new facts). The owner, 16 Nov
- * 2026: the old picture (the bot's chat alone) did not show how or what. Three steps over the window: the morning's ads
- * come in from the boards and the groups, the robot checks each and says why one does not fit, the one that fits flies
- * over to the manager's Telegram as an order with its score, place and sum, and a row goes into the table.
- *
- * The markup is the last frame (every ad decided, the order in the chat): SearchRun plays the morning while the window
- * is on the screen; without it, or with reduced motion, the last frame stays. Narrow (the container under 34 rem):
- * the ads over the chat, the window scrolls down to the chat when the order goes out.
+ * 2026: the old picture (the bot's chat alone) did not show how or what. The morning's ads come in from the boards and
+ * the groups, the robot checks each and says why one does not fit, the one that fits flies over to the manager's
+ * Telegram as an order with its score, place and sum, and a row goes into the table. Narrow (the window under 36 rem):
+ * the ads over the chat, the window scrolls down to the chat as the order goes out.
  */
+
+// 0 empty · 1–4 the ads come in · 5–9 the robot checks one each · 10 the one that fits goes over · 11 the order ·
+// 12 its row in the table (held) · 13 the fade
+const BEATS = [700, 420, 420, 420, 800, 760, 760, 760, 760, 650, 650, 1000, 3600, 700] as const;
+const HOLD = BEATS.length - 2;
+const SENT = 10;
+const FLIGHTS: Flight[] = [{ at: SENT, from: ".sd-ad--ok .sd-ad__t", to: ".sd-card__t", wide: true }];
 
 const ADS = [
   { n: 1, ok: false },
@@ -26,21 +33,14 @@ const TICK = <path d="m5 12.5 4.2 4.2L19 7" />;
 
 export async function SearchDemo() {
   const t = await getTranslations();
+  const steps = [
+    { text: t("ai.demo.search.step.1"), span: [0, 5] as const },
+    { text: t("ai.demo.search.step.2"), span: [5, SENT] as const },
+    { text: t("ai.demo.search.step.3"), span: [SENT, 99] as const },
+  ];
   return (
-    <SearchRun className="ai-demo sd" label={t("ai.demo.search.sr")}>
-      <div className="sd__bar" aria-hidden="true">
-        <ol className="sd__steps">
-          {[1, 2, 3].map((n) => (
-            <li className={n === 3 ? "sd__step is-on" : "sd__step is-done"} key={n}>
-              <i>
-                <span className="sd__n">{n}</span>
-                <svg viewBox="0 0 24 24">{TICK}</svg>
-              </i>
-              <span>{t(`ai.demo.search.step.${n}`)}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
+    <DemoRun className="ai-demo sd sd--search" label={t("ai.demo.search.sr")} beats={BEATS} flags={{ "is-busy": [5, SENT], "is-sent": SENT }} flights={FLIGHTS}>
+      <DemoSteps steps={steps} hold={HOLD} />
       <div className="sd__body" aria-hidden="true">
         <div className="sd__track">
           <div className="sd__ads">
@@ -50,7 +50,7 @@ export async function SearchDemo() {
             </p>
             <ol className="sd__list">
               {ADS.map((ad) => (
-                <li className={`sd-ad sd-ad--${ad.ok ? "ok" : "no"} is-in is-done`} key={ad.n}>
+                <li {...part(`sd-ad sd-ad--${ad.ok ? "ok" : "no"}`, { in: ad.n, scan: [ad.n + 4, ad.n + 5], done: ad.n + 5 }, HOLD)} key={ad.n}>
                   <span className="sd-ad__mark">
                     <i className="sd-ad__dot" />
                     <svg className="sd-ad__icon" viewBox="0 0 24 24">{ad.ok ? TICK : X}</svg>
@@ -65,7 +65,7 @@ export async function SearchDemo() {
               ))}
             </ol>
           </div>
-          <div className="sd__tg">
+          <div className="sd__tg" data-shift="">
             <p className="sd-tg__bar">
               <span className="sd-tg__ava">{t("case.bot.ava")}</span>
               <span className="sd-tg__who">
@@ -78,7 +78,7 @@ export async function SearchDemo() {
             </p>
             <div className="sd-tg__chat">
               <p className="sd-tg__day">{t("aiCommon.tg.today")}</p>
-              <div className="sd-card is-in">
+              <div {...part("sd-card", { in: SENT + 1 }, HOLD)}>
                 <p className="sd-card__head">
                   <span>{t("ai.demo.search.card.new")}</span>
                   {/* the score's number is the ring's counter (search-demo.css): it counts up as the order arrives */}
@@ -101,7 +101,7 @@ export async function SearchDemo() {
                   <time>08:02</time>
                 </p>
               </div>
-              <p className="sd-sheet is-in">
+              <p {...part("sd-sheet", { in: SENT + 2 }, HOLD)}>
                 <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M4 10h16M10 4v16" /></svg>
                 <span>{t("case.bento.sheet")}</span>
               </p>
@@ -109,8 +109,8 @@ export async function SearchDemo() {
           </div>
         </div>
         {/* the order that fits, on its way from the list to the chat (wide windows only) */}
-        <span className="sd-ghost">{t("case.ad.4.t")}</span>
+        <span className="sd-ghost" />
       </div>
-    </SearchRun>
+    </DemoRun>
   );
 }
