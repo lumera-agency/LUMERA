@@ -2,10 +2,11 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { aiRich } from "@/components/ai/rich";
 import { aiHref } from "@/components/ai/links";
 import { ButtonLink } from "@/components/ui/button/Button";
-import { FeedDemo } from "./CaseDemos";
+import { AssistantDemo } from "./AssistantDemo";
+import { InboxDemo } from "./InboxDemo";
+import { SearchDemo } from "./SearchDemo";
 import { RobotConsole } from "./RobotConsole";
 import { AUDIT, NICHES, PRODUCTS, usd, weeksText, type Product } from "./prices";
-import { offerScenes } from "./scenes";
 
 /** each task the robot takes over: its product, the business it suits most (its niche's tasks), its way further */
 const TASKS: { product: Exclude<Product, "custom">; niche: (typeof NICHES)[number]["key"]; can: number; link?: "case" | "asst" }[] = [
@@ -25,16 +26,17 @@ const CHECK = (
 /**
  * 3 · Що робот візьме на себе, after «Що таке AI-автоматизація» (the owner, 5 Nov 2026: the niches, the lineup's words
  * and the case's salon in one block, set as the main page's services). An opening: what the robot does, in a line,
- * beside its console at work (RobotConsole). Then a row for each task: its picture in a window on the left (the case's
- * feed of orders, the letter going into the table, the assistant's chat), on the right its name, what it does, the
- * business it suits with that business's tasks, its price and time, and the way to the case or the example. Under
- * them, everyone else's way in: the audit.
+ * beside its console at work (RobotConsole). Then a row for each task: on the left a window where it plays out in
+ * three steps (the owner, 16 Nov 2026: show how and what): the case's morning of ads, the check and the order in
+ * Telegram (SearchDemo); a shop's requests from four channels into one table (InboxDemo); the salon's evening chat,
+ * the booking and the hand-over (AssistantDemo). On the right its name, what it does, the business it suits with that
+ * business's tasks, its price and time, and the way to the case or the example. Under them, everyone else's way in:
+ * the audit.
  */
 export async function Niches({ index }: { index: number }) {
   const t = await getTranslations("ai");
   const locale = await getLocale();
   const lang = locale === "ru" ? "ru" : "uk";
-  const scenes = await offerScenes();
   const links = {
     case: { href: aiHref(locale, "/keisy/poshuk-zamovlen"), text: t("ex.case.go") },
     asst: { href: aiHref(locale, "/keisy/ai-asystent"), text: t("ex.asst.go") },
@@ -72,19 +74,7 @@ export async function Niches({ index }: { index: number }) {
             return (
               <li className="ai-task" key={task.product}>
                 <div className="ai-task__demo" data-rv="">
-                  {task.product === "search" ? (
-                    <FeedDemo />
-                  ) : (
-                    <div className="ai-win">
-                      <p className="ai-win__bar" aria-hidden="true">
-                        <i />
-                        <i />
-                        <i />
-                        <span>{t(`offer.${task.product}.t`)}</span>
-                      </p>
-                      {scenes[task.product]}
-                    </div>
-                  )}
+                  {task.product === "search" ? <SearchDemo /> : task.product === "sources" ? <InboxDemo /> : <AssistantDemo />}
                 </div>
                 <div className="ai-task__text" data-rv="">
                   <p className="ai-task__k">
@@ -92,7 +82,8 @@ export async function Niches({ index }: { index: number }) {
                     <span>{t(`offer.${task.product}.t`)}</span>
                   </p>
                   <h3 className="ai-task__t">{t(`how.do.${task.can}.t`)}</h3>
-                  <p className="ai-task__p">{t(`offer.${task.product}.p`)}</p>
+                  {/* the longer words where the short ones leave the how unsaid (the search, the owner, 16 Nov 2026) */}
+                  <p className="ai-task__p">{t(t.has(`offer.${task.product}.long`) ? `offer.${task.product}.long` : `offer.${task.product}.p`)}</p>
                   <p className="ai-task__for">
                     <span>{t("niche.meta")}</span>
                     <span>{t(`niche.${task.niche}.t`)}</span>

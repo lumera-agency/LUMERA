@@ -336,40 +336,6 @@
 .ai-mp__txt b { font-weight: 500; color: var(--ink); }
 .ai-mp__txt span { color: var(--ink-soft); }
 .ai-mp__dot { position: absolute; right: -0.1875rem; top: -0.1875rem; width: 0.625rem; height: 0.625rem; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 0.1875rem #0b0b0b; }
-/* · 2 a question, the assistant's answer, the request in the CRM */
-.ai-svc__art--crm { display: grid; align-content: center; gap: 0.5rem; padding: 0.875rem 1rem; }
-.ai-mb { max-width: 84%; margin: 0; padding: 0.5rem 0.75rem; border-radius: 0.875rem; font-size: 0.7812rem; line-height: 1.35; }
-.ai-mb--in { justify-self: start; border-bottom-left-radius: 0.25rem; color: var(--ink); background: #232323; }
-.ai-mb--bot { justify-self: end; border-bottom-right-radius: 0.25rem; color: var(--ink); background: rgba(218, 255, 2, 0.1); box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.34); }
-.ai-mc { justify-self: center; display: inline-flex; align-items: center; gap: 0.5rem; margin: 0.25rem 0 0; padding: 0.375rem 0.75rem; border-radius: 62.4375rem; font: 400 0.7188rem/1 var(--font-mono); color: var(--ink-soft); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.16); }
-.ai-mc i { width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: var(--signal); }
-/* · 3 a letter, its row in the table */
-.ai-mm { position: absolute; left: 0.875rem; top: 0.875rem; width: 64%; max-width: 14.375rem; padding: 0.625rem 0.75rem; border-radius: 0.625rem; rotate: -3deg; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1), 0 0.875rem 1.625rem -0.875rem #000; font-size: 0.75rem; }
-.ai-mm__from { display: flex; align-items: center; gap: 0.375rem; margin: 0 0 0.25rem; font-weight: 500; color: var(--ink); }
-.ai-mm__from svg { width: 0.8125rem; height: 0.8125rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.ai-mm__b { margin: 0; overflow: hidden; line-height: 1.35; white-space: nowrap; text-overflow: ellipsis; color: var(--ink-soft); }
-.ai-mt { position: absolute; right: 0.875rem; bottom: 0.875rem; width: 70%; max-width: 16.25rem; border-radius: 0.625rem; overflow: hidden; background: #141414; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1); }
-.ai-mt__sk,
-.ai-mt__row { display: grid; grid-template-columns: 1.15fr 1fr 0.6fr; column-gap: 0.5rem; align-items: center; min-height: 1.625rem; margin: 0; padding: 0 0.625rem; }
-.ai-mt__sk + .ai-mt__sk,
-.ai-mt__row { border-top: 1px solid rgba(246, 246, 243, 0.06); }
-.ai-mt__sk i { height: 0.3125rem; border-radius: 0.1875rem; background: rgba(246, 246, 243, 0.12); }
-.ai-mt__row { position: relative; font: 500 0.6875rem/1 var(--font-mono); white-space: nowrap; color: var(--ink); background: rgba(218, 255, 2, 0.07); }
-.ai-mt__row > span { overflow: hidden; text-overflow: ellipsis; }
-.ai-mt__bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--signal); transform-origin: 50% 0; }
-/* · 4 the case's way: about 50 ads, the ones that fit, Telegram */
-.ai-svc__art--flow { display: grid; place-items: center; padding: 0 0.625rem; }
-.ai-mfl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; margin: 0; padding: 0; list-style: none; }
-.ai-mfl__s { position: relative; display: grid; justify-items: center; align-content: start; gap: 0.625rem; }
-.ai-mfl__n { position: relative; z-index: 1; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; font-size: 1rem; color: var(--ink); background: #1c1c1c; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.14); }
-.ai-mfl__s:first-child .ai-mfl__n { align-content: center; gap: 0.1875rem; }
-.ai-mfl__s:first-child .ai-mfl__n i { width: 1.125rem; height: 0.1875rem; border-radius: 2px; background: rgba(246, 246, 243, 0.5); }
-.ai-mfl__n--ok,
-.ai-mfl__n--tg { font-weight: 600; color: var(--on-accent); background: var(--signal); box-shadow: 0 0 1.375rem rgba(218, 255, 2, 0.22); }
-.ai-mfl__n svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform: translateX(-1px); }
-.ai-mfl__c { font: 400 0.6875rem/1.25 var(--font-mono); text-align: center; color: var(--ink-soft); }
-.ai-mfl__seg { position: absolute; top: 1.375rem; right: calc(50% + 1.375rem); width: calc(100% - 2.75rem); height: 1px; background: rgba(246, 246, 243, 0.14); }
-.ai-mfl__seg b { position: absolute; inset: 0; background: var(--signal); transform-origin: 0 50%; }
 .ai-dlg__n { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; font: 500 0.75rem/1 var(--font-mono); color: var(--on-accent); background: var(--signal); }
 /* ---------- 5 · the calculator: option cards (the chosen one in ivory, as on the main page) and the sum beside ---------- */
 .ai-calc { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: start; }
@@ -418,12 +384,6 @@
 @media (max-width: 600px) {
   .ai-svc { border-radius: 1.25rem; }
   .ai-svc__art { height: 8.5rem; margin: 0.375rem 0.375rem 0; border-radius: 0.875rem; }
-  .ai-svc__art--crm { gap: 0.375rem; padding: 0.625rem 0.875rem; }
-  .ai-mb { padding: 0.4375rem 0.6875rem; }
-  .ai-mm { top: 0.625rem; }
-  .ai-mt { bottom: 0.625rem; }
-  .ai-mt__sk,
-  .ai-mt__row { min-height: 1.375rem; }
 
   .ai-opt { padding: 0.875rem 1rem; border-radius: 0.875rem; }
   .ai-opt__t,
@@ -433,15 +393,8 @@
 @media (max-width: 374px) {
   .ai-chk { padding: 0 0.8125rem 0 0.6875rem; font-size: 0.8125rem; }
 }
-.ai-svc__art--tg.is-pre :is(.ai-mp, .ai-mp__dot),
-.ai-svc__art--crm.is-pre :is(.ai-mb, .ai-mc),
-.ai-svc__art--mail.is-pre :is(.ai-mm, .ai-mt__row),
-.ai-svc__art--flow.is-pre .ai-mfl__s:first-child .ai-mfl__n i { opacity: 0; }
-.ai-svc__art--mail.is-pre .ai-mt__bar { transform: scaleY(0); }
-.ai-svc__art--flow.is-pre .ai-mfl__seg b { transform: scaleX(0); }
-.ai-svc__art--flow.is-pre .ai-mfl__s + .ai-mfl__s .ai-mfl__n { opacity: 0.25; }
-.ai-svc__art--flow.is-pre .ai-mfl__s + .ai-mfl__s .ai-mfl__c { opacity: 0.35; }
-.ai-svc__art.is-warm :is(.ai-mf__btn, .ai-mp, .ai-mp__dot, .ai-mb, .ai-mc, .ai-mm, .ai-mt__row, .ai-mt__bar, .ai-mfl__n, .ai-mfl__n i, .ai-mfl__c, .ai-mfl__seg b) { will-change: opacity, transform; }
+.ai-svc__art--tg.is-pre :is(.ai-mp, .ai-mp__dot) { opacity: 0; }
+.ai-svc__art.is-warm :is(.ai-mf__btn, .ai-mp, .ai-mp__dot) { will-change: opacity, transform; }
 /* start frames of the AI page's scenes (js/ai-page.js). The final frame is the CSS above, so these only
    need to outrank it, never !important. The to-do list holds its start until the script runs, too */
 :is(.ai-todo.is-pre, html.motion:not(.ai-go):not(.is-ready) .ai-todo) :is(.ai-todo__fill, .ai-todo__who, .ai-todo__hl) { opacity: 0; }

@@ -1,0 +1,93 @@
+/*
+ * «AI-асистент» (AssistantDemo, block 3's third task): the client's chat with the salon on the left, the schedule and
+ * the administrator on the right (the window round it: demo-window.css). The client's messages are grey, the
+ * assistant's lime: it is the robot's. A message comes in by opening its row (grid rows 0fr → 1fr), so the chat
+ * grows from the bottom and the older ones go up and out, as in a messenger. The window's .is-typing: the assistant
+ * types. Narrow (the window under 34 rem): the chat alone, the booking and the hand-over as notes in it.
+ */
+main[data-ai-page="ai"] .sa-track { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); height: 100%; }
+
+/* ---- the chat ---- */
+main[data-ai-page="ai"] .sa-chat { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+main[data-ai-page="ai"] :is(.sa-st--idle, .sa-st--busy) { grid-area: 1 / 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; transition: opacity 0.3s; }
+main[data-ai-page="ai"] .sa-st--idle { color: var(--ink-mute); }
+main[data-ai-page="ai"] .sa-st--busy { color: var(--lime); opacity: 0; }
+main[data-ai-page="ai"] .sd.is-typing .sa-st--idle { opacity: 0; }
+main[data-ai-page="ai"] .sd.is-typing .sa-st--busy { opacity: 1; }
+main[data-ai-page="ai"] .sa-flow {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0.5rem 0.75rem 0.75rem;
+  -webkit-mask-image: linear-gradient(transparent, #000 1.5rem);
+  mask-image: linear-gradient(transparent, #000 1.5rem);
+}
+main[data-ai-page="ai"] .sa-flow > .sd-tg__day { flex: none; margin-bottom: 0; }
+main[data-ai-page="ai"] .sa-m { display: grid; flex: none; grid-template-rows: 1fr; margin-top: 0.4375rem; transition: grid-template-rows 0.5s var(--ease-out), margin-top 0.5s var(--ease-out), opacity 0.4s var(--ease-out); }
+main[data-ai-page="ai"] .sa-m:not(.is-in) { grid-template-rows: 0fr; margin-top: 0; opacity: 0; }
+main[data-ai-page="ai"] .sa-m__in { display: flex; flex-direction: column; align-items: flex-start; min-height: 0; overflow: hidden; }
+main[data-ai-page="ai"] .sa-m__text { max-width: 86%; margin: 0; padding: 0.4375rem 0.6875rem; border-radius: 0.875rem 0.875rem 0.875rem 0.25rem; font-size: 0.75rem; line-height: 1.4; color: var(--ink); background: #1d1d1d; box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.07); }
+main[data-ai-page="ai"] .sa-m--bot .sa-m__in { align-items: flex-end; }
+main[data-ai-page="ai"] .sa-m--bot .sa-m__text { border-radius: 0.875rem 0.875rem 0.25rem 0.875rem; background: rgb(218 255 2 / 0.09); box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.28); }
+/* typing: three dots */
+main[data-ai-page="ai"] .sa-m--typing .sa-m__text { display: flex; gap: 0.25rem; padding-block: 0.625rem; }
+main[data-ai-page="ai"] .sa-m--typing i { width: 0.3125rem; height: 0.3125rem; border-radius: 50%; background: var(--lime); animation: sa-dot 0.9s ease-in-out infinite; }
+main[data-ai-page="ai"] .sa-m--typing i:nth-child(2) { animation-delay: 0.15s; }
+main[data-ai-page="ai"] .sa-m--typing i:nth-child(3) { animation-delay: 0.3s; }
+/* the free times as buttons under the answer; the one she takes fills */
+main[data-ai-page="ai"] .sa-picks { display: flex; gap: 0.375rem; margin: 0.375rem 0 0; }
+main[data-ai-page="ai"] .sa-pick { padding: 0.3125rem 0.625rem; border-radius: 62.4375rem; font: 500 0.6875rem/1 var(--font-mono); color: var(--lime); box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.45); transition: color 0.35s, background-color 0.35s, opacity 0.35s; }
+main[data-ai-page="ai"] .sa-pick--b.is-done { color: #0d0d0d; background: var(--lime); }
+main[data-ai-page="ai"] .sa-pick--a.is-done { opacity: 0.35; }
+/* the notes (narrow windows only): what happened on the other side */
+main[data-ai-page="ai"] .sa-m--sys { display: none; }
+main[data-ai-page="ai"] .sa-m--sys .sa-m__in { align-items: center; }
+main[data-ai-page="ai"] .sa-m--sys .sa-m__text { display: inline-flex; align-items: center; gap: 0.375rem; max-width: 100%; padding: 0.3125rem 0.625rem; border-radius: 62.4375rem; font: 400 0.6875rem/1.3 var(--font-mono); color: var(--ink-soft); background: transparent; box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.35); }
+main[data-ai-page="ai"] .sa-m--sys svg { flex: none; width: 0.75rem; height: 0.75rem; fill: none; stroke: var(--lime); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- the other side: the schedule, the administrator ---- */
+main[data-ai-page="ai"] .sa-side { display: flex; flex-direction: column; gap: 0.625rem; min-width: 0; padding: 0.75rem; border-left: 1px solid rgb(246 246 243 / 0.08); background: #0e0e0e; }
+main[data-ai-page="ai"] .sa-sched { display: grid; gap: 0.4375rem; }
+main[data-ai-page="ai"] .sa-master { display: flex; align-items: center; gap: 0.4375rem; margin: 0; font-size: 0.6875rem; color: var(--ink-soft); }
+main[data-ai-page="ai"] .sa-master__ava { display: grid; flex: none; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 50%; font-size: 0.625rem; font-weight: 600; color: var(--ink); background: #262626; }
+main[data-ai-page="ai"] .sa-slots { display: grid; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+main[data-ai-page="ai"] .sa-slot { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); align-items: center; padding: 0.3125rem 0.5rem; border-radius: 0.5rem; font-size: 0.6875rem; line-height: 1.3; color: var(--ink-mute); background: repeating-linear-gradient(135deg, rgb(246 246 243 / 0.035) 0 0.25rem, transparent 0.25rem 0.5rem); transition: background-color 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out), color 0.45s; }
+main[data-ai-page="ai"] .sa-slot time { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+main[data-ai-page="ai"] .sa-slot__what { display: grid; min-width: 0; }
+main[data-ai-page="ai"] .sa-slot__what > span { grid-area: 1 / 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; transition: opacity 0.35s var(--ease-out); }
+main[data-ai-page="ai"] .sa-slot--free { color: var(--ink-soft); background: none; box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.14); }
+/* the assistant looks at the free times */
+main[data-ai-page="ai"] .sa-slot--free.is-scan { color: var(--lime); box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.6); animation: sa-look 0.9s ease-in-out infinite alternate; }
+/* 14:30 booked */
+main[data-ai-page="ai"] .sa-slot__booked { opacity: 0; }
+main[data-ai-page="ai"] .sa-slot--b.is-done { color: var(--ink); background: rgb(218 255 2 / 0.12); box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.55); }
+main[data-ai-page="ai"] .sa-slot--b.is-done time { color: var(--lime); }
+main[data-ai-page="ai"] .sa-slot--b.is-done .sa-slot__free { opacity: 0; }
+main[data-ai-page="ai"] .sa-slot--b.is-done .sa-slot__booked { opacity: 1; }
+main[data-ai-page="ai"] .sa-slot__booked b { font-weight: 500; }
+main[data-ai-page="ai"] .sa-slot__what > .sa-slot__booked { white-space: normal; }
+/* the administrator's Telegram */
+main[data-ai-page="ai"] .sa-admin { display: grid; gap: 0.1875rem; padding: 0.5rem 0.625rem; border-radius: 0.75rem; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.08), 0 0.75rem 1.5rem -1rem #000; transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out), filter 0.6s var(--ease-out); }
+main[data-ai-page="ai"] .sa-admin:not(.is-in) { opacity: 0; transform: translateY(0.375rem); filter: blur(0.375rem); }
+main[data-ai-page="ai"] .sa-admin p { margin: 0; }
+main[data-ai-page="ai"] .sa-admin__k { display: flex; align-items: center; gap: 0.375rem; font: 400 0.625rem/1.2 var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-mute); }
+main[data-ai-page="ai"] .sa-admin__k svg,
+main[data-ai-page="ai"] .sa-admin__ping svg { flex: none; width: 0.75rem; height: 0.75rem; fill: none; stroke: var(--lime); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+main[data-ai-page="ai"] .sa-admin__t { font-size: 0.75rem; font-weight: 500; color: var(--ink); }
+main[data-ai-page="ai"] .sa-admin__q { font-size: 0.6875rem; line-height: 1.35; color: var(--ink-soft); }
+main[data-ai-page="ai"] .sa-admin__ping { display: flex; align-items: center; gap: 0.375rem; margin-top: 0.1875rem !important; padding-top: 0.3125rem; border-top: 1px solid rgb(246 246 243 / 0.07); font-size: 0.6875rem; line-height: 1.3; color: var(--lime); transition: opacity 0.4s var(--ease-out); }
+main[data-ai-page="ai"] .sa-admin__ping:not(.is-in) { opacity: 0; }
+
+@keyframes sa-dot { 0%, 100% { opacity: 0.3; transform: none; } 50% { opacity: 1; transform: translateY(-0.125rem); } }
+@keyframes sa-look { to { background-color: rgb(218 255 2 / 0.08); } }
+
+/* ---- narrow windows: the chat alone ---- */
+@container sdemo (max-width: 34rem) {
+  main[data-ai-page="ai"] .ai-task__demo .ai-demo.sd--asst { height: 25rem; }
+  main[data-ai-page="ai"] .sa-track { grid-template-columns: minmax(0, 1fr); }
+  main[data-ai-page="ai"] .sa-side { display: none; }
+  main[data-ai-page="ai"] .sa-m--sys { display: grid; }
+}

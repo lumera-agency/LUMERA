@@ -1,0 +1,73 @@
+/*
+ * The window round each task's demo in block 3 (SearchDemo, InboxDemo, AssistantDemo): the three steps over it, its
+ * body, the lit copy that flies across it, the start and the fade. Lime is the robot's, as everywhere on the site.
+ * Every state is the last frame unless DemoRun takes a class away (demo-beats.ts): a part's .is-in / .is-scan /
+ * .is-done, a step's .is-on / .is-done, the window's .is-live (playing), .is-reset (an empty start, no transitions)
+ * and .is-out (the fade). Each demo's own parts are its own file. The window is a container (sdemo): under 34 rem
+ * the demos lay out for a narrow window (--sd-stack: 1).
+ */
+main[data-ai-page="ai"] .ai-task__demo { container: sdemo / inline-size; }
+main[data-ai-page="ai"] .sd { position: relative; }
+/* the window's frame over its panes (an inset shadow would go under their grounds) */
+main[data-ai-page="ai"] .sd::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--ai-frame); pointer-events: none; }
+/* one height at every width while a demo's panes stand side by side */
+main[data-ai-page="ai"] .ai-task__demo .ai-demo.sd { height: 21.5rem; }
+main[data-ai-page="ai"] .sd.is-reset,
+main[data-ai-page="ai"] .sd.is-reset * { transition: none !important; }
+
+/* ---- the steps: the one at work lit, the ones behind it ticked ---- */
+main[data-ai-page="ai"] .sd__bar { display: flex; flex: none; align-items: center; height: 2.75rem; padding: 0 0.625rem; border-bottom: 1px solid rgb(246 246 243 / 0.08); background: #0f0f0f; }
+main[data-ai-page="ai"] .sd__steps { display: flex; align-items: center; gap: 0.25rem; margin: 0; padding: 0; list-style: none; font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: 0.02em; color: var(--ink-mute); }
+main[data-ai-page="ai"] .sd__step { display: flex; align-items: center; gap: 0.5rem; padding: 0.3125rem 0.75rem 0.3125rem 0.3125rem; border-radius: 62.4375rem; white-space: nowrap; transition: color 0.45s var(--ease-out), background-color 0.45s var(--ease-out); }
+/* a hairline between two steps */
+main[data-ai-page="ai"] .sd__step + .sd__step::before { content: ""; width: 1rem; height: 1px; margin-right: 0.25rem; background: rgb(246 246 243 / 0.16); }
+main[data-ai-page="ai"] .sd__step i { position: relative; display: grid; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 50%; font-style: normal; box-shadow: inset 0 0 0 1px rgb(246 246 243 / 0.22); transition: background-color 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out), color 0.45s var(--ease-out); }
+main[data-ai-page="ai"] .sd__n { font-size: 0.6875rem; transition: opacity 0.3s; }
+main[data-ai-page="ai"] .sd__step svg { position: absolute; width: 0.75rem; height: 0.75rem; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity 0.3s; }
+main[data-ai-page="ai"] .sd__step.is-on { color: var(--ink); background: rgb(218 255 2 / 0.09); }
+main[data-ai-page="ai"] .sd__step.is-on i { color: #0d0d0d; background: var(--lime); box-shadow: 0 0 0.875rem rgb(218 255 2 / 0.35); }
+main[data-ai-page="ai"] .sd__step.is-done { color: var(--ink-soft); }
+main[data-ai-page="ai"] .sd__step.is-done i { color: var(--lime); box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.55); }
+main[data-ai-page="ai"] .sd__step.is-done .sd__n { opacity: 0; }
+main[data-ai-page="ai"] .sd__step.is-done svg { opacity: 1; }
+
+/* ---- the body ---- */
+main[data-ai-page="ai"] .sd__body { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+/* a pane's label line: its name on the left, a chip on the right */
+main[data-ai-page="ai"] .sd__head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0; font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main[data-ai-page="ai"] .sd__head b { flex: none; padding: 0.375rem 0.5625rem; border-radius: 62.4375rem; font-weight: 500; letter-spacing: 0.02em; text-transform: none; color: var(--lime); background: rgb(218 255 2 / 0.07); box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.32); }
+
+/* a chat's bar (the bot or the business, its state under the name) and its day */
+main[data-ai-page="ai"] .sd-tg__bar { display: flex; flex: none; align-items: center; gap: 0.625rem; margin: 0; padding: 0.625rem 0.875rem; border-bottom: 1px solid rgb(246 246 243 / 0.07); background: #131313; }
+main[data-ai-page="ai"] .sd-tg__ava { display: grid; flex: none; place-items: center; width: 1.875rem; height: 1.875rem; border-radius: 50%; font-size: 0.8125rem; font-weight: 600; color: var(--on-accent); background: var(--signal); }
+main[data-ai-page="ai"] .sd-tg__who { display: grid; min-width: 0; line-height: 1.25; }
+main[data-ai-page="ai"] .sd-tg__who b { font-size: 0.8125rem; font-weight: 500; }
+main[data-ai-page="ai"] .sd-tg__st { display: grid; font-size: 0.6875rem; }
+main[data-ai-page="ai"] .sd-tg__day { align-self: center; margin: 0 0 0.125rem; padding: 0.1875rem 0.625rem; border-radius: 62.4375rem; font-size: 0.6875rem; color: var(--ink-mute); background: rgb(255 255 255 / 0.05); }
+
+/* the words on their way across the window (DemoRun moves them) */
+main[data-ai-page="ai"] .sd-ghost { position: absolute; left: 0; top: 0; z-index: 2; margin: -0.25rem 0 0 -0.5rem; padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; line-height: 1.3; white-space: nowrap; color: #0d0d0d; background: var(--lime); box-shadow: 0 0.75rem 2rem -0.5rem rgb(218 255 2 / 0.5); opacity: 0; pointer-events: none; }
+
+/* the fade before it starts again: every part that comes in goes out */
+main[data-ai-page="ai"] .sd.is-out [data-in] { opacity: 0 !important; transition: opacity 0.6s var(--ease-out) !important; }
+
+@keyframes sd-spin { to { transform: rotate(1turn); } }
+
+@container sdemo (max-width: 34rem) {
+  main[data-ai-page="ai"] .sd { --sd-stack: 1; }
+  main[data-ai-page="ai"] .sd__bar { padding-inline: 0.5rem; }
+  main[data-ai-page="ai"] .sd__steps { gap: 0.125rem; font-size: 0.6875rem; }
+  main[data-ai-page="ai"] .sd__step { gap: 0.375rem; padding-right: 0.5rem; }
+  main[data-ai-page="ai"] .sd__step + .sd__step::before { width: 0.5rem; margin-right: 0.125rem; }
+}
+/* phones: the steps behind and ahead keep their circles, the one at work its word too */
+@container sdemo (max-width: 26rem) {
+  main[data-ai-page="ai"] .sd__step + .sd__step::before { display: none; }
+  main[data-ai-page="ai"] .sd__step:not(.is-on) { padding-right: 0.3125rem; }
+  main[data-ai-page="ai"] .sd__step:not(.is-on) > span { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main[data-ai-page="ai"] .sd *,
+  main[data-ai-page="ai"] .sd *::before { animation: none !important; transition: none !important; }
+}
