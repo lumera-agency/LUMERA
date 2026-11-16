@@ -24,7 +24,11 @@ function cut(text: string, n: number) {
   const last = part.charCodeAt(part.length - 1);
   return last >= 0xd800 && last <= 0xdbff ? part.slice(0, -1) : part;
 }
-const str = (v: unknown, n: number) => (typeof v === "string" ? cut(v.trim(), n) : "");
+/** Characters no one types but that change how the lead reads in the chat (the owner, 13 Nov 2026): the controls (line
+ *  breaks and tabs kept), the marks that turn text right to left or isolate it, zero-width spaces and joiners between
+ *  words, the soft hyphen and the byte order mark. The joiner inside emoji (U+200D) and the emoji style mark stay */
+const INVISIBLE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F­᠎​‌‎‏‪-‮⁠-⁤⁦-⁩﻿]/g;
+const str = (v: unknown, n: number) => (typeof v === "string" ? cut(v.replace(INVISIBLE, "").trim(), n) : "");
 /** one line: a line break in a name or a contact cannot fake the message's next field */
 const line = (v: unknown, n: number) => str(v, n).replace(/[\r\n\u2028\u2029]+/g, " ");
 
