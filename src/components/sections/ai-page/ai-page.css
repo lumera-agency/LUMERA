@@ -94,34 +94,8 @@ main[data-ai-page="ai"] .ai-task__go { margin-top: 1.25rem; }
   main[data-ai-page="ai"] .ai-task__demo .ai-demo { height: 17.5rem; }
 }
 
-/* the case's feed of orders (the first task's picture): the bot's chat in Telegram */
+/* the window of the first task's picture (SearchDemo; its own parts are search-demo.css) */
 main[data-ai-page="ai"] .ai-demo { display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-md); color: var(--ink); background: #0b0b0b; }
-main[data-ai-page="ai"] .ai-demo__bar { display: flex; flex: none; align-items: center; gap: 0.4375rem; height: 2.125rem; padding: 0 0.75rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); font-size: 0.6875rem; color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-demo__bar i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(246, 246, 243, 0.16); }
-main[data-ai-page="ai"] .ai-demo__bar span { margin-left: 0.25rem; }
-main[data-ai-page="ai"] .ai-feed__bar { display: flex; flex: none; align-items: center; gap: 0.625rem; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(246, 246, 243, 0.07); background: #121212; }
-main[data-ai-page="ai"] .ai-feed__ava { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; font-size: 0.875rem; font-weight: 600; color: var(--on-accent); background: var(--signal); }
-main[data-ai-page="ai"] .ai-feed__who { display: grid; line-height: 1.2; }
-main[data-ai-page="ai"] .ai-feed__who b { font-size: 0.875rem; font-weight: 500; }
-main[data-ai-page="ai"] .ai-feed__who span { font-size: 0.75rem; color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-feed__chat { display: grid; flex: 1; align-content: start; gap: 0.625rem; padding: 1rem; }
-main[data-ai-page="ai"] .ai-feed__day { justify-self: center; margin: 0 0 0.25rem; padding: 0.2rem 0.625rem; border-radius: 62.4375rem; font-size: 0.75rem; color: var(--ink-mute); background: rgba(255, 255, 255, 0.05); }
-main[data-ai-page="ai"] .ai-feed__msg { justify-self: start; max-width: 86%; padding: 0.625rem 0.875rem 0.5rem; border-radius: 0.875rem 0.875rem 0.875rem 0.25rem; background: #1b1b1b; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.06); }
-main[data-ai-page="ai"] .ai-feed__t { margin: 0; font-size: 0.875rem; font-weight: 500; line-height: 1.35; color: var(--ink); }
-main[data-ai-page="ai"] .ai-feed__b { margin: 0.125rem 0 0; font-size: 0.8125rem; line-height: 1.4; color: var(--ink-soft); }
-main[data-ai-page="ai"] .ai-feed__f { display: flex; justify-content: space-between; gap: 0.75rem; margin: 0.375rem 0 0; font-size: 0.75rem; color: var(--ink-mute); }
-main[data-ai-page="ai"] .ai-feed__f u { color: #8cc4ff; text-decoration: none; }
-/* the loop: CSS only, while the demo is on the screen (InView: .is-on); the markup is the final frame */
-@media (prefers-reduced-motion: no-preference) {
-  main[data-ai-page="ai"] .ai-demo:not(.is-on) * { animation-play-state: paused !important; }
-  main[data-ai-page="ai"] .ai-feed__msg--1 { animation: ai-feed-1 7.5s var(--ease-out) infinite; }
-  main[data-ai-page="ai"] .ai-feed__msg--2 { animation: ai-feed-2 7.5s var(--ease-out) infinite; }
-  main[data-ai-page="ai"] .ai-feed__msg--3 { animation: ai-feed-3 7.5s var(--ease-out) infinite; }
-}
-/* the bot's messages arrive one after another, stay, and the morning starts again */
-@keyframes ai-feed-1 { 0%, 4% { opacity: 0; transform: translateY(14px) scale(0.98); } 10%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
-@keyframes ai-feed-2 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(0.98); } 28%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
-@keyframes ai-feed-3 { 0%, 40% { opacity: 0; transform: translateY(14px) scale(0.98); } 46%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
 
 /* ---------- 4 · Кейс (ivory): the client, the morning before and after as two table rows, the full case ---------- */
 main[data-ai-page="ai"] .ai-proof__lead { display: grid; gap: 0.875rem; max-width: 46rem; }
