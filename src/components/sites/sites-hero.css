@@ -236,6 +236,9 @@ main[data-ai-page="sites"] .st-hero.st-hg::before { content: none; }
    the live droplet (a computer) or its film (a phone, SitesDropletSlot) comes in with the still's own entrance once
    drawn, with reduced motion too */
 html.js .st-hg .ai-hero__rock:not(.is-still) .ai-hero__stone { visibility: hidden; }
+/* (with scripts the still shown is a canvas drawn from the photo, SitesDropletSlot showStill; the photo never paints,
+   so it is not the first screen's LCP seconds in) */
+html.js .st-hg .ai-hero__rock.is-still img.ai-hero__stone { visibility: hidden; }
 /* its entrance with reduced motion: a short fade in place, held at 0.4 s against the site's reduced motion rule
    (base.css), which would cut it to a blink */
 .st-hg .ai-hero__rock.is-live .ai-hero__canvas { opacity: 1; animation: st-stone-in 0.4s var(--ease-out) both; }

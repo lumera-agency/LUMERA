@@ -40,7 +40,8 @@
  */
 import { useEffect, useRef, type CSSProperties } from "react";
 import "./flux-lines.css";
-import { allowWebGL } from "@/lib/perf/mode";
+import { allowWebGL, isLite } from "@/lib/perf/mode";
+import { drawCover } from "@/lib/cover-canvas";
 
 const MAX_COLORS = 8;
 const INTRO_SECONDS = 1.8;
@@ -323,7 +324,9 @@ export default function FluxLines({
     const canvas = canvasRef.current;
     // (this site: LITE, lib/perf/mode, makes no context; flux-lines.css lays the lines' still picture instead)
     const gl = allowWebGL() ? canvas?.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false }) : null;
-    if (!container || !canvas || !gl) return undefined;
+    if (!container || !canvas) return undefined;
+    // no graphics card in FULL: the same still picture, on the canvas (lib/cover-canvas)
+    if (!gl) return isLite() ? undefined : drawCover(canvas, () => (matchMedia("(max-width: 600px)").matches ? "/img/sites/flux-m.webp" : "/img/sites/flux-d.webp"));
 
     const program = link(gl);
     if (!program) return undefined;

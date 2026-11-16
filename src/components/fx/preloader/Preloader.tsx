@@ -181,6 +181,15 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
         cv.style.cssText = "left:" + (xs[i] - margin).toFixed(1) + "px;width:" + lw + "px;height:" + cssH + "px";
         const gl = cv.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
         if (!gl) return Promise.resolve(null);
+        // a software renderer draws the chrome on the processor, 1.5 to 3 s of blocked page on PageSpeed's phone
+        // (16 Nov 2026): the plain name instead, as without WebGL. Asked of the first letter's context, once
+        if (i === 0) {
+          const info = gl.getExtension("WEBGL_debug_renderer_info");
+          if (info && /swiftshader|llvmpipe|softpipe|basic render|software/i.test(String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)))) {
+            gl.getExtension("WEBGL_lose_context")?.loseContext();
+            return Promise.resolve(null);
+          }
+        }
         const prog = gl.createProgram()!;
         for (const [type, src] of [[gl.VERTEX_SHADER, cfg.chrome[0]], [gl.FRAGMENT_SHADER, cfg.chrome[1]]] as const) {
           const sh = gl.createShader(type)!;
@@ -323,11 +332,29 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
       node = n.node;
       if (motion) n.letters.forEach((l) => (l.style.opacity = "0"));
     } else {
-      // without WebGL: the word itself
-      node = document.createElement("div");
-      node.className = "preloader__plain";
-      node.textContent = cfg.mark;
-      node.style.fontSize = (nameW * 0.31).toFixed(1) + "px";
+      // without a graphics card: the word itself in the font, drawn on a canvas as the page would set it (its box as
+      // tall as the size, line-height 1). As text this large it was the first screen's LCP, seconds in, on PageSpeed's
+      // phone (16 Nov 2026: 5.6 s); a canvas is not counted. A little room round it so no glyph's edge is cut, taken
+      // back by its margins so the box stays the word's own
+      const size = nameW * 0.31;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      const pen = document.createElement("canvas").getContext("2d")!;
+      pen.font = FONT(size);
+      const metrics = pen.measureText(cfg.mark);
+      const room = Math.ceil(size * 0.08);
+      const boxWidth = Math.ceil(metrics.width) + room * 2, boxHeight = Math.ceil(size) + room * 2;
+      const canvas = pen.canvas;
+      canvas.width = Math.ceil(boxWidth * ratio);
+      canvas.height = Math.ceil(boxHeight * ratio);
+      canvas.className = "preloader__plain";
+      canvas.style.cssText = "display:block;width:" + boxWidth + "px;height:" + boxHeight + "px;margin:-" + room + "px";
+      // (a canvas given a new size forgets its state: the font again)
+      pen.scale(ratio, ratio);
+      pen.font = FONT(size);
+      pen.fillStyle = "#dcdcd8";
+      const ascent = metrics.fontBoundingBoxAscent || size * 0.8, descent = metrics.fontBoundingBoxDescent || size * 0.2;
+      pen.fillText(cfg.mark, room, room + (size - ascent - descent) / 2 + ascent);
+      node = canvas;
     }
     // the name in the very middle; the words under it hang off it (absolute)
     stage.append(node, row);

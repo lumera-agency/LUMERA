@@ -16,8 +16,8 @@ const STILL = { wide: "/img/footer/eclo-chrome-d.webp", narrow: "/img/footer/ecl
  * this text and measures everything from it, so the name in config/site is the only place it is set.
  * LITE keeps the effect, calm (the owner, 12 Nov 2026: «в лайт версии не надо чтоб был хром переливающийся, хватит
  * картинки, но с линзой»; for a day a plain still stood there): the metal stands as a picture, drawn once, and the
- * lens follows the cursor as in FULL; frames are drawn only while the lens is out. Only LITE without a graphics card
- * (no WebGL, a software renderer, where the shader would run on the processor) shows a still of that chrome in its
+ * lens follows the cursor as in FULL; frames are drawn only while the lens is out. Only without a graphics card, in
+ * either mode (no WebGL, a software renderer, where the shader would run on the processor), a still of that chrome is in its
  * place, with no lens, sized as the live mark is (footer.css, [data-still]); the effect's code is not fetched there,
  * and the picture is asked for only near the footer. The still is a picture of the word ECLO: a new name needs a new
  * frame.
@@ -27,8 +27,10 @@ const STILL = { wide: "/img/footer/eclo-chrome-d.webp", narrow: "/img/footer/ecl
  * before the page is painted; leaving stops it and lets its WebGL context go. A page that goes LITE keeps its mark
  * and brings its metal to rest where it is (setCalm).
  */
-/** LITE without a graphics card: the still stands and the effect is not started */
-const stillOnly = () => isLite() && !canRunFull();
+/** No graphics card: the still stands and the effect is not started. In LITE as before, and in FULL too: a phone is
+ *  not looked at by the early script and stays FULL, and there the chrome ran on the processor (PageSpeed's phone,
+ *  16 Nov 2026) */
+const stillOnly = () => !canRunFull();
 
 export function Wordmark() {
   const root = useRef<HTMLDivElement>(null);

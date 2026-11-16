@@ -23,6 +23,34 @@ const SitesDroplet = dynamic(() => import("./SitesDroplet"), { ssr: false });
 const TOUCH = "(hover: none) and (pointer: coarse)";
 const FILM = "/img/droplet/droplet-film.mp4";
 
+/**
+ * The still where nothing can move (no film, no live droplet), put on a canvas as it is shown. The photo itself never
+ * paints: shown seconds in, once the page had found out nothing else could run, it was the first screen's largest
+ * element and so its LCP (PageSpeed's phone, 16 Nov 2026: 6.5 s). A canvas is not counted; the title is, at first paint.
+ * Without scripts the photo stays as it is (sites-hero.css).
+ */
+function showStill(host: HTMLElement) {
+  const photo = host.querySelector<HTMLImageElement>("img.ai-hero__stone");
+  const draw = () => {
+    if (host.classList.contains("is-still")) return;
+    if (photo?.naturalWidth) {
+      // the photo's own class: its size, place, turn and entrance (sites-hero.css)
+      const canvas = document.createElement("canvas");
+      canvas.className = "ai-hero__stone";
+      canvas.width = photo.naturalWidth;
+      canvas.height = photo.naturalHeight;
+      canvas.getContext("2d")?.drawImage(photo, 0, 0);
+      photo.after(canvas);
+    }
+    host.classList.add("is-still");
+  };
+  if (!photo || (photo.complete && photo.naturalWidth)) draw();
+  else {
+    photo.addEventListener("load", draw, { once: true });
+    photo.addEventListener("error", draw, { once: true });
+  }
+}
+
 export function SitesDropletSlot() {
   const mark = useRef<HTMLSpanElement>(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
@@ -64,13 +92,13 @@ export function SitesDropletSlot() {
           src={FILM}
           onFail={() => {
             // the film cannot play: the live droplet in FULL; in LITE the still
-            if (isLite()) host.classList.add("is-still");
+            if (isLite()) showStill(host);
             setMode(isLite() ? "still" : "live");
           }}
         />
       )}
       {host && mode === "live" && (
-        <WebGLGate onSkip={() => host.classList.add("is-still")}>
+        <WebGLGate onSkip={() => showStill(host)}>
           <SitesDroplet host={host} />
         </WebGLGate>
       )}

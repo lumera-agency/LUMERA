@@ -14,6 +14,7 @@
 import { useEffect, useRef } from "react";
 import { watchCover } from "./hero-cover";
 import { isLite, watchLite } from "@/lib/lite";
+import { allowWebGL } from "@/lib/perf/mode";
 
 /** The field's reach either way (css px): it is kept in 8 bits a channel, 0.5 the rest. */
 const RANGE = 48;
@@ -131,8 +132,9 @@ export function TitleFx() {
   useEffect(() => {
     const canvas = ref.current;
     const host = canvas?.parentElement;
-    // (a slow computer, lib/lite: the page's own letters, no liquid: the owner, 11 Nov 2026, «отключай анимацию текста»)
-    if (!canvas || !host || matchMedia("(prefers-reduced-motion: reduce)").matches || isLite()) return;
+    // (a slow computer, lib/lite: the page's own letters, no liquid: the owner, 11 Nov 2026, «отключай анимацию текста»;
+    // no graphics card, a software renderer included, lib/perf/mode allowWebGL: the liquid ran on the processor)
+    if (!canvas || !host || matchMedia("(prefers-reduced-motion: reduce)").matches || isLite() || !allowWebGL()) return;
     const gl = canvas.getContext("webgl2", { premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
     if (!gl) return;
     let field: ReturnType<typeof program>;

@@ -5,7 +5,8 @@
  * LITE: the same page, content and navigation, no three.js and no Lenis fetched, no preloader, the text's animations off (the list: lib/lite.ts); its 3D objects play as films recorded
  * from the live scenes (the home stone, the robot, the droplet: the owner, 11 Nov 2026, «статические вообще не имеет
  * смысла»), each drawn by one small shader (fx/alpha-film); the ads page's fibres and the sites page's lines are still
- * pictures. Where the browser has no WebGL at all the films cannot be drawn and their stills stand. The footer's
+ * pictures. Where no graphics card draws WebGL (none at all, or a software renderer) the films are not drawn and their
+ * stills stand. The footer's
  * chrome name keeps its lens in LITE wherever a graphics card draws it, its metal standing (layout/footer/Wordmark).
  *
  * Who decides, in this order (the early script, lib/perf/early.ts, before anything is drawn; this module after it):
@@ -68,16 +69,18 @@ function probeGraphics() {
 export const canRunFull = () => probeGraphics() === "ok";
 
 /**
- * Whether a live WebGL effect may start (a 3D scene, a shader canvas): never in LITE, and only where the browser has
- * WebGL. Every canvas effect asks this before it makes its context.
+ * Whether a live WebGL effect may start (a 3D scene, a shader canvas): never in LITE, and only where a graphics card
+ * draws it. A software renderer counts as none: a phone is not looked at by the early script and stays FULL, and there
+ * every shader ran on the processor (PageSpeed's phone, 16 Nov 2026: 7.4 s of blocked main thread on the sites page).
+ * Every canvas effect asks this before it makes its context.
  */
-export const allowWebGL = () => !isLite() && probeGraphics() !== "none";
+export const allowWebGL = () => !isLite() && probeGraphics() === "ok";
 
 /**
- * Whether a film with its own transparency may play (fx/alpha-film): in both modes, wherever the browser has WebGL (the
- * film's two halves are put together by one small shader; no three.js comes with it).
+ * Whether a film with its own transparency may play (fx/alpha-film): in both modes, wherever a graphics card draws it
+ * (the film's two halves are put together by one small shader; no three.js comes with it). Without one its still stands.
  */
-export const allowFilm = () => probeGraphics() !== "none";
+export const allowFilm = () => probeGraphics() === "ok";
 
 function apply(mode: Mode, why: string) {
   root().classList.toggle(CLASS, mode === "lite");
