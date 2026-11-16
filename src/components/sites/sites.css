@@ -652,6 +652,17 @@ body:has(main[data-ai-page="sites"]) .st-sumbar.is-on { visibility: visible; tra
   body:has(main[data-ai-page="sites"]) .ai-sticky { padding: 0 calc(1rem + 2.875rem + 0.5rem) 0 1rem; }
   body:has(main[data-ai-page="sites"]) .to-top { bottom: calc(14px + env(safe-area-inset-bottom)); }
 }
+/* block 3's sum bar too ends before the button's corner, so the two stand on one line (the owner, 15 Nov 2026; the
+   button used to rise above it). Wider, the bar's 520 px in the middle leave the corner free anyway */
+@media (max-width: 700px) {
+  .st-sumbar { right: var(--to-top-room, 4.375rem); }
+}
+/* phones: its button keeps the arrow only, a circle. The words («До розрахунку» is the longer) with the sum and the weeks
+   did not fit beside the button back up (measured at 320 to 414 px, both languages); the whole bar is the link */
+@media (max-width: 420px) {
+  .st-sumbar__go { width: 42px; padding: 0; justify-content: center; }
+  .st-sumbar__go > span { display: none; }
+}
 
 /* ==================== from css/sites-fx-page.css ==================== */
 /*

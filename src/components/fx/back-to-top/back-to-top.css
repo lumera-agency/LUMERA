@@ -1,14 +1,24 @@
 /* BackToTop: a dark glass circle with a progress ring; lime on hover, the arrow leaves up and the
    next one comes in from below (the buttons' arrow move, vertical) */
+/* its corner: a bar pinned to the bottom ends --to-top-room from the screen's right edge, so the button stands beside
+   it on one line (the owner, 15 Nov 2026) */
+:root {
+  --to-top-size: 3.25rem;
+  --to-top-edge: max(1rem, calc(var(--gutter, 1.5rem) * 0.6));
+  --to-top-room: calc(var(--to-top-edge) + var(--to-top-size) + 0.5rem);
+}
+@media (max-width: 600px) {
+  :root { --to-top-size: 2.875rem; }
+}
 .to-top {
   position: fixed;
-  right: max(1rem, calc(var(--gutter, 1.5rem) * 0.6));
-  bottom: max(1rem, calc(var(--gutter, 1.5rem) * 0.6));
+  right: var(--to-top-edge);
+  bottom: var(--to-top-edge);
   z-index: 50;
   display: grid;
   place-items: center;
-  width: 3.25rem;
-  height: 3.25rem;
+  width: var(--to-top-size);
+  height: var(--to-top-size);
   border-radius: 50%;
   color: var(--ink, #f6f6f3);
   background: rgb(15 14 13 / 0.92); /* (a dark pane, no glass: the light look for everyone, the owner, 10 Nov 2026) */
@@ -17,7 +27,7 @@
   opacity: 0;
   visibility: hidden;
   transform: translateY(0.75rem) scale(0.9);
-  /* above a bar pinned to the bottom (BackToTop sets the lift) */
+  /* level with a bar pinned to the bottom, or above one that reaches its corner (BackToTop sets the lift) */
   translate: 0 calc(-1 * var(--to-top-lift, 0px));
   transition:
     opacity 0.4s var(--ease-out, ease-out),
@@ -72,9 +82,6 @@
   .to-top:hover .to-top__arrow--b { transform: none; }
 }
 
-@media (max-width: 600px) {
-  .to-top { width: 2.875rem; height: 2.875rem; }
-}
 @media (prefers-reduced-motion: reduce) {
   .to-top,
   .to-top__arrow { transition: none; }

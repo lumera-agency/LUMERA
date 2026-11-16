@@ -363,7 +363,8 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: clamp(1rem, 2vw, 2rem);
-  padding: 0 var(--gutter) clamp(1.125rem, 3.4vh, 2.125rem);
+  /* (on the right, the button back up's corner: «skip» and the button on one line, the owner, 15 Nov 2026) */
+  padding: 0 var(--to-top-room, 6rem) clamp(1.125rem, 3.4vh, 2.125rem) var(--gutter);
 }
 .ride__count { margin: 0; font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--track-num); color: var(--ink-mute); font-variant-numeric: tabular-nums; }
 .ride__count b { font-weight: 400; color: var(--ink); }

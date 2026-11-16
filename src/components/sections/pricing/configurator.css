@@ -397,6 +397,9 @@
     /* no flow slot of its own after the last card (polish audit D3): it rests over the summary's foot,
        where it is hidden anyway (the summary on screen hides it) */
     margin-top: -3.75rem;
+    /* it ends before the button back up, the two on one line (the owner, 15 Nov 2026): wherever it shows, phones and
+       low computer screens, its column ends a gutter from the screen's edge */
+    margin-right: calc(var(--to-top-room, 4.375rem) - var(--gutter));
     height: 3.75rem;
     align-items: center;
     justify-content: space-between;
@@ -438,9 +441,29 @@
   .cfg-bar__month { order: 4; }
   .cfg-bar__more { order: 5; }
 }
-@media (max-width: 380px) {
+/* the bar shorter by the button back up's corner, its words make room: the button's arrow goes first (up to 380 px
+   until 15 Nov 2026) and «разово» beside a sum with a monthly part (the «+…/міс» says which is which), then the
+   chevron, some padding and a smaller sum, on the narrowest phones «разово» everywhere. Measured with every ready
+   variant at 320 to 600 px, both languages: nothing under the button */
+@media (max-width: 420px) {
   .cfg .cfg-bar__cta .btn__icon { display: none; }
   .cfg .cfg-bar__cta { padding-inline: 1.1rem; }
+  .cfg-bar__t:has(.cfg-bar__month:not(:empty)) .cfg-bar__once { display: none; }
+}
+@media (max-width: 380px) {
+  .cfg-bar__more { display: none; }
+}
+@media (max-width: 371px) {
+  .cfg-bar { gap: 0.375rem; }
+  .cfg-bar__t { padding: 2px 0.25rem 2px 0.5rem; }
+  .cfg-bar__price { font-size: 1.25rem; }
+  .cfg .cfg-bar__cta { padding-inline: 0.875rem; }
+}
+@media (max-width: 345px) {
+  .cfg-bar { gap: 0.25rem; }
+  .cfg-bar__price { font-size: 1.125rem; }
+  .cfg-bar__once { display: none; }
+  .cfg .cfg-bar__cta { padding-inline: 0.75rem; }
 }
 .cfg-card .cfg-price { white-space: normal; text-wrap: balance; }
 .cfg .btn:focus-visible { border-radius: 62.4375rem; }

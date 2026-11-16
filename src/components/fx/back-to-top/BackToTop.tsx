@@ -8,7 +8,9 @@
  * the whole footer, the request form and the controls in that corner: it was gone long before the page's
  * end and came back late). Both edges are scroll positions measured when the page's size changes, so it
  * shows and hides on the frame the scroll crosses them. A bar pinned to the bottom (the phones' request bar,
- * the sum bars) does not hide it: it rises above the bar (the owner, 10 Nov 2026).
+ * the sum bars, the services ride's panel) does not hide it: the bar ends before its corner (--to-top-room) and the
+ * button stands level with it, the two on one line (the owner, 15 Nov 2026: «стрелка вверх в одну строчку»; it used to
+ * rise above the bar, 10 Nov). Over a bar that still reaches its corner it rises above it.
  */
 import { useEffect, useRef } from "react";
 import { fadeJumpTo } from "@/lib/scroll";
@@ -21,9 +23,13 @@ type Props = {
   after?: number;
 };
 
-/** bars pinned to the bottom of the screen: the button rises above whichever is there (the services ride's panel too:
- *  its «skip» sits in that corner for the whole ride) */
-const BARS = ".ai-sticky.is-on .btn, .st-sumbar.is-on, .cfg-bar:not(.is-hidden), .ride.is-on .ride__hud";
+/** bars pinned to the bottom of the screen, shown: the button stands on their line (the services ride's panel by its
+ *  «skip», the panel's last part, at the bottom for the whole ride) */
+const BARS = ".ai-sticky.is-on .btn, .st-sumbar.is-on, .cfg-bar:not(.is-hidden), .ride.is-on .ride__skip";
+/** the bars that slide in and out: read mid-slide, the button stood off their line, so it is placed again as one stops */
+const SLIDING = ".ai-sticky, .st-sumbar, .cfg-bar";
+/** a bar is on the button's line while its middle is this near the screen's foot, px */
+const LINE_ZONE = 120;
 /** where it goes at the page's end: as this reaches it (the footer's map, on every page) */
 const LAST = ".footer__col--studio";
 /** room between a bar and the button, px */
@@ -81,13 +87,22 @@ export function BackToTop({ label, after = 1 }: Props) {
     };
     const place = (y: number) => {
       const { right, bottom, size } = rest;
-      let lift = 0;
+      const screen = window.innerHeight;
+      let above = 0;
+      let level = 0;
       for (const bar of document.querySelectorAll<HTMLElement>(BARS)) {
-        const r = bar.getBoundingClientRect();
-        const pinned = r.width > 0 && r.bottom > window.innerHeight - 64 && r.left < right && r.right > right - size;
-        if (pinned) lift = Math.max(lift, bottom - r.top + BAR_GAP);
+        const box = bar.getBoundingClientRect();
+        if (!box.width) continue;
+        const middle = box.top + box.height / 2;
+        if (box.left < right && box.right > right - size) {
+          // in the button's corner: it rises above the bar
+          if (box.bottom > screen - 64) above = Math.max(above, bottom - box.top + BAR_GAP);
+        } else if (box.bottom <= screen + 1 && middle > screen - LINE_ZONE) {
+          // beside it: the two middles level, the button kept on the screen
+          level = Math.max(bottom - size / 2 - middle, bottom - screen + 4);
+        }
       }
-      lift = Math.round(lift);
+      const lift = Math.round(above || level);
       if (lift !== shownLift) {
         shownLift = lift;
         el.style.setProperty("--to-top-lift", `${lift}px`);
@@ -115,18 +130,25 @@ export function BackToTop({ label, after = 1 }: Props) {
       placedAt = -Infinity;
       queue();
     };
+    const barStopped = (event: TransitionEvent) => {
+      if (!(event.target instanceof Element) || !event.target.matches(SLIDING)) return;
+      placedAt = -Infinity;
+      queue();
+    };
     queue();
     // the page grows as its parts load (the height for the ring, where the footer stands)
     const grown = new ResizeObserver(resized);
     grown.observe(document.body);
     window.addEventListener("scroll", queue, { passive: true });
     window.addEventListener("resize", resized);
+    document.addEventListener("transitionend", barStopped);
     return () => {
       cancelAnimationFrame(queued);
       clearTimeout(settle);
       grown.disconnect();
       window.removeEventListener("scroll", queue);
       window.removeEventListener("resize", resized);
+      document.removeEventListener("transitionend", barStopped);
     };
   }, [after]);
 
