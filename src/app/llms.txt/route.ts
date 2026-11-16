@@ -8,7 +8,7 @@ import { services, type Price } from "@/components/seo/services";
 
 /**
  * /llms.txt (llmstxt.org): the studio in short for AI assistants. What it is, the services with their pages and
- * prices, the clients' cases, where the questions are, the contacts; Ukrainian, then Russian. Made once, at build,
+ * prices, the clients' cases, where the questions are, the studio's pages, the contacts; Ukrainian, then Russian. Made once, at build,
  * from the messages and prices the pages show (components/seo/services), so it never says anything else.
  */
 export const dynamic = "force-static";
@@ -36,6 +36,8 @@ async function part(locale: string) {
     [t("nav.services"), list.map((s) => item(s.name, at(s.path), [s.desc, s.prices.map(price).join("; ")].join(" ")))],
     [t("nav.casesMore"), CASES.map((c) => item(t(`nav.caseTitle.${c.key}`), at(c.path, c.hash)))],
     [t("nav.faq"), [item(studioName, at("/", "#faq")), ...list.map((s) => item(s.name, at(s.path, "#faq")))]],
+    // the studio's own pages, as the footer's «Студія» column links them: who we are (with its description), the contacts
+    [t("footer.map.studio"), [item(t("nav.about"), at("/pro-nas"), t("about.meta.description")), item(t("nav.kontakty"), at("/kontakty"))]],
     [
       t("footer.map.contacts"),
       [`- [${CONTACTS.email}](mailto:${CONTACTS.email})`, ...realPhones().map((n) => `- [${phoneText(n)}](tel:${n})`), item(t("nav.contact"), at("/", "#contact"))],

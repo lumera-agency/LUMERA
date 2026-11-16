@@ -51,9 +51,11 @@ type Props = {
   crumbs?: { name: string; path: string }[];
   /** the page's questions, as its list shows them */
   faq?: { q: ReactNode; a: ReactNode }[];
+  /** what kind of page it is, when more than a page: «Про нас», «Контакти» */
+  type?: "AboutPage" | "ContactPage";
 };
 
-export async function pageGraph({ locale, path, meta, service, about, crumbs = [], faq = [] }: Props) {
+export async function pageGraph({ locale, path, meta, service, about, crumbs = [], faq = [], type }: Props) {
   const t = await getTranslations({ locale });
   const m = await getTranslations({ locale, namespace: meta });
   const list = await services(locale);
@@ -101,7 +103,7 @@ export async function pageGraph({ locale, path, meta, service, about, crumbs = [
   };
 
   const page = {
-    "@type": "WebPage",
+    "@type": type ?? "WebPage",
     "@id": `${url}#webpage`,
     url,
     // the page's <title> and description, the sums in them the engine's as in its metadata (services/copy)
