@@ -3,11 +3,12 @@
  * root layout writes this script into every page of the production build only (previews and local hosts send nothing),
  * as the body's first markup, next to Vercel's analytics. What it counts:
  * - page views (GA4's own, history changes included);
- * - a click on tel: → click_phone_<page>, on t.me → click_telegram_<page>, on Viber → click_viber_<page>;
- * - a lead the server took → lead_form_<page> (the form calls window.ecloTrackLead: sections/contact/lead-form.js).
- * <page> is the page the click or the lead happened on, each page its own (the owner, 17 Nov 2026: «на каждой странице
- * четко отдельно»), the Russian version under the same name (its page_path starts with /ru). Google Ads ties a lead to
- * its ad click by itself; the name only says where it happened.
+ * - a click on tel: → click_phone, on t.me → click_telegram, on Viber → click_viber;
+ * - a lead the server took → lead_form (the form calls window.ecloTrackLead: sections/contact/lead-form.js).
+ * Each event carries page_name, the page it happened on (home, dyzain, reklama, ai, keis_brygada …; the Russian version
+ * under the same name, its page_path starts with /ru), and page_path. The event names stay the same on every page (the
+ * owner, 17 Nov 2026), so one key event in GA4 and one conversion in Google Ads count them all; GA4 shows page_name once
+ * it is a custom dimension. Google Ads ties a lead to its ad click by itself.
  * Changed from his file: no service carried over from page to page; Google's gtag.js loads once the page has loaded
  * (the first screen does not wait for it; the events wait in dataLayer); visitors from the EEA, the UK and Switzerland
  * get no cookies (Consent Mode, denied by default: the site has no consent banner). The content policy lets Google's
@@ -15,7 +16,7 @@
  */
 export const GA4_ID = "G-XJ7WSKTEC6";
 
-/** each page's name in the events: its path without the language, as app/[locale] has them */
+/** each page's page_name: its path without the language, as app/[locale] has them */
 export const GA4_PAGES: Record<string, string> = {
   "": "home",
   "dyzain-i-saity": "dyzain",
@@ -58,8 +59,9 @@ gtag('config', '${GA4_ID}');
   }
   function send(base, params) {
     params = params || {};
+    params.page_name = pageName();
     params.page_path = location.pathname;
-    gtag('event', base + '_' + pageName(), params);
+    gtag('event', base, params);
   }
   document.addEventListener('click', function (e) {
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
