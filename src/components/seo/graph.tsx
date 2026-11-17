@@ -74,8 +74,8 @@ export async function pageGraph({ locale, path, meta, service, about, crumbs = [
     // «ECLO» and the other spellings people use (config/site: «Екло»)
     alternateName: [brandName, ...brandAltNames],
     url: `${siteUrl}/`,
-    // the site's icon, the favicon's picture: a new logo there is the studio's logo here too
-    logo: `${siteUrl}/apple-touch-icon.png`,
+    // the site's mark as a 512 px square (app/logo.png, drawn from components/ui/logo/mark): a new mark is a new logo here too
+    logo: `${siteUrl}/logo.png`,
     description: plainText(t("meta.org")),
     email: CONTACTS.email,
     ...(phones.length ? { telephone: phones[0] } : {}),
