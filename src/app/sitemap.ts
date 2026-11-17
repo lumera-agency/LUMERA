@@ -8,17 +8,18 @@ import { siteUrl } from "@/config/site";
  *  data (components/seo: the services, prices and questions) or its links. Shared messages count for every page that
  *  shows them (contact.*, faq.*, nav.*, the configurator's prices). Search engines trust lastmod only while it is true:
  *  move a date with such a change, not on every deploy (a build date would say «changed» every time, and Google would
- *  stop reading it). 12 Nov 2026: every page got its structured data. */
+ *  stop reading it). 12 Nov 2026: every page got its structured data. 16 Nov 2026, the launch: every page's footer and
+ *  menu changed on 15–16 Nov (the privacy link, the cases' names), «Про нас» got its structured data. */
 const PAGES = [
-  { path: "", priority: 1, updated: "2026-11-12" },
-  { path: "/dyzain-i-saity", priority: 0.8, updated: "2026-11-12" },
-  { path: "/reklama-i-analityka", priority: 0.8, updated: "2026-11-12" },
-  { path: "/ai-avtomatyzatsiia", priority: 0.8, updated: "2026-11-12" },
-  { path: "/keisy/poshuk-zamovlen", priority: 0.6, updated: "2026-11-12" },
-  { path: "/keisy/ai-asystent", priority: 0.6, updated: "2026-11-12" },
-  { path: "/kontakty", priority: 0.6, updated: "2026-11-15" },
-  { path: "/polityka-konfidentsiinosti", priority: 0.3, updated: "2026-11-14" },
-  { path: "/pro-nas", priority: 0.5, updated: "2026-11-15" },
+  { path: "", priority: 1, updated: "2026-11-16" },
+  { path: "/dyzain-i-saity", priority: 0.8, updated: "2026-11-16" },
+  { path: "/reklama-i-analityka", priority: 0.8, updated: "2026-11-16" },
+  { path: "/ai-avtomatyzatsiia", priority: 0.8, updated: "2026-11-16" },
+  { path: "/keisy/poshuk-zamovlen", priority: 0.6, updated: "2026-11-16" },
+  { path: "/keisy/ai-asystent", priority: 0.6, updated: "2026-11-16" },
+  { path: "/kontakty", priority: 0.6, updated: "2026-11-16" },
+  { path: "/polityka-konfidentsiinosti", priority: 0.3, updated: "2026-11-16" },
+  { path: "/pro-nas", priority: 0.5, updated: "2026-11-16" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -5,10 +5,13 @@ import { aiMetadata } from "@/components/ai/meta";
 import { studioName } from "@/config/site";
 import { AboutShell } from "@/components/about/AboutShell";
 import { AboutPb, PB_NAV } from "@/components/sections/about-page/pb/AboutPb";
+import { PageJsonLd } from "@/components/seo/graph";
+
+const PATH = "/pro-nas";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/pro-nas">) {
   const { locale } = await params;
-  return aiMetadata({ locale, namespace: "about.meta", path: "/pro-nas" });
+  return aiMetadata({ locale, namespace: "about.meta", path: PATH });
 }
 
 /**
@@ -24,6 +27,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/pro-nas
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("about");
+  const tNav = await getTranslations("nav");
   const home = aiHref(locale, "/");
   const blocks = PB_NAV.map((id) => ({ href: `#${id}`, text: t(`pb.nav.${id}`) }));
   const nav = [...blocks, { href: "#contact", text: t("nav.lead"), bar: false }, { href: home, text: t("nav.home"), bar: false }];
@@ -37,6 +41,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/pro-nas
       <PageShell>
         <AboutPb />
       </PageShell>
+      <PageJsonLd locale={locale} path={PATH} meta="about.meta" type="AboutPage" crumbs={[{ name: tNav("about"), path: PATH }]} />
     </AboutShell>
   );
 }

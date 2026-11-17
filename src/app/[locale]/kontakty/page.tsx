@@ -36,7 +36,7 @@ export default async function KontaktyPage({ params }: PageProps<"/[locale]/kont
       <PageShell>
         <Contact index={2} />
       </PageShell>
-      <PageJsonLd locale={locale} path={PATH} meta="kontakty.meta" crumbs={[{ name: t("kontakty.crumb"), path: PATH }]} />
+      <PageJsonLd locale={locale} path={PATH} meta="kontakty.meta" type="ContactPage" crumbs={[{ name: t("kontakty.crumb"), path: PATH }]} />
     </LegalShell>
   );
 }
