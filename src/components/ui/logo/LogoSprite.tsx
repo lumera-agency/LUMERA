@@ -1,15 +1,17 @@
 import { MARK_DOT, MARK_PATHS } from "./mark";
 import "./logo.css";
 
-/** The logo mark (the L with its light), drawn once; every <LogoMark> reuses it via <use>. */
+/** The logo mark (the L with its light), drawn once; every <LogoMark> reuses it via <use>. The light is lime, the
+ *  signal colour, as on the favicon and the search logo (the owner, 17 Nov 2026) */
 export function LogoSprite() {
   return (
     <svg className="sprite" width="0" height="0" aria-hidden="true" focusable="false">
-      <symbol id="logo-mark" viewBox="0 0 329 329">
+      {/* the dot and the L touch the box's edges: overflow visible keeps a pixel-snapped box from shaving them flat */}
+      <symbol id="logo-mark" viewBox="0 0 329 329" style={{ overflow: "visible" }}>
         {MARK_PATHS.map((path) => (
           <path key={path} d={path} />
         ))}
-        <circle cx={MARK_DOT.cx} cy={MARK_DOT.cy} r={MARK_DOT.r} />
+        <circle cx={MARK_DOT.cx} cy={MARK_DOT.cy} r={MARK_DOT.r} style={{ fill: "var(--signal, #daff02)" }} />
       </symbol>
     </svg>
   );

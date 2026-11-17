@@ -38,7 +38,7 @@ html.pl-done .preloader { display: none; }
   color: var(--pl-mute);
 }
 .preloader__brand { left: var(--gutter); top: var(--pl-pad); display: flex; align-items: center; gap: 0.75rem; color: var(--pl-ink); }
-.preloader__mark { width: 1.375rem; height: 1.375rem; fill: currentColor; }
+.preloader__mark { width: 1.375rem; height: 1.375rem; fill: currentColor; overflow: visible; } /* the dot touches the edge */
 .preloader__note { left: 50%; bottom: var(--pl-pad); translate: -50% 0; white-space: nowrap; }
 
 /* the middle: the name, large, the words under it */
