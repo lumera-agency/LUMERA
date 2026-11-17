@@ -14,7 +14,7 @@
   font-weight: 400;
   line-height: 1;
 }
-.logo__mark { flex: none; width: var(--logo-h); height: var(--logo-h); fill: currentColor; }
+.logo__mark { flex: none; width: var(--logo-h); height: var(--logo-h); fill: currentColor; overflow: visible; } /* the dot touches the edge */
 .logo__type {
   display: inline-flex;
   flex-direction: column;

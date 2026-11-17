@@ -6,7 +6,8 @@ import "./logo.css";
 export function LogoSprite() {
   return (
     <svg className="sprite" width="0" height="0" aria-hidden="true" focusable="false">
-      <symbol id="logo-mark" viewBox="0 0 329 329">
+      {/* the dot and the L touch the box's edges: overflow visible keeps a pixel-snapped box from shaving them flat */}
+      <symbol id="logo-mark" viewBox="0 0 329 329" style={{ overflow: "visible" }}>
         {MARK_PATHS.map((path) => (
           <path key={path} d={path} />
         ))}
