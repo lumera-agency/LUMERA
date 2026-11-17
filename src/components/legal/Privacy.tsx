@@ -179,7 +179,7 @@ export async function PrivacyParts() {
       <Part id="where" label={t("nav.where")} title={t("where.title")}>
         <p className="lg-p">{t("where.p")}</p>
         <p className="lg-p lg-p--lead-in">{t("where.via")}</p>
-        <Rows ns="where" n={2} />
+        <Rows ns="where" n={3} />
         <p className="lg-p">{t("where.none")}</p>
       </Part>
 

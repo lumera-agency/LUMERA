@@ -18,7 +18,7 @@ const PAGES = [
   { path: "/keisy/poshuk-zamovlen", priority: 0.6, updated: "2026-11-16" },
   { path: "/keisy/ai-asystent", priority: 0.6, updated: "2026-11-16" },
   { path: "/kontakty", priority: 0.6, updated: "2026-11-16" },
-  { path: "/polityka-konfidentsiinosti", priority: 0.3, updated: "2026-11-16" },
+  { path: "/polityka-konfidentsiinosti", priority: 0.3, updated: "2026-11-17" },
   { path: "/pro-nas", priority: 0.5, updated: "2026-11-16" },
 ];
 

@@ -17,6 +17,7 @@ import { Preloader } from "@/components/fx/preloader/Preloader";
 import { PreloaderRelease } from "@/components/fx/preloader/PreloaderRelease";
 import { PerfProbe } from "@/components/fx/lite/PerfProbe";
 import { EARLY_SCRIPT } from "@/lib/perf/early";
+import { GA4_SCRIPT } from "@/lib/analytics/ga4";
 
 // (+ sites: «Дизайн і сайти», messages/sites/)
 const AI_NAMESPACES = ["ai", "case", "asst", "aiCommon", "sites", "ads", "about"];
@@ -77,8 +78,11 @@ const PREFETCH = JSON.stringify({
 /* Vercel Web Analytics (the owner, 12 Nov 2026): no cookies, so no consent banner; it shows the pages and where the
    visitors came from (Google, chatgpt.com, perplexity.ai). Vercel serves its script under /_vercel/insights once
    Analytics is on in the project, so only the production build asks for it (locally and on previews it is a 404).
-   Deferred: it waits for the page and costs the first screen nothing. */
-const ANALYTICS = process.env.VERCEL_ENV === "production" ? `<script defer src="/_vercel/insights/script.js"></script>` : "";
+   Deferred: it waits for the page and costs the first screen nothing. Google Analytics 4 next to it (the owner,
+   17 Nov 2026; lib/analytics/ga4.ts): page views, clicks on the phone, Telegram and Viber, and sent leads, production
+   only too; its cookies are named on the privacy page. */
+const ANALYTICS =
+  process.env.VERCEL_ENV === "production" ? `<script defer src="/_vercel/insights/script.js"></script><script>${GA4_SCRIPT}</script>` : "";
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;

@@ -175,6 +175,9 @@ function initForm(form, reducedMotion) {
       await sendLead(form, reducedMotion);
       if (signal.aborted) return; // sent, but the page has moved on (a language switch): its form is a new one
       form.classList.add('is-sent');
+      // a lead the server took counts in Google Analytics (lib/analytics/ga4.ts, production only); a bot's (the hidden
+      // `fax` field filled in) is thanked by the server and counted nowhere
+      if (!form.elements.fax?.value) window.ecloTrackLead?.('contact');
       document.dispatchEvent(new CustomEvent('stone:flash', { detail: { env: 0.5 } }));
       done.hidden = false;
       done.focus();
