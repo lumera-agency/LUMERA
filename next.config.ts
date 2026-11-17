@@ -29,20 +29,26 @@ const toDomain = [
 /**
  * Security headers on every response. Framing is refused (no page here embeds another), the browser keeps to the
  * declared file types, other sites get only the origin as referrer, and the browser features the site never uses stay
- * off. The content policy names what the pages load (all first-party: inline boot scripts, workers and blob: URLs of
+ * off. The content policy names what the pages load (first-party but for Google Analytics: inline boot scripts, workers and blob: URLs of
  * the 3D, data:/blob: pictures, /_vercel/insights) and is enforced (the owner, 13 Nov 2026): a script, style, frame or
  * request from any other host is refused, so injected code cannot load more or send data away. Checked with no
  * violations on every page type. `next dev` needs eval; Vercel's toolbar on previews needs vercel.live (previews only).
  */
 const preview = process.env.VERCEL_ENV === "preview";
+/* Google Analytics 4 (the owner, 17 Nov 2026; lib/analytics/ga4.ts): its script from Google's tag host, its hits to
+   Google's hosts (Google's own list for GA4 with Google signals, google.com.ua named apart). The only other hosts. */
+const GOOGLE = {
+  script: "https://www.googletagmanager.com",
+  send: "https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://*.google.com.ua",
+};
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}${preview ? " https://vercel.live" : ""}`,
+  `script-src 'self' 'unsafe-inline' ${GOOGLE.script}${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}${preview ? " https://vercel.live" : ""}`,
   `style-src 'self' 'unsafe-inline'${preview ? " https://vercel.live" : ""}`,
-  `img-src 'self' data: blob:${preview ? " https://vercel.live https://vercel.com" : ""}`,
+  `img-src 'self' data: blob: ${GOOGLE.send}${preview ? " https://vercel.live https://vercel.com" : ""}`,
   `font-src 'self'${preview ? " https://vercel.live https://assets.vercel.com" : ""}`,
   "media-src 'self' blob:",
-  `connect-src 'self'${preview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
+  `connect-src 'self' ${GOOGLE.send}${preview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
   "worker-src 'self' blob:",
   `frame-src ${preview ? "https://vercel.live" : "'none'"}`,
   "object-src 'none'",
