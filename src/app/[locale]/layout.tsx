@@ -56,7 +56,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
     },
     twitter: { card: "summary_large_image" },
     icons: {
-      icon: [{ url: "/favicon.svg", type: "image/svg+xml" }, { url: "/favicon-32.png", sizes: "32x32", type: "image/png" }],
+      // the mark on a dark tile (17 Nov 2026: it read poorly black on a dark tab or a dark Google page); Google takes
+      // a square that is a multiple of 48 px
+      icon: [{ url: "/favicon.svg", type: "image/svg+xml" }, { url: "/favicon-96.png", sizes: "96x96", type: "image/png" }, { url: "/favicon-48.png", sizes: "48x48", type: "image/png" }, { url: "/favicon-32.png", sizes: "32x32", type: "image/png" }],
       apple: "/apple-touch-icon.png",
     },
   };
