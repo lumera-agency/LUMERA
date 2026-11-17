@@ -1,19 +1,32 @@
 /**
  * Google Analytics 4 (the owner, 17 Nov 2026: the property «ECLO — eclo.com.ua», his file eclo-ga4-code.html). The
  * root layout writes this script into every page of the production build only (previews and local hosts send nothing),
- * as the body's first markup, next to Vercel's analytics. It works the way that file asks:
+ * as the body's first markup, next to Vercel's analytics. What it counts:
  * - page views (GA4's own, history changes included);
- * - a click on tel: → click_phone_<service>, on t.me → click_telegram_<service>, on Viber → click_viber_<service>;
- * - a lead the server took → lead_form_<service> (the form calls window.ecloTrackLead: sections/contact/lead-form.js).
- * <service> is the page's (reklama / ai / dyzain, the cases under ai), kept for the rest of the visit, so a lead sent from
- * the main page or «Контакти» after a service page still counts for it; with none the event has no ending (counted in
- * GA4, not imported into Google Ads).
- * Changed from the file: Google's gtag.js loads once the page has loaded (the first screen does not wait for it; the
- * events wait in dataLayer); the brigade case (keisy/poshuk-zamovlen) is ai; visitors from the EEA, the UK and
- * Switzerland get no cookies (Consent Mode, denied by default: the site has no consent banner). The content policy
- * lets Google's hosts in (next.config.ts) and the privacy page says what is counted (messages/privacy).
+ * - a click on tel: → click_phone_<page>, on t.me → click_telegram_<page>, on Viber → click_viber_<page>;
+ * - a lead the server took → lead_form_<page> (the form calls window.ecloTrackLead: sections/contact/lead-form.js).
+ * <page> is the page the click or the lead happened on, each page its own (the owner, 17 Nov 2026: «на каждой странице
+ * четко отдельно»), the Russian version under the same name (its page_path starts with /ru). Google Ads ties a lead to
+ * its ad click by itself; the name only says where it happened.
+ * Changed from his file: no service carried over from page to page; Google's gtag.js loads once the page has loaded
+ * (the first screen does not wait for it; the events wait in dataLayer); visitors from the EEA, the UK and Switzerland
+ * get no cookies (Consent Mode, denied by default: the site has no consent banner). The content policy lets Google's
+ * hosts in (next.config.ts) and the privacy page says what is counted (messages/privacy).
  */
 export const GA4_ID = "G-XJ7WSKTEC6";
+
+/** each page's name in the events: its path without the language, as app/[locale] has them */
+export const GA4_PAGES: Record<string, string> = {
+  "": "home",
+  "dyzain-i-saity": "dyzain",
+  "reklama-i-analityka": "reklama",
+  "ai-avtomatyzatsiia": "ai",
+  "keisy/poshuk-zamovlen": "keis_brygada",
+  "keisy/ai-asystent": "keis_salon",
+  kontakty: "kontakty",
+  "pro-nas": "pro_nas",
+  "polityka-konfidentsiinosti": "polityka",
+};
 
 /** where cookies wait for a consent the site never asks for: the EEA, the UK, Switzerland */
 const NO_COOKIES = "AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE IS LI NO GB CH".split(" ");
@@ -37,28 +50,16 @@ gtag('config', '${GA4_ID}');
   if (document.readyState === 'complete') load();
   else { addEventListener('load', load, { once: true }); setTimeout(load, 4000); }
 
-  var KEY = 'eclo_service';
-  function serviceFromPath(path) {
-    path = (path || '').toLowerCase();
-    if (path.indexOf('reklama') > -1) return 'reklama';
-    if (path.indexOf('avtomat') > -1 || path.indexOf('poshuk-zamovlen') > -1 || /(^|\\/)ai(-|\\/|$)/.test(path)) return 'ai';
-    if (/dyzain|dizain|dizajn|saity|sajty/.test(path)) return 'dyzain';
-    return null;
+  var PAGES = ${JSON.stringify(GA4_PAGES)};
+  function pageName() {
+    var p = location.pathname.toLowerCase().replace(/^\\/ru(?=\\/|$)/, '').replace(/^\\/+|\\/+$/g, '');
+    if (Object.prototype.hasOwnProperty.call(PAGES, p)) return PAGES[p];
+    return p.indexOf('lab') === 0 ? 'lab' : 'other';
   }
-  function currentService() {
-    var s = serviceFromPath(location.pathname);
-    try {
-      if (s) sessionStorage.setItem(KEY, s);
-      else s = sessionStorage.getItem(KEY);
-    } catch (e) {}
-    return s;
-  }
-  currentService();
   function send(base, params) {
-    var s = currentService();
     params = params || {};
     params.page_path = location.pathname;
-    gtag('event', s ? base + '_' + s : base, params);
+    gtag('event', base + '_' + pageName(), params);
   }
   document.addEventListener('click', function (e) {
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;

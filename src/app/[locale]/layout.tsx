@@ -79,7 +79,7 @@ const PREFETCH = JSON.stringify({
    visitors came from (Google, chatgpt.com, perplexity.ai). Vercel serves its script under /_vercel/insights once
    Analytics is on in the project, so only the production build asks for it (locally and on previews it is a 404).
    Deferred: it waits for the page and costs the first screen nothing. Google Analytics 4 next to it (the owner,
-   17 Nov 2026; lib/analytics/ga4.ts): page views, clicks on the phone, Telegram and Viber, and sent leads, production
+   17 Nov 2026; lib/analytics/ga4.ts): page views, clicks on the phone, Telegram and Viber, and sent leads, each named by its page, production
    only too; its cookies are named on the privacy page. */
 const ANALYTICS =
   process.env.VERCEL_ENV === "production" ? `<script defer src="/_vercel/insights/script.js"></script><script>${GA4_SCRIPT}</script>` : "";
