@@ -3,7 +3,8 @@ import { MARK_DOT, MARK_PATHS, MARK_SIZE } from "@/components/ui/logo/mark";
 
 /**
  * /logo.png: the studio's logo for search engines and AI assistants (the Organization's `logo` in components/seo/graph).
- * The site's own mark (components/ui/logo/mark) in the share pictures' ivory on their black, square, 512 px: Google asks
+ * The site's own mark (components/ui/logo/mark) in the share pictures' ivory on their black, with the lime dot of the
+ * favicon (the owner's pick, 17 Nov 2026), square, 512 px: Google asks
  * for 112 px at least and a picture that still reads on white. Made once, at build; a new mark in mark.ts is a new logo
  * here too.
  */
@@ -21,7 +22,7 @@ export function GET() {
           {MARK_PATHS.map((d) => (
             <path key={d} d={d} />
           ))}
-          <circle cx={MARK_DOT.cx} cy={MARK_DOT.cy} r={MARK_DOT.r} />
+          <circle cx={MARK_DOT.cx} cy={MARK_DOT.cy} r={MARK_DOT.r} fill="#daff02" />
         </svg>
       </div>
     ),
