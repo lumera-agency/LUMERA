@@ -132,6 +132,8 @@ const STAT_ICON: Record<"n" | "cr" | "spend", React.ReactNode> = {
 function Window({ c, text, hidden }: { c: CaseView; text: CasesText; hidden: boolean }) {
   const [shot, setShot] = useState(0);
   const [panned, setPanned] = useState(false);
+  /** the screenshot is wider than the window (one column): the keyboard can then reach the scroller and move it with the arrows */
+  const [scrollable, setScrollable] = useState(false);
   const pan = useRef<HTMLDivElement>(null);
   const opened = useRef(0);
   const current = c.shots[shot] ?? c.shots[0];
@@ -142,7 +144,9 @@ function Window({ c, text, hidden }: { c: CaseView; text: CasesText; hidden: boo
     const rings = current.rings ?? [];
     const focus = rings.length ? (Math.min(...rings.map((ring) => ring.left)) + Math.max(...rings.map((ring) => ring.left + ring.width))) / 200 : 0.5;
     const open = () => {
-      if (scroller.scrollWidth <= scroller.clientWidth) return;
+      const over = scroller.scrollWidth > scroller.clientWidth;
+      setScrollable(over);
+      if (!over) return;
       scroller.scrollLeft = focus * scroller.scrollWidth - scroller.clientWidth / 2;
       opened.current = scroller.scrollLeft;
     };
@@ -170,7 +174,7 @@ function Window({ c, text, hidden }: { c: CaseView; text: CasesText; hidden: boo
       </div>
       <div className="rk-cs-win__body" data-panned={panned || undefined}>
         {/* (the scroller is only a box in one column; on a computer it gives way and the screenshot fits the window) */}
-        <div className="rk-cs-win__pan" ref={pan} onScroll={(event) => Math.abs(event.currentTarget.scrollLeft - opened.current) > 8 && setPanned(true)}>
+        <div className="rk-cs-win__pan" ref={pan} tabIndex={scrollable ? 0 : undefined} onScroll={(event) => Math.abs(event.currentTarget.scrollLeft - opened.current) > 8 && setPanned(true)}>
           {/* every screenshot is in the HTML with its alt (the figures in it), the ones not chosen hidden */}
           {c.shots.map((s, index) => (
             <span className="rk-cs-win__in" hidden={index !== shot} style={{ "--ar": s.w / s.h, "--w": s.w } as React.CSSProperties} key={`${c.id}-${s.id}`}>

@@ -1078,7 +1078,8 @@ html:not(.motion) .faq__item::after { transition: none; }
   .st-bd__vp { aspect-ratio: 2 / 1; }
   .st-bd__rib { padding: 6px 12px 4px; }
   .st-bd__seg { min-height: 30px; gap: 5px; padding: 4px 0; }
-  .st-bd__sl > span { display: none; }
+  /* the step's name leaves the sight, not the button: screen readers and agents still read it as the button's name */
+  .st-bd__sl > span { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .st-hw { padding: 26px 0 30px; }
   .st-hw__t { font-size: var(--fs-h4); }
   .st-hw.is-you .st-hw__n::before { top: -27px; height: 22px; }

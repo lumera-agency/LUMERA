@@ -56,7 +56,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
           </button>
         </div>
         <div className="st-stages">
-          <article className="st-stage" id="fmt-stage-landing" role="tabpanel" aria-labelledby="fmt-tab-landing" data-fmt="landing">
+          <div className="st-stage" id="fmt-stage-landing" role="tabpanel" aria-labelledby="fmt-tab-landing" data-fmt="landing">
             <div className="st-stage__copy">
               <p className="st-stage__k"><span>{t("g.format")}</span> · 01</p>
               <h3 className="st-stage__t" id="fmt-1-t"><span className="st-stage__tin">{t("f.landing.t")}</span></h3>
@@ -78,8 +78,8 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 
               </div>
             </div>
-          </article>
-          <article className="st-stage" id="fmt-stage-landingPlus" role="tabpanel" aria-labelledby="fmt-tab-landingPlus" data-fmt="landingPlus" hidden>
+          </div>
+          <div className="st-stage" id="fmt-stage-landingPlus" role="tabpanel" aria-labelledby="fmt-tab-landingPlus" data-fmt="landingPlus" hidden>
             <div className="st-stage__copy">
               <p className="st-stage__k"><span>{t("g.format")}</span> · 02</p>
               <h3 className="st-stage__t" id="fmt-2-t"><span className="st-stage__tin">{t("f.plus.t")}</span></h3>
@@ -101,8 +101,8 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 <span className="st-dev__badge"><b>+4</b> <span>{t("stage.plus")}</span></span>
               </div>
             </div>
-          </article>
-          <article className="st-stage" id="fmt-stage-corporate" role="tabpanel" aria-labelledby="fmt-tab-corporate" data-fmt="corporate" hidden>
+          </div>
+          <div className="st-stage" id="fmt-stage-corporate" role="tabpanel" aria-labelledby="fmt-tab-corporate" data-fmt="corporate" hidden>
             <div className="st-stage__copy">
               <p className="st-stage__k"><span>{t("g.format")}</span> · 03</p>
               <h3 className="st-stage__t" id="fmt-3-t"><span className="st-stage__tin">{t("f.corp.t")}</span></h3>
@@ -128,8 +128,8 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 <span className="st-dev__badge"><b>+1–3</b> <span>{t("pg.more")}</span></span>
               </div>
             </div>
-          </article>
-          <article className="st-stage" id="fmt-stage-ecommerce" role="tabpanel" aria-labelledby="fmt-tab-ecommerce" data-fmt="ecommerce" hidden>
+          </div>
+          <div className="st-stage" id="fmt-stage-ecommerce" role="tabpanel" aria-labelledby="fmt-tab-ecommerce" data-fmt="ecommerce" hidden>
             <div className="st-stage__copy">
               <p className="st-stage__k"><span>{t("g.format")}</span> · 04</p>
               <h3 className="st-stage__t" id="fmt-4-t"><span className="st-stage__tin">{t("f.shop.t")}</span></h3>
@@ -149,7 +149,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 <div className="st-dev__phone"><div className="st-dev__vp" style={{ "--lqip": "url(data:image/jpeg;base64,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)" } as React.CSSProperties}><img className="st-dev__img" width="300" height="6225" alt="" loading="lazy" decoding="async" data-src={t("img.shop.m")} /></div></div>
               </div>
             </div>
-          </article>
+          </div>
         </div>
         </div>
 
