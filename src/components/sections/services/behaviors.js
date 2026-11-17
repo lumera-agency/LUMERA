@@ -167,6 +167,7 @@ function initServiceTabs(reducedMotion, signal) {
     panels.forEach((p, k) => {
       p.classList.toggle('is-open', on && k === current);
       if (on) {
+        // the panels are <div>s (panels/): an <article> may not take the tabpanel role
         p.setAttribute('role', 'tabpanel');
         p.setAttribute('aria-labelledby', tabs[k].id);
       } else {

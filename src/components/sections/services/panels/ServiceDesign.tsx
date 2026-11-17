@@ -17,7 +17,7 @@ export async function ServiceDesign() {
   const prices = PRICES;
   const locale = await getLocale();
   return (
-    <article className="service" id="svc-1" data-sr="">
+    <div className="service" id="svc-1" data-sr="">
       <div className="service__demo">
         <button className="demo-replay" type="button" data-replay="" aria-label={t("services.replay.label")}>
           <span className="demo-replay__icon" aria-hidden="true">↻</span>
@@ -233,6 +233,6 @@ export async function ServiceDesign() {
           </a>
         </div>
       </div>
-    </article>
+    </div>
   );
 }
