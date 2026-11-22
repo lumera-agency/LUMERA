@@ -971,7 +971,9 @@ main[data-ai-page="ads"] ~ .footer .btn--primary { --btn-bg: var(--lime); --btn-
 body:has(main[data-ai-page="ads"]) :is(.page, .topbar, .footer) :is(.btn--ghost, .btn--line) { --btn-fill: var(--lime); --btn-fill-ink: var(--on-ink); }
 main[data-ai-page="ads"] .section--ivory .btn--primary { --btn-bg: var(--ink-dark); --btn-ink: #fcfcfa; --btn-line: transparent; --btn-wave: #2b2926; --btn-glow: rgb(15 14 13 / 0.3); gap: 1rem; padding: 0 0.375rem 0 1.5rem; }
 main[data-ai-page="ads"] .section--ivory .btn--primary .btn__icon { width: 2.375rem; height: 2.375rem; border-radius: 50%; color: #0d0d0d; background: var(--lime); }
-main[data-ai-page="ads"] .section--ivory .btn--primary .arrow { inset: 0.6875rem; width: auto; height: auto; stroke-width: 1.9; }
+/* (the arrow's size is written out and it is centred by its margins: sized by the insets alone, a browser that gives a
+   bare SVG its box's width drew it as wide as the disc, pushed down and right and cut off, an iPhone, 22 Nov 2026) */
+main[data-ai-page="ads"] .section--ivory .btn--primary .arrow { margin: auto; width: 1rem; height: 1rem; stroke-width: 1.9; }
 /* no hover fill (the owner, 6 Nov: the dark wave on the dark pill could not be seen): no wave, no lift, no glow; the
    arrow still slides through its disc */
 main[data-ai-page="ads"] .section--ivory .btn--primary::before { display: none; }
