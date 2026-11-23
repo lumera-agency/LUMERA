@@ -8,13 +8,15 @@ import "@/components/sections/faq/faq.css";
 /**
  * 7 · Питання: the main page's FAQ (native <details>, the answers open with an animated height), the ads part. The
  * answers quote or shorten the main page's (budget, guarantees, the accounts); the sums and the setup time come from
- * the configurator engine (facts). Eleven questions in the reader's order: why us first (the trust block's four promises
- * and the honest line, moved here by the owner on 20 Oct), then money, which channel, the site, time, what is needed
- * from you, guarantees, GA4 and the source of each request, the accounts, management, prices.
+ * the configurator engine (facts). Fourteen questions: why us first (the trust block's four promises and the honest line,
+ * moved here by the owner on 20 Oct), then money, which channel, the site, time, what is needed from you, guarantees,
+ * GA4 and the source of each request, the accounts, management, prices; then the setup's price, management, an audit.
  */
 /** how many questions phones show before «Ще 6 питань» (the page was 17 screens long there, 20 Oct) */
 const SHOWN = 5;
-const COUNT = 11;
+/** eleven in the reader's order, then the owner's three of 23 Nov 2026 (what search people type): the setup's price,
+ *  management, an audit */
+const COUNT = 14;
 /** «А якщо сайту немає?»: the question that links to the sites page */
 const SITES_Q = 4;
 
