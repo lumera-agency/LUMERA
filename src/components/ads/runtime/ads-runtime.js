@@ -65,7 +65,7 @@ export function startAds() {
 const STILL = '.rk-card, .rk-track';
 const REVEAL = [
   'main.rk .ai-sec .s-head__meta', 'main.rk .ai-sec .s-head__intro',
-  '.rk-card', '.rk-live__how', '.rk-live__foot', '.rk-path__foot', '.rk-first', '.rk-pc', '.rk-addons__h', '.rk-addon',
+  '.rk-card', '.rk-live__how', '.rk-live__foot', '.rk-path__foot', '.rk-first', '.rk-pc', '.rk-prices__cap', '.rk-addons__h', '.rk-addon',
   '.rk-price__note', '.rk-track', 'main.rk .faq', '.rk-next', '.rk-get',
   '.rk-terms__list', '.rk-paths',
   'main.rk .lead-form',

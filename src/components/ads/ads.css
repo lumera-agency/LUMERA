@@ -464,6 +464,8 @@ main.ai .rk-path__facts { margin: 0; padding: 0; list-style: none; }
 .rk-first dd b { font-weight: 500; color: var(--ink); }
 /* (each card spans the list's five rows as a subgrid: title, sum, text, list, footer stand on the same lines) */
 main.ai .rk-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--card-gap); row-gap: var(--card-gap); margin: 0; padding: 0; list-style: none; }
+/* (the line «Інші пакети» is for phones only, where the recommended card stands first: further down) */
+.rk-prices__cap { display: none; }
 .rk-pc { grid-row: span 5; display: grid; grid-template-rows: subgrid; row-gap: 0.875rem; min-width: 0; padding: 1.625rem 1.625rem 1.375rem; border-radius: var(--radius-lg); background: #050505; box-shadow: inset 0 0 0 1px rgba(218, 255, 2, 0.45); }
 /* «Що входить» folds only on phones; elsewhere the list is simply there */
 .rk-pc__more > summary { display: none; }
@@ -1247,21 +1249,15 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
   html.js:not(.rk-go) .rk-site-fold > :not(summary) { display: none; }
 }
 @media (max-width: 600px) {
-  /* 7 · the prices as a list: «Реклама в Google» stays a card with its button, first; the other setups are rows, the name
-     and the sum on one line and «Що входить +» under them, a row's button coming with its list. Every price stays in
-     sight (the owner, 28 Oct) */
-  main.ai .rk-prices { row-gap: 0; }
-  .rk-pc--featured { order: -1; margin-bottom: 1.25rem; }
-  .rk-pc:not(.rk-pc--featured) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "top sum" "more more" "foot foot"; align-items: start; row-gap: 0; column-gap: 1rem; padding: 1rem 0 0.25rem; border-radius: 0; background: none; box-shadow: none; border-top: 1px solid var(--line); }
-  .rk-pc:not(.rk-pc--featured):last-child { border-bottom: 1px solid var(--line); }
-  .rk-pc:not(.rk-pc--featured) > .rk-pc__top { grid-area: top; flex-direction: column; align-items: flex-start; justify-content: start; gap: 0.375rem; }
-  .rk-pc:not(.rk-pc--featured) .rk-pc__t { font-size: 1.125rem; }
-  .rk-pc:not(.rk-pc--featured) > .rk-pc__sum { grid-area: sum; justify-self: end; gap: 0.375rem; }
-  .rk-pc:not(.rk-pc--featured) > .rk-pc__sum b { font-size: 1.75rem; }
-  .rk-pc:not(.rk-pc--featured) > .rk-pc__more { grid-area: more; }
-  .rk-pc:not(.rk-pc--featured) > .rk-pc__more > summary { padding-top: 0; border-top: 0; }
-  .rk-pc:not(.rk-pc--featured) > .rk-pc__foot { grid-area: foot; padding: 0.5rem 0 0.75rem; border-top: 0; }
-  .rk-pc:not(.rk-pc--featured):not(:has(> .rk-pc__more[open])) > .rk-pc__foot { display: none; }
+  /* 7 · the prices: four whole cards, «Реклама в Google» first, each with its own button; the other three under the
+     line «Інші пакети» (the owner, 23 Nov 2026, variant 2 of three: as rows between hairlines they did not read as
+     other packages to choose from). Their edge is the recommended card's lime, thin and faint, so the four read as
+     one set; their lists fold under «Що входить», the button stays in sight */
+  main.ai .rk-prices { row-gap: 0.75rem; }
+  .rk-pc--featured { order: -1; }
+  .rk-prices__cap { display: flex; align-items: center; gap: 0.75rem; margin: 0.875rem 0 0.25rem; font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); }
+  .rk-prices__cap::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .rk-pc:not(.rk-pc--featured) { box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.3), 0 2rem 3rem -2rem rgb(0 0 0 / 0.8); }
   /* what can be added: one line each, the name and the sum (or the ask) side by side */
   .rk-addons { row-gap: 0; margin-top: 1.75rem; }
   .rk-addon { padding: 0.875rem 0; row-gap: 0; }

@@ -75,6 +75,10 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
 
         {/* the setups: one row, shared lines */}
         <ul className="rk-prices">
+          {/* phones: the recommended setup stands first, this line under it names the rest as packages to choose from
+              (the owner, 23 Nov 2026: under the framed card it was not clear that the others are packages too); unseen
+              where the cards stand side by side */}
+          <li className="rk-prices__cap" role="presentation">{t("price.others")}</li>
           {setups.map((c) => (
             <li className={`rk-pc${c.featured ? " rk-pc--featured" : ""}${c.bundle ? " rk-pc--bundle" : ""}`} data-card={c.id} key={c.id}>
               <div className="rk-pc__top">
