@@ -13,8 +13,9 @@ import "@/components/sections/faq/faq.css";
  *  here, so the two always say the same. */
 export async function sitesFaqItems(facts: SitesFacts) {
   const t = await getTranslations("sites");
-  const priced = new Set([1, 2, 8]);
-  return [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
+  // (9–11, the owner's keyword round of 23 Nov 2026: сайт-візитка, what the design includes, a studio or a freelancer)
+  const priced = new Set([1, 2, 8, 9]);
+  return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => ({
     n,
     q: t(`faq.q.${n}`),
     a: priced.has(n) ? priceLine(t.raw(`faq.a.${n}`), facts) : t(`faq.a.${n}`),

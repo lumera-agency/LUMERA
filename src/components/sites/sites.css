@@ -352,6 +352,8 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-mk-wait .st-mk { background-size: 0% 58%; }
 .st-mk-run .st-mk { animation: st-mk-in 0.8s var(--ease-out) 0.55s forwards; }
 @keyframes st-mk-in { to { background-size: 100% 58%; } }
+/* how to order, the form's first line (as the ads page's .rk-order) */
+.st-order { margin: 0; font-size: var(--fs-body-s); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
 .st-fmts__end { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 32px; margin-top: var(--rhythm-s); }
 .st-fmts__note { margin: 0; font-size: var(--fs-body-s); font-weight: 300; color: var(--ink-dark-soft); }
 .st-fmts__note .link { padding-block: 12px; color: var(--ember-deep); }
