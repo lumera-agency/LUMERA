@@ -174,8 +174,6 @@ main.ai .rk-fl__src { display: grid; grid-template-columns: repeat(3, minmax(0, 
 /* a tap: a ring where the finger lands */
 /* the person's finger: it glides to the ad, presses and goes; at rest it is not there */
 .rk-finger { position: absolute; left: 0; top: 0; z-index: 6; width: 0.875rem; height: 0.875rem; margin: -0.4375rem 0 0 -0.4375rem; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 0.375rem rgba(246, 246, 243, 0.2), 0 0.5rem 1rem -0.25rem #000; opacity: 0; pointer-events: none; }
-/* the ad reaching the three who fit: thin signal beams that pass and fade (transient) */
-.rk-beam { position: absolute; left: 0; top: 0; z-index: 1; width: 1px; height: 1px; background: linear-gradient(90deg, rgba(246, 246, 243, 0.9), rgba(246, 246, 243, 0.2)); transform-origin: 0 50%; opacity: 0; pointer-events: none; }
 .rk-tap { position: absolute; left: 70%; top: 50%; width: 2.75rem; height: 2.75rem; margin: -1.375rem 0 0 -1.375rem; border-radius: 50%; border: 2px solid var(--ink); opacity: 0; pointer-events: none; }
 /* «+1 заявка» */
 .rk-toast { position: absolute; left: 1rem; bottom: 1rem; z-index: 4; display: flex; align-items: center; gap: 0.625rem; max-width: calc(100% - 7.5rem); padding: 0.5625rem 0.875rem 0.5625rem 0.5625rem; border-radius: 0.875rem; font-size: 0.8125rem; line-height: 1.3; color: var(--ink-soft); background: rgba(28, 28, 28, 0.94); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1), 0 1rem 2rem -0.75rem #000; }
@@ -207,33 +205,31 @@ main.ai .rk-fl__src { display: grid; grid-template-columns: repeat(3, minmax(0, 
 .rk-serp__otitle { overflow: hidden; font-size: 0.9375rem; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; color: rgba(156, 195, 255, 0.72); }
 .rk-serp .rk-tap { left: 64%; top: 46%; }
 
-/* · the Facebook / Instagram screen: the people of a city, who the ad is shown to, the ad in the feed */
-.rk-feed { position: absolute; inset: 0; }
-.rk-feed > .ai-sample { position: absolute; top: 0.75rem; right: 0.75rem; z-index: 3; }
-/* the people of a city: each audience chip leaves some out (data-k 1 the city, 2 the age), three light up. At rest:
-   the left-out dim, the three in signal */
-.rk-crowd { position: absolute; left: 1.25rem; right: 16rem; top: 8.75rem; bottom: 4.75rem; }
-.rk-crowd__dot { position: absolute; left: var(--x); top: var(--y); width: 0.5rem; height: 0.5rem; margin: -0.25rem 0 0 -0.25rem; border-radius: 50%; background: rgba(246, 246, 243, 0.8); opacity: 0.55; }
-.rk-crowd__dot:is([data-k="1"], [data-k="2"]) { opacity: 0.14; transform: scale(0.7); }
-.rk-crowd__dot.is-fit { opacity: 1; }
-.rk-crowd__dot b { position: absolute; inset: -0.125rem; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 0.25rem rgba(246, 246, 243, 0.14); }
-.rk-aud { position: absolute; left: 1rem; top: 1rem; z-index: 2; display: grid; justify-items: start; gap: 0.5rem; max-width: calc(100% - 15.5rem); }
-.rk-aud__k { font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.rk-aud__chips { display: grid; justify-items: start; gap: 0.375rem; }
-.rk-aud__chips li { padding: 0.375rem 0.75rem; border-radius: 0.875rem; font: 400 0.75rem/1.2 var(--font-mono); color: var(--ink); background: rgba(14, 14, 14, 0.88); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.3); }
-.rk-post { position: absolute; right: 1rem; top: 2.75rem; z-index: 2; width: 13.25rem; border-radius: 1rem; overflow: hidden; background: #121212; box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1), 0 1.75rem 3rem -1.25rem #000; }
-.rk-post__head { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 0.75rem; }
-.rk-post__ava { flex: none; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; color: var(--on-accent); background: var(--ink); }
-.rk-post__ava svg { width: 0.875rem; height: 0.875rem; fill: currentColor; }
-.rk-post__who { display: grid; line-height: 1.2; }
-.rk-post__who b { font-size: 0.75rem; font-weight: 600; color: var(--ink); }
-.rk-post__who span { font-size: 0.6562rem; color: var(--ink-mute); }
-.rk-post__img { display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden; background: radial-gradient(80% 90% at 50% 60%, #3a2216 0%, #170d08 55%, #0b0907 100%); }
-.rk-post__img img { width: 46%; height: auto; rotate: -10deg; filter: drop-shadow(0 0.875rem 1rem rgba(0, 0, 0, 0.6)); }
-.rk-post__cap { padding: 0.5rem 0.75rem 0.375rem; font-size: 0.7188rem; line-height: 1.35; color: var(--ink-soft); }
-.rk-post__cta { position: relative; display: flex; align-items: center; justify-content: space-between; margin: 0.25rem 0.625rem 0.625rem; padding: 0.5rem 0.625rem 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 500; color: var(--ink); background: rgba(255, 255, 255, 0.08); }
-.rk-post__cta svg { width: 0.875rem; height: 0.875rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.rk-post__cta .rk-tap { left: 50%; }
+/* · the queries screen: what people type into Google, line by line; the ad is shown for the ones that bring clients (a
+   lime tick) and left out for the rest (struck through, dimmed). At rest: the final frame */
+.rk-kw { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.rk-kw > .ai-sheet__bar { flex: none; }
+.rk-kw__in { display: grid; align-content: start; gap: 0.625rem; padding: 1.125rem 1.25rem; }
+.rk-kw__k { font: 400 0.6875rem/1.2 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
+main.ai .rk-kw__list { display: grid; gap: 0.375rem; margin: 0; padding: 0; list-style: none; }
+.rk-kw__row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: 0.625rem; min-height: 2.625rem; padding: 0 0.75rem 0 0.875rem; border-radius: 0.75rem; background: rgb(255 255 255 / 0.035); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.1); }
+.rk-kw__row[data-on] { background: rgb(218 255 2 / 0.05); box-shadow: inset 0 0 0 1px rgb(218 255 2 / 0.32); }
+.rk-kw__ico { width: 0.9375rem; height: 0.9375rem; fill: none; stroke: var(--ink-mute); stroke-width: 1.8; stroke-linecap: round; }
+.rk-kw__q { position: relative; justify-self: start; max-width: 100%; font-size: 0.9375rem; color: var(--ink); }
+.rk-kw__q > span { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.rk-kw__row:not([data-on]) .rk-kw__q { opacity: 0.45; }
+/* the strike: a line across the query, drawn from the left (runtime) */
+.rk-kw__cut { position: absolute; left: -0.125rem; right: -0.125rem; top: 52%; height: 1.5px; border-radius: 1px; background: var(--ink); transform-origin: 0 50%; }
+.rk-kw__row[data-on] .rk-kw__cut { display: none; }
+.rk-kw__v { display: inline-flex; align-items: center; gap: 0.4375rem; font: 400 0.75rem/1 var(--font-mono); white-space: nowrap; color: var(--ink-mute); }
+.rk-kw__row[data-on] .rk-kw__v { color: var(--ink); }
+.rk-kw__mark { display: grid; place-items: center; width: 1.125rem; height: 1.125rem; border-radius: 50%; color: var(--ink-mute); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.3); }
+.rk-kw__row[data-on] .rk-kw__mark { color: var(--on-ink); background: var(--lime); box-shadow: none; }
+.rk-kw__mark svg { width: 0.75rem; height: 0.75rem; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+/* «Виключено 3 запити»: the system's result, so its mark in lime; it stands under the list, at the foot of the screen
+   (in the flow, so it never covers the last query) */
+.rk-kw > .rk-toast { position: relative; left: auto; bottom: auto; align-self: flex-start; max-width: calc(100% - 2.5rem); margin: auto 1.25rem 1.25rem; }
+.rk-toast--kw .rk-toast__ico { color: var(--on-ink); background: var(--lime); }
 
 /* ==========================================================================
    6 · Як працюємо (ivory), the owner's second pass of 20 Oct: one card, the setup time on top, five steps, each with a
@@ -372,10 +368,9 @@ main.ai .rk-live__list { --row: 3.25rem; margin: 0.75rem 0 0; padding: 0; list-s
 .rk-live__row:first-child .rk-live__time::before { content: ""; position: absolute; left: -0.875rem; top: 50%; width: 0.4375rem; height: 0.4375rem; margin-top: -0.21875rem; border-radius: 50%; background: var(--ember); }
 .rk-live__what { overflow: hidden; font-size: 0.9375rem; white-space: nowrap; text-overflow: ellipsis; }
 .rk-live__src { display: inline-flex; align-items: center; gap: 0.4rem; height: 1.625rem; padding: 0 0.625rem 0 0.5rem; border-radius: 0.35rem 0.8rem 0.8rem 0.35rem; font: 500 0.75rem/1 var(--font-mono); white-space: nowrap; color: var(--p-ink); box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.22); }
-.rk-live__src b { font-weight: 500; }
 .rk-live__src i, .rk-live__tk i { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--p-ink); }
-.rk-live__src[data-src="insta"] i, .rk-live__t[data-src="insta"] :is(.rk-live__tk i, .rk-live__tb i) { background: rgba(15, 14, 13, 0.55); }
-.rk-live__src[data-src="fb"] i, .rk-live__t[data-src="fb"] :is(.rk-live__tk i, .rk-live__tb i) { background: rgba(15, 14, 13, 0.3); }
+.rk-live__src[data-src="org"] i, .rk-live__t[data-src="org"] :is(.rk-live__tk i, .rk-live__tb i) { background: rgba(15, 14, 13, 0.55); }
+.rk-live__src[data-src="direct"] i, .rk-live__t[data-src="direct"] :is(.rk-live__tk i, .rk-live__tb i) { background: rgba(15, 14, 13, 0.3); }
 .rk-live__sum { display: flex; flex-direction: column; padding: 1.25rem 1.5rem 1.5rem; }
 .rk-live__tot { display: grid; gap: 0.875rem; margin: 1rem 0 1.25rem; }
 .rk-live__t { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; row-gap: 0.5rem; margin: 0; }
@@ -437,13 +432,13 @@ main.ai .rk-live__facts { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; ma
 .rk-path__rec { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; padding: 0.5rem 0.75rem; border-radius: 0.625rem; font-size: 0.8125rem; color: var(--ink); background: rgba(246, 246, 243, 0.05); box-shadow: inset 0 0 0 1px rgba(246, 246, 243, 0.18); }
 .rk-path__tick { flex: none; width: 1rem; height: 1rem; border-radius: 50%; background: var(--ink) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23111' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 0.7rem no-repeat; }
 main.ai .rk-path__rows { display: grid; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
-.rk-path__row { position: relative; display: grid; grid-template-columns: 4.75rem minmax(0, 1fr) 1.75rem; align-items: center; column-gap: 0.75rem; min-height: 1.875rem; margin: 0 -0.5rem; padding: 0 0.5rem; border-radius: 0.5rem; }
+.rk-path__row { position: relative; display: grid; grid-template-columns: 7.25rem minmax(0, 1fr) 1.75rem; align-items: center; column-gap: 0.75rem; min-height: 1.875rem; margin: 0 -0.5rem; padding: 0 0.5rem; border-radius: 0.5rem; }
 .rk-path__flash { position: absolute; inset: 0; border-radius: inherit; background: rgba(210, 86, 28, 0.12); box-shadow: inset 0 0 0 1px rgba(210, 86, 28, 0.55); opacity: 0; }
 .rk-path__name { position: relative; font-size: 0.875rem; color: var(--ink); }
 .rk-path__bar { position: relative; height: 0.5rem; border-radius: 0.25rem; background: rgba(246, 246, 243, 0.07); }
 .rk-path__bar i { display: block; height: 100%; border-radius: inherit; background: rgba(246, 246, 243, 0.42); transform-origin: 0 50%; }
-.rk-path__row[data-src="google"] .rk-path__bar i { background: var(--ember); }
-.rk-path__row[data-src="fb"] .rk-path__bar i { background: rgba(246, 246, 243, 0.26); }
+.rk-path__row[data-src="paid"] .rk-path__bar i { background: var(--ember); }
+.rk-path__row[data-src="direct"] .rk-path__bar i { background: rgba(246, 246, 243, 0.26); }
 .rk-path__v { position: relative; justify-self: end; font-size: 1.0625rem; font-weight: 500; color: var(--ink); }
 .rk-path__cpl { margin-top: 0.625rem; padding-top: 0.625rem; border-top: 1px solid rgba(246, 246, 243, 0.08); font: 400 0.6875rem/1.5 var(--font-mono); color: var(--ink-mute); }
 .rk-path__cpl b { font-weight: 400; color: var(--ink-soft); }
@@ -506,7 +501,6 @@ main.ai .rk-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1
 .rk-addons__h { grid-column: 1 / -1; margin: 1rem 0 0.25rem; font-size: clamp(1.375rem, 2vw, 1.75rem); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); }
 .rk-addon { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; row-gap: 0.75rem; padding: 1.125rem 0; border-top: 1px solid var(--line); }
 .rk-addon__main { display: grid; justify-items: start; gap: 0.25rem; min-width: 0; }
-.rk-addon > .btn { justify-self: end; }
 .rk-addon__t { margin: 0; font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; color: var(--ink); }
 .rk-addon__d { font-size: var(--fs-small); font-weight: 300; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
 .rk-addon__more > summary { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.25rem; font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); list-style: none; cursor: pointer; }
@@ -521,7 +515,6 @@ main.ai .rk-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1
 .rk-addon__sum { display: flex; align-items: baseline; gap: 0.5rem; white-space: nowrap; }
 .rk-addon__sum b { font-size: clamp(1.6rem, 2.2vw, 2rem); font-weight: 300; letter-spacing: -0.03em; color: var(--ink); }
 .rk-addon__sum span { font: 400 0.6875rem/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-mute); }
-.rk-addon__sum .rk-addon__talk { font-size: clamp(1.25rem, 1.7vw, 1.5rem); letter-spacing: -0.02em; color: var(--ink-soft); }
 .rk-price__note { max-width: 72ch; }
 
 
@@ -553,8 +546,9 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 :is(.rk-fl.is-pre, html.motion:not(.rk-go):not(.is-ready) .rk-fl) :is(.rk-inbox__row, .rk-inbox__src) { opacity: 0; }
 :is(.rk-fl.is-pre, html.motion:not(.rk-go):not(.is-ready) .rk-fl) .rk-part__strip { transform: none; }
 .rk-serp.is-pre :is(.rk-type > i, .rk-serp__ad, .rk-serp__org, .rk-toast) { opacity: 0; }
-.rk-feed.is-pre :is(.rk-aud__k, .rk-aud__chips li, .rk-post, .rk-toast, .rk-crowd__dot b) { opacity: 0; }
-.rk-feed.is-pre .rk-crowd__dot { opacity: 0.55; transform: none; }
+.rk-kw.is-pre :is(.rk-kw__k, .rk-kw__row, .rk-kw__v, .rk-toast) { opacity: 0; }
+.rk-kw.is-pre .rk-kw__cut { transform: scaleX(0); }
+.rk-kw.is-pre .rk-kw__row:not([data-on]) .rk-kw__q { opacity: 1; }
 .rk-track.is-pre .rk-sp__wave b { transform: scaleY(0.2); }
 .rk-track.is-pre :is(.rk-sp__chips b, .rk-sp__ok) { opacity: 0; }
 .rk-track.is-pre .rk-sp__form b { transform: scaleX(0); }
@@ -571,9 +565,8 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 .rk-track.is-warm :is(.rk-sp__wave b, .rk-sp__chips b, .rk-sp__form b, .rk-sp__ok, .rk-sp__knob, .rk-sp__off, .rk-sp--rep b, .rk-sp__page b, .rk-sp__bar b, .rk-sp__body b, .rk-sp__cur, .rk-sp__pair > *),
 .rk-serp.is-warm :is(.rk-serp__ad, .rk-toast, .rk-type__caret),
 .rk-serp.is-warm .rk-serp__org,
-.rk-feed.is-warm :is(.rk-crowd__dot, .rk-crowd__dot b, .rk-post, .rk-toast, .rk-aud__chips li),
+.rk-kw.is-warm :is(.rk-kw__row, .rk-kw__v, .rk-kw__mark, .rk-kw__cut, .rk-kw__q, .rk-toast),
 .rk-serp.is-warm .rk-finger,
-.rk-feed.is-warm :is(.rk-beam, .rk-finger),
 .rk-live.is-warm :is(.rk-live__row, .rk-count__strip, .rk-live__tb i, .rk-live__plus),
 .rk-path.is-warm :is(.rk-path__run, .rk-path__seg i, .rk-path__shot, .rk-count__strip) { will-change: transform, opacity; }
 
@@ -679,19 +672,15 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .rk-addon__more > summary { min-height: 2.75rem; }
   .rk-card__go { width: 100%; justify-content: space-between; }
   .rk-toast { left: 0.75rem; bottom: 0.75rem; max-width: calc(100% - 6.75rem); }
-  /* the audience in a row across the top (a column would run under the ad), the ad below it on the right, without
-     its caption; «+1 заявка» floats over the ad's foot like a notification */
-  /* the audience sits under the sample chip (at 12 px the chip reached «Кому показуємо», Impeccable pass, 20 Oct) */
-  .rk-feed { --aud-h: 6.875rem; }
-  .rk-crowd { left: 0.75rem; right: 11.75rem; top: calc(var(--aud-h) + 0.75rem); bottom: 4.25rem; }
-  .rk-aud { left: 0.75rem; right: 0.75rem; top: 2.375rem; max-width: none; }
-  .rk-aud__chips { display: flex; flex-wrap: wrap; gap: 0.3125rem; }
-  .rk-aud__chips li { padding: 0.3125rem 0.625rem; font-size: 0.6875rem; }
-  .rk-post { right: 0.75rem; top: calc(var(--aud-h) + 0.5rem); width: 10.25rem; }
-  .rk-post__cap { display: none; }
-  .rk-post__img { aspect-ratio: 16 / 10; }
-  .rk-post__cta { margin-top: 0.5rem; }
-  .rk-feed > .ai-sample { top: 0.5rem; right: 0.5rem; }
+  /* the queries: six lines in the phone's frame, «+1»-style result at the foot */
+  /* (the answers as marks only: the words left the longest query no room) */
+  .rk-card[data-ch="kw"] .rk-card__media { height: 24.5rem; }
+  .rk-kw__in { gap: 0.5rem; padding: 0.875rem 0.875rem 0.625rem; }
+  main.ai .rk-kw__list { gap: 0.3125rem; }
+  .rk-kw__row { column-gap: 0.5rem; min-height: 2.25rem; padding: 0 0.625rem 0 0.75rem; }
+  .rk-kw__q { font-size: 0.8125rem; }
+  .rk-kw__vt { display: none; }
+  .rk-kw > .rk-toast { max-width: calc(100% - 1.5rem); margin: auto 0.75rem 0.75rem; }
 
   #faq:not(.is-all) .faq__item--more { display: none; }
   .rk-faq-more { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 3.25rem; margin-top: 0.5rem; padding: 0 0.25rem; border: 0; border-bottom: 1px solid var(--line); font: 400 var(--fs-label)/1 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); background: none; cursor: pointer; }
@@ -707,7 +696,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   html.js:not(.rk-go) .rk-pc__more[data-fold] > :not(summary) { display: none; }
   html.js:not(.rk-go) .rk-pc__more[data-fold] > summary::after { content: "+"; content: "+" / ""; }
   .rk-addon { row-gap: 0.5rem; padding: 1rem 0; }
-  .rk-addon .btn { grid-column: 1 / -1; width: 100%; justify-content: space-between; }
   .rk-pc { padding: 1.375rem 1.125rem 1.125rem; border-radius: 1.25rem; }
   .rk-pc__foot .btn { flex: 1 1 100%; justify-content: space-between; }
 
@@ -719,8 +707,6 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
 }
 @media (max-width: 374px) {
   .rk-inbox__src > span:last-child { max-width: 7.5rem; overflow: hidden; text-overflow: ellipsis; }
-  .rk-post { width: 9.75rem; }
-  .rk-aud__chips li { font-size: 0.625rem; }
 }
 
 /* ==========================================================================
@@ -889,7 +875,7 @@ html.motion .rk-cs-dl .rk-cs-num__now[data-run] { animation: rk-cs-mark 0.7s var
   .rk-hero .ai-hero__copy { grid-column: 1 / span 5; }
   main[data-ai-page="ads"] .rk-hero .ai-hero__copy { --cols: 5; --title-fs: calc(100cqi / 6.2); }
   .rk-hero .ai-hero__visual { grid-column: 6 / -1; }
-  /* the networks in two rows (the mark and the count on top, the name under), so «Instagram» never cuts at 960 px */
+  /* the queries in two rows (the mark and the count on top, the query under), so «…терміново» never cuts at 960 px */
   .rk-fl__chip { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0.375rem; }
   .rk-fl__n { grid-column: 2; grid-row: 1; }
   .rk-fl__name { grid-column: 1 / -1; }
@@ -1250,8 +1236,8 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
 .rk-site-fold > summary { display: none; }
 @media (max-width: 600px) {
   .rk-ch__pick { display: inline-grid; width: 100%; margin: 0 0 1.25rem; }
-  .rk-ch__grid[data-pick="google"] > [data-ch="meta"],
-  .rk-ch__grid[data-pick="meta"] > [data-ch="google"] { display: none; }
+  .rk-ch__grid[data-pick="google"] > [data-ch="kw"],
+  .rk-ch__grid[data-pick="kw"] > [data-ch="google"] { display: none; }
 
   .rk-site-fold:not([open]) > summary,
   html.js:not(.rk-go) .rk-site-fold > summary { display: inline-flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; list-style: none; cursor: pointer; font-size: 0.9375rem; color: var(--ink); -webkit-tap-highlight-color: transparent; }
@@ -1287,10 +1273,6 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
   .rk-addon__sum b { font-size: 1.75rem; }
   .rk-addon__more { justify-self: stretch; }
   .rk-addon__more > summary { display: flex; justify-content: space-between; }
-  /* Facebook · Instagram: the name, then «за запитом» and its button on one line */
-  .rk-addon:has(> .btn) { row-gap: 0.625rem; }
-  .rk-addon:has(> .btn) .rk-addon__sum { grid-column: 1; grid-row: 2; align-self: center; justify-self: start; }
-  .rk-addon > .btn { grid-column: 2; grid-row: 2; align-self: center; width: auto; }
 
   /* the pause: as tall as its sentence */
   .rk-pause > .container { padding-block: 2.5rem; }
@@ -1316,7 +1298,7 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
 /* (the light without a blur filter: the box grown by the blur's reach and the light fading out on rounded stops, as
    the 30 px blur spread it; 10 Nov 2026) */
 .rk-card::before { content: ""; position: absolute; left: calc(6% - 3.75rem); top: calc(4% - 3.75rem); z-index: -1; width: calc(70% + 7.5rem); height: 29.5rem; border-radius: 50%; background: radial-gradient(closest-side, rgb(160 210 60 / 0.21), rgb(90 242 217 / 0.08) 45%, rgb(90 242 217 / 0.04) 62%, rgb(90 242 217 / 0.014) 80%, transparent 100%); pointer-events: none; }
-.rk-card[data-ch="meta"]::before { left: auto; right: calc(6% - 3.75rem); background: radial-gradient(closest-side, rgb(123 92 255 / 0.21), rgb(90 242 217 / 0.08) 45%, rgb(90 242 217 / 0.04) 62%, rgb(90 242 217 / 0.014) 80%, transparent 100%); }
+.rk-card[data-ch="kw"]::before { left: auto; right: calc(6% - 3.75rem); background: radial-gradient(closest-side, rgb(90 242 217 / 0.17), rgb(160 210 60 / 0.08) 45%, rgb(160 210 60 / 0.04) 62%, rgb(160 210 60 / 0.014) 80%, transparent 100%); }
 .rk-checks { align-self: stretch; gap: 0; border-top: 1px solid var(--line); }
 .rk-checks li { padding: 0.625rem 0 0.625rem 2rem; border-bottom: 1px solid var(--line); transition: color 0.25s; }
 .rk-checks li::before { top: 0.75rem; transition: transform 0.35s var(--ease-out), box-shadow 0.35s; }
@@ -1331,9 +1313,9 @@ main[data-ai-page="ads"] #storinka { padding-top: var(--ad-after-m); }
   .rk-card__media { grid-column: 1; grid-row: 1; height: 30rem; }
   .rk-card > .rk-note { grid-column: 1; grid-row: 2; }
   .rk-card__body { grid-column: 2; grid-row: 1 / span 2; padding: 0; }
-  .rk-card[data-ch="meta"] { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
-  .rk-card[data-ch="meta"] .rk-card__media, .rk-card[data-ch="meta"] > .rk-note { grid-column: 2; }
-  .rk-card[data-ch="meta"] .rk-card__body { grid-column: 1; }
+  .rk-card[data-ch="kw"] { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .rk-card[data-ch="kw"] .rk-card__media, .rk-card[data-ch="kw"] > .rk-note { grid-column: 2; }
+  .rk-card[data-ch="kw"] .rk-card__body { grid-column: 1; }
   .rk-card__t { font-size: clamp(1.875rem, 2.6vw, 2.5rem); }
 }
 

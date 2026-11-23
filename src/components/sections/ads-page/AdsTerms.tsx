@@ -15,7 +15,7 @@ const ICON: Record<number, React.ReactNode> = {
 
 /**
  * 5 · Наші умови (the owner's brief of 21 Oct): the terms as a plain list on the black, no cards, much air. The words
- * are the FAQ's answers shortened (the accounts are yours, the budget goes to Google or Meta without our markup, the
+ * are the FAQ's answers shortened (the accounts are yours, the budget goes to Google without our markup, the
  * test request, the free fixes, no promised number of requests, the access at the end); nothing new is promised.
  * Phones (the owner, 22 Oct: «one text»): an accordion, as the FAQ, each term its mark and a short title, the sentence
  * under it on a tap, the first one open; the open one's minus in lime. Wider screens show every sentence (runtime:

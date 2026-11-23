@@ -7,8 +7,7 @@ const NBSP = "\u00a0";
  * «Реклама й аналітика»: the prices and the setup time, from the main page's configurator engine (one source of prices).
  * The messages carry them as ICU arguments: {analytics} {ads} {adsAi} {mgmt}, the bundle {siteAds}, and
  * {wAds}, the calculator's setup time for a site that is already there («≈ 1 тиждень»); for the bridge to the sites page
- * (block 5) the landing-with-ads bundle's time {wSiteAds} («≈ 1–2 тижні»). Facebook / Instagram have no price in the
- * engine yet: the page says «під запит» there (an open question to the owner, _merge/MERGE.md).
+ * (block 5) the landing-with-ads bundle's time {wSiteAds} («≈ 1–2 тижні»). Google only (the owner, 22 Nov 2026).
  */
 export function adsFacts(locale: string) {
   const strings = STRINGS[locale === "ru" ? "ru" : "uk"];

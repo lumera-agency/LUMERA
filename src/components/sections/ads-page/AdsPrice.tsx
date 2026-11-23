@@ -19,9 +19,9 @@ type Card = {
 /**
  * 4 · Ціна (dark): what each part costs, from the configurator engine (facts). The art director's order (20 Oct): the
  * one-time setups in a row on shared lines (title, sum, text, list, footer line up across the cards; the Google ads one
- * recommended, the only one in signal; the ChatGPT note under the row), then what can be added as thin strips (the
- * monthly management, with its list under «Що входить»; Facebook / Instagram, no price in the engine yet), then the first
- * month in plain text. The landing with the ads stands in the row as the fourth card (the owner's brief of 26 Oct: the
+ * recommended, the only one in signal; the ChatGPT note under the row), then what can be added as a thin strip (the
+ * monthly management, with its list under «Що входить»; the Facebook / Instagram strip went with the owner's word of
+ * 22 Nov 2026: Google only), then the first month in plain text. The landing with the ads stands in the row as the fourth card (the owner's brief of 26 Oct: the
  * bridge from block 5 ends on a price; «якщо сайту немає», its own ≈ 1–2 тижні); the line of bundles with a site that
  * closed the block (the full system, the calculator link) went at the owner's word the same day. «Обговорити» puts
  * that choice into the form's plan box and glides there (runtime). On phones the other setups' lists fold under «Що
@@ -36,7 +36,6 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
     { id: "siteAds", key: "s", sum: facts.siteAds, period: "once", items: 4, bundle: true },
   ];
   const mgmt: Card = { id: "mgmt", key: "m", sum: facts.mgmt, period: "month", items: 3 };
-  const meta: Card = { id: "meta", key: "fb", sum: null, period: null, items: 0 };
   const plan = (c: Card) => [t(`price.${c.key}.t`), c.sum ? `${c.sum}${c.period === "month" ? ` ${t("price.month")}` : ""}` : t("price.talk")].join(" · ");
   const details = (c: Card) => Array.from({ length: c.items }, (_, i) => t(`price.${c.key}.${i + 1}`)).join("\n");
   /** wider screens show the first four items and «ще N» (so the three cards end level); phones list them all (CSS) */
@@ -57,7 +56,7 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
   );
   const go = (c: Card, featured = false) => (
     <ButtonLink href="#contact" variant={featured ? "primary" : "ghost"} size="sm" className="rk-price__go" data-plan={plan(c)} data-details={details(c)}>
-      {c.key === "fb" ? t("price.fb.go") : t("price.go")}
+      {t("price.go")}
     </ButtonLink>
   );
   return (
@@ -106,7 +105,7 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
         <p className="ai-foot rk-price__note">{t("price.note")}</p>
         <p className="rk-price__star">* {t("price.ai.note")}</p>
 
-        {/* what can be added: thin strips (the management one without its own button: it is chosen with a setup) */}
+        {/* what can be added: a thin strip (the management, without its own button: it is chosen with a setup) */}
         <div className="rk-addons">
           <h3 className="rk-addons__h">{t("price.add")}</h3>
           <div className="rk-addon" data-card={mgmt.id}>
@@ -119,14 +118,6 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
               </details>
             </div>
             <p className="rk-addon__sum"><b>{facts.mgmt}</b><span>{t("price.month")}</span></p>
-          </div>
-          <div className="rk-addon" data-card={meta.id}>
-            <div className="rk-addon__main">
-              <h4 className="rk-addon__t">{t("price.fb.t")}</h4>
-              <p className="rk-addon__d">{t("price.fb.d")}</p>
-            </div>
-            <p className="rk-addon__sum"><b className="rk-addon__talk">{t("price.talk")}</b></p>
-            {go(meta)}
           </div>
         </div>
 

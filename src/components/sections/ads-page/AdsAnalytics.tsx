@@ -3,8 +3,9 @@ import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich as R } from "@/components/ai/rich";
 import { priceLine, type AdsFacts } from "@/components/ads/facts";
 
-type Src = "google" | "insta" | "fb";
-const NAME: Record<Src, string> = { google: "Google", insta: "Instagram", fb: "Facebook" };
+/** where a request came from, as Google Analytics groups it: the ads in Google, Google's search without the ads, and
+ *  those who typed the address or came back from a bookmark (the copy names them: an.src) */
+type Src = "paid" | "org" | "direct";
 
 /** A number whose digits stand on strips of 0–9 (React Bits' Counter): at rest each strip shows its digit; the runtime
  *  steps the last one as requests come in. Screen readers get the number itself. */
@@ -32,17 +33,17 @@ function Count({ value }: { value: number }) {
 /** The month's latest requests in the live report (a sample), newest first; what each was about comes from the first
  *  screen's list (hero.req), the time from here («вчора» from the copy) */
 const LIVE: { time: string | null; req: number; src: Src }[] = [
-  { time: "14:32", req: 1, src: "google" },
-  { time: "12:05", req: 2, src: "insta" },
-  { time: "10:47", req: 3, src: "google" },
-  { time: null, req: 4, src: "fb" },
-  { time: null, req: 1, src: "google" },
+  { time: "14:32", req: 1, src: "paid" },
+  { time: "12:05", req: 2, src: "org" },
+  { time: "10:47", req: 3, src: "paid" },
+  { time: null, req: 4, src: "direct" },
+  { time: null, req: 1, src: "paid" },
 ];
 /** The month's totals: 15 · 6 · 4; `from` is where each stands before the five requests above come in */
 const TOTALS: { src: Src; n: number; from: number }[] = [
-  { src: "google", n: 15, from: 12 },
-  { src: "insta", n: 6, from: 5 },
-  { src: "fb", n: 4, from: 3 },
+  { src: "paid", n: 15, from: 12 },
+  { src: "org", n: 6, from: 5 },
+  { src: "direct", n: 4, from: 3 },
 ];
 
 /**
@@ -58,6 +59,7 @@ const TOTALS: { src: Src; n: number; from: number }[] = [
 export async function AdsAnalytics({ index, facts }: { index: number; facts: AdsFacts }) {
   const t = await getTranslations("ads");
   const m = (k: string) => t(`ch.mock.${k}`);
+  const name = (src: Src) => t(`an.src.${src}`);
   /** analytics on its own: the same choice as its price card */
   const alone = { plan: `${t("price.a.t")} · ${facts.analytics}`, details: [1, 2, 3].map((n) => t(`price.a.${n}`)).join("\n") };
   const go = (
@@ -99,7 +101,7 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
                     <li className="rk-live__row" key={i}>
                       <span className="rk-live__time">{r.time ?? t("an.live.yday")}</span>
                       <span className="rk-live__what">{t(`hero.req.${r.req}`)}</span>
-                      <span className="rk-live__src" data-src={r.src}><i aria-hidden="true" /><span><b>{t("an.live.ad")}&nbsp;</b>{NAME[r.src]}</span></span>
+                      <span className="rk-live__src" data-src={r.src}><i aria-hidden="true" /><span>{name(r.src)}</span></span>
                     </li>
                   ))}
                 </ul>
@@ -109,7 +111,7 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
                 <div className="rk-live__tot">
                   {TOTALS.map((x) => (
                     <p className="rk-live__t" data-src={x.src} data-from={x.from} key={x.src}>
-                      <span className="rk-live__tk"><i aria-hidden="true" />{NAME[x.src]}</span>
+                      <span className="rk-live__tk"><i aria-hidden="true" />{name(x.src)}</span>
                       <b className="rk-live__tv"><em className="rk-live__plus" aria-hidden="true">{t("an.live.plus")}</em><Count value={x.n} /></b>
                       <span className="rk-live__tb" aria-hidden="true"><i style={{ width: `${Math.round((x.n / TOTALS[0].n) * 10000) / 100}%` }} /></span>
                     </p>
@@ -174,10 +176,10 @@ export async function AdsAnalytics({ index, facts }: { index: number; facts: Ads
                   <ul className="rk-path__rows">
                     {TOTALS.map((x) => (
                       <li className="rk-path__row" data-src={x.src} key={x.src}>
-                        {x.src === "google" && <span className="rk-path__flash" />}
-                        <span className="rk-path__name">{NAME[x.src]}</span>
+                        {x.src === "paid" && <span className="rk-path__flash" />}
+                        <span className="rk-path__name">{name(x.src)}</span>
                         <span className="rk-path__bar"><i style={{ width: `${Math.round((x.n / TOTALS[0].n) * 10000) / 100}%` }} /></span>
-                        <b className="rk-path__v">{x.src === "google" ? <Count value={x.n} /> : x.n}</b>
+                        <b className="rk-path__v">{x.src === "paid" ? <Count value={x.n} /> : x.n}</b>
                       </li>
                     ))}
                   </ul>
