@@ -61,6 +61,9 @@ export async function AdsPrice({ index, facts }: { index: number; facts: AdsFact
   );
   return (
     <section className="section ai-sec rk-price" id="price" aria-labelledby="price-title">
+      {/* /reklama-i-analityka#tsiny lands here too (the owner, 23 Nov 2026: the ads' price groups lead to it); the block
+          keeps id="price", which the site's menu (content/site-nav) and its highlight read */}
+      <span className="rk-anchor" id="tsiny" aria-hidden="true" />
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta">
