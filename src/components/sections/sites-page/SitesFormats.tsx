@@ -20,7 +20,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta"><span className="s-head__index">2</span><span>{t("nav.formats")}</span></p>
-          <h2 data-split="" className="s-head__title" id="formats-title"><span className="tone">{t.rich("fmt.title", R)}</span></h2>
+          <h2 data-split="" className="s-head__title" id="formats-title"><span className="tone">{t.rich("fmt.title", { ...R, mk: (c) => <span className="st-mk">{c}</span> })}</span></h2>
           <p className="s-head__intro">{t("fmt.intro")}</p>
         </header>
 

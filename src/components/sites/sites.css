@@ -346,6 +346,12 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 
 .st-get__list li { position: relative; padding-left: 28px; font-size: var(--fs-body-s); font-weight: 300; line-height: 1.45; color: var(--ink-dark-soft); text-wrap: pretty; }
 .st-get__list li::before { content: ""; position: absolute; left: 0; top: 0.1em; width: 18px; height: 18px; border-radius: 50%; background: var(--ink-dark) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='m6 12.5 4 4L18 8' fill='none' stroke='%23f1ece3' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 12px no-repeat; }
+/* «під ключ» in block 2's title under a lime highlighter, as the ads page's case numbers (the owner, 23 Nov 2026);
+   it sweeps in once as the title comes in (sites-runtime initMarks), or is simply there */
+.st-mk { white-space: nowrap; margin: 0 -0.3em 0 -0.08em; padding: 0 0.4em 0 0.16em; background: linear-gradient(100deg, transparent 0.25em, rgb(218 255 2 / 0.9) 0.3em, rgb(218 255 2 / 0.9) calc(100% - 0.3em), transparent calc(100% - 0.25em)) 0 88% / 100% 58% no-repeat; }
+.st-mk-wait .st-mk { background-size: 0% 58%; }
+.st-mk-run .st-mk { animation: st-mk-in 0.8s var(--ease-out) 0.55s forwards; }
+@keyframes st-mk-in { to { background-size: 100% 58%; } }
 .st-fmts__end { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 32px; margin-top: var(--rhythm-s); }
 .st-fmts__note { margin: 0; font-size: var(--fs-body-s); font-weight: 300; color: var(--ink-dark-soft); }
 .st-fmts__note .link { padding-block: 12px; color: var(--ember-deep); }

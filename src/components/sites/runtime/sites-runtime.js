@@ -147,6 +147,7 @@ async function boot() {
   initTabs();
   initSumbar();
   initCards();
+  initMarks();
   arrive();
 }
 
@@ -193,6 +194,25 @@ function arrive() {
 /* ---------- the cards' touches (js/sites-fx-page.js): the light under the mouse on the rail and the extras, the first
    screen's sample leaning to the mouse, a lap of light round the sum on first sight (no magnetic buttons: the owner,
    15 Oct; the buttons are the main page's, css/sites-btn.css) ---------- */
+/* «під ключ» in block 2's title under a lime highlighter (the owner, 23 Nov 2026, as the ads page's case numbers): it
+   sweeps in once as the title comes in; already on the screen at the start, or without motion, it is simply there.
+   The state sits on the title, which the line split keeps (it may re-make the words inside on a resize) */
+function initMarks() {
+  if (!motion || !('IntersectionObserver' in window)) return;
+  for (const title of $$('.s-head__title')) {
+    if (!$('.st-mk', title)) continue;
+    const box = title.getBoundingClientRect();
+    if (box.top < innerHeight && box.bottom > 0) continue;
+    title.classList.add('st-mk-wait');
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      io.disconnect();
+      title.classList.add('st-mk-run');
+    }, { rootMargin: '0px 0px -14% 0px' });
+    io.observe(title);
+  }
+}
+
 function initCards() {
   if (OG) return;
   for (const card of $$('.st-rail__t, .st-add')) spotlight(card);
