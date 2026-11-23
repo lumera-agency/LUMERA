@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/reklama-
 /**
  * «Реклама й аналітика» — the ads section's own page (the main page's block 2, row 04, will lead here). The order of the
  * owner's brief of 21 Oct (the proof before the explaining): 1 the first screen → 2 the clients' cases (the one light
- * block) → a pause, one sentence → 3 where the ads are shown (Google, Facebook / Instagram) → 4 the analytics (GA4) →
+ * block) → a pause, one sentence → 3 how the ads in Google work (the ad, the queries) → 4 the analytics (GA4) →
  * 5 the page (the bridge to the sites page: a short film, an unclear page drains the budget; the owner, 26 Oct) → 6 our terms → 7 the price →
  * 8 how we work → 9 questions → 10 the request. Built from the AI pages' and «Дизайн і сайти»'s kit.
  */

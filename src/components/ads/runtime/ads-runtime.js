@@ -282,7 +282,7 @@ function segFocus(seg) {
   }
 }
 
-/* ---------- 3 · phones: one network at a time under a switch (the owner, 28 Oct: the two demos one under the other took
+/* ---------- 3 · phones: one scene at a time under a switch (the owner, 28 Oct: the two demos one under the other took
    two screens). Wider screens show both and hide the switch (CSS). The demo shown comes into view as any scene does and
    plays; the one hidden, if playing, jumps to its end (the scene engine) ---------- */
 function initChPick() {
@@ -297,7 +297,7 @@ function initChPick() {
     });
     grid.dataset.pick = input.value;
   };
-  // a browser that kept the choice over a reload shows that network from the start
+  // a browser that kept the choice over a reload shows that scene from the start
   const kept = $('input:checked', seg);
   if (kept && kept.value !== $('input', seg).value) paint(kept);
   seg.addEventListener('change', (e) => {
@@ -388,14 +388,14 @@ let current = null;
 const queue = [];
 /** the demos that play again each time they come back into view (their «↻ Ще раз» went in the owner's brief of 21 Oct):
  *  off the screen they go back to their first frame, so the start is never seen jumping */
-const AGAIN = new Set(['hero', 'google', 'meta', 'live', 'path', 'page']);
+const AGAIN = new Set(['hero', 'google', 'kw', 'live', 'path', 'page']);
 /** the first screen goes round while it is in sight (the owner, 21 Oct: once played, it stood still): a pause, the
  *  requests fade, a new round comes in. Covered by the page, off the screen or in a hidden tab, it waits */
 const LOOP = new Set(['hero']);
 const LOOP_HOLD = 2600;
 
 function initScenes() {
-  const defs = { hero: playHero, google: playGoogle, meta: playMeta, live: playLive, path: playPath, how: playHow, page: playPage };
+  const defs = { hero: playHero, google: playGoogle, kw: playKw, live: playLive, path: playPath, how: playHow, page: playPage };
   for (const el of $$('[data-scene]')) {
     const play = defs[el.dataset.scene];
     if (!play) continue;
@@ -612,10 +612,11 @@ const pop = (scene, el, delay, duration = 560) => {
 const tap = (scene, el, delay) =>
   anim(scene, el, [{ opacity: 0.9, transform: 'scale(0.3)' }, { opacity: 0, transform: 'scale(1.6)' }], { duration: 560, delay, fill: 'none' });
 
-/* ---------- 1 · the way of a request (the owner's redesign, 20 Oct; Magic UI's / 21st.dev's Animated Beam): four times
-   (Google, Instagram, Facebook, Google; phones three, the first Google left out) a light leaves the network, runs down its line, across, into «Ваш сайт», which
-   answers, and on down into the list, where the request lands on top with its source (React Bits' AnimatedList: the
-   earlier ones step down), and that network's count goes up. About 4 s ---------- */
+/* ---------- 1 · the way of a request (the owner's redesign, 20 Oct; Magic UI's / 21st.dev's Animated Beam; Google only
+   since 22 Nov 2026): four times («ціна», «київ», «терміново», «ціна»; phones three, the first «ціна» left out) a light
+   leaves the query, runs down its line, across, into «Ваш сайт», which answers, and on down into the list, where the
+   request lands on top with its query (React Bits' AnimatedList: the earlier ones step down), and that query's count
+   goes up. About 4 s ---------- */
 const HERO_STEP = 820;
 function playHero(scene, replay) {
   // newest first, as at rest; only the rows shown (phones hide the oldest)
@@ -626,12 +627,12 @@ function playHero(scene, replay) {
   const runs = $$('.rk-fl__bus .rk-fl__run', scene.el);
   const link = $('.rk-fl__link .rk-fl__run', scene.el);
   const hub = $('.rk-fl__hub', scene.el);
-  const COL = { google: 0, insta: 1, fb: 2 };
+  const COL = { price: 0, city: 1, fast: 2 };
   const SHIFT_X = ['33.333%', '0%', '-33.333%'];
   const BUS = 640;
   const LINK = 300;
   const glow = [{ opacity: 0 }, { opacity: 1, offset: 0.12 }, { opacity: 1, offset: 0.88 }, { opacity: 0 }];
-  /** when the k-th request lands (the oldest first), and when each network's land */
+  /** when the k-th request lands (the oldest first), and when each query's land */
   const times = [];
   const at = {};
   rows.slice().reverse().forEach((row, k) => {
@@ -666,7 +667,7 @@ function playHero(scene, replay) {
     }
     anim(scene, row, frames, { duration: end, delay: 0, easing: 'linear' });
   });
-  // each network's count stands at zero from the start and goes up as its requests land; its badge answers each time
+  // each query's count stands at zero from the start and goes up as its requests land; its badge answers each time
   const STEP = 420;
   for (const li of $$('.rk-fl__src > li', scene.el)) {
     const strip = $('.rk-part__strip', li);
@@ -691,7 +692,6 @@ function playHero(scene, replay) {
    glides along, blinks once and goes as the results come), two ordinary results come up, our ad comes in on top of them
    and pushes them down, a tap on it, «+1 заявка». About 3.3 s ---------- */
 function playGoogle(scene) {
-  googleAt = performance.now();
   const chars = $$('.rk-type > i', scene.el);
   const caret = $('.rk-type__caret', scene.el);
   // the pace: 40–60 ms a letter, a little longer after a space (deterministic, so a replay types the same way)
@@ -769,76 +769,30 @@ function finger(scene, target, at) {
   ], { duration: D, delay: at - GLIDE, easing: 'linear', fill: 'none' });
 }
 
-/** wide screens: the two ad cards play as a pair, Google first and Facebook / Instagram 1.6 s after it, so their «+1»
- *  never land together (the review, 20 Oct: they did, 0.2 s apart, when the second scene happened to start first) */
-const PAIR = 1600;
-let googleAt = -1e9;
-const onScreen = (el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight; };
-
-/* ---------- 2 · Facebook / Instagram: the people of a city; each audience chip that lands leaves some of them out (the
-   city, then the age) in a wave that starts at the chip, the third lights the three who fit and the ad reaches them
-   (beams after Magic UI's Animated Beam, the same motif as the way of a request), the ad comes in from their side, the
-   finger taps it, «+1 заявка». About 3.4 s ---------- */
-function playMeta(scene, replay) {
-  let lag = 0;
-  if (!replay && !phoneMQ.matches) {
-    const google = scenes.find((s) => s.el.dataset.scene === 'google');
-    if (google && !google.played && !google.playing && onScreen(google.el)) start(google, false);
-    if (google?.playing) lag = Math.max(0, googleAt + PAIR - performance.now());
-  }
-  const d = (ms) => ms + lag;
-  const dots = $$('.rk-crowd__dot', scene.el);
-  const chips = $$('.rk-aud__chips li', scene.el);
-  show(scene, $('.rk-aud__k', scene.el), d(100), 'translateY(0.25rem)', 420);
-  const CHIP = 450;
-  chips.forEach((chip, i) => pop(scene, chip, d(250 + i * CHIP)));
-  // chip 1 (the city) and chip 2 (the age): those outside dim and shrink in a wave that starts at the chip
-  const WAVE = 320;
-  [1, 2].forEach((k, i) => {
-    const from = spot(chips[i] || scene.el, scene.el);
-    const left = dots.filter((dot) => dot.dataset.k === String(k));
-    const far = left.map((dot) => { const q = spot(dot, scene.el); return Math.hypot(q.x - from.x, q.y - from.y); });
-    const max = Math.max(1, ...far);
-    left.forEach((dot, j) =>
-      anim(scene, dot, [{ opacity: 0.55, transform: 'none' }, { opacity: 0.14, transform: 'scale(0.7)' }], { duration: 420, delay: d(400 + i * CHIP) + (far[j] / max) * WAVE }));
+/* ---------- 2 · the queries: what people type into Google comes in line by line (Magic UI's Animated List); each gets
+   its answer a beat later: the ones that bring clients a lime tick («показуємо»), the rest a line drawn through them as
+   they dim («не показуємо»); «3 запити виключено» closes it. About 3.3 s ---------- */
+function playKw(scene, replay) {
+  const rows = $$('.rk-kw__row', scene.el);
+  show(scene, $('.rk-kw__k', scene.el), replay ? 60 : 120, 'translateY(0.25rem)');
+  const T0 = replay ? 220 : 320, GAP = 360, SAY = 300;
+  rows.forEach((row, i) => {
+    const t = T0 + i * GAP;
+    pop(scene, row, t);
+    const at = t + SAY;
+    show(scene, $('.rk-kw__v', row), at, 'translateX(-0.375rem)', 420);
+    anim(scene, $('.rk-kw__mark', row), [{ transform: 'scale(0.3)' }, { transform: 'none' }], { duration: 420, delay: at + 20, easing: SPRING });
+    if (row.hasAttribute('data-on')) return;
+    anim(scene, $('.rk-kw__cut', row), [{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 420, delay: at + 60, easing: MOVE });
+    anim(scene, $('.rk-kw__q', row), [{ opacity: 1 }, { opacity: 0.45 }], { duration: 420, delay: at + 100, easing: 'linear' });
   });
-  // chip 3 (the interests): the three who fit light up, and the ad reaches them: a beam from each passes and fades
-  const lit = d(400 + 2 * CHIP);
-  const fit = dots.filter((dot) => dot.classList.contains('is-fit'));
-  fit.forEach((dot, j) => {
-    anim(scene, dot, [{ opacity: 0.55 }, { opacity: 1 }], { duration: 240, delay: lit + j * 110, easing: 'linear' });
-    anim(scene, $('b', dot), [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'scale(1.35)', offset: 0.45 }, { opacity: 1, transform: 'none' }], { duration: 560, delay: lit + j * 110 });
-  });
-  const postEl = $('.rk-post', scene.el);
-  const post = lit + 520;
-  if (postEl) {
-    const edge = spot(postEl, scene.el);
-    edge.x -= postEl.offsetWidth / 2;
-    $$('.rk-beam', scene.el).forEach((beam, j) => {
-      const dot = fit[j];
-      if (!dot) return;
-      const q = spot(dot, scene.el);
-      const len = Math.hypot(edge.x - q.x, edge.y - q.y);
-      const turn = Math.atan2(edge.y - q.y, edge.x - q.x);
-      const at = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px) rotate(${turn.toFixed(4)}rad)`;
-      anim(scene, beam, [
-        { opacity: 0, transform: `${at} scaleX(0)`, easing: MOVE },
-        { opacity: 1, transform: `${at} scaleX(${len.toFixed(1)})`, offset: 0.45 },
-        { opacity: 0, transform: `${at} scaleX(${len.toFixed(1)})` },
-      ], { duration: 800, delay: lit + 260 + j * 90, easing: 'linear', fill: 'none' });
-    });
-  }
-  // the ad comes in from the people's side
-  anim(scene, postEl, [{ opacity: 0, transform: 'translateX(-1.5rem)' }, { opacity: 1, transform: 'none' }], { duration: 560, delay: post });
-  const press = post + 680;
-  finger(scene, $('.rk-post__cta .rk-tap', scene.el), press);
-  tap(scene, $('.rk-post__cta .rk-tap', scene.el), press);
-  pop(scene, $('.rk-toast', scene.el), press + 250);
+  pop(scene, $('.rk-toast', scene.el), T0 + rows.length * GAP + SAY + 180);
 }
 
 /* ---------- 3 · wide screens, the live report (Magic UI's / React Bits' Animated List, React Bits' Counter): the sheet
    rises; five requests come in, the oldest first, each at the top of the list while the earlier ones slide down; with
-   each, its source's total ticks up by one and an ember «+1» passes (Google 12 → 15, Facebook 3 → 4, Instagram 5 → 6).
+   each, its source's total ticks up by one and an ember «+1» passes (Google's ads 12 → 15, Google's search 5 → 6, those
+   who came straight 3 → 4).
    About 3.4 s ---------- */
 function playLive(scene, replay) {
   anim(scene, scene.el, [{ opacity: 0, transform: 'translateY(1.25rem)' }, { opacity: 1, transform: 'none' }], { duration: 700 });

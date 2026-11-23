@@ -4,38 +4,33 @@ import { aiRich } from "@/components/ai/rich";
 import { AdsFibers } from "@/components/ads/AdsFibers";
 import { priceLine, type AdsFacts } from "@/components/ads/facts";
 
-type Src = "google" | "insta" | "fb";
+/** three of the queries people type into Google before they find the business (the mock-up's «ваша послуга …», cut to
+ *  the word that differs): each brings its own requests. The words are hero.g.*: the old hero.sum / s / src / alt stay
+ *  for the main page's configurator, which still draws the old diagram (pricing/AdsScheme.tsx, a shared file) */
+type Src = "price" | "city" | "fast";
 
-/** The week's requests (a sample): what the request was about, when, and the ad it came from. No names: Google
+/** The week's requests (a sample): what the request was about, when, and the query it came from. No names: Google
  *  Analytics keeps no personal data, only the request and its source. Newest on top, as in a mailbox: they arrive from
  *  the top and push the earlier ones down (runtime); phones show the latest three, so the first screen fits theirs */
 const ROWS: { n: number; time: string; src: Src }[] = [
-  { n: 4, time: "16:22", src: "google" },
-  { n: 3, time: "13:05", src: "fb" },
-  { n: 2, time: "11:40", src: "insta" },
-  { n: 1, time: "09:14", src: "google" },
+  { n: 4, time: "16:22", src: "price" },
+  { n: 3, time: "13:05", src: "fast" },
+  { n: 2, time: "11:40", src: "city" },
+  { n: 1, time: "09:14", src: "price" },
 ];
 const PHONE_ROWS = 3;
-/** where the ads are; each one's count is its rows in the list, on phones only the rows they show */
-const SOURCES: Src[] = ["google", "insta", "fb"];
+/** the queries; each one's count is its rows in the list, on phones only the rows they show */
+const SOURCES: Src[] = ["price", "city", "fast"];
 const countOf = (src: Src, rows: typeof ROWS) => rows.filter((row) => row.src === src).length;
-const NAME: Record<Src, string> = { google: "Google", insta: "Instagram", fb: "Facebook" };
-
-/** the three networks' marks, plain line drawings (not their logos) */
-const ICON: Record<Src, React.ReactNode> = {
-  google: <><circle cx="12" cy="12" r="8" /><path d="M12.5 12h7.3" /></>,
-  insta: <><rect x="4.5" y="4.5" width="15" height="15" rx="4.5" /><circle cx="12" cy="12" r="3.4" /><circle cx="16.6" cy="7.4" r="0.6" /></>,
-  fb: <><path d="M13.5 20v-7h2.6l.4-3h-3V8.4c0-.9.3-1.4 1.5-1.4H16.6V4.3c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9V10H8v3h2.5v7" /></>,
-};
 
 /**
  * 1 · the first screen (the owner's redesign of 20 Oct: the words alone did not say where the ads are or what the
- * window was): the words on the left (the owner's setting of 5 Nov 2026: the title large and white, one lead, the
+ * window was; Google only since the owner's word of 22 Nov 2026): the words on the left (the owner's setting of 5 Nov 2026: the title large and white, one lead, the
  * confirmed facts as a numbered table, the request button in lime with the quiet link to the prices), and on the right
- * the way of a request as an integration diagram (Magic UI's / 21st.dev's Animated Beam): the three networks on top,
- * their lines join and run into «Ваш сайт · форма заявки», and from there into the week's requests, each with the ad it
- * came from. Plays once (scene «hero»): a light runs from a network down the lines into the site, the request lands on
- * top of the list, and that network's count goes up; four times, Google, Instagram, Facebook, Google (phones three).
+ * the way of a request as an integration diagram (Magic UI's / 21st.dev's Animated Beam): three Google queries on top,
+ * their lines join and run into «Ваш сайт · форма заявки», and from there into the week's requests, each with the query
+ * it came from. Plays once (scene «hero»): a light runs from a query down the lines into the site, the request lands on
+ * top of the list, and that query's count goes up; four times, «ціна», «київ», «терміново», «ціна» (phones three).
  * It plays again each time it comes back into view. Phones set the title, the facts, the diagram, then the button (the
  * owner, 5 Nov 2026). The ground (the owner, 5 Nov 2026): a stream of glowing lines arcing under the window
  * (AdsFibers), the window over it as frosted glass. No longer pinned: block 2 scrolls in after it, it does not slide
@@ -69,17 +64,17 @@ export async function AdsHero({ facts }: { facts: AdsFacts }) {
 
         <div className="ai-hero__visual">
           <div className="rk-fl" data-scene="hero">
-            <div className="rk-fl__win" role="img" aria-label={t("hero.alt")}>
+            <div className="rk-fl__win" role="img" aria-label={t("hero.g.alt")}>
               <p className="rk-fl__top" aria-hidden="true">
-                <span>{t("hero.sum")}</span>
+                <span>{t("hero.g.sum")}</span>
               </p>
-              {/* the networks, each with its count of the week's requests (a strip 0…n, rolled by the runtime) */}
+              {/* the queries, each with its count of the week's requests (a strip 0…n, rolled by the runtime) */}
               <ul className="rk-fl__src" aria-hidden="true">
                 {SOURCES.map((src) => (
                   <li data-src={src} key={src}>
                     <span className="rk-fl__chip">
-                      <svg className="rk-fl__ico" viewBox="0 0 24 24" focusable="false">{ICON[src]}</svg>
-                      <span className="rk-fl__name"><b>{NAME[src]}</b><small>{t(`hero.s.${src}`)}</small></span>
+                      <svg className="rk-fl__ico" viewBox="0 0 24 24" focusable="false"><circle cx="11" cy="11" r="6" /><path d="m20 20-4.3-4.3" /></svg>
+                      <span className="rk-fl__name"><b>{t(`hero.g.q.${src}`)}</b><small>{t("hero.g.s")}</small></span>
                       <span className="rk-fl__n">
                         <span className="rk-part__n" style={{ "--n": countOf(src, ROWS), "--n-phone": countOf(src, ROWS.slice(0, PHONE_ROWS)) } as React.CSSProperties}>
                           <span className="rk-part__strip">
@@ -91,7 +86,7 @@ export async function AdsHero({ facts }: { facts: AdsFacts }) {
                   </li>
                 ))}
               </ul>
-              {/* the lines: from each network down, together, into the site; a light runs along them (runtime) */}
+              {/* the lines: from each query down, together, into the site; a light runs along them (runtime) */}
               <div className="rk-fl__bus" aria-hidden="true">
                 {SOURCES.map((src, i) => (
                   <span className="rk-fl__run" data-i={i} key={src}><b /></span>
@@ -117,8 +112,8 @@ export async function AdsHero({ facts }: { facts: AdsFacts }) {
                       </span>
                       <span className="rk-inbox__src">
                         <span className="rk-inbox__tick">✓</span>
-                        <span className="rk-inbox__l">{t(`hero.src.${r.src}`)}</span>
-                        <span className="rk-inbox__s">{NAME[r.src]}</span>
+                        <span className="rk-inbox__l">{t(`hero.g.src.${r.src}`)}</span>
+                        <span className="rk-inbox__s">{t(`hero.g.q.${r.src}`)}</span>
                       </span>
                     </li>
                   ))}
