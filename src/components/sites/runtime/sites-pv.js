@@ -225,7 +225,7 @@ function landingB(c, s, e, opts) {
     <section class="pv-hero pv-hero--day" data-hero>
       <i class="pv-day__light" aria-hidden="true"></i><i class="pv-day__win" aria-hidden="true"><i></i></i><i class="pv-day__grain" aria-hidden="true"></i>
       <span class="pv-pill" data-in data-shine><i class="pv-pill__dot" aria-hidden="true"></i>${words({ html: lx(s.eyebrow, e?.eyebrow) }, opts.rest, true)}</span>
-      <h1 class="pv-h1" data-in>${lxh(s.h1, s.em, e, s.rot)}</h1>
+      <div class="pv-h1" data-in>${lxh(s.h1, s.em, e, s.rot)}</div>
       <p class="pv-sub" data-in>${lx(s.sub, e?.sub)}</p>
       <div class="pv-row" data-in><span class="pv-btn pv-btn--arrow" data-cta>${STAR}${lx(s.btn, e?.btn)}<b class="pv-btn__ar">${ICO.arrow}</b></span><span class="pv-tlink pv-tlink--day">${lx(s.btn2, e?.btn2)}<i class="pv-tlink__ar" aria-hidden="true"></i></span></div>
       <div class="pv-fan">${print('l', 1, s, e)}${print('r', 2, s, e)}${print('c', 0, s, e, true)}${objSlot}</div>
@@ -437,7 +437,7 @@ function landingCover(c, s, e) {
       <div class="pv-cover__z">
         <div class="pv-cover__cl">
           <span class="pv-cover__k">${lx(A.eyebrow, e?.eyebrow)}</span>
-          <h1 class="pv-h1 pv-cover__h1">${h1}</h1>
+          <div class="pv-h1 pv-cover__h1">${h1}</div>
           <p class="pv-cover__sub">${lx(s.sub, e?.sub)}</p>
         </div>
         <div class="pv-cover__ctas"><span class="pv-btn pv-btn--cover" data-cta>${lx(s.btn, e?.btn)}<b class="pv-btn__sq">${ICO.right}</b></span><span class="pv-cover__tl">${lx(s.btn2, e?.btn2)}</span></div>
@@ -554,7 +554,7 @@ function corpPage(c, k, e, d, page, opts) {
   const A = d === 'a';
   const H = A ? concept(k) : k, E = A ? concept(e) : e;
   const head = header(c, e, { nav: c.tabs.corporate, cta: k.cta, design: d, mark: 'law' });
-  const ph = (title, intro) => `<section class="pv-phead pv-phead--${d}" data-hero><span class="pv-kicker" data-in>${esc(c.brand)} / ${esc(title)}</span><h1 class="pv-h1" data-in>${wds(title)}</h1>${intro ? `<p class="pv-sub" data-in>${esc(intro)}</p>` : ''}</section>`;
+  const ph = (title, intro) => `<section class="pv-phead pv-phead--${d}" data-hero><span class="pv-kicker" data-in>${esc(c.brand)} / ${esc(title)}</span><div class="pv-h1" data-in>${wds(title)}</div>${intro ? `<p class="pv-sub" data-in>${esc(intro)}</p>` : ''}</section>`;
   const numsRow = `<section class="pv-nums${A ? ' pv-nums--serif' : ''}">${k.nums.map(([n, l]) => `<div><b>${nums(n)}</b><span>${esc(l)}</span></div>`).join('')}</section>`;
   // the practices: three flat cards (Базовий) or the «§» list (Авторський, its signature)
   const practices = A
@@ -567,14 +567,14 @@ function corpPage(c, k, e, d, page, opts) {
       ? `<section class="pv-hero pv-hero--a" data-hero>
           <div class="pv-meta" data-in><span>(01) ${esc(k.studioLabel)}</span><span>${k.meta.map(esc).join(' — ')}</span></div>
           <span class="pv-eyebrow-a" data-in data-shine>${words(H.eyebrow, opts.rest, true)}</span>
-          <h1 class="pv-h1" data-in>${lxh(H.h1, H.em, E, H.rot)}</h1>
+          <div class="pv-h1" data-in>${lxh(H.h1, H.em, E, H.rot)}</div>
           <div class="pv-hero__foot" data-in><p class="pv-sub">${lx(H.sub, E?.sub)}</p><span class="pv-btn" data-cta>${STAR}${lx(H.btn, E?.btn)}${ICO.arrow}</span></div>
           <div class="pv-visual" data-in data-slot-default>${CUBELINE}</div>${objSlot}
         </section>`
       : `<section class="pv-hero pv-hero--b" data-hero>
           <div class="pv-hero__t">
             <span class="pv-eyebrow" data-in data-shine>${words(k.eyebrow, opts.rest, true)}</span>
-            <h1 class="pv-h1" data-in>${lxh(k.h1, k.em, e, k.rot)}</h1>
+            <div class="pv-h1" data-in>${lxh(k.h1, k.em, e, k.rot)}</div>
             <p class="pv-sub" data-in>${lx(k.sub, e?.sub)}</p>
             <div class="pv-row" data-in><span class="pv-btn" data-cta>${STAR}${lx(k.btn, e?.btn)}</span><span class="pv-tlink">${lx(k.btn2, e?.btn2)} →</span></div>
           </div>
@@ -613,7 +613,7 @@ function shopB(c, h, e, opts) {
     <section class="pv-hero pv-hero--b pv-hero--shop" data-hero>
       <div class="pv-hero__t">
         <span class="pv-eyebrow" data-in data-shine>${words(h.eyebrow, opts.rest, true)}</span>
-        <h1 class="pv-h1" data-in>${lxh(h.h1, h.em, e, h.rot)}</h1>
+        <div class="pv-h1" data-in>${lxh(h.h1, h.em, e, h.rot)}</div>
         <p class="pv-sub" data-in>${lx(h.sub, e?.sub)}</p>
         <div class="pv-price" data-in><b>${esc(h.price)}</b></div>
         <div class="pv-row" data-in><span class="pv-btn" data-addcart data-cta>${STAR}${ICO.bag}${lx(h.btn, e?.btn)}</span><span class="pv-iconbtn" data-ico>${ICO.heart}</span></div>
@@ -645,7 +645,7 @@ function shopA(c, h, e, opts) {
       <div class="pv-bigname" data-in data-rot>${h.bigRot ? rotCell(h.bigRot) : esc(h.big)}</div>
       <div class="pv-hero__t" data-in>
         <span class="pv-eyebrow-a" data-shine>${words(h.mono, opts.rest, true)}</span>
-        <h1 class="pv-h1">${wds(h.card.name)}</h1>
+        <div class="pv-h1">${wds(h.card.name)}</div>
         <p class="pv-sub">${lx(h.sub, e?.sub)}</p>
       </div>
       <div class="pv-visual pv-visual--shopa" data-in><div class="pv-floor"></div>${cubeImg('ember', 'pv-cube--hero', true)}</div>
@@ -669,7 +669,7 @@ function theirs(c, x) {
   return `<div class="pv-x-top"><span>${ICO.phone}${esc(x.phone)}</span><span class="pv-x-call">${esc(x.call)}</span></div>
   <header class="pv-hdr pv-hdr--x"><span class="pv-logo pv-logo--x"><i class="pv-logo__m"></i>${esc(c.brand)}</span><nav class="pv-nav">${x.nav.map((n) => `<span>${esc(n)}</span>`).join('')}</nav></header>
   <div class="pv-scroll pv-scroll--x">
-    <section class="pv-x-banner" data-hero><div class="pv-x-banner__art"><i></i><i></i><i></i></div><h1>${esc(x.h1)}</h1><p>${esc(x.sub)}</p><span class="pv-x-btn">${esc(x.btn)}<i class="pv-tap"></i></span><span class="pv-x-dots"><i class="is-on"></i><i></i><i></i></span></section>
+    <section class="pv-x-banner" data-hero><div class="pv-x-banner__art"><i></i><i></i><i></i></div><div class="pv-x-banner__h">${esc(x.h1)}</div><p>${esc(x.sub)}</p><span class="pv-x-btn">${esc(x.btn)}<i class="pv-tap"></i></span><span class="pv-x-dots"><i class="is-on"></i><i></i><i></i></span></section>
     <section class="pv-x-sec"><h2>${esc(x.aboutTitle)}</h2><p>${esc(x.about)}</p>
       <div class="pv-x-cols">${x.services.map(([t, d], i) => `<div><span class="pv-x-ic">${[ICO.gauge, ICO.drop, ICO.tire][i]}</span><b>${esc(t)}</b><span>${esc(d)}</span></div>`).join('')}</div></section>
     <footer class="pv-x-ftr"><span>${esc(c.studio.footer.copy)}</span><span>${esc(x.phone)}</span></footer>

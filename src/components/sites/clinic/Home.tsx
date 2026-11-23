@@ -34,13 +34,13 @@ function Hero() {
         <span className="cl-hero__eye cl-label">
           <Lx a={W.label} b={E?.label} />
         </span>
-        <h1 className="cl-hero__h">
+        <div className="cl-hero__h">
           {H.lines.map((l, i) => (
             <span key={l} className={`cl-ln cl-hero__l cl-hero__l${i + 1}`} style={{ "--i": i } as Css}>
               <span className="cl-ln__i">{i === 2 ? <em className="cl-key"><Lx a={l} b={E?.hero.lines[i]} /></em> : <Lx a={l} b={E?.hero.lines[i]} />}</span>
             </span>
           ))}
-        </h1>
+        </div>
         <div className="cl-hero__row">
           <p className="cl-hero__sub">
             <Lx a={H.sub} b={E?.hero.sub} />

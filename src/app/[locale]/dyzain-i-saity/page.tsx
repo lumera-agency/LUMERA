@@ -31,7 +31,7 @@ export default async function SitesPage({ params }: PageProps<"/[locale]/dyzain-
   const facts = sitesFacts(locale);
   const nav = [
     { href: "#formats", text: t("nav.formats") },
-    { href: "#design", text: t("nav.design") },
+    { href: "#kalkuliator", text: t("nav.design") },
     { href: "#how", text: t("nav.how") },
     { href: "#faq", text: t("x.nav.faq") },
     { href: "#contact", text: t("x.nav.lead"), bar: false },

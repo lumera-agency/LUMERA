@@ -13,7 +13,7 @@ export async function SitesPrice({ facts: F }: { facts: SitesFacts }) {
   // the main page's calculator, in the page's language (/#pricing, /ru#pricing)
   const home = aiHref(await getLocale(), "/");
   return (
-    <section className="section ai-sec st-design" id="design" aria-labelledby="design-title">
+    <section className="section ai-sec st-design" id="kalkuliator" aria-labelledby="design-title">
       <div className="container">
         <header className="s-head">
           <p className="s-head__meta"><span className="s-head__index">3</span><span>{t("nav.design")}</span></p>

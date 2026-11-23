@@ -87,7 +87,7 @@ export function Lx({ a, b }: { a: ReactNode; b?: ReactNode | null }) {
 }
 
 /** SplitText: a heading set in line masks; each line rises once as its block enters */
-export function Lines({ lines, en, as: Tag = "h2", className = "", children }: { lines: readonly string[]; en?: readonly string[] | null; as?: "h1" | "h2" | "p"; className?: string; children?: ReactNode }) {
+export function Lines({ lines, en, as: Tag = "h2", className = "", children }: { lines: readonly string[]; en?: readonly string[] | null; as?: "h1" | "h2" | "p" | "div"; className?: string; children?: ReactNode }) {
   return (
     <Tag className={`sh-lines ${className}`}>
       {lines.map((l, i) => (

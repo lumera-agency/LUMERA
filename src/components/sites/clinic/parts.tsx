@@ -120,7 +120,7 @@ export function SplitHeading({
   block = false,
   className = "",
 }: {
-  as?: "h1" | "h2" | "p";
+  as?: "h1" | "h2" | "p" | "div";
   parts: readonly string[];
   keyIndex?: number;
   en?: readonly string[] | null;
@@ -220,7 +220,7 @@ export function PageHead({ h, meta, photo, focus }: { h: readonly string[]; meta
         <div className="cl-phead__no cl-label" data-rv>
           {two(page + 1)} / {two(tabs.length)}
         </div>
-        <SplitHeading as="h1" className="cl-phead__h" parts={h} keyIndex={1} en={E ? E.heads[page - 1] : null} />
+        <SplitHeading as="div" className="cl-phead__h" parts={h} keyIndex={1} en={E ? E.heads[page - 1] : null} />
         <ul className="cl-phead__meta cl-label" data-rv>
           {meta.map((m) => (
             <li key={m}>{m}</li>

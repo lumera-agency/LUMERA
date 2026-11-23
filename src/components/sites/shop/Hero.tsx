@@ -93,7 +93,7 @@ export function Hero() {
       <span className="sh-eyebrow sh-label" data-rv>
         <Lx a={D.eyebrow} b={E?.eyebrow} />
       </span>
-      <Lines as="h1" className="sh-h1" lines={W.h1} en={enH} />
+      <Lines as="div" className="sh-h1" lines={W.h1} en={enH} />
       <p className="sh-hero__sub sh-lead" data-rv style={{ "--rd": "300ms" } as Css}>
         <Lx a={W.sub} b={E?.sub} />
       </p>

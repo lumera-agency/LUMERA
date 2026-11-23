@@ -147,6 +147,7 @@ async function boot() {
   initTabs();
   initSumbar();
   initCards();
+  initMarks();
   arrive();
 }
 
@@ -193,6 +194,25 @@ function arrive() {
 /* ---------- the cards' touches (js/sites-fx-page.js): the light under the mouse on the rail and the extras, the first
    screen's sample leaning to the mouse, a lap of light round the sum on first sight (no magnetic buttons: the owner,
    15 Oct; the buttons are the main page's, css/sites-btn.css) ---------- */
+/* «під ключ» in block 2's title under a lime highlighter (the owner, 23 Nov 2026, as the ads page's case numbers): it
+   sweeps in once as the title comes in; already on the screen at the start, or without motion, it is simply there.
+   The state sits on the title, which the line split keeps (it may re-make the words inside on a resize) */
+function initMarks() {
+  if (!motion || !('IntersectionObserver' in window)) return;
+  for (const title of $$('.s-head__title')) {
+    if (!$('.st-mk', title)) continue;
+    const box = title.getBoundingClientRect();
+    if (box.top < innerHeight && box.bottom > 0) continue;
+    title.classList.add('st-mk-wait');
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      io.disconnect();
+      title.classList.add('st-mk-run');
+    }, { rootMargin: '0px 0px -14% 0px' });
+    io.observe(title);
+  }
+}
+
 function initCards() {
   if (OG) return;
   for (const card of $$('.st-rail__t, .st-add')) spotlight(card);
@@ -324,7 +344,7 @@ function initSticky() {
   const link = $('a', bar);
   // (the phone audit, 15 Oct) also while a block's own «Обговорити» is on screen: block 2's card (the open format's)
   // and the end of block 4, so two ember buttons never stand one over the other
-  const ends = [$('#design'), $('#contact'), $('.footer'), ...$$('.st-stage__acts .btn--primary'), $('.st-hw-end__acts .btn')].filter(Boolean);
+  const ends = [$('#kalkuliator'), $('#contact'), $('.footer'), ...$$('.st-stage__acts .btn--primary'), $('.st-hw-end__acts .btn')].filter(Boolean);
   const after = hero.nextElementSibling || hero;
   let heroGone = false;
   const atEnd = new Set();
@@ -721,7 +741,7 @@ function initDialogs() {
     for (const count of $$('[data-calc-format]', dlg)) {
       count.addEventListener('click', () => close(dlg, () => {
         setFormat(count.dataset.calcFormat);
-        $('#design')?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'start' });
+        $('#kalkuliator')?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'start' });
         $(`input[name="calc-format"][value="${count.dataset.calcFormat}"]`)?.focus({ preventScroll: true });
       }));
     }
@@ -1048,7 +1068,7 @@ function initTabs() {
   for (const count of $$('[data-calc-format]', room)) {
     count.addEventListener('click', () => {
       setFormat(count.dataset.calcFormat);
-      $('#design')?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'start' });
+      $('#kalkuliator')?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'start' });
     });
   }
   syncTabs();
@@ -1190,7 +1210,7 @@ function initHow() {
 /* ---------- ≤860: while block 3 is on screen and its sum card is not, the sum stays at hand ---------- */
 function initSumbar() {
   const bar = $('[data-sumbar]');
-  const block = $('#design');
+  const block = $('#kalkuliator');
   const card = $('.st-sum');
   if (!bar || !block || !card) return;
   let inBlock = false;
