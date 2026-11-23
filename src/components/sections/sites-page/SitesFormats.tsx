@@ -10,6 +10,9 @@ import type { SitesFacts } from "@/components/sites/facts";
  * site on a computer and a phone (the corporate site: its four pages fanned out); «Детальніше» opens the format's
  * panel. Prices and weeks from the main page's configurator engine (facts).
  */
+/** «сайт-візитка · 5–6 блоків» stays on one line: the browser would break after the hyphen or before the dot */
+const NW = { nw: (chunks: React.ReactNode) => <span style={{ whiteSpace: "nowrap" }}>{chunks}</span> };
+
 export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
   return (
@@ -60,7 +63,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
             <div className="st-stage__copy">
               <p className="st-stage__k"><span>{t("g.format")}</span> · 01</p>
               <h3 className="st-stage__t" id="fmt-1-t"><span className="st-stage__tin">{t("f.landing.t")}</span></h3>
-              <p className="st-stage__m">{t("f.landing.m")}</p>
+              <p className="st-stage__m">{t.rich("f.landing.m", NW)}</p>
               <p className="st-stage__p">{t("f.landing.p")}</p>
               <ul className="st-stage__inc"><li>{t("inc.landing.1")}</li><li>{t("inc.landing.2")}</li><li>{t("inc.anim")}</li><li>{t("inc.landing.3")}</li><li>{t("inc.landing.4")}</li><li>{t("inc.landing.5")}</li></ul>
               <p className="st-stage__price"><span className="st-stage__from">{t("from")}</span> <b data-fprice="landing">{F.landing}</b><span className="st-stage__wk" data-fweeks="landing">{F.wLanding}</span></p>
@@ -107,7 +110,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
               <p className="st-stage__k"><span>{t("g.format")}</span> · 03</p>
               <h3 className="st-stage__t" id="fmt-3-t"><span className="st-stage__tin">{t("f.corp.t")}</span></h3>
               <p className="st-stage__m">{t("f.corp.m")}</p>
-              <p className="st-stage__p">{t("f.corp.p")}</p>
+              <p className="st-stage__p">{t("f.corp.d")} {t("f.corp.p")}</p>
               <ul className="st-stage__inc"><li>{t("inc.corp.1")}</li><li>{t("inc.corp.2")}</li><li>{t("inc.anim")}</li><li>{t("inc.landing.2")}</li><li>{t("inc.corp.4")}</li><li>{t("inc.corp.5")}</li></ul>
               <p className="st-stage__price"><span className="st-stage__from">{t("from")}</span> <b data-fprice="corporate">{F.corporate}</b><span className="st-stage__wk" data-fweeks="corporate">{F.wCorporate}</span></p>
               <div className="st-stage__acts">
@@ -132,9 +135,9 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
           <div className="st-stage" id="fmt-stage-ecommerce" role="tabpanel" aria-labelledby="fmt-tab-ecommerce" data-fmt="ecommerce" hidden>
             <div className="st-stage__copy">
               <p className="st-stage__k"><span>{t("g.format")}</span> · 04</p>
-              <h3 className="st-stage__t" id="fmt-4-t"><span className="st-stage__tin">{t("f.shop.t")}</span></h3>
+              <h3 className="st-stage__t" id="fmt-4-t"><span className="st-stage__tin">{t("f.shop.t2")}</span></h3>
               <p className="st-stage__m">{t("f.shop.m")}</p>
-              <p className="st-stage__p">{t("f.shop.p")}</p>
+              <p className="st-stage__p">{t("f.shop.d")} {t("f.shop.p")}</p>
               <ul className="st-stage__inc"><li>{t("inc.shop.1")}</li><li>{t("inc.shop.2")}</li><li>{t("inc.anim")}</li><li>{t("inc.shop.3")}</li><li>{t("inc.shop.4")}</li><li>{t("inc.shop.5")}</li></ul>
               <p className="st-stage__price"><span className="st-stage__from">{t("from")}</span> <b data-fprice="ecommerce">{F.ecommerce}</b><span className="st-stage__wk" data-fweeks="ecommerce">{F.wEcommerce}</span></p>
               <div className="st-stage__acts">
@@ -154,7 +157,11 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
         </div>
 
         <div className="st-fmts__end">
-          <p className="st-fmts__note"><span>{t("fmt.unsure._")}</span> <a className="link" href="#contact" data-pick-format="unsure">{t("fmt.unsure.a")}</a></p>
+          {/* (23 Nov 2026, the owner's keyword round: the format advice and the calculator below, both as links) */}
+          <p className="st-fmts__note"><span>{t("fmt.unsure._")}</span> {t.rich("fmt.unsure.a", {
+            contact: (c) => <a className="link" href="#contact" data-pick-format="unsure">{c}</a>,
+            calc: (c) => <a className="link" href="#kalkuliator">{c}</a>,
+          })}</p>
           <p className="st-fmts__note"><span>{t("fmt.has._")}</span> <a className="link" href="#faq-has">{t("fmt.has.a")}</a></p>
           <button className="ai-replay" type="button" data-replay="fmt-landing fmt-plus fmt-corp fmt-shop" aria-label={t("replay.fmt")}><span aria-hidden="true">↻</span> <span>{t("x.replay")}</span></button>
         </div>
@@ -167,7 +174,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
               <button className="ai-dlg__x" type="button" data-close="" aria-label={t("close")}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-x" /></svg></button>
             </div>
             <h3 className="ai-dlg__t" id="dlg-landing-t">{t("f.landing.t")}</h3>
-            <p className="ai-dlg__lead"><span>{t("f.landing.m")}</span>. <span>{t("f.landing.p")}</span></p>
+            <p className="ai-dlg__lead"><span>{t.rich("f.landing.m", NW)}</span>. <span>{t("f.landing.p")}</span></p>
             <div className="ai-dlg__grid">
               <div>
                 <p className="ai-dlg__h">{t("dlg.blocks")}</p>

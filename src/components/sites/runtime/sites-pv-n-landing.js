@@ -233,7 +233,7 @@ export function build(H, c, data, e, opts = {}) {
       ${pocket}
       <div class="fx-hero__copy">
         <span class="fx-eyebrow" data-shine>${words({ html: lx(s.eyebrow, e?.eyebrow) }, rest, true)}</span>
-        <h1 class="fx-h1">${h1}</h1>
+        <div class="fx-h1">${h1}</div>
         <p class="fx-sub">${sub}</p>
         <div class="fx-ctas">${fb(lx(s.btn, e?.btn), 'fx-btn', 'data-cta data-to="5"', STARFX)}${fb(lx(s.btn2, e?.btn2), 'fx-btn2', 'data-to="1"')}</div>
       </div>

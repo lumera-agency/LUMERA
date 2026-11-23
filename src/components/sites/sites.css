@@ -40,12 +40,12 @@ main[data-ai-page="sites"] .ai-hero__in { position: relative; }
 main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 22px; }
 main[data-ai-page="sites"] .section .s-head__title { font-size: clamp(1.9rem, 3vw, 3.2rem); }
 /* block 3 is dark and the ivory block 4 follows: it pads its own bottom, as #services on the AI page */
-main[data-ai-page="sites"] #design { padding-bottom: clamp(88px, 12vh, 152px); }
+main[data-ai-page="sites"] #kalkuliator { padding-bottom: clamp(88px, 12vh, 152px); }
 /* the first screen's title and the stone behind it keep the AI page's size (ai-page.css: clamp(2.4rem, 4.6vw, 4.8rem)) */
 
 @media (max-width: 600px) {
   main[data-ai-page="sites"] .section .s-head__title { font-size: clamp(1.6rem, 7.2vw, 1.9rem); }
-  main[data-ai-page="sites"] #design { padding-bottom: 72px; }
+  main[data-ai-page="sites"] #kalkuliator { padding-bottom: 72px; }
   main[data-ai-page="sites"] .ai-hero--center .ai-hero__title--auto,
   main[data-ai-page="sites"] .ai-hero__head { font-size: clamp(1.75rem, 8.3vw, 2.4rem); }
   main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { flex-direction: column; gap: 6px; }

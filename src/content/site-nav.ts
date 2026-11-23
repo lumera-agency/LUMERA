@@ -123,7 +123,7 @@ export async function getSiteNav(locale: string): Promise<SiteNavData> {
   const subs: SiteNavSub[][] = [
     [
       ...formats,
-      { text: t("sites.nav.design"), href: at(SITES, "#design") },
+      { text: t("sites.nav.design"), href: at(SITES, "#kalkuliator") },
       { text: t("sites.nav.how"), href: at(SITES, "#how") },
       { text: t("sites.x.nav.faq"), href: at(SITES, "#faq") },
     ],

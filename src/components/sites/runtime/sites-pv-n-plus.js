@@ -410,7 +410,7 @@ export function build(H, c, data, e, opts = {}) {
   const hero = `<section class="pn-hero" data-blk="1" style="--sw:${SWATCH[0]}">
       <div class="pn-hero__txt">
         <div class="pn-hero__top" data-in><span>${lx(s.eyebrow, e?.eyebrow)}</span></div>
-        <h1 class="pn-h1" data-h1>${h1}</h1>
+        <div class="pn-h1" data-h1>${h1}</div>
         <p class="pn-sub" data-in>${lx(t('sub'), e ? T.suben : null)}</p>
         <div class="pn-ctas" data-in>${pbtn(lx(s.btn, e?.btn), '', ' data-btn data-go="10"')}<span class="pn-link" data-go="2">${lx(s.btn2, e?.btn2)}</span></div>
         <div class="pn-sw" data-in data-sw><span class="pn-sw__k">${esc(t('bg'))}</span><span class="pn-sw__row">${SWATCH.map((col, i) => `<i class="pn-sw__i${i ? '' : ' is-on'}" data-s="${i}" style="--c:${col}"></i>`).join('')}</span><span class="pn-sw__n">${t('sw').map((n, i) => `<span${i ? '' : ' class="is-on"'}>${esc(n)}</span>`).join('')}</span></div>

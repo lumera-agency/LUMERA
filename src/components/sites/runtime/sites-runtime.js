@@ -324,7 +324,7 @@ function initSticky() {
   const link = $('a', bar);
   // (the phone audit, 15 Oct) also while a block's own «Обговорити» is on screen: block 2's card (the open format's)
   // and the end of block 4, so two ember buttons never stand one over the other
-  const ends = [$('#design'), $('#contact'), $('.footer'), ...$$('.st-stage__acts .btn--primary'), $('.st-hw-end__acts .btn')].filter(Boolean);
+  const ends = [$('#kalkuliator'), $('#contact'), $('.footer'), ...$$('.st-stage__acts .btn--primary'), $('.st-hw-end__acts .btn')].filter(Boolean);
   const after = hero.nextElementSibling || hero;
   let heroGone = false;
   const atEnd = new Set();
@@ -721,7 +721,7 @@ function initDialogs() {
     for (const count of $$('[data-calc-format]', dlg)) {
       count.addEventListener('click', () => close(dlg, () => {
         setFormat(count.dataset.calcFormat);
-        $('#design')?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'start' });
+        $('#kalkuliator')?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'start' });
         $(`input[name="calc-format"][value="${count.dataset.calcFormat}"]`)?.focus({ preventScroll: true });
       }));
     }
@@ -1048,7 +1048,7 @@ function initTabs() {
   for (const count of $$('[data-calc-format]', room)) {
     count.addEventListener('click', () => {
       setFormat(count.dataset.calcFormat);
-      $('#design')?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'start' });
+      $('#kalkuliator')?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'start' });
     });
   }
   syncTabs();
@@ -1190,7 +1190,7 @@ function initHow() {
 /* ---------- ≤860: while block 3 is on screen and its sum card is not, the sum stays at hand ---------- */
 function initSumbar() {
   const bar = $('[data-sumbar]');
-  const block = $('#design');
+  const block = $('#kalkuliator');
   const card = $('.st-sum');
   if (!bar || !block || !card) return;
   let inBlock = false;
