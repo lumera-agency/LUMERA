@@ -71,6 +71,9 @@ const security = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // `next dev` only: the owner opens the dev server from a phone on the home network. Since 16.4.6 Next refuses its dev
+  // resources to any other origin, the page never hydrates and the preloader stays (23 Nov 2026). No effect on builds.
+  allowedDevOrigins: ["192.168.178.62"],
   // The AI-automation page and its cases are app pages (app/[locale]/ai-avtomatyzatsiia, …/keisy/*): Russian under
   // /ru like the main page. Their first, static version took ?lang=ru: such links land on the Russian page.
   async redirects() {
