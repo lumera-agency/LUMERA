@@ -667,6 +667,8 @@ main.about[data-ai-page="about"] .pb-mat--word.is-play .pb-say__roles li { --ris
    ========================================================================== */
 main.about[data-ai-page="about"] .pb-lead__grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
 main.about[data-ai-page="about"] .pb-lead .pb-lead__form { grid-column: 1 / -1; order: 0; margin-top: var(--rhythm-m); }
+/* phones: 64 px under the head, as on the other pages (its 32 px and this 59 made 91) */
+@media (max-width: 600px) { main.about[data-ai-page="about"] .pb-lead .pb-lead__form { margin-top: 2rem; } }
 /* the slip's torn foot keeps the cards' gap to the business card under it */
 main.about[data-ai-page="about"] .pb-lead__aside { display: grid; gap: calc(var(--card-gap) + 0.4375rem) var(--card-gap); align-items: start; margin-top: var(--rhythm-l); }
 /* «Що буде далі»: dark paper with the receipt's torn foot; a tick on each step in place of its number */

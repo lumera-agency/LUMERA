@@ -63,4 +63,8 @@ main[data-ai-page="sites"] .ai-fmore__body { display: grid; gap: inherit; }
   main[data-ai-page="sites"] .contact .lead-form { margin-top: 2rem; }
   main[data-ai-page="sites"] .contact .st-get { order: 3; margin-top: 2rem; padding-top: 0; border-top: 0; }
   main[data-ai-page="sites"] .lead-form .field__hint { display: none; }
+  /* the questions follow their head at 2rem, as on the AI pages (the head's margin and the wrap's gap made 92 px) */
+  main[data-ai-page="sites"] .faq-wrap { row-gap: 2rem; }
+  main[data-ai-page="sites"] .faq-wrap .faq { margin-top: 0; }
+  main[data-ai-page="sites"] .faq-wrap .s-head { margin-bottom: 0; }
 }

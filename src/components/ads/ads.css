@@ -706,8 +706,13 @@ main[data-ai-page="ads"] .lead-form__plan b { flex: 1 1 10rem; min-width: 0; }
   .rk-get { margin-top: 1.5rem; }
   main[data-ai-page="ads"] #f-contact-hint { display: none; }
   main[data-ai-page="ads"] #contact textarea { min-height: 4.75rem; }
-  /* (the head already keeps its own space below: the form's own top margin doubled it, about 90 px of nothing) */
-  main[data-ai-page="ads"] #contact .lead-form { margin-top: 0.5rem; padding: 1.25rem; }
+  /* (the head already keeps its own space below: the form's own top margin doubled it, about 90 px of nothing; 2rem
+     more, 26 Nov 2026: the head-to-form distance of the sites, AI and case pages, 64 px) */
+  main[data-ai-page="ads"] #contact .lead-form { margin-top: 2rem; padding: 1.25rem; }
+  /* the questions follow their head at 2rem, as on the AI pages (the head's margin and the wrap's gap made 92 px) */
+  main[data-ai-page="ads"] .faq-wrap { row-gap: 2rem; }
+  main[data-ai-page="ads"] .faq-wrap .faq { margin-top: 0; }
+  main[data-ai-page="ads"] .faq-wrap .s-head { margin-bottom: 0; }
 }
 @media (max-width: 374px) {
   .rk-inbox__src > span:last-child { max-width: 7.5rem; overflow: hidden; text-overflow: ellipsis; }
@@ -1067,7 +1072,8 @@ main[data-ai-page="ads"] #analytics { padding-top: var(--ad-after-m); }
 main[data-ai-page="ads"] #terms { padding-top: var(--ad-after-m); }
 main[data-ai-page="ads"] #price { padding-top: var(--ad-after-s); }
 main[data-ai-page="ads"] #how { padding-top: var(--ad-after-l); }
-main[data-ai-page="ads"] #faq { padding-top: var(--ad-after-s); }
+/* (the questions come after the steps of «Як працюємо»: the page's middle step, the smallest one left them stuck to the steps) */
+main[data-ai-page="ads"] #faq { padding-top: var(--ad-after-m); }
 main[data-ai-page="ads"] #contact { padding-top: var(--ad-after-l); }
 
 /* the first screen on wide screens: the networks in two rows where the window is narrow */
