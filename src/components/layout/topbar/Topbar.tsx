@@ -12,6 +12,7 @@ import { menu, useMenuOpen } from "@/components/layout/menu/menu-store";
 import { ScrollTopLink } from "@/components/layout/page-nav/ScrollTopLink";
 import { useSiteNav } from "@/components/layout/site-nav/SiteNavProvider";
 import { NavChevron, NavPanel } from "@/components/layout/site-nav/NavPanel";
+import { Contacts } from "@/components/layout/site-nav/Contacts";
 import { navDisclosure, type NavDisclosure } from "@/components/layout/site-nav/disclosure";
 import "./topbar.css";
 
@@ -50,6 +51,43 @@ export function Topbar({ links, cta, always = false, home }: { links?: readonly 
   useEffect(() => {
     if (!visible) panels.current?.close();
   }, [visible]);
+
+  // the contact pill takes the room the bar has (26 Nov 2026): all three buttons, the phone alone (its card has
+  // Telegram and Viber) or none, whichever leaves the page's links clear of the bar's end; looked at again whenever
+  // the bar or its links change size (a page with seven links, the ads page, runs out of room first)
+  useEffect(() => {
+    const bar = root.current;
+    if (!always || !bar) return;
+    const nav = bar.querySelector<HTMLElement>(".topbar__nav");
+    const end = bar.querySelector<HTMLElement>(".topbar__end");
+    if (!nav || !end) return;
+    const ROOM = 16;
+    const shown = (el: Element) => el.getBoundingClientRect().width > 0;
+    const room = () => {
+      const links = [...nav.querySelectorAll(":scope > .nav__link, :scope > .topbar__div")].filter(shown);
+      if (!links.length) return Infinity;
+      const right = Math.max(...links.map((el) => el.getBoundingClientRect().right));
+      const left = Math.min(...[...end.children].filter(shown).map((el) => el.getBoundingClientRect().left));
+      return left - right;
+    };
+    let busy = false;
+    const fit = () => {
+      if (busy) return;
+      busy = true;
+      bar.classList.remove("topbar--snug", "topbar--tight");
+      if (room() < ROOM) {
+        bar.classList.add("topbar--snug");
+        if (room() < ROOM) bar.classList.add("topbar--tight");
+      }
+      busy = false;
+    };
+    fit();
+    const sized = new ResizeObserver(() => requestAnimationFrame(fit));
+    sized.observe(bar);
+    sized.observe(nav);
+    document.fonts?.ready.then(fit);
+    return () => sized.disconnect();
+  }, [always]);
 
   useEffect(() => {
     if (always) return;
@@ -134,6 +172,9 @@ export function Topbar({ links, cta, always = false, home }: { links?: readonly 
       </nav>
       <div className="topbar__end">
         <LangSwitch />
+        {/* the other pages' bar takes the main page header's contact pill: Telegram, Viber, the phone (the owner,
+            26 Nov 2026); phones have the dock at the screen's foot instead */}
+        {always && <Contacts />}
         <ButtonLink href={action.href} variant="ghost" size="xs">{action.text}</ButtonLink>
         <button className="topbar__menu" type="button" aria-expanded={open} aria-controls="site-menu" aria-label={t("topbar.menu")} onClick={(e) => menu.toggle(e.currentTarget)}>
           <i />

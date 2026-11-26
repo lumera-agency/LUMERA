@@ -3,6 +3,8 @@ import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import { aiRich as R } from "@/components/ai/rich";
 import type { SitesFacts } from "@/components/sites/facts";
 import { aiHref } from "@/components/ai/links";
+import { telegramHref } from "@/config/contacts";
+import { TelegramIcon } from "@/components/layout/site-nav/Contacts";
 
 /**
  * 3 · Ціна: the format, the live sample site (the main page's configurator samples, the vanilla engine in
@@ -10,6 +12,7 @@ import { aiHref } from "@/components/ai/links";
  */
 export async function SitesPrice({ facts: F }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
+  const q = await getTranslations("quote");
   // the main page's calculator, in the page's language (/#pricing, /ru#pricing)
   const home = aiHref(await getLocale(), "/");
   return (
@@ -58,17 +61,22 @@ export async function SitesPrice({ facts: F }: { facts: SitesFacts }) {
 
           {/* the sum, beside the choices (sticky); on narrow screens a bar at the bottom leads to it */}
           <div className="st-side" id="design-sum">
-            <div className="ai-calc__card st-sum">
-              <p className="ai-calc__k"><span>{t("calc.k")}</span><span className="ai-calc__weeks" data-calc-weeks="">≈ 1–2 тижні</span></p>
-              <p className="ai-calc__name" data-calc-name="">Лендінг · базовий дизайн</p>
-              <p className="ai-calc__x" data-calc-extra="" hidden />
-              <p className="ai-calc__price"><b className="st-num" data-calc-price="">$500</b> <span>{t("once")}</span></p>
+            <div className="ai-calc__card st-sum" data-tg-card="">
+              <p className="ai-calc__k"><span>{t("calc.k")}</span><span className="ai-calc__weeks" data-calc-weeks="" data-tg-line="4">≈ 1–2 тижні</span></p>
+              <p className="ai-calc__name" data-calc-name="" data-tg-line="1">Лендінг · базовий дизайн</p>
+              <p className="ai-calc__x" data-calc-extra="" data-tg-line="2" hidden />
+              <p className="ai-calc__price" data-tg-line="3"><b className="st-num" data-calc-price="">$500</b> <span>{t("once")}</span></p>
               <details className="ai-calc__inc">
                 <summary><span>{t("inc.h")}</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-plus" /></svg></summary>
                 <div data-calc-inc="" />
                 <p className="ai-calc__note">{t("calc.extras")}</p>
               </details>
               <button className="btn btn--primary ai-calc__send" type="button" data-calc-send=""><span className="btn__label">{t("calc.send")}</span><ArrowIcon /></button>
+              {/* the sum to the studio's Telegram, its message filled in (the owner, 26 Nov 2026; layout/dock/tg-quote) */}
+              <a className="tg-quote" href={telegramHref()} target="_blank" rel="noopener" data-tg-quote="" data-tg-hello={q("hello")} data-tg-from={q("from")}>
+                <TelegramIcon />
+                <span>{q("btn")}</span>
+              </a>
               <p className="ai-calc__fine">{t("calc.fine")}</p>
               <p className="ai-calc__tol">{t("calc.tol")}</p>
               <p className="st-sum__more"><span>{t("calc.more._")}</span> <a className="link" href={`${home}#pricing`}>{t("calc.more.a")}</a></p>

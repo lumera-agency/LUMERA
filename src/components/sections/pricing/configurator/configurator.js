@@ -30,6 +30,7 @@ import { STRINGS } from './strings.js';
 import { mountPreview } from '@/components/sites/runtime/sites-pv.js';
 import { getLenis } from '@/lib/scroll';
 import { mountAdsFlow } from './ads-flow.js';
+import { telegramHref } from '@/config/contacts';
 import '@/components/sites/sites-pv.css';
 import '@/components/sites/clinic/clinic.css';
 import '@/components/sites/shop/shop.css';
@@ -438,6 +439,7 @@ export function mountConfigurator(el, { lang = 'uk', assets = {}, reducedMotion 
     month.dataset.state = !hasAds(cfg) ? 'none' : cfg.adsManagement ? 'on' : 'offer';
     // switched off, the monthly sum is an offer («+$150/міс», set small); on, it is the sum
     ref('mnum').textContent = !hasAds(cfg) ? '—' : (cfg.adsManagement ? '' : '+') + money(optionPrice('adsManagement')) + t.perMonth;
+    ref('mnum').dataset.tgLine = hasAds(cfg) && cfg.adsManagement ? '4' : '';
     ref('bar-name').textContent = name;
     ref('bar-price').textContent = once;
     ref('bar-month').textContent = p.monthly ? '+' + money(p.monthly) + t.perMonth : '';
@@ -633,13 +635,13 @@ function template(t) {
   </div>
 
   <div class="cfg__side">
-    <div class="cfg-sum" data-ref="sum">
-      <div class="cfg-sum__top"><span class="cfg-mono">${escU(t.summary.kicker)}</span><span class="cfg-mono cfg-sum__weeks" data-ref="weeks"></span></div>
-      <p class="cfg-sum__name" data-ref="name"></p>
+    <div class="cfg-sum" data-ref="sum" data-tg-card>
+      <div class="cfg-sum__top"><span class="cfg-mono">${escU(t.summary.kicker)}</span><span class="cfg-mono cfg-sum__weeks" data-ref="weeks" data-tg-line="5"></span></div>
+      <p class="cfg-sum__name" data-ref="name" data-tg-line="1"></p>
       <div class="cfg-sum__price">
-        <div class="cfg-sum__once"><span class="cfg-sum__num" data-ref="once"></span><span class="cfg-mono">${escU(t.once)}</span><span class="cfg-small cfg-sum__x" data-ref="x" hidden></span></div>
+        <div class="cfg-sum__once"><span class="cfg-sum__num" data-ref="once" data-tg-line="2"></span><span class="cfg-mono" data-tg-line="2">${escU(t.once)}</span><span class="cfg-small cfg-sum__x" data-ref="x" data-tg-line="3" hidden></span></div>
         <div class="cfg-sum__month" data-ref="month" data-state="none">
-          <span class="cfg-sum__mnum" data-ref="mnum"></span>
+          <span class="cfg-sum__mnum" data-ref="mnum" data-tg-line=""></span>
           <span class="cfg-sum__mlabel cfg-mono">${escU(t.monthly)}</span>
           <button type="button" class="cfg-sum__mgmt" role="switch" aria-checked="false" data-group="adsManagement"><span class="cfg-switch cfg-switch--s" aria-hidden="true"></span><span>${escU(t.mgmtShort)}</span></button>
         </div>
@@ -648,6 +650,7 @@ function template(t) {
         <button type="button" class="btn btn--primary btn--sm cfg-cta" data-act="open-form"><span class="btn__label">${escU(t.summary.cta)}</span>${ARROW}</button>
         <button type="button" class="cfg-link" data-act="break" data-ref="break-btn" aria-expanded="false" aria-controls="cfg-break"><span>${escU(t.summary.breakdownOpen)}</span></button>
       </div>
+      <a class="tg-quote" href="${escU(telegramHref())}" target="_blank" rel="noopener" data-tg-quote data-tg-hello="${escU(t.summary.tgHello)}" data-tg-from="${escU(t.summary.tgFrom)}"><svg class="ico ico--tg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M21.4 3.3 2.5 10.6c-.8.3-.7 1.4.1 1.6l5 1.6 1.8 5.4c.2.6 1 .8 1.5.3l2.6-2.4 4.8 3.5c.6.4 1.4.1 1.6-.6L22.6 4.6c.2-.9-.5-1.6-1.2-1.3ZM8.9 13.5l8.6-6.3-7.1 7.4-.6 3.2-.9-4.3Z"/></svg><span>${escU(t.summary.tg)}</span></a>
       <p class="cfg-small">${escU(t.summary.ctaNote)}</p>
       <p class="cfg-small cfg-sum__pnote">${escU(t.priceNote)}</p>
     </div>

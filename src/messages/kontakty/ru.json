@@ -2,7 +2,7 @@
   "kontakty": {
     "meta": {
       "title": "Контакты — {studio}",
-      "description": "Телефоны, Telegram, Viber, e-mail и форма заявки {studio}. Отвечаем в течение рабочего дня."
+      "description": "Телефоны, Telegram, Viber, e-mail и форма заявки {studio}. Отвечаем за 15 минут."
     },
     "crumb": "Контакты",
     "nav": {
@@ -12,7 +12,7 @@
     },
     "hero": {
       "title": "Контакты",
-      "lead": "Позвоните, напишите в Telegram, Viber или на <nb>e-mail</nb> либо оставьте заявку ниже. Ответим в течение рабочего дня.",
+      "lead": "Позвоните, напишите в Telegram, Viber или на <nb>e-mail</nb> либо оставьте заявку ниже. Ответим за 15 минут.",
       "cta": "Оставить заявку"
     },
     "board": {
