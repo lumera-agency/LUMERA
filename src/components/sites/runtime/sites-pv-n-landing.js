@@ -11,6 +11,18 @@
  * The six blocks (pd.md §1): Перший екран · Зали й ціни · Чому нам вірять · Як забронювати · Питання · Заявка й контакти
  * (the footer with the wordmark closes the last one).
  *
+ * Round 11 (26 Nov 2026, the owner: a landing has up to ten blocks, its sample shows at least nine): ten blocks. Under
+ * the first screen a strip of marigold tape runs the shoot types (only while it is in the frame); then U «Для яких
+ * зйомок» (a list in the display face: the row under the pointer, or the tapped one, brings its frame, which unrolls
+ * over the last), the halls, K «У ціні оренди» (a bento of paper tiles, two of them photos, the numbers count), the
+ * numbers and reviews, G «Кадри гостей» (white-bordered prints on a table: a mouse drags one, a tap lifts one,
+ * «Перемішати» deals them again; a phone swipes them in a row), the steps, M «Хто вас зустріне» (the hall as the host
+ * leaves it, no face or name, three ticks that draw, the studio's round stamp landing on the photo's corner), the
+ * questions, the booking. Ideas, not code: Dribbble's editorial studio pages, Awwwards (a list that shows its picture,
+ * prints to move about, a stamp), MotionSites (a bento of large numbers). The new blocks' photos are the Лендінг+
+ * series (photos/plus/CREDITS.md) beside two of this sample's own. Their keys are letters (u, k, g, m), so the links'
+ * numbers (data-to) still name the same six blocks.
+ *
  * Components, ported to vanilla DOM + WAAPI in our own code:
  *   React Bits (reactbits.dev, David Haz, MIT + Commons Clause, notice below): PillNav (components/pill-nav: the pill
  *   that slides between the anchors and takes the current block's paper, the hover circle), FoldText
@@ -104,6 +116,21 @@ export const object3d = true;
 // (lead, 15 Oct) phones get the 640-px copies in m/: a phone frame never shows a photo wider than that, and the
 // full-size ones decoded together outgrow a phone browser's memory
 const IMG = typeof matchMedia === 'function' && matchMedia('(max-width: 700px)').matches ? '/img/sites/photos/landing/m/' : '/img/sites/photos/landing/';
+// (round 11) the same studio's other series, the Лендінг+ sample's (Neon Wang, Unsplash License: photos/plus/CREDITS.md)
+const IMG2 = IMG.replace('/landing/', '/plus/');
+const PHONE = () => typeof matchMedia === 'function' && matchMedia('(max-width: 700px)').matches;
+// round 11 · U the shoots: each row's frame ([folder, file])
+const USES = [[IMG2, 'set-1.webp'], [IMG2, 'set-5.webp'], [IMG2, 'set-6.webp'], [IMG2, 'set-3.webp'], [IMG, 'hall-attic.webp'], [IMG2, 'set-4.webp']];
+// round 11 · K what the rent includes: each tile's paper and photo (the bento's two photo tiles)
+const KIT = [{ p: 'ch', img: [IMG2, 'kit-backdrops.webp'] }, { p: 'ch', img: [IMG2, 'kit-light.webp'] }, { p: 'fx' }, { p: 'pw' }, { p: 'mg' }, { p: 'ch2' }];
+// round 11 · G the guests' shots: the prints, and where they lie on the window's table (left %, top %, turn °): three
+// deals for «Перемішати» (a phone lays them in a row to swipe through instead: CSS)
+const PRINTS = [[IMG2, 'set-2.webp'], [IMG2, 'hall-south.webp'], [IMG, 'hall-graphite.webp'], [IMG2, 'hall-attic.webp'], [IMG2, 'hall-graphite.webp'], [IMG2, 'set-4.webp']];
+const DEALS = [
+  [[1, 8, -6], [17, 30, 4], [33, 3, -3], [49, 27, 5], [63, 6, -4], [77, 24, 7]],
+  [[4, 26, 5], [19, 2, -5], [36, 30, 3], [51, 4, -6], [66, 28, 4], [76, 2, -3]],
+  [[2, 2, 3], [20, 24, -4], [37, 8, 6], [50, 31, -3], [64, 3, 5], [78, 29, -6]],
+];
 // the rack, top to bottom, as in the hero photo: the studio's six backdrop colours. `sheet` is the paper as it hangs in
 // the hero (teal and grass a shade deeper, so white text keeps ≥ 4.5:1); `ink` the text on it
 const ROLLS = [
@@ -164,6 +191,34 @@ const T = {
   sent: { uk: 'Заявку надіслано', ru: 'Заявка отправлена' },
   days: { uk: ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'], ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'] },
   mail: 'hello@vash-sait.ua',
+  // round 11 (the owner, 26 Nov 2026: a landing of up to ten blocks, its sample at least nine): the run of shoot types
+  // and four more blocks; facts as the studio's own (the halls, the six backdrops, the steamer, the parking)
+  run: { uk: ['Портрети', 'Предметна зйомка', 'Love story', 'Каталоги одягу', 'Відео й подкасти', 'Дитячі зйомки'], ru: ['Портреты', 'Предметная съёмка', 'Love story', 'Каталоги одежды', 'Видео и подкасты', 'Детские съёмки'] },
+  usesK: { uk: 'Для яких зйомок', ru: 'Для каких съёмок' },
+  usesH: { uk: 'Портрет, предмет чи відео', ru: 'Портрет, предмет или видео' },
+  usesA: { uk: 'Підкажемо зал і фон під вашу ідею.', ru: 'Подскажем зал и фон под вашу идею.' },
+  uses: {
+    uk: [['Портрети', 'Південь: денне світло з вікон'], ['Предметна зйомка', 'Графіт: темні стіни, точне світло'], ['Love story', 'Мансарда: світло крізь дах'], ['Каталоги одягу', 'Фони 6 кольорів, відпарювач'], ['Відео й подкасти', 'Стіл, світло й тиша'], ['Дитячі зйомки', 'Реквізит і м’які кольори']],
+    ru: [['Портреты', 'Юг: дневной свет из окон'], ['Предметная съёмка', 'Графит: тёмные стены, точный свет'], ['Love story', 'Мансарда: свет сквозь крышу'], ['Каталоги одежды', 'Фоны 6 цветов, отпариватель'], ['Видео и подкасты', 'Стол, свет и тишина'], ['Детские съёмки', 'Реквизит и мягкие цвета']],
+  },
+  kitK: { uk: 'У ціні оренди', ru: 'В цене аренды' },
+  kitH: { uk: 'Усе для зйомки вже на місці', ru: 'Всё для съёмки уже на месте' },
+  kit: {
+    uk: [['6', 'кольорів фону', 'Фуксія, жовтий, бірюзовий, зелений, білий і чорний'], ['4', 'спалахи', 'Імпульсне світло, софтбокси й відбивачі'], ['', 'Гримерка', 'Дзеркало зі світлом і вішаки'], ['', 'Відпарювач', 'Для одягу й тканин'], ['', 'Парковка', 'Біля входу, для гостей'], ['', 'Wi‑Fi і кава', 'Поки готується світло']],
+    ru: [['6', 'цветов фона', 'Фуксия, жёлтый, бирюзовый, зелёный, белый и чёрный'], ['4', 'вспышки', 'Импульсный свет, софтбоксы и отражатели'], ['', 'Гримёрка', 'Зеркало со светом и вешалки'], ['', 'Отпариватель', 'Для одежды и тканей'], ['', 'Парковка', 'У входа, для гостей'], ['', 'Wi‑Fi и кофе', 'Пока готовится свет']],
+  },
+  galK: { uk: 'Кадри гостей', ru: 'Кадры гостей' },
+  galH: { uk: 'Знято в наших залах', ru: 'Снято в наших залах' },
+  mix: { uk: 'Перемішати', ru: 'Перемешать' },
+  galC: {
+    uk: ['Предмет · Графіт', 'Портрет · Південь', 'Відео · Графіт', 'Love story · Мансарда', 'Каталог · Графіт', 'Дитяча · Південь'],
+    ru: ['Предмет · Графит', 'Портрет · Юг', 'Видео · Графит', 'Love story · Мансарда', 'Каталог · Графит', 'Детская · Юг'],
+  },
+  meetK: { uk: 'Хто вас зустріне', ru: 'Кто вас встретит' },
+  meetH: { uk: 'Зустрінемо й покажемо зал', ru: 'Встретим и покажем зал' },
+  meetP: { uk: 'Адміністратор студії допоможе виставити світло й підкаже фон. Приходьте за 15 хвилин до початку: зал буде готовий.', ru: 'Администратор студии поможет выставить свет и подскажет фон. Приходите за 15 минут до начала: зал будет готов.' },
+  meetL: { uk: ['Покажемо зал і гримерку', 'Налаштуємо світло під вашу ідею', 'Підкажемо фон і реквізит'], ru: ['Покажем зал и гримёрку', 'Настроим свет под вашу идею', 'Подскажем фон и реквизит'] },
+  stamp: { uk: 'з 2016 · на Подолі · фотостудія · ', ru: 'с 2016 · на Подоле · фотостудия · ' },
 };
 const SLOTS = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
 // the mock availability: busy slots per day of the strip (nothing is promised)
@@ -342,16 +397,67 @@ export function build(H, c, data, e, opts = {}) {
       </footer>
     </section>`;
 
+  /* ---------- round 11 (26 Nov 2026, the owner: the $500 landing's sample shows ten blocks). Ideas taken from Dribbble's
+     editorial studio pages, Awwwards (a list whose row shows its picture, prints scattered to move about, a round stamp)
+     and MotionSites (a bento of large numbers); our own code, the «Фуксія» papers and type throughout ---------- */
+  /* the run of shoot types: a strip of marigold tape under the first screen (it runs while it is in the frame) */
+  const runGroup = `<span class="fx-run__g">${T.run[L].map((w) => `<b>${esc(w)}</b>${IRIS('fx-iris fx-run__iris')}`).join('')}</span>`;
+  const run = `<div class="fx-run" data-run aria-hidden="true"><div class="fx-run__in">${runGroup}${runGroup}</div></div>`;
+
+  /* U · the shoots: a list in the display face, the row under the pointer (or the tapped one) brings its frame, which
+     unrolls over the last one like a sheet of paper */
+  const uses = `<section class="fx-blk fx-uses" data-blk="u" data-paper="ch">
+      <i class="fx-sheet" aria-hidden="true"></i>
+      <div class="fx-head"><span class="fx-kick">${esc(t('usesK'))}</span><h2 class="fx-h2" data-fold>${fw(t('usesH'))}</h2><p class="fx-aside">${esc(t('usesA'))}</p></div>
+      <div class="fx-uses__in" data-uses>
+        <ol class="fx-uses__list">${T.uses[L].map(([n, d], i) => `<li class="fx-use${i ? '' : ' is-on'}" data-use="${i}"><span class="fx-use__n">${pad(i + 1)}</span><b class="fx-use__t">${esc(n)}</b><i class="fx-use__go" aria-hidden="true">${ARROW}</i><span class="fx-use__d">${esc(d)}</span></li>`).join('')}</ol>
+        <figure class="fx-uses__ph" aria-hidden="true">${USES.map(([dir, img], i) => `<img class="fx-uses__img${i ? '' : ' is-on'}" data-img="${i}" src="${dir}${img}" alt="" loading="lazy" decoding="async">`).join('')}<span class="fx-uses__tape" data-usetape>01 / ${pad(USES.length)}</span></figure>
+      </div>
+    </section>`;
+
+  /* K · what the rent includes: a bento of paper tiles, two of them photos; the numbers count up */
+  const kit = `<section class="fx-blk fx-kit" data-blk="k" data-paper="oak">
+      <i class="fx-sheet" aria-hidden="true"></i>
+      <div class="fx-head"><span class="fx-kick">${esc(t('kitK'))}</span><h2 class="fx-h2" data-fold>${fw(t('kitH'))}</h2></div>
+      <div class="fx-bento">${T.kit[L].map(([n, k, d], i) => `<div class="fx-tile fx-tile--${i}" data-p="${KIT[i].p}">${KIT[i].img ? `<img class="fx-tile__img" src="${KIT[i].img[0]}${KIT[i].img[1]}" alt="" loading="lazy" decoding="async">` : ''}${i === 0 ? `<i class="fx-tile__rack" aria-hidden="true">${ROLLS.map((r) => `<i style="--c:${r.c}"></i>`).join('')}</i>` : ''}<span class="fx-tile__k">${n ? `<b class="fx-tile__n" data-cnt="${n}">${n}</b>` : ''}<b class="fx-tile__t">${esc(k)}</b></span><span class="fx-tile__d">${esc(d)}</span></div>`).join('')}</div>
+    </section>`;
+
+  /* G · the guests' shots: prints on the table, to move about (a mouse drags them, a tap lifts one); «Перемішати» deals
+     them again. A phone lays them in a row to swipe through */
+  const gal = `<section class="fx-blk fx-gal" data-blk="g" data-paper="ch">
+      <i class="fx-sheet" aria-hidden="true"></i>
+      <div class="fx-head"><span class="fx-kick">${esc(t('galK'))}</span><h2 class="fx-h2" data-fold>${fw(t('galH'))}</h2>${fb(esc(t('mix')), 'fx-btn2 fx-gal__mix', 'data-mix')}</div>
+      <div class="fx-table" data-table>${PRINTS.map(([dir, img], i) => `<figure class="fx-print" data-print="${i}" style="--x:${DEALS[0][i][0]}%;--y:${DEALS[0][i][1]}%;--r:${DEALS[0][i][2]}deg"><span class="fx-print__ph"><img src="${dir}${img}" alt="" loading="lazy" decoding="async" draggable="false"></span><figcaption>${esc(T.galC[L][i])}</figcaption></figure>`).join('')}
+        <span class="fx-cond">${esc(t('cond'))}</span></div>
+    </section>`;
+
+  /* M · who meets you: the hall as the host leaves it for you (no face, no name), what they do, the studio's stamp */
+  const stampId = `fx-stamp-${(stampN += 1)}`;
+  const meet = `<section class="fx-blk fx-meet" data-blk="m" data-paper="pw">
+      <i class="fx-sheet" aria-hidden="true"></i>
+      <figure class="fx-meet__ph"><span class="fx-meet__img"><img src="${IMG2}meet.webp" alt="" loading="lazy" decoding="async"></span>
+        <i class="fx-stamp" aria-hidden="true"><svg viewBox="-60 -60 120 120"><defs><path id="${stampId}" d="M0,-45a45,45 0 1,1 0,90a45,45 0 1,1 0,-90"/></defs><circle class="fx-stamp__o" r="57"/><circle class="fx-stamp__i" r="31"/><text class="fx-stamp__t"><textPath href="#${stampId}">${esc(t('stamp').repeat(2))}</textPath></text><g transform="scale(.5)">${[0, 120, 240].map((r) => `<path class="fx-stamp__b" transform="rotate(${r})" d="M0-46A46 46 0 0 1 39.8 23L14 8.1C17-4 10.5-15.2 0-16.2z"/>`).join('')}</g></svg></i></figure>
+      <div class="fx-meet__t"><span class="fx-kick">${esc(t('meetK'))}</span><h2 class="fx-h2" data-fold>${fw(t('meetH'))}</h2><p class="fx-meet__p">${esc(t('meetP'))}</p>
+        <ul class="fx-meet__l">${T.meetL[L].map((x) => `<li><i>${TICK}</i><span>${esc(x)}</span></li>`).join('')}</ul></div>
+    </section>`;
+
   return `${header}${menu}
   <div class="pv-scroll fx-scroll">
     ${hero}
+    ${run}
+    ${uses}
     ${halls}
+    ${kit}
     ${trust}
+    ${gal}
     ${steps}
+    ${meet}
     ${faq}
     ${book}
   </div>`;
 }
+// (each built sample's stamp names its own text path: an old copy and a new one can stand in the frame at once)
+let stampN = 0;
 
 /* ==========================================================================
    enhance: the sample's life (once per render)
@@ -473,6 +579,41 @@ export function enhance(site, ctx = {}) {
       come([b.querySelector('.fx-book__sub'), ...b.querySelectorAll('.fx-ci li')], 520, 70);
       play(b.querySelector('.fx-form__roll'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 420, delay: 300, easing: ROLL });
       play(b.querySelector('.fx-form__in'), [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { duration: 560, delay: 420, easing: ROLL });
+    },
+    // round 11 · the shoots: the rows slide in one after another, the first frame unrolls
+    u: (b) => {
+      sheet(b);
+      foldWords(b.querySelector('.fx-h2'), 240);
+      come([b.querySelector('.fx-kick'), b.querySelector('.fx-aside')], 220, 80);
+      come([...b.querySelectorAll('.fx-use')], 420, 70, '-2cqw 0');
+      play(b.querySelector('.fx-uses__ph'), [{ clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)' }], { duration: 900, delay: 360, easing: ROLL });
+    },
+    // · what the rent includes: each tile rolls down from its top edge, the numbers count
+    k: (b) => {
+      sheet(b);
+      foldWords(b.querySelector('.fx-h2'), 240);
+      come([b.querySelector('.fx-kick')], 220);
+      [...b.querySelectorAll('.fx-tile')].forEach((tl, i) => play(tl, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { duration: 560, delay: 380 + i * 80, easing: ROLL }));
+      countIn(b, 760);
+    },
+    // · the guests' shots: the prints drop onto the table one after another
+    g: (b) => {
+      sheet(b);
+      foldWords(b.querySelector('.fx-h2'), 240);
+      come([b.querySelector('.fx-kick'), b.querySelector('.fx-gal__mix')], 220, 90);
+      [...b.querySelectorAll('.fx-print')].forEach((p, i) => play(p, [{ opacity: 0, transform: 'translateY(-5cqw) rotate(-9deg) scale(1.08)' }, { opacity: 1, transform: 'none' }], { duration: 700, delay: 380 + i * 90, easing: SPRING }));
+    },
+    // · who meets you: the photo unrolls, the ticks draw, the stamp lands
+    m: (b) => {
+      sheet(b);
+      play(b.querySelector('.fx-meet__img'), [{ clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)' }], { duration: 900, delay: 260, easing: ROLL });
+      foldWords(b.querySelector('.fx-h2'), 300);
+      come([b.querySelector('.fx-kick'), b.querySelector('.fx-meet__p')], 260, 120);
+      [...b.querySelectorAll('.fx-meet__l li')].forEach((li, i) => {
+        play(li, [{ opacity: 0, translate: '0 1cqw' }, { opacity: 1, translate: '0 0' }], { duration: 560, delay: 640 + i * 110 });
+        play(li.querySelector('path'), [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 420, delay: 760 + i * 110, easing: 'cubic-bezier(.65,0,.35,1)' });
+      });
+      play(b.querySelector('.fx-stamp'), [{ opacity: 0, transform: 'scale(1.9) rotate(-40deg)' }, { opacity: 1, transform: 'scale(.94) rotate(-12deg)', offset: 0.7 }, { opacity: 1, transform: 'scale(1) rotate(-12deg)' }], { duration: 640, delay: 1100, easing: 'cubic-bezier(.3,0,.2,1)' });
     },
   };
   const word = site.querySelector('[data-word]');
@@ -805,6 +946,82 @@ export function enhance(site, ctx = {}) {
       });
     });
     word.addEventListener('pointerleave', () => { cancelAnimationFrame(raf); raf = 0; iris.style.transform = ''; });
+  }
+
+  /* ---------- round 11 · the run: the tape runs only while it is in the frame (nothing runs at rest) ---------- */
+  const runEl = site.querySelector('[data-run]');
+  if (runEl && vp && !still && 'IntersectionObserver' in window) {
+    const ioRun = new IntersectionObserver((es) => runEl.classList.toggle('is-run', es[es.length - 1].isIntersecting), { root: vp, threshold: 0 });
+    ioRun.observe(runEl);
+    onDispose(() => ioRun.disconnect());
+  }
+
+  /* ---------- round 11 · the shoots: the row under the pointer, or the tapped one, brings its frame; the new frame
+     unrolls over the last one (the last stays under it until it is covered) ---------- */
+  const usesEl = site.querySelector('[data-uses]');
+  if (usesEl) {
+    const rows = [...usesEl.querySelectorAll('.fx-use')];
+    const imgs = [...usesEl.querySelectorAll('.fx-uses__img')];
+    const tape = usesEl.querySelector('[data-usetape]');
+    let on = 0;
+    const useOn = (i) => {
+      if (i === on || !rows[i]) return;
+      rows.forEach((r, k) => r.classList.toggle('is-on', k === i));
+      imgs.forEach((im, k) => { im.classList.toggle('was-on', k === on); im.classList.toggle('is-on', k === i); });
+      if (tape) tape.textContent = `${pad(i + 1)} / ${pad(imgs.length)}`;
+      on = i;
+    };
+    usesEl.addEventListener('pointerover', (ev) => { if (ev.pointerType === 'mouse') { const r = ev.target.closest('.fx-use'); if (r) useOn(+r.dataset.use); } });
+    usesEl.addEventListener('click', (ev) => { const r = ev.target.closest('.fx-use'); if (r) useOn(+r.dataset.use); });
+  }
+
+  /* ---------- round 11 · the guests' shots: a mouse drags a print about the table (it rises above the others), a tap
+     lifts one to the top; «Перемішати» deals them again (three deals in turn). A phone swipes the row instead ---------- */
+  const table = site.querySelector('[data-table]');
+  if (table) {
+    const prints = [...table.querySelectorAll('.fx-print')];
+    let top = prints.length;
+    let deal = 0;
+    const lift = (p) => { p.style.zIndex = String(++top); };
+    let drag = null;
+    table.addEventListener('pointerdown', (ev) => {
+      const p = ev.target.closest('.fx-print');
+      if (!p) return;
+      lift(p);
+      if (ev.pointerType !== 'mouse' || PHONE()) {
+        if (!still) p.animate([{ scale: '1' }, { scale: '1.05' }, { scale: '1' }], { duration: 420, easing: EASE });
+        return;
+      }
+      ev.preventDefault();
+      const T0 = table.getBoundingClientRect();
+      drag = { p, id: ev.pointerId, x0: ev.clientX, y0: ev.clientY, px: parseFloat(p.style.getPropertyValue('--x')), py: parseFloat(p.style.getPropertyValue('--y')), w: T0.width, h: T0.height, pw: p.offsetWidth, ph: p.offsetHeight };
+      p.classList.add('is-drag');
+      try { table.setPointerCapture(ev.pointerId); } catch { /* (no capture: the moves still come while over the table) */ }
+    });
+    table.addEventListener('pointermove', (ev) => {
+      if (!drag || ev.pointerId !== drag.id) return;
+      const maxX = 100 - (drag.pw / drag.w) * 100, maxY = 100 - (drag.ph / drag.h) * 100;
+      const x = Math.min(maxX, Math.max(0, drag.px + ((ev.clientX - drag.x0) / drag.w) * 100));
+      const y = Math.min(maxY, Math.max(0, drag.py + ((ev.clientY - drag.y0) / drag.h) * 100));
+      drag.p.style.setProperty('--x', `${x.toFixed(2)}%`);
+      drag.p.style.setProperty('--y', `${y.toFixed(2)}%`);
+    });
+    const drop = () => { if (!drag) return; drag.p.classList.remove('is-drag'); drag = null; };
+    table.addEventListener('pointerup', drop);
+    table.addEventListener('pointercancel', drop);
+    site.querySelector('[data-mix]')?.addEventListener('click', () => {
+      deal = (deal + 1) % DEALS.length;
+      prints.forEach((p, i) => {
+        const [x, y, r] = DEALS[deal][i];
+        p.style.setProperty('--x', `${x}%`);
+        p.style.setProperty('--y', `${y}%`);
+        p.style.setProperty('--r', `${r}deg`);
+        p.style.zIndex = String(i + 1);
+      });
+      top = prints.length;
+      // (a phone's row: the deal turns the prints and goes back to the first one)
+      if (PHONE()) table.scrollTo({ left: 0, behavior: still ? 'auto' : 'smooth' });
+    });
   }
 
   /* ---------- in the visitor's hands: every link goes somewhere, scripted demos stop ---------- */

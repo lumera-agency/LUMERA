@@ -2374,6 +2374,99 @@
 /* the phone's menu (hidden on a desktop) */
 .pv-site--n.pv-n-landing .fx-menu { display: none; }
 
+/* ==========================================================================
+   round 11 (26 Nov 2026, the owner: the $500 landing's sample shows ten blocks): the run of shoot types under the first
+   screen and four more blocks, U the shoots · K what the rent includes · G the guests' shots · M who meets you. The
+   «Фуксія» papers and type throughout; ideas from Dribbble's editorial studio pages, Awwwards and MotionSites
+   ========================================================================== */
+/* the run: a strip of marigold tape across the wall between the first screen and the next sheet; it runs only while
+   it is in the frame (.is-run) */
+.pv-site--n.pv-n-landing .fx-run { position: relative; z-index: 3; width: 104%; margin: -1.5cqw -2% -1.5cqw; padding: 1.05cqw 0; overflow: hidden; background: var(--mg); color: var(--ch); transform: rotate(-1.3deg); }
+.pv-site--n.pv-n-landing .fx-run__in { display: flex; width: max-content; }
+.pv-site--n.pv-n-landing .fx-run__g { display: flex; align-items: center; gap: 2.2cqw; padding-right: 2.2cqw; }
+.pv-site--n.pv-n-landing .fx-run b { font: 800 2.5cqw/1 var(--sofia); letter-spacing: .01em; text-transform: uppercase; white-space: nowrap; }
+.pv-site--n.pv-n-landing .fx-run__iris { flex: none; width: 1.7cqw; height: 1.7cqw; }
+.pv-site--n.pv-n-landing .fx-run .fx-iris .fx-iris__b path { fill: var(--ch); stroke: var(--mg); }
+.pv-site--n.pv-n-landing .fx-run .fx-iris .fx-iris__h { fill: var(--mg); }
+.pv-site--n.pv-n-landing .fx-run.is-run .fx-run__in { animation: fx-run 32s linear infinite; }
+@keyframes fx-run { to { transform: translateX(-50%); } }
+
+/* U · the shoots: the list in the display face (the current row lit, its line under it), the frame beside it */
+.pv-site--n.pv-n-landing .fx-uses { padding-top: 8cqw !important; }
+.pv-site--n.pv-n-landing .fx-uses__in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: 4cqw; align-items: start; }
+.pv-site--n.pv-n-landing .fx-uses__list { border-top: .12cqw solid var(--line); }
+.pv-site--n.pv-n-landing .fx-use { display: grid; grid-template-columns: 3.4cqw minmax(0, 1fr) auto; align-items: baseline; column-gap: 1.2cqw; padding: 1.35cqw 0; border-bottom: .12cqw solid var(--line); cursor: pointer; }
+.pv-site--n.pv-n-landing .fx-use__n { font: 500 .9cqw/1 var(--pv-sans); letter-spacing: .08em; color: var(--ink2); }
+.pv-site--n.pv-n-landing .fx-use__t { font: 800 3.5cqw/.9 var(--sofia); letter-spacing: .005em; text-transform: uppercase; color: var(--ink); opacity: .4; transition: opacity .35s ease, transform .55s var(--fx-roll), color .35s ease; }
+.pv-site--n.pv-n-landing .fx-use__go { align-self: center; width: 1.8cqw; height: 1.8cqw; color: var(--mg); opacity: 0; transform: translateX(-1.2cqw); transition: opacity .3s ease, transform .45s var(--fx-roll); }
+.pv-site--n.pv-n-landing .fx-use__go svg { display: block; width: 100%; height: 100%; }
+.pv-site--n.pv-n-landing .fx-use__d { grid-column: 2 / -1; display: block; max-height: 0; overflow: hidden; font-size: 1.08cqw; line-height: 1.4; color: var(--ink2); opacity: 0; transition: max-height .5s var(--fx-roll), opacity .3s ease, margin .5s var(--fx-roll); }
+.pv-site--n.pv-n-landing .fx-use.is-on .fx-use__t { opacity: 1; transform: translateX(.9cqw); color: var(--mg); }
+.pv-site--n.pv-n-landing .fx-use.is-on .fx-use__go { opacity: 1; transform: none; }
+.pv-site--n.pv-n-landing .fx-use.is-on .fx-use__d { max-height: 3cqw; margin-top: .7cqw; opacity: 1; }
+@media (hover: hover) { .pv-site--n.pv-n-landing .fx-use:not(.is-on):hover .fx-use__t { opacity: .7; } }
+/* the frame: each photo unrolls from the top over the one before (which stays under it until it is covered) */
+.pv-site--n.pv-n-landing .fx-uses__ph { position: relative; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; background: var(--ch2); }
+.pv-site--n.pv-n-landing .fx-uses__img { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; object-fit: cover; clip-path: inset(0 0 100% 0); transition: clip-path .75s var(--fx-roll); }
+.pv-site--n.pv-n-landing .fx-uses__img.was-on { z-index: 1; clip-path: inset(0); transition: none; }
+.pv-site--n.pv-n-landing .fx-uses__img.is-on { z-index: 2; clip-path: inset(0); }
+.pv-site--n.pv-n-landing .fx-uses__tape { position: absolute; z-index: 3; left: 1.4cqw; top: 1.4cqw; padding: .5cqw 1cqw .45cqw; background: var(--fx); color: #fff; font: 800 1.3cqw/1 var(--sofia); letter-spacing: .04em; transform: rotate(-3deg); }
+
+/* K · what the rent includes: the bento of paper tiles (four columns, three rows; the backdrops two by two) */
+.pv-site--n.pv-n-landing .fx-bento { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, 13.5cqw); gap: 1.2cqw; }
+.pv-site--n.pv-n-landing .fx-tile { --tb: var(--pw); --ti: var(--ch); --td: rgba(31, 29, 33, .74); position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: .7cqw; padding: 1.7cqw; background: var(--tb); color: var(--ti); transform-origin: 50% 0; }
+.pv-site--n.pv-n-landing .fx-tile[data-p='ch'] { --tb: var(--ch); --ti: var(--pw); --td: rgba(246, 243, 238, .78); }
+.pv-site--n.pv-n-landing .fx-tile[data-p='ch2'] { --tb: var(--ch2); --ti: var(--pw); --td: rgba(246, 243, 238, .78); }
+.pv-site--n.pv-n-landing .fx-tile[data-p='fx'] { --tb: var(--fx); --ti: #fff; --td: rgba(255, 255, 255, .86); }
+.pv-site--n.pv-n-landing .fx-tile[data-p='mg'] { --tb: var(--mg); --ti: var(--ch); --td: rgba(31, 29, 33, .8); }
+.pv-site--n.pv-n-landing .fx-tile--0 { grid-column: 1 / 3; grid-row: 1 / 3; }
+.pv-site--n.pv-n-landing .fx-tile--1 { grid-column: 3 / 5; grid-row: 1; }
+.pv-site--n.pv-n-landing .fx-tile--2 { grid-column: 3; grid-row: 2; }
+.pv-site--n.pv-n-landing .fx-tile--3 { grid-column: 4; grid-row: 2; }
+.pv-site--n.pv-n-landing .fx-tile--4 { grid-column: 1 / 3; grid-row: 3; }
+.pv-site--n.pv-n-landing .fx-tile--5 { grid-column: 3 / 5; grid-row: 3; }
+.pv-site--n.pv-n-landing .fx-tile__img { position: absolute; inset: 0; z-index: -2; display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--fx-roll); }
+.pv-site--n.pv-n-landing .fx-tile:has(.fx-tile__img)::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(31, 29, 33, 0) 30%, rgba(31, 29, 33, .86) 100%); }
+@media (hover: hover) { .pv-site--n.pv-n-landing .fx-tile:hover .fx-tile__img { transform: scale(1.05); } }
+.pv-site--n.pv-n-landing .fx-tile__rack { position: absolute; left: 1.7cqw; right: 1.7cqw; top: 1.7cqw; display: flex; gap: .45cqw; height: 1.1cqw; }
+.pv-site--n.pv-n-landing .fx-tile__rack i { flex: 1; border-radius: .55cqw; background: var(--c); box-shadow: inset 0 -.25cqw 0 rgba(0, 0, 0, .18); }
+.pv-site--n.pv-n-landing .fx-tile__k { display: flex; align-items: baseline; flex-wrap: wrap; gap: .2cqw .9cqw; }
+.pv-site--n.pv-n-landing .fx-tile__n { font: 800 6.6cqw/.8 var(--sofia); letter-spacing: -.01em; }
+.pv-site--n.pv-n-landing .fx-tile--0 .fx-tile__n { font-size: 12cqw; }
+.pv-site--n.pv-n-landing .fx-tile__t { font: 800 2.3cqw/.9 var(--sofia); letter-spacing: .01em; text-transform: uppercase; }
+.pv-site--n.pv-n-landing .fx-tile__d { max-width: 32ch; font-size: 1.04cqw; line-height: 1.4; color: var(--td); }
+
+/* G · the guests' shots: white-bordered prints on a darker table, turned a little; a mouse picks one up and moves it */
+.pv-site--n.pv-n-landing .fx-gal .fx-head { align-items: end; }
+.pv-site--n.pv-n-landing .fx-gal__mix { --fb-ink: var(--pw); --fb-sheet: var(--pw); --fb-sheet-ink: var(--ch); }
+.pv-site--n.pv-n-landing .fx-table { position: relative; height: 44cqw; background: var(--ch2); box-shadow: inset 0 0 0 .12cqw rgba(246, 243, 238, .06); }
+.pv-site--n.pv-n-landing .fx-print { position: absolute; left: var(--x); top: var(--y); width: 19.5cqw; margin: 0; padding: .85cqw .85cqw 3.2cqw; background: var(--pw); color: var(--ch); rotate: var(--r); cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none;
+  transition: left .8s var(--fx-spring), top .8s var(--fx-spring), rotate .8s var(--fx-spring), box-shadow .3s ease, scale .3s var(--fx-roll); }
+.pv-site--n.pv-n-landing .fx-print__ph { display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--oak); }
+.pv-site--n.pv-n-landing .fx-print img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.pv-site--n.pv-n-landing .fx-print figcaption { position: absolute; left: .9cqw; right: .9cqw; bottom: 1.1cqw; font: 700 1.25cqw/1 var(--sofia); letter-spacing: .04em; text-transform: uppercase; color: var(--ch); }
+.pv-site--n.pv-n-landing .fx-print.is-drag { cursor: grabbing; scale: 1.05; box-shadow: 0 2.4cqw 4cqw -1cqw rgba(0, 0, 0, .55); transition: none; }
+.pv-site--n.pv-n-landing .fx-table .fx-cond { top: auto; bottom: 1.1cqw; right: 1.3cqw; color: rgba(246, 243, 238, .55); }
+
+/* M · who meets you: the photo with the studio's stamp on its corner, the words beside it */
+.pv-site--n.pv-n-landing .fx-meet { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); column-gap: 5cqw; align-items: center; }
+.pv-site--n.pv-n-landing .fx-meet__ph { position: relative; margin: 0; }
+.pv-site--n.pv-n-landing .fx-meet__img { display: block; aspect-ratio: 4 / 3; overflow: hidden; }
+.pv-site--n.pv-n-landing .fx-meet__img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pv-site--n.pv-n-landing .fx-meet .fx-h2 { font-size: 5.4cqw; }
+.pv-site--n.pv-n-landing .fx-meet__p { margin: 1.8cqw 0 0; max-width: 40ch; font-size: 1.22cqw; line-height: 1.5; color: var(--ink2); }
+.pv-site--n.pv-n-landing .fx-meet__l { display: grid; gap: .9cqw; margin-top: 2.2cqw; }
+.pv-site--n.pv-n-landing .fx-meet__l li { display: flex; align-items: center; gap: .9cqw; font: 500 1.2cqw/1.3 var(--pv-sans); }
+.pv-site--n.pv-n-landing .fx-meet__l i { display: grid; place-items: center; flex: none; width: 1.9cqw; height: 1.9cqw; border-radius: 50%; background: var(--fx); color: #fff; }
+.pv-site--n.pv-n-landing .fx-meet__l svg { width: 1.15cqw; height: 1.15cqw; }
+.pv-site--n.pv-n-landing .fx-meet__l path { stroke-dasharray: 1; }
+.pv-site--n.pv-n-landing .fx-stamp { position: absolute; right: -4cqw; bottom: -4.5cqw; width: 12.5cqw; height: 12.5cqw; color: var(--fx); transform: rotate(-12deg); }
+.pv-site--n.pv-n-landing .fx-stamp svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.pv-site--n.pv-n-landing .fx-stamp__o { fill: var(--pw); stroke: currentColor; stroke-width: 2.4; }
+.pv-site--n.pv-n-landing .fx-stamp__i { fill: none; stroke: currentColor; stroke-width: 1.2; }
+.pv-site--n.pv-n-landing .fx-stamp__t { fill: currentColor; font: 800 10.4px/1 var(--sofia); letter-spacing: .14em; text-transform: uppercase; }
+.pv-site--n.pv-n-landing .fx-stamp__b { fill: currentColor; }
+
 /* reduced motion: the final frame, no transitions */
 .pv-site--n.pv-n-landing.fx-still *, .pv-site--n.pv-n-landing.fx-still *::before, .pv-site--n.pv-n-landing.fx-still *::after { transition: none !important; }
 
@@ -2601,6 +2694,56 @@
   .pv-site--n.pv-n-landing .fx-send__b svg { width: 4cqw; height: 4cqw; }
   .pv-site--n.pv-n-landing .fx-note { gap: 1.6cqw; margin-top: 3.4cqw; font-size: 2.7cqw; }
   .pv-site--n.pv-n-landing .fx-note svg { width: 3cqw; height: 3cqw; }
+}
+
+/* round 11 on a phone: the run larger, the frame above the shoots, the bento in two columns, the prints in a row to
+   swipe through, the photo above who meets you */
+@media (max-width: 700px) {
+  .pv-site--n.pv-n-landing .fx-run { margin: -3cqw -2% -3cqw; padding: 2.4cqw 0; }
+  .pv-site--n.pv-n-landing .fx-run__g { gap: 4.4cqw; padding-right: 4.4cqw; }
+  .pv-site--n.pv-n-landing .fx-run b { font-size: 6cqw; }
+  .pv-site--n.pv-n-landing .fx-run__iris { width: 4.4cqw; height: 4.4cqw; }
+  .pv-site--n.pv-n-landing .fx-uses { padding-top: 16cqw !important; }
+  .pv-site--n.pv-n-landing .fx-uses__in { grid-template-columns: minmax(0, 1fr); row-gap: 6cqw; }
+  .pv-site--n.pv-n-landing .fx-uses__ph { order: -1; aspect-ratio: 4 / 3; }
+  .pv-site--n.pv-n-landing .fx-uses__tape { left: 3cqw; top: 3cqw; padding: 1.3cqw 2.6cqw 1.1cqw; font-size: 3.6cqw; }
+  .pv-site--n.pv-n-landing .fx-use { grid-template-columns: 8cqw minmax(0, 1fr) auto; column-gap: 2.4cqw; padding: 3.6cqw 0; border-width: .3cqw; }
+  .pv-site--n.pv-n-landing .fx-uses__list { border-width: .3cqw; }
+  .pv-site--n.pv-n-landing .fx-use__n { font-size: 2.6cqw; }
+  .pv-site--n.pv-n-landing .fx-use__t { font-size: 8.4cqw; }
+  .pv-site--n.pv-n-landing .fx-use__go { width: 5cqw; height: 5cqw; }
+  .pv-site--n.pv-n-landing .fx-use__d { font-size: 3.3cqw; }
+  .pv-site--n.pv-n-landing .fx-use.is-on .fx-use__t { transform: translateX(1.6cqw); }
+  .pv-site--n.pv-n-landing .fx-use.is-on .fx-use__d { max-height: 10cqw; margin-top: 2cqw; }
+
+  .pv-site--n.pv-n-landing .fx-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: minmax(40cqw, auto); gap: 2.6cqw; }
+  .pv-site--n.pv-n-landing .fx-tile { gap: 1.6cqw; padding: 4.2cqw; }
+  .pv-site--n.pv-n-landing .fx-tile--0 { grid-column: 1 / -1; grid-row: auto; min-height: 78cqw; }
+  .pv-site--n.pv-n-landing .fx-tile--1 { grid-column: 1 / -1; grid-row: auto; min-height: 52cqw; }
+  .pv-site--n.pv-n-landing .fx-tile--2, .pv-site--n.pv-n-landing .fx-tile--3, .pv-site--n.pv-n-landing .fx-tile--4, .pv-site--n.pv-n-landing .fx-tile--5 { grid-column: auto; grid-row: auto; }
+  .pv-site--n.pv-n-landing .fx-tile__rack { left: 4.2cqw; right: 4.2cqw; top: 4.2cqw; gap: 1.1cqw; height: 2.8cqw; }
+  .pv-site--n.pv-n-landing .fx-tile__rack i { border-radius: 1.4cqw; }
+  .pv-site--n.pv-n-landing .fx-tile__n { font-size: 15cqw; }
+  .pv-site--n.pv-n-landing .fx-tile--0 .fx-tile__n { font-size: 26cqw; }
+  .pv-site--n.pv-n-landing .fx-tile__t { font-size: 6.2cqw; }
+  .pv-site--n.pv-n-landing .fx-tile__d { font-size: 3.2cqw; }
+
+  .pv-site--n.pv-n-landing .fx-gal .fx-head { grid-template-columns: minmax(0, 1fr); }
+  .pv-site--n.pv-n-landing .fx-gal__mix { justify-self: start; margin-top: 5cqw; height: 10.5cqw; padding: 0 8cqw 0 4cqw; font-size: 3.7cqw; }
+  .pv-site--n.pv-n-landing .fx-table { display: flex; gap: 4cqw; height: auto; margin: 0 calc(-1 * var(--g)); padding: 6cqw var(--g) 12cqw; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; background: none; box-shadow: none; }
+  .pv-site--n.pv-n-landing .fx-table::-webkit-scrollbar { display: none; }
+  .pv-site--n.pv-n-landing .fx-print { position: relative; left: auto; top: auto; flex: none; width: 60cqw; padding: 2.4cqw 2.4cqw 9cqw; scroll-snap-align: center; touch-action: pan-x pan-y; cursor: default; }
+  .pv-site--n.pv-n-landing .fx-print figcaption { left: 2.6cqw; right: 2.6cqw; bottom: 3cqw; font-size: 3.6cqw; }
+  .pv-site--n.pv-n-landing .fx-table .fx-cond { position: absolute; left: var(--g); right: auto; bottom: 3cqw; font-size: 2.1cqw; }
+
+  .pv-site--n.pv-n-landing .fx-meet { grid-template-columns: minmax(0, 1fr); row-gap: 12cqw; }
+  .pv-site--n.pv-n-landing .fx-meet .fx-h2 { font-size: 12cqw; }
+  .pv-site--n.pv-n-landing .fx-meet__p { margin-top: 4cqw; font-size: 3.5cqw; }
+  .pv-site--n.pv-n-landing .fx-meet__l { gap: 2.6cqw; margin-top: 5cqw; }
+  .pv-site--n.pv-n-landing .fx-meet__l li { gap: 2.4cqw; font-size: 3.5cqw; }
+  .pv-site--n.pv-n-landing .fx-meet__l i { width: 5.6cqw; height: 5.6cqw; }
+  .pv-site--n.pv-n-landing .fx-meet__l svg { width: 3.4cqw; height: 3.4cqw; }
+  .pv-site--n.pv-n-landing .fx-stamp { right: -1cqw; bottom: -9cqw; width: 30cqw; height: 30cqw; }
 }
 
 /* «Дизайн і сайти»: round 6, the new Базовий sample of Лендінг+ (the photo studio, 10 blocks), «План» (js/sites-pv-n-plus.js).
