@@ -98,8 +98,8 @@ const uk = {
   summary: {
     kicker: 'Ваш проєкт',
     // the sum to the studio's Telegram, its message filled in (the owner, 26 Nov 2026; layout/dock/tg-quote)
-    tg: 'Отримати розрахунок у Telegram',
-    tgHello: 'Вітаю! Хочу отримати розрахунок:',
+    tg: 'Написати в Telegram',
+    tgHello: 'Вітаю! Мене цікавить:',
     tgFrom: 'Калькулятор на сайті',
     cta: 'Обговорити проєкт',
     ctaNote: 'Ваш вибір додамо до заявки.', // coordinator, 9 Oct: plain words
@@ -254,8 +254,8 @@ const ru = {
   view: { label: 'Что показать', site: 'Сайт', ads: 'Реклама', stats: 'Аналитика', robot: 'Автоматизация' },
   summary: {
     kicker: 'Ваш проект',
-    tg: 'Получить расчёт в Telegram',
-    tgHello: 'Здравствуйте! Хочу получить расчёт:',
+    tg: 'Написать в Telegram',
+    tgHello: 'Здравствуйте! Меня интересует:',
     tgFrom: 'Калькулятор на сайте',
     cta: 'Обсудить проект',
     ctaNote: 'Ваш выбор добавим к заявке.',

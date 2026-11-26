@@ -8,7 +8,7 @@
  * root carries .dock-on: the bars that sit at the foot (the request button, the calculators' sum bars, the button
  * back up) stand on it instead (dock.css, BackToTop).
  *
- * It also serves the calculators' «Отримати розрахунок у Telegram» links (tg-quote.ts), as it is on every page.
+ * It also serves the calculators' «Написати в Telegram» links (tg-quote.ts), as it is on every page.
  */
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
