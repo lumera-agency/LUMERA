@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
+import { useSiteNav } from "@/components/layout/site-nav/SiteNavProvider";
+import { TelegramIcon } from "@/components/layout/site-nav/Contacts";
 import { useReducedMotion } from "@/lib/hooks";
 import { LANDING, PRODUCTS, PRODUCT_ORDER, usd, weeksText, type Product } from "./prices";
 
@@ -37,6 +40,9 @@ export function PriceCalcForm({ copy, aside }: { copy: PriceCopy; /** over the s
   const [site, setSite] = useState<Site>("existing");
   const [focus, setFocus] = useState<string | null>(null);
   const reduced = useReducedMotion();
+  // the studio's Telegram and the quote link's words (the main messages, in the browser too)
+  const nav = useSiteNav();
+  const q = useTranslations("quote");
   const priceRef = useRef<HTMLElement>(null);
   const first = useRef(true);
   const [said, setSaid] = useState(""); // what the screen reader hears after a change (nothing on load)
@@ -113,14 +119,14 @@ export function PriceCalcForm({ copy, aside }: { copy: PriceCopy; /** over the s
       </div>
       <div className="ai-calc__sum">
         {aside}
-        <div className="ai-calc__card" data-rv="">
-          <p className="ai-calc__k"><span>{copy.k}</span><span className="ai-calc__weeks">{r.weeks}</span></p>
-          <p className="ai-calc__name">{r.name}</p>
-          <p className="ai-calc__price">
+        <div className="ai-calc__card" data-rv="" data-tg-card="">
+          <p className="ai-calc__k"><span>{copy.k}</span><span className="ai-calc__weeks" data-tg-line="5">{r.weeks}</span></p>
+          <p className="ai-calc__name" data-tg-line="1">{r.name}</p>
+          <p className="ai-calc__price" data-tg-line="2">
             <b ref={priceRef} className={r.sum > 0 ? undefined : "is-talk"}>{r.priceText}</b> {r.sum > 0 && <span>{copy.once}</span>}
           </p>
-          {r.extra && <p className="ai-calc__x">{r.extra}</p>}
-          {r.monthly && <p className="ai-calc__x">{r.monthly}</p>}
+          {r.extra && <p className="ai-calc__x" data-tg-line="3">{r.extra}</p>}
+          {r.monthly && <p className="ai-calc__x" data-tg-line="4">{r.monthly}</p>}
           <p className="ai-calc__note">{copy.audit}</p>
           <button
             className="btn btn--primary ai-calc__send"
@@ -138,6 +144,11 @@ export function PriceCalcForm({ copy, aside }: { copy: PriceCopy; /** over the s
             <span className="btn__label">{copy.send}</span>
             <ArrowIcon />
           </button>
+          {/* the sum to the studio's Telegram, its message filled in (the owner, 26 Nov 2026; layout/dock/tg-quote) */}
+          <a className="tg-quote" href={nav.contacts.telegram} target="_blank" rel="noopener" data-tg-quote="" data-tg-hello={q("hello")} data-tg-from={q("from")}>
+            <TelegramIcon />
+            <span>{q("btn")}</span>
+          </a>
           <p className="ai-calc__tol">{copy.tol}</p>
           <p className="visually-hidden" aria-live="polite">{said}</p>
         </div>

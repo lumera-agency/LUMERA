@@ -1,0 +1,94 @@
+/* The contact dock (ContactDock.tsx): phones only, three buttons at the screen's foot; «Подзвонити» in ember, as the
+   phones' request button (.ai-sticky), Telegram and Viber on the dark glass */
+:root { --dock-h: calc(4rem + env(safe-area-inset-bottom)); }
+.dock { display: none; }
+@media (max-width: 860px) {
+  .dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    display: flex;
+    gap: 0.5rem;
+    height: var(--dock-h);
+    padding: 0.625rem 0.75rem calc(0.625rem + env(safe-area-inset-bottom));
+    background: rgb(10 10 10 / 0.9);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    box-shadow: inset 0 1px 0 rgb(246 246 243 / 0.08), 0 -0.75rem 2rem -1rem rgb(0 0 0 / 0.6);
+    visibility: hidden;
+    transform: translateY(105%);
+    transition: transform 0.45s var(--ease-out), visibility 0s linear 0.45s;
+  }
+  .dock.is-on { visibility: visible; transform: none; transition: transform 0.45s var(--ease-out); }
+  /* the open menu covers the page: the dock steps away under it */
+  html.menu-open .dock { visibility: hidden; transform: translateY(105%); }
+  /* each as wide as its word, the room left shared out (three equal columns cut «Подзвонити» on a 390 px phone) */
+  .dock__btn {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-width: 0;
+    height: 2.75rem;
+    padding: 0 0.375rem;
+    border-radius: 0.875rem;
+    background: rgb(246 246 243 / 0.08);
+    color: var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background var(--dur-fast);
+  }
+  .dock__btn svg { flex: none; width: 1.25rem; height: 1.25rem; }
+  .dock__btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dock__btn:active { background: rgb(246 246 243 / 0.16); }
+  .dock__btn--call { background: var(--ember); color: var(--on-ink); }
+  .dock__btn--call:active { background: var(--ember-hi); }
+  .dock__btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* the page ends above it */
+  body { padding-bottom: var(--dock-h); }
+  /* the bars at the screen's foot stand on it while it shows: the request button, the calculators' sum bars (the
+     button back up finds its place by itself: BackToTop) */
+  /* (the AI pages, the cases and the sites page float their request bar above the edge with their own, stronger rules:
+     body:has(main[data-ai-page]); this one outranks them) */
+  html.dock-on body:has(main[data-ai-page]) .ai-sticky { bottom: calc(var(--dock-h) + 0.625rem); }
+  html.dock-on .st-sumbar { bottom: calc(var(--dock-h) + 0.625rem); }
+  html.dock-on .cfg-bar { bottom: calc(var(--dock-h) + 0.75rem); }
+}
+@media (max-width: 359px) {
+  .dock { gap: 0.375rem; padding-inline: 0.5rem; }
+  .dock__btn { gap: 0.3rem; padding: 0 0.25rem; font-size: 0.875rem; }
+  .dock__btn svg { width: 1.125rem; height: 1.125rem; }
+}
+
+/* «Отримати розрахунок у Telegram» under a calculator's request button (tg-quote.ts): its quieter twin, a hairline
+   capsule in the card's own ink, as wide as the button above it */
+.tg-quote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-height: 3rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 30%, transparent);
+  color: inherit;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--dur-fast), box-shadow var(--dur-fast);
+}
+.tg-quote svg { flex: none; width: 1.125rem; height: 1.125rem; }
+.tg-quote:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+@media (hover: hover) {
+  .tg-quote:hover { background: color-mix(in srgb, currentColor 8%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 55%, transparent); }
+}

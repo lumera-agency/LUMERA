@@ -140,3 +140,6 @@ html.motion main.kt .ai-hero__copy > .kt-hero__act { animation-delay: 0.24s; }
 
 /* a word that never breaks at its hyphen («e-mail») */
 .kt-nb { white-space: nowrap; }
+
+/* phones: the form 64 px under its head, as on the other pages (the head's 32 px and the form's own 59 made 91) */
+@media (max-width: 600px) { .kt .contact .lead-form { margin-top: 2rem; } }

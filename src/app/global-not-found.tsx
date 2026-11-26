@@ -9,6 +9,7 @@ import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
 import { PageCurtain } from "@/components/fx/page-curtain/PageCurtain";
 import { RootKeep } from "@/components/layout/RootKeep";
 import { SiteNavProvider } from "@/components/layout/site-nav/SiteNavProvider";
+import { ContactDock } from "@/components/layout/dock/ContactDock";
 import { Topbar } from "@/components/layout/topbar/Topbar";
 import { MenuSheet } from "@/components/layout/menu/MenuSheet";
 import { Footer } from "@/components/layout/footer/Footer";
@@ -82,6 +83,7 @@ export default async function GlobalNotFound() {
             </main>
             <Footer links={links} cta={cta} />
             <MenuSheet links={links} cta={cta} home={home} />
+            <ContactDock />
           </SiteNavProvider>
         </NextIntlClientProvider>
       </body>

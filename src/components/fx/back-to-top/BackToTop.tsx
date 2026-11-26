@@ -25,9 +25,9 @@ type Props = {
 
 /** bars pinned to the bottom of the screen, shown: the button stands on their line (the services ride's panel by its
  *  «skip», the panel's last part, at the bottom for the whole ride) */
-const BARS = ".ai-sticky.is-on .btn, .st-sumbar.is-on, .cfg-bar:not(.is-hidden), .ride.is-on .ride__skip";
+const BARS = ".ai-sticky.is-on .btn, .st-sumbar.is-on, .cfg-bar:not(.is-hidden), .ride.is-on .ride__skip, .dock.is-on";
 /** the bars that slide in and out: read mid-slide, the button stood off their line, so it is placed again as one stops */
-const SLIDING = ".ai-sticky, .st-sumbar, .cfg-bar";
+const SLIDING = ".ai-sticky, .st-sumbar, .cfg-bar, .dock";
 /** a bar is on the button's line while its middle is this near the screen's foot, px */
 const LINE_ZONE = 120;
 /** where it goes at the page's end: as this reaches it (the footer's map, on every page) */

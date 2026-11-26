@@ -7,6 +7,7 @@ import { allowIndexing, siteUrl, studioName } from "@/config/site";
 import { LogoSprite } from "@/components/ui/logo/LogoSprite";
 import { InvertCursor } from "@/components/fx/invert-cursor/InvertCursor";
 import { SiteNavProvider } from "@/components/layout/site-nav/SiteNavProvider";
+import { ContactDock } from "@/components/layout/dock/ContactDock";
 import { getSiteNav } from "@/content/site-nav";
 import { PRICES } from "@/components/sections/services/copy";
 import "../globals.css";
@@ -118,7 +119,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         {/* (over the footer's index the lens steps aside for the plain pointer: footer.css; the owner, 3 Nov) */}
         <InvertCursor scope="#manifesto .manifesto__ink, .footer__top, .footer__bottom" quiet="[data-wordmark], .footer__index, .footer__privacy" size={110} grow={1.15} lensGrow={1.35} />
         <NextIntlClientProvider messages={clientMessages}>
-          <SiteNavProvider value={siteNav}>{children}</SiteNavProvider>
+          <SiteNavProvider value={siteNav}>
+            {children}
+            {/* phones: Telegram, Viber and the phone at the screen's foot on every page (the owner, 26 Nov 2026) */}
+            <ContactDock />
+          </SiteNavProvider>
         </NextIntlClientProvider>
       </body>
     </html>
