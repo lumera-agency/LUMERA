@@ -97,7 +97,7 @@ export async function SitesPrice({ facts: F }: { facts: SitesFacts }) {
                 <input className="st-lead__in" id="calc-contact" name="contact" type="text" autoComplete="tel" required aria-describedby="calc-contact-err calc-lead-note" />
                 <p className="st-lead__err" id="calc-contact-err" hidden>{t("x.form.contact.err")}</p>
                 <button className="btn btn--primary ai-calc__send st-lead__go" type="submit"><span className="btn__label">{t("calc.lead.btn")}</span><ArrowIcon /></button>
-                <p className="st-lead__note" id="calc-lead-note">{t("calc.lead.note")} {t("x.form.note")}</p>
+                <p className="st-lead__note" id="calc-lead-note"><span className="st-lead__say">{t("calc.lead.note")}</span> <span className="st-lead__priv">{t("x.form.note")}</span></p>
                 <p className="st-lead__fail" data-lead-fail="" role="alert" tabIndex={-1} hidden>{t("x.form.fail._")}</p>
                 <p className="st-lead__fail" data-lead-fail-server="" role="alert" tabIndex={-1} hidden>{t("x.form.fail.server")}</p>
                 <p className="st-lead__done" data-lead-done="" tabIndex={-1} hidden>
