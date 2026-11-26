@@ -9,7 +9,8 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const LOCAL_HOSTS = ['localhost', '127.0.0.1', '[::1]', ''];
 const LOCAL = LOCAL_HOSTS.includes(location.hostname) || /^(192\.168|10)\./.test(location.hostname);
 const simulate = (reducedMotion) => new Promise((resolve) => setTimeout(resolve, reducedMotion ? 0 : 900));
-async function sendLead(form, reducedMotion) {
+/** A form's request to its data-endpoint (the page's form; the sites page's calculator sends its one field the same way) */
+export async function sendLead(form, reducedMotion) {
   const endpoint = (form.dataset.endpoint || '').trim();
   if (!endpoint) {
     if (!LOCAL) throw Object.assign(new Error('no endpoint configured'), { server: true });
@@ -29,6 +30,13 @@ async function sendLead(form, reducedMotion) {
   } finally {
     clearTimeout(timer);
   }
+}
+
+/** A way to answer: a Telegram username (it starts with a letter), a mail address or a phone (a bare 5–8 digit number
+ *  is a phone with digits missing) */
+export function contactOk(value) {
+  const v = String(value || '').trim();
+  return /^@?[a-z][a-z0-9_]{4,31}$/i.test(v) || /^\S+@\S+\.\S+$/.test(v) || v.replace(/\D/g, '').length >= 9;
 }
 
 const noop = { setPlan() {}, setTask() {}, destroy() {} };
@@ -65,11 +73,7 @@ function initForm(form, reducedMotion) {
     },
     contact: {
       field: () => form.elements.contact,
-      ok: () => {
-        const v = form.elements.contact.value.trim();
-        // a Telegram username starts with a letter; a bare 5–8 digit number is a phone with digits missing
-        return /^@?[a-z][a-z0-9_]{4,31}$/i.test(v) || /^\S+@\S+\.\S+$/.test(v) || v.replace(/\D/g, '').length >= 9;
-      },
+      ok: () => contactOk(form.elements.contact.value),
       error: 'f-contact-err',
     },
     task: {

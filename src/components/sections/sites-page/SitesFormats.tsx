@@ -13,6 +13,23 @@ import type { SitesFacts } from "@/components/sites/facts";
 /** «сайт-візитка · 5–6 блоків» stays on one line: the browser would break after the hyphen or before the dot */
 const NW = { nw: (chunks: React.ReactNode) => <span style={{ whiteSpace: "nowrap" }}>{chunks}</span> };
 
+/** «Що входить у ціну» per format (the owner's packages, 26 Nov 2026): the panels («Детальніше») list every line and
+ *  the calculator reads them there ([data-inc], sites-runtime); the AI search's line carries its note in small type */
+const INC = {
+  landing: ["inc.landing.1", "inc.landing.2", "inc.landing.3", "inc.landing.4", "inc.landing.5", "inc.landing.6", "inc.landing.7", "inc.landing.8", "inc.landing.9"],
+  landingPlus: ["inc.plus.all", "inc.plus.1", "inc.plus.2"],
+  corporate: ["inc.corp.1", "inc.corp.2", "inc.landing.2", "inc.corp.3", "inc.landing.4", "inc.plus.2", "inc.landing.5", "inc.landing.6", "inc.landing.9"],
+  ecommerce: ["inc.shop.1", "inc.shop.2", "inc.shop.3", "inc.landing.2", "inc.shop.4", "inc.landing.4", "inc.landing.5", "inc.shop.5", "inc.landing.9"],
+} as const;
+/** the format's card: the main lines only, the rest in its panel */
+const CARD = {
+  landing: ["inc.landing.1", "inc.landing.2", "inc.landing.3", "inc.landing.4", "inc.landing.9"],
+  landingPlus: ["inc.plus.all", "inc.plus.1", "inc.plus.2", "inc.landing.9"],
+  corporate: ["inc.corp.1", "inc.corp.2", "inc.landing.2", "inc.plus.2", "inc.landing.9"],
+  ecommerce: ["inc.shop.1", "inc.shop.2", "inc.shop.3", "inc.shop.4", "inc.landing.9"],
+} as const;
+const AI_LINE: string = "inc.landing.5";
+
 export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
   return (
@@ -65,7 +82,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
               <h3 className="st-stage__t" id="fmt-1-t"><span className="st-stage__tin">{t("f.landing.t")}</span></h3>
               <p className="st-stage__m">{t.rich("f.landing.m", NW)}</p>
               <p className="st-stage__p">{t("f.landing.p")}</p>
-              <ul className="st-stage__inc"><li>{t("inc.landing.1")}</li><li>{t("inc.landing.2")}</li><li>{t("inc.anim")}</li><li>{t("inc.landing.3")}</li><li>{t("inc.landing.4")}</li><li>{t("inc.landing.5")}</li></ul>
+              <ul className="st-stage__inc">{CARD.landing.map((k) => <li key={k}>{t(k)}</li>)}</ul>
               <p className="st-stage__price"><span className="st-stage__from">{t("from")}</span> <b data-fprice="landing">{F.landing}</b><span className="st-stage__wk" data-fweeks="landing">{F.wLanding}</span></p>
               <div className="st-stage__acts">
                 <ButtonLink href="#contact" variant="primary" size="sm" data-pick-format="landing" aria-describedby="fmt-1-t">{t("talk")}</ButtonLink>
@@ -88,7 +105,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
               <h3 className="st-stage__t" id="fmt-2-t"><span className="st-stage__tin">{t("f.plus.t")}</span></h3>
               <p className="st-stage__m">{t("f.plus.m")}</p>
               <p className="st-stage__p">{t("f.plus.p")}</p>
-              <ul className="st-stage__inc"><li>{t("inc.plus.1")}</li><li>{t("inc.landing.2")}</li><li>{t("inc.anim")}</li><li>{t("inc.landing.3")}</li><li>{t("inc.landing.4")}</li><li>{t("inc.landing.5")}</li></ul>
+              <ul className="st-stage__inc">{CARD.landingPlus.map((k) => <li key={k}>{t(k)}</li>)}</ul>
               <p className="st-stage__price"><span className="st-stage__from">{t("from")}</span> <b data-fprice="landingPlus">{F.landingPlus}</b><span className="st-stage__wk" data-fweeks="landingPlus">{F.wLandingPlus}</span></p>
               <div className="st-stage__acts">
                 <ButtonLink href="#contact" variant="primary" size="sm" data-pick-format="landingPlus" aria-describedby="fmt-2-t">{t("talk")}</ButtonLink>
@@ -101,7 +118,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 <ol className="st-ruler" data-ruler="landingPlus" />
                 <div className="st-dev__desk"><div className="st-dev__bar"><i /><i /><i /><span className="ai-sample">{t("x.sample")}</span><span>vash-sait.ua</span></div><div className="st-dev__vp" style={{ "--lqip": "url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAFKADAAQAAAABAAAAcQAAAAD/wAARCABxABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwAHBwcHBwcMBwcMEQwMDBEXERERERceFxcXFxceJB4eHh4eHiQkJCQkJCQkKysrKysrMjIyMjI4ODg4ODg4ODg4/9sAQwEJCQkODQ4ZDQ0ZOyghKDs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7/90ABAAC/9oADAMBAAIRAxEAPwD12Sci/NpFIobbu2nrWsMJEHk5PfFZ15aG5WSPzTHvXbleCPcGmaHZTaZpaaddTm7ZCxMjZycnI656dKyRbNJYYIhmAYV/m/E0uBTic+2KSmB//9D2vAE7SOARjGDWHunMjbQ4AYjjjpW8xG/aVLfyqJbu2OcHp1/CsizF0CK9iiuvt0jyM9wzIW7IVXAHsK3+feiCeKdPMhOV/KpqYH//0fcfl3ZJrm7awuYnleQg7mOAPQnNWLmOY3bOCduelVQtyIycMWznH49KxsaXNuzQxRFX4O6rWR61gKJSoJBB9Kdtk9DTuI//0vabh/LZSM/McVlx39zJcz27RsqRsAj/AN4Hn9OlbJLb9uzI9aEKkn5QDWRZUa6kU4x+lN+1yf3f0rRwPSjA9KdxWZ//0/bvM/eeXgn3+tSrGu/aOGNcl4g8WWnhxibqFmXKDcpHVs4H6VraNr0OsabFqUAZUl3YB6/KSv8ASsizZdChwabSBzJ81LQB/9T1/UNHsNVUxXsXmAkE/wDAelGmabY6TaJp1ihWKPdgHn7xJP6muN1j4lWGi6nPpklrK7QNtLKwAPAP9aWx8dSagolsNJuZg43jayE49cZzis7Mu56IAAOBilrzDUPiZBpM4ttS0y5gkKhgrFc4PAP6VR/4XBpH/PlP+a0WYXP/1eE8eFB4w1Lf/wA9BjHrsFd34e8c6Fp+gWWn3GwSQJhj84bOSeSo5HNexzadZTSmaSFGY8klQc/Wmf2dpx4FtFwf7oqOYqx81ePPENp4i1iO/t2DBYFjO3OMhmPf2NcVvSvs1dL03H/HtF/3wKd/Zem/8+0X/fAo5gsf/9b029/5CY+o/wDQayT/AMfk/wDvj/0EVrXv/ITH1H/oNZJ/4/J/98f+gisyzorXpJ/10arVVbXpJ/10arVAH//Z)" } as React.CSSProperties}><img className="st-dev__img" width="900" height="5118" alt="" loading="lazy" decoding="async" data-src={t("img.landingPlus._")} /></div></div>
                 <div className="st-dev__phone"><div className="st-dev__vp" style={{ "--lqip": "url(data:image/jpeg;base64,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)" } as React.CSSProperties}><img className="st-dev__img" width="300" height="6019" alt="" loading="lazy" decoding="async" data-src={t("img.landingPlus.m")} /></div></div>
-                <span className="st-dev__badge"><b>+4</b> <span>{t("stage.plus")}</span></span>
+                <span className="st-dev__badge"><b>+3</b> <span>{t("stage.plus")}</span></span>
               </div>
             </div>
           </div>
@@ -111,7 +128,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
               <h3 className="st-stage__t" id="fmt-3-t"><span className="st-stage__tin">{t("f.corp.t")}</span></h3>
               <p className="st-stage__m">{t("f.corp.m")}</p>
               <p className="st-stage__p">{t("f.corp.d")} {t("f.corp.p")}</p>
-              <ul className="st-stage__inc"><li>{t("inc.corp.1")}</li><li>{t("inc.corp.2")}</li><li>{t("inc.anim")}</li><li>{t("inc.landing.2")}</li><li>{t("inc.corp.4")}</li><li>{t("inc.corp.5")}</li></ul>
+              <ul className="st-stage__inc">{CARD.corporate.map((k) => <li key={k}>{t(k)}</li>)}</ul>
               <p className="st-stage__price"><span className="st-stage__from">{t("from")}</span> <b data-fprice="corporate">{F.corporate}</b><span className="st-stage__wk" data-fweeks="corporate">{F.wCorporate}</span></p>
               <div className="st-stage__acts">
                 <ButtonLink href="#contact" variant="primary" size="sm" data-pick-format="corporate" aria-describedby="fmt-3-t">{t("talk")}</ButtonLink>
@@ -138,7 +155,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
               <h3 className="st-stage__t" id="fmt-4-t"><span className="st-stage__tin">{t("f.shop.t2")}</span></h3>
               <p className="st-stage__m">{t("f.shop.m")}</p>
               <p className="st-stage__p">{t("f.shop.d")} {t("f.shop.p")}</p>
-              <ul className="st-stage__inc"><li>{t("inc.shop.1")}</li><li>{t("inc.shop.2")}</li><li>{t("inc.anim")}</li><li>{t("inc.shop.3")}</li><li>{t("inc.shop.4")}</li><li>{t("inc.shop.5")}</li></ul>
+              <ul className="st-stage__inc">{CARD.ecommerce.map((k) => <li key={k}>{t(k)}</li>)}</ul>
               <p className="st-stage__price"><span className="st-stage__from">{t("from")}</span> <b data-fprice="ecommerce">{F.ecommerce}</b><span className="st-stage__wk" data-fweeks="ecommerce">{F.wEcommerce}</span></p>
               <div className="st-stage__acts">
                 <ButtonLink href="#contact" variant="primary" size="sm" data-pick-format="ecommerce" aria-describedby="fmt-4-t">{t("talk")}</ButtonLink>
@@ -185,17 +202,18 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                   <li><b>{t("blk.4._")}</b><span>{t("blk.4.d")}</span></li>
                   <li><b>{t("blk.5._")}</b><span>{t("blk.5.d")}</span></li>
                   <li><b>{t("blk.6._")}</b><span>{t("blk.6.d")}</span></li>
+                  <li><b>{t("blk.7._")}</b><span>{t("blk.7.d")}</span></li>
+                  <li><b>{t("blk.8._")}</b><span>{t("blk.8.d")}</span></li>
+                  <li><b>{t("blk.9._")}</b><span>{t("blk.9.d")}</span></li>
+                  <li><b>{t("blk.10._")}</b><span>{t("blk.10.d")}</span></li>
                 </ol>
               </div>
               <div className="ai-dlg__side">
                 <p className="ai-dlg__h">{t("inc.h")}</p>
                 <ul className="ai-dlg__inc" data-inc="landing">
-                  <li>{t("inc.landing.1")}</li>
-                  <li>{t("inc.landing.2")}</li>
-                  <li>{t("inc.anim")}</li>
-                  <li>{t("inc.landing.3")}</li>
-                  <li>{t("inc.landing.4")}</li>
-                  <li>{t("inc.landing.5")}</li>
+                  {INC.landing.map((k) => (
+                    <li key={k}>{t(k)}{k === AI_LINE && <small className="st-inc__note">{t("inc.ai")}</small>}</li>
+                  ))}
                 </ul>
                 <p className="ai-dlg__price"><span>{t("from")}</span> <b className="ai-dlg__sum" data-fprice="landing">{F.landing}</b> <span className="ai-dlg__once">{t("once")}</span> <span className="ai-dlg__wk"><span>{t("launch")}</span> <span data-fweeks="landing">{F.wLanding}</span></span></p>
                 <p className="ai-dlg__note">{t("dlg.note._")}</p>
@@ -218,29 +236,20 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
             <p className="ai-dlg__lead"><span>{t("f.plus.m")}</span>. <span>{t("f.plus.p")}</span></p>
             <div className="ai-dlg__grid">
               <div>
-                <p className="ai-dlg__h">{t("dlg.blocks")}</p>
+                <p className="ai-dlg__h">{t("dlg.pages")}</p>
                 <ol className="st-blocks">
-                  <li><b>{t("blk.1._")}</b><span>{t("blk.1.d")}</span></li>
-                  <li><b>{t("blk.2._")}</b><span>{t("blk.2.d")}</span></li>
-                  <li><b>{t("blk.3._")}</b><span>{t("blk.3.d")}</span></li>
-                  <li><b>{t("blk.4._")}</b><span>{t("blk.4.d")}</span></li>
-                  <li><b>{t("blk.5._")}</b><span>{t("blk.5.d")}</span></li>
-                  <li><b>{t("blk.6._")}</b><span>{t("blk.6.d")}</span></li>
-                  <li className="st-blocks__add"><b>{t("blk.7._")}</b><span>{t("blk.7.d")}</span></li>
-                  <li className="st-blocks__add"><b>{t("blk.8._")}</b><span>{t("blk.8.d")}</span></li>
-                  <li className="st-blocks__add"><b>{t("blk.9._")}</b><span>{t("blk.9.d")}</span></li>
-                  <li className="st-blocks__add"><b>{t("blk.10._")}</b><span>{t("blk.10.d")}</span></li>
+                  <li><b>{t("pp.1._")}</b><span>{t("pp.1.d")}</span></li>
+                  <li className="st-blocks__add"><b>{t("pg.2._")}</b><span>{t("pg.2.d")}</span></li>
+                  <li className="st-blocks__add"><b>{t("pg.3._")}</b><span>{t("pg.3.d")}</span></li>
+                  <li className="st-blocks__add"><b>{t("pp.4._")}</b><span>{t("pp.4.d")}</span></li>
                 </ol>
               </div>
               <div className="ai-dlg__side">
                 <p className="ai-dlg__h">{t("inc.h")}</p>
                 <ul className="ai-dlg__inc" data-inc="landingPlus">
-                  <li>{t("inc.plus.1")}</li>
-                  <li>{t("inc.landing.2")}</li>
-                  <li>{t("inc.anim")}</li>
-                  <li>{t("inc.landing.3")}</li>
-                  <li>{t("inc.landing.4")}</li>
-                  <li>{t("inc.landing.5")}</li>
+                  {INC.landingPlus.map((k) => (
+                    <li key={k}>{t(k)}{k === AI_LINE && <small className="st-inc__note">{t("inc.ai")}</small>}</li>
+                  ))}
                 </ul>
                 <p className="ai-dlg__price"><span>{t("from")}</span> <b className="ai-dlg__sum" data-fprice="landingPlus">{F.landingPlus}</b> <span className="ai-dlg__once">{t("once")}</span> <span className="ai-dlg__wk"><span>{t("launch")}</span> <span data-fweeks="landingPlus">{F.wLandingPlus}</span></span></p>
                 <p className="ai-dlg__note">{t("dlg.note._")}</p>
@@ -276,12 +285,9 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
               <div className="ai-dlg__side">
                 <p className="ai-dlg__h">{t("inc.h")}</p>
                 <ul className="ai-dlg__inc" data-inc="corporate">
-                  <li>{t("inc.corp.1")}</li>
-                  <li>{t("inc.corp.2")}</li>
-                  <li>{t("inc.anim")}</li>
-                  <li>{t("inc.landing.2")}</li>
-                  <li>{t("inc.corp.4")}</li>
-                  <li>{t("inc.corp.5")}</li>
+                  {INC.corporate.map((k) => (
+                    <li key={k}>{t(k)}{k === AI_LINE && <small className="st-inc__note">{t("inc.ai")}</small>}</li>
+                  ))}
                 </ul>
                 <p className="ai-dlg__price"><span>{t("from")}</span> <b className="ai-dlg__sum" data-fprice="corporate">{F.corporate}</b> <span className="ai-dlg__once">{t("once")}</span> <span className="ai-dlg__wk"><span>{t("launch")}</span> <span data-fweeks="corporate">{F.wCorporate}</span></span></p>
                 <p className="ai-dlg__note">{t("dlg.note.pay")}</p>
@@ -315,12 +321,9 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
               <div className="ai-dlg__side">
                 <p className="ai-dlg__h">{t("inc.h")}</p>
                 <ul className="ai-dlg__inc" data-inc="ecommerce">
-                  <li>{t("inc.shop.1")}</li>
-                  <li>{t("inc.shop.2")}</li>
-                  <li>{t("inc.anim")}</li>
-                  <li>{t("inc.shop.3")}</li>
-                  <li>{t("inc.shop.4")}</li>
-                  <li>{t("inc.shop.5")}</li>
+                  {INC.ecommerce.map((k) => (
+                    <li key={k}>{t(k)}{k === AI_LINE && <small className="st-inc__note">{t("inc.ai")}</small>}</li>
+                  ))}
                 </ul>
                 <p className="ai-dlg__price"><span>{t("from")}</span> <b className="ai-dlg__sum" data-fprice="ecommerce">{F.ecommerce}</b> <span className="ai-dlg__once">{t("once")}</span> <span className="ai-dlg__wk"><span>{t("launch")}</span> <span data-fweeks="ecommerce">{F.wEcommerce}</span></span></p>
                 <p className="ai-dlg__note">{t("dlg.note.pay")}</p>

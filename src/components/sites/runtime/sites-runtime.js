@@ -13,7 +13,7 @@
  */
 import * as ENGINE from '@/components/sections/pricing/configurator/engine.js';
 import { STRINGS } from '@/components/sections/pricing/configurator/strings.js';
-import { leadForm, goToForm as glideToForm } from '@/components/sections/contact/lead-form.js';
+import { leadForm, goToForm as glideToForm, sendLead, contactOk } from '@/components/sections/contact/lead-form.js';
 import { restorePlace, restoreScroll } from '@/lib/boot';
 import { getLenis } from '@/lib/scroll';
 import { SPRING, slideIn, rollNumber } from './sites-rb.js';
@@ -143,6 +143,7 @@ async function boot() {
   initScenes();
   initDialogs();
   initCalc();
+  initCalcLead();
   initHow();
   initTabs();
   initSumbar();
@@ -755,6 +756,13 @@ const state = { format: 'landing', design: 'essential', variant: 1, motion: fals
 let renderCalc = () => {};
 let syncTabs = () => {};
 let syncHow = () => {};
+/** what was counted, for a request: one line, and the lines with their prices (initCalc sets it) */
+let calcPlan = () => ({ summary: '', details: '' });
+/** a line of «Що входить у ціну»: its text, or its text and the small note under it (the AI search's) */
+const incLine = (li) => {
+  const note = $('.st-inc__note', li);
+  return note ? [li.firstChild.textContent.trim(), note.textContent.trim()] : li.textContent.trim();
+};
 
 function setFormat(f) {
   if (!FORMATS.includes(f)) return;
@@ -794,7 +802,7 @@ function initCalc() {
     // (owner, 15 Oct: one design level only; the samples are the design the price buys)
     const extras = [];
     const lines = [`${fName} — ${money(row.price)}`];
-    const groups = [[`${fName} · ${money(row.price)}`, $$(`[data-inc="${state.format}"] li`).map((li) => li.textContent.trim())]];
+    const groups = [[`${fName} · ${money(row.price)}`, $$(`[data-inc="${state.format}"] > li`).map(incLine)]];
     if (state.motion) {
       extras.push(mark('motion', 'sites.mark.motion'));
       const n = name('advancedMotion', 'sites.o.motion');
@@ -844,8 +852,8 @@ function initCalc() {
       secondLanguage: state.second, growth: 'none', adsManagement: false, automation: 'none',
     });
     renderMap();
-    // the sum
-    out.name.textContent = r.title;
+    // the sum («Лендінг · дизайн під ваш бренд»: the owner, 26 Nov 2026, for every format)
+    out.name.textContent = `${r.title} · ${t('sites.calc.design', 'дизайн під ваш бренд')}`;
     out.extra.hidden = !r.extras.length;
     out.extra.textContent = r.extras.join(', ');
     const anims = rollNumber(out.price, r.priceText, { roll: roll && motion });
@@ -860,7 +868,12 @@ function initCalc() {
       const box2 = document.createElement('div');
       const h = Object.assign(document.createElement('p'), { className: 'ai-calc__inc-h', textContent: title });
       const ul = document.createElement('ul');
-      ul.append(...items.map((line) => Object.assign(document.createElement('li'), { textContent: line })));
+      ul.append(...items.map((line) => {
+        const li = document.createElement('li');
+        if (Array.isArray(line)) li.append(line[0], Object.assign(document.createElement('small'), { className: 'st-inc__note', textContent: line[1] }));
+        else li.textContent = line;
+        return li;
+      }));
       box2.append(h, ul);
       return box2;
     }));
@@ -876,6 +889,8 @@ function initCalc() {
 
   form.addEventListener('change', (e) => {
     const input = e.target;
+    // (the request's field in the sum card changes nothing in the sum)
+    if (input.closest('[data-calc-lead]')) return;
     if (input.name === 'calc-format') {
       state.format = input.value;
       syncTabs();
@@ -898,13 +913,84 @@ function initCalc() {
 
   renderCalc(false);
 
-  out.send.addEventListener('click', (e) => {
+  calcPlan = () => {
     const r = renderCalc(false);
-    const summary = [r.title, r.extras.join(', '), `${r.priceText} ${text('sites.once', 'разово')}`, r.weeks].filter(Boolean).join(' · ');
+    return {
+      summary: [r.title, r.extras.join(', '), `${r.priceText} ${text('sites.once', 'разово')}`, r.weeks].filter(Boolean).join(' · '),
+      details: r.lines.join('\n'),
+    };
+  };
+  // «Обговорити проєкт» (a link now, under the request): to the form at the foot of the page, the sum in its plan box
+  out.send.addEventListener('click', (e) => {
+    e.preventDefault();
+    const { summary, details } = calcPlan();
     const pick = lead.picks?.find((p) => p.dataset.pick === state.format);
     pressPick(pick || null);
-    setAttached(summary, r.lines.join('\n'));
+    setAttached(summary, details);
     goToForm(byKeys(e));
+  });
+}
+
+/* ---------- 3 · the request in the sum card (the owner, 26 Nov 2026: «Заявка прямо в калькуляторі»): a phone or a
+   Telegram name, checked as the form checks its contact; sent through the form's own handler (lead-form.js sendLead)
+   to the same chat, with the form's hidden fields: the language, the task, what was counted and its lines, the bots'
+   trap; GA4 counts it as lead_form, form_name calculator. The thanks takes the form's place ---------- */
+function initCalcLead() {
+  const box = $('[data-calc-lead]');
+  if (!box) return;
+  const field = box.elements.contact;
+  const err = $('.st-lead__err', box);
+  const fail = $('[data-lead-fail]', box);
+  const failServer = $('[data-lead-fail-server]', box);
+  const done = $('[data-lead-done]', box);
+  const submit = $('button[type="submit"]', box);
+  let touched = false;
+  const mark = () => {
+    const ok = contactOk(field.value);
+    err.hidden = ok;
+    if (ok) field.removeAttribute('aria-invalid');
+    else field.setAttribute('aria-invalid', 'true');
+    return ok;
+  };
+  field.addEventListener('blur', () => {
+    if (field.value.trim()) touched = true;
+    if (touched) mark();
+  });
+  field.addEventListener('input', () => {
+    if (touched && contactOk(field.value)) mark();
+  });
+  box.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    touched = true;
+    if (!mark()) {
+      field.focus();
+      return;
+    }
+    if (submit.disabled) return; // already on its way: a second tap doesn't send it twice
+    const { summary, details } = calcPlan();
+    box.elements.lang.value = document.documentElement.lang === 'ru' ? 'ru' : 'uk';
+    box.elements.package.value = summary;
+    box.elements.details.value = details;
+    fail.hidden = true;
+    failServer.hidden = true;
+    submit.disabled = true;
+    submit.setAttribute('aria-busy', 'true');
+    try {
+      await sendLead(box, !motion);
+      // a lead the server took counts in Google Analytics (production only); a bot's (the hidden fax filled) nowhere
+      if (!box.elements.fax.value) window.ecloTrackLead?.('calculator');
+      box.classList.add('is-sent');
+      done.hidden = false;
+      done.focus();
+    } catch (error) {
+      console.warn('[calculator] the request was not sent.', error);
+      const message = error?.server ? failServer : fail;
+      message.hidden = false;
+      message.focus();
+    } finally {
+      submit.disabled = false;
+      submit.removeAttribute('aria-busy');
+    }
   });
 }
 
@@ -919,8 +1005,9 @@ function renderMap() {
   const words = (k) => t(k, '').split('·').map((w) => w.trim()).filter(Boolean);
   let items;
   if (state.format === 'landingPlus' && t(`sites.pv.lp.${d}.all`, '')) {
-    // a Лендінг+ with its own design: its ten blocks in order, the extras at the indexes in sites.pv.lp.<d>.add
-    const add = t(`sites.pv.lp.${d}.add`, '').split(',').map(Number);
+    // a Лендінг+ with its own design: its ten blocks in order, the extras at the indexes in sites.pv.lp.<d>.add (none
+    // since 26 Nov 2026: a landing has up to ten blocks itself, Лендінг+ adds three pages the sample does not show)
+    const add = t(`sites.pv.lp.${d}.add`, '').split(',').filter(Boolean).map(Number);
     items = words(`sites.pv.lp.${d}.all`).map((w, i) => [w, add.includes(i)]);
   } else {
     const base = words(`sites.pv.${key}`);
@@ -936,6 +1023,9 @@ function renderMap() {
     return li;
   }));
   count.textContent = t(`sites.pv.n.${state.format === 'landingPlus' ? `lp.${d}` : key}`, '');
+  // Лендінг+: a shortened sample, said under its list (the main page only, not its three inner pages)
+  const more = $('[data-pv-more]');
+  if (more) more.hidden = state.format !== 'landingPlus';
 }
 
 /* ---------- 3 · the sample sites: the main page's configurator samples (js/sites-pv.js and its modules, copied):
@@ -1022,7 +1112,7 @@ function initTabs() {
   for (const ol of $$('[data-ruler]', room)) {
     const plus = ol.dataset.ruler === 'landingPlus';
     const words = (k) => t(k, '').split('·').map((w) => w.trim()).filter(Boolean);
-    const add = t('sites.pv.lp.n.add', '').split(',').map(Number);
+    const add = t('sites.pv.lp.n.add', '').split(',').filter(Boolean).map(Number);
     const corp = ol.dataset.ruler === 'corporate';
     const items = plus ? words('sites.pv.lp.n.all').map((w, i) => [w, add.includes(i)]) : words(corp ? 'sites.pv.c' : 'sites.pv.l.n').map((w) => [w, false]);
     ol.replaceChildren(...items.map(([w, add]) => Object.assign(document.createElement('li'), { textContent: w, className: add ? 'is-add' : '' })));
@@ -1222,6 +1312,15 @@ function initSumbar() {
     bar.setAttribute('aria-hidden', String(!on));
     bar.tabIndex = on ? 0 : -1;
   };
+  // «До розрахунку» leads to the request in the sum card (the owner, 26 Nov 2026), the sum above it in sight
+  bar.addEventListener('click', (e) => {
+    const box = $('[data-calc-lead]');
+    if (!box) return;
+    e.preventDefault();
+    box.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'center' });
+    // (from the keyboard the field takes the focus; a tap never opens the phone's keyboard by itself)
+    if (byKeys(e)) setTimeout(() => box.elements.contact.focus({ preventScroll: true }), motion ? 500 : 0);
+  });
   // (the top band under the header does not count: block 3's last pixels there are not «in block 3»)
   new IntersectionObserver((entries) => { inBlock = entries[entries.length - 1].isIntersecting; update(); }, { rootMargin: '-15% 0px -35% 0px' }).observe(block);
   new IntersectionObserver((entries) => { cardSeen = entries[entries.length - 1].isIntersecting; update(); }, { threshold: 0.15 }).observe(card);

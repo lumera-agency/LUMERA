@@ -70,8 +70,8 @@ export const PRICING = {
 
   // weeks: [min, max] for the format alone; null = not known yet (no estimate shown)
   formats: {
-    landing:   { price: 500,  weeks: [1, 2] },
-    // the owner, 17 Oct: «Лендінг+» (one page, 9–10 blocks), as on /dyzain-i-saity
+    landing:   { price: 500,  weeks: [1, 1] }, // the owner, 26 Nov 2026: «за 1 неделю, не 1–2»
+    // the owner, 17 Oct: «Лендінг+», as on /dyzain-i-saity (since 26 Nov 2026 the landing and 3 inner pages)
     landingPlus: { price: 700, weeks: [2, 3] },
     corporate: { price: 900,  weeks: [3, 4] },
     ecommerce: { price: 1500, weeks: [4, 6] },
@@ -81,7 +81,7 @@ export const PRICING = {
 
   // custom design and motion grow with the site (owner's review, 9 Oct): more pages, more to design
   design: {
-    essential: { price: 0, weeks: 0 }, // built on a template
+    essential: { price: 0, weeks: 0 }, // the studio's own block library, under the client's brand
     custom:    { price: { landing: 200, landingPlus: 300, corporate: 400, ecommerce: 600 }, weeks: { landing: 1, landingPlus: 1, corporate: 1.5, ecommerce: 2 } }, // individual (not offered on the main page since 17 Oct)
   },
   threeDHero:     { price: 400, weeks: 1 },

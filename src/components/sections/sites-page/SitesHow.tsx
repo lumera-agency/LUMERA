@@ -1,12 +1,24 @@
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/button/Button";
 import { aiRich as R } from "@/components/ai/rich";
+import type { SitesFacts } from "@/components/sites/facts";
+
+/** The five stages: the client's part (its icon; none at the launch), the note on what is needed (the first two), how
+ *  many deliverables */
+const STAGES = [
+  { n: 1, need: true, items: 4, icon: <path d="M5 6.5h14v9H10l-5 3.5z" /> },
+  { n: 2, need: true, items: 3, icon: <path d="M5 19l1.2-4.2L15.5 5.5l3 3-9.3 9.3z" /> },
+  { n: 3, need: false, items: 3, icon: <path d="m6 12.5 4 4L18 8" /> },
+  { n: 4, need: false, items: 4, icon: <><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" /><circle cx="12" cy="12" r="2.4" /></> },
+  { n: 5, need: false, items: 3, icon: null },
+] as const;
 
 /**
  * 4 · Як працюємо (ivory): the board with the «Ваш бренд» landing in five states, the time from the first call to
- * the launch, the five stages with the client's part (runtime/fx-how.js).
+ * the launch, the five stages with the client's part (runtime/fx-how.js). Up to 860 px (the owner, 26 Nov 2026) the
+ * board goes, the time is one line and the stages are an accordion: number, name and result, the rest under a tap.
  */
-export async function SitesHow() {
+export async function SitesHow({ facts: F }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
   return (
     <section className="section section--ivory ai-sec st-how" id="how" aria-labelledby="how-title">
@@ -104,7 +116,7 @@ export async function SitesHow() {
               </div>
             </div>
             <div className="st-hw-time">
-              <div className="st-hw-time__br"><span className="st-hw-time__vw"><output className="st-hw-time__v" data-how-weeks="" aria-live="polite">≈ 1–2 тижні</output><span className="st-hw-time__calc" data-how-calc="" hidden>{t("how.time.calc")}</span></span></div>
+              <div className="st-hw-time__br"><span className="st-hw-time__vw"><output className="st-hw-time__v" data-how-weeks="" aria-live="polite">{F.wLanding}</output><span className="st-hw-time__calc" data-how-calc="" hidden>{t("how.time.calc")}</span></span></div>
               <div className="st-hw-time__row">
                 <p className="st-hw-time__k" id="how-time-k">{t("how.time._")}</p>
                 <div className="st-hseg" role="radiogroup" aria-labelledby="how-time-k" data-how-seg="">
@@ -118,94 +130,32 @@ export async function SitesHow() {
             </div>
           </div>
           <ol className="st-hw-list" data-how-list="">
-              <li className="st-hw is-you" id="how-st-1" data-st="1">
-                <p className="st-hw__n" aria-hidden="true">01</p>
+            {STAGES.map(({ n, icon, need, items }) => (
+              <li className={`st-hw${icon ? " is-you" : ""}${n === 1 ? " is-open" : ""}`} id={`how-st-${n}`} data-st={n} key={n}>
+                <p className="st-hw__n" aria-hidden="true">{`0${n}`}</p>
                 <div className="st-hw__b">
-                  <h3 className="st-hw__t">{t("st.1.t")}</h3>
-                  <p className="st-hw__r">{t("st.1._")}</p>
-                  <p className="st-hw__you"><i className="st-hw__yi" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 6.5h14v9H10l-5 3.5z" /></svg></i><span className="st-hw__yk">{t("how.you")}</span> <span>{t("st.1.you")}</span></p>
-                  <p className="st-hw__need">{t("st.1.need")}</p>
-                  <button className="st-hw__more" type="button" aria-expanded="false" aria-controls="how-dl-1"><span>{t("st.1.h")}</span><i aria-hidden="true" /></button>
-                  <div className="st-hw__dl" id="how-dl-1">
-                    <p className="st-hw__h">{t("st.1.h")}</p>
-                    <ul className="st-hw__items">
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.1.b.1")}</b><span>{t("st.1.s.1")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.1.b.2")}</b><span>{t("st.1.s.2")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.1.b.3")}</b><span>{t("st.1.s.3")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.1.b.4")}</b><span>{t("st.1.s.4")}</span></li>
-                    </ul>
+                  <h3 className="st-hw__t" id={`how-t-${n}`}>{t(`st.${n}.t`)}</h3>
+                  <p className="st-hw__r">{t(`st.${n}._`)}</p>
+                  {/* up to 860 px the stage opens and shuts (the owner, 26 Nov 2026): this button covers its head (its name and
+                      result), the rest is its panel; the first one open. Wider, the button is not there (sites.css) */}
+                  <button className="st-hw__tg" type="button" aria-expanded={n === 1} aria-controls={`how-p-${n}`} aria-labelledby={`how-t-${n}`}><i aria-hidden="true" /></button>
+                  <div className="st-hw__p" id={`how-p-${n}`}>
+                    {icon && (
+                      <p className="st-hw__you"><i className="st-hw__yi" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false">{icon}</svg></i><span className="st-hw__yk">{t("how.you")}</span> <span>{t(`st.${n}.you`)}</span></p>
+                    )}
+                    {need && <p className="st-hw__need">{t(`st.${n}.need`)}</p>}
+                    <div className="st-hw__dl">
+                      <p className="st-hw__h">{t(`st.${n}.h`)}</p>
+                      <ul className="st-hw__items">
+                        {Array.from({ length: items }, (_, i) => (
+                          <li key={i}><i className="st-hw__tick" aria-hidden="true" /><b>{t(`st.${n}.b.${i + 1}`)}</b><span>{t(`st.${n}.s.${i + 1}`)}</span></li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </li>
-              <li className="st-hw is-you" id="how-st-2" data-st="2">
-                <p className="st-hw__n" aria-hidden="true">02</p>
-                <div className="st-hw__b">
-                  <h3 className="st-hw__t">{t("st.2.t")}</h3>
-                  <p className="st-hw__r">{t("st.2._")}</p>
-                  <p className="st-hw__you"><i className="st-hw__yi" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 19l1.2-4.2L15.5 5.5l3 3-9.3 9.3z" /></svg></i><span className="st-hw__yk">{t("how.you")}</span> <span>{t("st.2.you")}</span></p>
-                  <p className="st-hw__need">{t("st.2.need")}</p>
-                  <button className="st-hw__more" type="button" aria-expanded="false" aria-controls="how-dl-2"><span>{t("st.2.h")}</span><i aria-hidden="true" /></button>
-                  <div className="st-hw__dl" id="how-dl-2">
-                    <p className="st-hw__h">{t("st.2.h")}</p>
-                    <ul className="st-hw__items">
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.2.b.1")}</b><span>{t("st.2.s.1")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.2.b.2")}</b><span>{t("st.2.s.2")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.2.b.3")}</b><span>{t("st.2.s.3")}</span></li>
-                    </ul>
-                  </div>
-                </div>
-              </li>
-              <li className="st-hw is-you" id="how-st-3" data-st="3">
-                <p className="st-hw__n" aria-hidden="true">03</p>
-                <div className="st-hw__b">
-                  <h3 className="st-hw__t">{t("st.3.t")}</h3>
-                  <p className="st-hw__r">{t("st.3._")}</p>
-                  <p className="st-hw__you"><i className="st-hw__yi" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="m6 12.5 4 4L18 8" /></svg></i><span className="st-hw__yk">{t("how.you")}</span> <span>{t("st.3.you")}</span></p>
-                  <button className="st-hw__more" type="button" aria-expanded="false" aria-controls="how-dl-3"><span>{t("st.3.h")}</span><i aria-hidden="true" /></button>
-                  <div className="st-hw__dl" id="how-dl-3">
-                    <p className="st-hw__h">{t("st.3.h")}</p>
-                    <ul className="st-hw__items">
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.3.b.1")}</b><span>{t("st.3.s.1")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.3.b.2")}</b><span>{t("st.3.s.2")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.3.b.3")}</b><span>{t("st.3.s.3")}</span></li>
-                    </ul>
-                  </div>
-                </div>
-              </li>
-              <li className="st-hw is-you" id="how-st-4" data-st="4">
-                <p className="st-hw__n" aria-hidden="true">04</p>
-                <div className="st-hw__b">
-                  <h3 className="st-hw__t">{t("st.4.t")}</h3>
-                  <p className="st-hw__r">{t("st.4._")}</p>
-                  <p className="st-hw__you"><i className="st-hw__yi" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" /><circle cx="12" cy="12" r="2.4" /></svg></i><span className="st-hw__yk">{t("how.you")}</span> <span>{t("st.4.you")}</span></p>
-                  <button className="st-hw__more" type="button" aria-expanded="false" aria-controls="how-dl-4"><span>{t("st.4.h")}</span><i aria-hidden="true" /></button>
-                  <div className="st-hw__dl" id="how-dl-4">
-                    <p className="st-hw__h">{t("st.4.h")}</p>
-                    <ul className="st-hw__items">
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.4.b.1")}</b><span>{t("st.4.s.1")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.4.b.2")}</b><span>{t("st.4.s.2")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.4.b.3")}</b><span>{t("st.4.s.3")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.4.b.4")}</b><span>{t("st.4.s.4")}</span></li>
-                    </ul>
-                  </div>
-                </div>
-              </li>
-              <li className="st-hw" id="how-st-5" data-st="5">
-                <p className="st-hw__n" aria-hidden="true">05</p>
-                <div className="st-hw__b">
-                  <h3 className="st-hw__t">{t("st.5.t")}</h3>
-                  <p className="st-hw__r">{t("st.5._")}</p>
-                  <button className="st-hw__more" type="button" aria-expanded="false" aria-controls="how-dl-5"><span>{t("st.5.h")}</span><i aria-hidden="true" /></button>
-                  <div className="st-hw__dl" id="how-dl-5">
-                    <p className="st-hw__h">{t("st.5.h")}</p>
-                    <ul className="st-hw__items">
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.5.b.1")}</b><span>{t("st.5.s.1")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.5.b.2")}</b><span>{t("st.5.s.2")}</span></li>
-                      <li><i className="st-hw__tick" aria-hidden="true" /><b>{t("st.5.b.3")}</b><span>{t("st.5.s.3")}</span></li>
-                    </ul>
-                  </div>
-                </div>
-              </li>
+            ))}
           </ol>
         </div>
         <div className="st-hw-end">

@@ -15,7 +15,8 @@
  * only while the block is near the screen; nothing at rest; without motion every swap is instant.
  * Phones (round 12, ≤ 600 px): the board is not pinned. It goes through the five states once by itself while it is on
  * screen (paused when it leaves, a tap on the ribbon takes over; without motion it shows the last state), the reading
- * line only fills the rows, and each row's list folds under a button.
+ * line only fills the rows. Since 26 Nov 2026 (the owner) up to 860 px the board is not shown at all and the rows are
+ * an accordion (below).
  */
 const SETTLE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 const POP = 'cubic-bezier(0.34, 1.4, 0.64, 1)';
@@ -33,7 +34,6 @@ export function mountHow({ motion }) {
   const segs = [...board.querySelectorAll('.st-bd__seg')];
   const rows = [...list.querySelectorAll('.st-hw')];
   const narrow = matchMedia('(max-width: 860px)');
-  const phone = matchMedia('(max-width: 600px)');
   // (QA 19 Oct, S-01) the board is not pinned on a phone, held upright or on its side (a low screen up to 860 px wide):
   // there it plays its five states by itself and the ribbon shows a state (sites.css, the same query)
   const solo = matchMedia('(max-width: 600px), (max-width: 860px) and (max-height: 600px)');
@@ -137,7 +137,8 @@ export function mountHow({ motion }) {
   };
 
   /* ---------- the reading line ---------- */
-  const lineY = () => (narrow.matches && !solo.matches ? board.getBoundingClientRect().bottom + 24 : window.innerHeight * 0.45);
+  // (up to 860 px the board is not shown since 26 Nov 2026: the line is the screen's own there)
+  const lineY = () => (narrow.matches && !solo.matches && board.offsetParent ? board.getBoundingClientRect().bottom + 24 : window.innerHeight * 0.45);
   const done = (row) => {
     if (row.classList.contains('is-done')) return;
     row.classList.add('is-done');
@@ -232,23 +233,22 @@ export function mountHow({ motion }) {
     }
   }
 
-  /* ---------- phones: each row's list folds under a button with its own heading ---------- */
-  if (phone.matches) {
-    list.setAttribute('data-fold', '');
-    for (const row of rows) {
-      const more = row.querySelector('.st-hw__more');
-      const dl = row.querySelector('.st-hw__dl');
-      if (!more || !dl) continue;
-      more.addEventListener('click', () => {
-        const open = !row.classList.contains('is-open');
-        row.classList.toggle('is-open', open);
-        more.setAttribute('aria-expanded', String(open));
-        if (!open || !motion) return;
-        dl.querySelectorAll('li').forEach((li, i) => {
-          li.animate([{ opacity: 0, transform: 'translate3d(0, 8px, 0)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: i * 50, easing: SETTLE, fill: 'backwards' });
-        });
+  /* ---------- up to 860 px: the stages as an accordion (the owner, 26 Nov 2026). Each head is its button (SitesHow:
+     .st-hw__tg, shown only there); a tap opens or shuts its panel, the others stay as they are; the first one is open
+     from the server's markup. What opens comes in line by line ---------- */
+  for (const row of rows) {
+    const tg = row.querySelector('.st-hw__tg');
+    const panel = row.querySelector('.st-hw__p');
+    if (!tg || !panel) continue;
+    tg.addEventListener('click', () => {
+      const open = !row.classList.contains('is-open');
+      row.classList.toggle('is-open', open);
+      tg.setAttribute('aria-expanded', String(open));
+      if (!open || !motion) return;
+      [...panel.children].forEach((part, i) => {
+        part.animate([{ opacity: 0, transform: 'translate3d(0, 8px, 0)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: i * 60, easing: SETTLE, fill: 'backwards' });
       });
-    }
+    });
   }
 
   paintRibbon(shown);

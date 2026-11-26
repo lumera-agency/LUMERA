@@ -50,7 +50,7 @@ export default async function SitesPage({ params }: PageProps<"/[locale]/dyzain-
       <PageShell>
         <SitesFormats facts={facts} />
         <SitesPrice facts={facts} />
-        <SitesHow />
+        <SitesHow facts={facts} />
         <SitesFaq facts={facts} />
         <SitesContact />
         {/* (QA 19 Oct, S-15) the main page's PageShell fades in blocks marked data-sr (ScrollReveals); this page has its own
