@@ -189,6 +189,8 @@ const T = {
   date: { uk: 'Дата', ru: 'Дата' },
   time: { uk: 'Час', ru: 'Время' },
   sent: { uk: 'Заявку надіслано', ru: 'Заявка отправлена' },
+  // the fields are empty to fill in (the owner, 27 Nov 2026: no name written in for the visitor)
+  ph: { uk: ['Ваше імʼя', '+380'], ru: ['Ваше имя', '+380'] },
   days: { uk: ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'], ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'] },
   mail: 'hello@vash-sait.ua',
   // round 11 (the owner, 26 Nov 2026: a landing of up to ten blocks, its sample at least nine): the run of shoot types
@@ -226,7 +228,6 @@ const SLOTS = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
 // the mock availability: busy slots per day of the strip (nothing is promised)
 const BUSY = [[1, 4], [0, 3], [2], [1, 5], [0, 2, 4], [3], [1]];
 
-const pad = (n) => String(n).padStart(2, '0');
 const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path pathLength="1" d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m12 2.8 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 16.8l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>';
@@ -259,7 +260,7 @@ export function build(H, c, data, e, opts = {}) {
      left the frame the header tightens (21st.dev Truncating Navbar's idea, Maxim Bortnikov, MIT): the rack rolls up and
      a hairline in the current block's paper runs along the bar ---------- */
   const navE = e ? T.nav.en : null;
-  const nav = T.nav[L].map((x, i) => `<span class="fx-nav__i${i ? '' : ' is-on'}" data-go="${i}"><i class="fx-nav__hc" aria-hidden="true"></i><span class="fx-nav__t"><small class="fx-nav__no">${pad(i + 1)}</small>${lx(x, navE?.[i])}</span></span>`).join('');
+  const nav = T.nav[L].map((x, i) => `<span class="fx-nav__i${i ? '' : ' is-on'}" data-go="${i}"><i class="fx-nav__hc" aria-hidden="true"></i><span class="fx-nav__t">${lx(x, navE?.[i])}</span></span>`).join('');
   const rack = ROLLS.map((r, i) => `<i class="fx-roll${r.k === 'fx' ? ' is-on' : ''}" data-roll="${r.k}" style="--c:${r.c}" title="${esc(T.rolls[L][i])}"></i>`).join('');
   const lockup = `<i class="fx-logo__disc">${IRIS('fx-iris fx-logo__m')}</i><span class="fx-logo__w"><b>${esc(c.brand)}</b><small>${esc(s.studioLabel || '')} · ${esc(s.meta?.[1] || '')}</small></span>`;
   const header = `<header class="pv-hdr fx-hdr" data-hdr data-paper="fx">
@@ -273,7 +274,7 @@ export function build(H, c, data, e, opts = {}) {
     </header>`;
   // the phone's full-screen menu: a charcoal sheet rolls down with the anchors
   const menu = `<div class="fx-menu" data-menu aria-hidden="true"><i class="fx-menu__pre" data-c="mg"></i><i class="fx-menu__pre" data-c="fx"></i><i class="fx-menu__sheet"></i>
-      <div class="fx-menu__in">${T.nav[L].map((x, i) => `<span class="fx-menu__i" data-go="${i}"><small>${pad(i + 1)}</small>${lx(x, navE?.[i])}</span>`).join('')}
+      <div class="fx-menu__in">${T.nav[L].map((x, i) => `<span class="fx-menu__i" data-go="${i}">${lx(x, navE?.[i])}</span>`).join('')}
         ${fb(esc(s.btn), 'fx-menu__cta', 'data-to="5"')}</div></div>`;
 
   /* ---------- 01 · the first screen ---------- */
@@ -306,8 +307,8 @@ export function build(H, c, data, e, opts = {}) {
         const [n, unit] = price(p);
         const d = H.noArea ? H.noArea(s.services[i]?.[1] || '') : (s.services[i]?.[1] || '');
         return `<article class="fx-hall${i ? '' : ' is-on'}" data-hall="${i}" data-p="${HALL[i].p}">
-          <span class="fx-hall__tab"><i class="fx-hall__roll" aria-hidden="true"></i><span class="fx-hall__n">${pad(i + 1)}</span><b class="fx-hall__name" aria-label="${esc(name)}">${shutter(name)}</b><span class="fx-hall__area">${esc(area)}</span></span>
-          <span class="fx-hall__stage"><b class="fx-hall__big" aria-hidden="true">${pad(i + 1)}</b><span class="fx-hall__ph"><img src="${IMG}${HALL[i].img}" alt="" loading="lazy" decoding="async"><i class="fx-glare" aria-hidden="true"></i></span></span>
+          <span class="fx-hall__tab"><i class="fx-hall__roll" aria-hidden="true"></i><b class="fx-hall__name" aria-label="${esc(name)}">${shutter(name)}</b><span class="fx-hall__area">${esc(area)}</span></span>
+          <span class="fx-hall__stage"><span class="fx-hall__ph"><img src="${IMG}${HALL[i].img}" alt="" loading="lazy" decoding="async"><i class="fx-glare" aria-hidden="true"></i></span></span>
           <span class="fx-hall__info"><span class="fx-hall__d">${esc(d)}</span>
             <span class="fx-hall__f"><span class="fx-hall__p"><b data-cnt="${esc(n)}">${esc(n)}</b><small>${esc(unit)}</small></span>${fb(esc(t('bookHall')), 'fx-hall__go', `data-to="5" data-hall-pick="${i}"`)}</span></span>
         </article>`;
@@ -320,7 +321,7 @@ export function build(H, c, data, e, opts = {}) {
   const [pre = '', year = '2016'] = String(s.meta?.[1] || '').split(/\s+/);
   const facts = [['', st[0][0], st[0][1], st[0][2]], ['', st[1][0], st[1][1], st[1][2]], ['', st[3][0], st[3][1], st[3][2]], [pre, year, '', t('year')[1]]];
   const cards = s.halls.slice(0, 3).map(([name], i) => `<figure class="fx-card" data-card="${i}" data-p="${['pw', 'fx', 'ch'][i]}"><i class="fx-card__fold" aria-hidden="true"></i><i class="fx-glare" aria-hidden="true"></i>
-        <span class="fx-card__top"><span class="fx-stars">${STAR.repeat(5)}</span><span class="fx-card__no">${pad(i + 1)} / 03</span></span>
+        <span class="fx-card__top"><span class="fx-stars">${STAR.repeat(5)}</span><span class="fx-card__no">${i + 1} / 3</span></span>
         <blockquote class="fx-card__q">${esc(t('rev'))}</blockquote>
         <figcaption><i class="fx-card__m">${esc(t('mono'))}</i><span><b>${esc(t('client'))}</b><small>${esc(s.services[i]?.[0] || name)}</small></span></figcaption>
       </figure>`).reverse().join('');
@@ -347,14 +348,14 @@ export function build(H, c, data, e, opts = {}) {
   const faq = `<section class="fx-blk fx-faq" data-blk="4" data-paper="fx" data-nav="2">
       <i class="fx-sheet" aria-hidden="true"></i>
       <div class="fx-faq__t"><span class="fx-kick">${esc(s.plus?.faqKicker || qs[0][0])}</span><h2 class="fx-h2" data-fold>${fw(s.plus?.faqTitle || '')}</h2></div>
-      <ol class="fx-qs" data-qs>${qs.map(([q, a], i) => `<li class="fx-q${i ? '' : ' is-on'}" data-q="${i}"><span class="fx-q__n">${pad(i + 1)}</span><b class="fx-q__t">${esc(q)}</b><i class="fx-q__x" aria-hidden="true"></i>
+      <ol class="fx-qs" data-qs>${qs.map(([q, a], i) => `<li class="fx-q${i ? '' : ' is-on'}" data-q="${i}"><b class="fx-q__t">${esc(q)}</b><i class="fx-q__x" aria-hidden="true"></i>
         <p class="fx-q__a">${esc(a)}</p></li>`).join('')}</ol>
     </section>`;
 
   /* ---------- 06 · the booking and the contacts, then the footer ---------- */
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, k) => { const d = new Date(today); d.setDate(today.getDate() + k + 1); return d; });
-  const field = ([k, v], i) => `<span class="fx-field${i ? '' : ' is-focus'}" data-field><span>${esc(k)}</span><b>${esc(v)}</b></span>`;
+  const field = ([k], i) => `<label class="fx-field" data-field><span>${esc(k)}</span><input class="fx-field__in" type="${i ? 'tel' : 'text'}" inputmode="${i ? 'tel' : 'text'}" placeholder="${esc(t('ph')[i])}" autocomplete="off" maxlength="40" tabindex="-1"></label>`;
   // the split-flap board: the chosen day, time and hall, in fixed cells (blank flaps pad the shorter names)
   const hallW = Math.max(...s.halls.slice(0, 3).map(([n]) => [...n].length));
   const flaps = (txt, w) => [...String(txt).toUpperCase().padEnd(w, ' ')].map((ch) => `<i class="fx-fl${ch === ' ' ? ' is-blank' : ''}">${ch === ' ' ? '' : esc(ch)}</i>`).join('');
@@ -377,7 +378,7 @@ export function build(H, c, data, e, opts = {}) {
           <span class="fx-form__k">${esc(t('date'))}</span>
           <div class="fx-days">${days.map((d, k) => `<span class="fx-day${k === 1 ? ' is-on' : ''}" data-day="${k}"><small>${esc(t('days')[d.getDay()])}</small><b>${d.getDate()}</b></span>`).join('')}</div>
           <span class="fx-form__k">${esc(t('time'))}</span>
-          <div class="fx-slots">${SLOTS.map((x, k) => `<span class="fx-slot${BUSY[1].includes(k) ? ' is-busy' : ''}${k === 2 ? ' is-on' : ''}" data-slot="${k}">${x}</span>`).join('')}</div>
+          <div class="fx-slots">${SLOTS.map((x, k) => `<span class="fx-slot${BUSY[1].includes(k) ? ' is-busy' : ''}${k === 2 ? ' is-on' : ''}" data-time="${k}">${x}</span>`).join('')}</div>
           <div class="fx-fields">${s.fields.slice(0, 2).map(field).join('')}</div>
           ${board}
           <span class="fx-send fx-fb" data-send><i class="fx-fb__sheet" aria-hidden="true"></i><i class="fx-fb__a fx-fb__a--in" aria-hidden="true">${ARROW}</i><span class="fx-send__t fx-fb__t"><span class="fx-send__a">${esc(s.send)}</span><span class="fx-send__c" aria-hidden="true"><i></i><i></i><i></i></span><span class="fx-send__b">${TICK}${esc(t('sent'))}</span></span><i class="fx-fb__a fx-fb__a--out" aria-hidden="true">${ARROW}</i></span>
@@ -388,7 +389,7 @@ export function build(H, c, data, e, opts = {}) {
         <div class="fx-ftr__halls">${s.halls.slice(0, 3).map(([n, a, p], i) => `<span class="fx-ftr__hall" data-p="${HALL[i].p}" data-to="1" data-hall-show="${i}"><i class="fx-ftr__roll" aria-hidden="true"></i><b>${esc(n)}</b><small>${esc(a)}</small><em>${esc(p)}</em><i class="fx-ftr__go" aria-hidden="true">${ARROW}</i></span>`).join('')}</div>
         <div class="fx-ftr__cols">
           <div class="fx-ftr__brand"><span class="fx-logo" data-to="0">${lockup}</span><p>${T.h1[L].map((ln) => ln.map(([w]) => esc(w)).join('')).join(' ')}</p></div>
-          <nav class="fx-ftr__nav">${T.nav[L].map((x, i) => `<span data-go="${i}"><small>${pad(i + 1)}</small>${esc(x)}</span>`).join('')}</nav>
+          <nav class="fx-ftr__nav">${T.nav[L].map((x, i) => `<span data-go="${i}">${esc(x)}</span>`).join('')}</nav>
           <div class="fx-ftr__c"><span class="fx-ftr__k">${esc(heads[0])}</span><b>${esc(f.addr || '')}</b><small>${esc(s.meta?.[0] || '')}</small></div>
           <div class="fx-ftr__c"><span class="fx-ftr__k">${esc(heads[1])}</span><b>${esc(f.phone || '')}</b><b>${esc(T.mail)}</b></div>
           <div class="fx-ftr__c"><span class="fx-ftr__k">${esc(heads[2])}</span>${(f.links || []).map((l) => `<b>${esc(l)}</b>`).join('')}</div>
@@ -412,8 +413,8 @@ export function build(H, c, data, e, opts = {}) {
       <i class="fx-sheet" aria-hidden="true"></i>
       <div class="fx-head"><span class="fx-kick">${esc(t('usesK'))}</span><h2 class="fx-h2" data-fold>${fw(t('usesH'))}</h2><p class="fx-aside">${esc(t('usesA'))}</p></div>
       <div class="fx-uses__in" data-uses>
-        <ol class="fx-uses__list">${T.uses[L].map(([n, d], i) => `<li class="fx-use${i ? '' : ' is-on'}" data-use="${i}"><span class="fx-use__n">${pad(i + 1)}</span><b class="fx-use__t">${esc(n)}</b><i class="fx-use__go" aria-hidden="true">${ARROW}</i><span class="fx-use__d">${esc(d)}</span></li>`).join('')}</ol>
-        <figure class="fx-uses__ph" aria-hidden="true">${USES.map(([dir, img], i) => `<img class="fx-uses__img${i ? '' : ' is-on'}" data-img="${i}" src="${dir}${img}" alt="" loading="lazy" decoding="async">`).join('')}<span class="fx-uses__tape" data-usetape>01 / ${pad(USES.length)}</span></figure>
+        <ol class="fx-uses__list">${T.uses[L].map(([n, d], i) => `<li class="fx-use${i ? '' : ' is-on'}" data-use="${i}"><b class="fx-use__t">${esc(n)}</b><i class="fx-use__go" aria-hidden="true">${ARROW}</i><span class="fx-use__d">${esc(d)}</span></li>`).join('')}</ol>
+        <figure class="fx-uses__ph" aria-hidden="true">${USES.map(([dir, img], i) => `<img class="fx-uses__img${i ? '' : ' is-on'}" data-img="${i}" src="${dir}${img}" alt="" loading="lazy" decoding="async">`).join('')}</figure>
       </div>
     </section>`;
 
@@ -869,19 +870,27 @@ export function enhance(site, ctx = {}) {
         flap('time', free?.textContent || '');
         return;
       }
-      const sl = ev.target.closest('[data-slot]');
+      const sl = ev.target.closest('[data-time]');
       if (sl && !sl.classList.contains('is-busy')) {
         slots.forEach((x) => x.classList.toggle('is-on', x === sl));
         if (!still) sl.animate([{ transform: 'scale(0.92)' }, { transform: 'scale(1)' }], { duration: 420, easing: SPRING });
         flap('time', sl.textContent);
         return;
       }
-      const fd = ev.target.closest('[data-field]');
-      if (fd) { form.querySelectorAll('[data-field]').forEach((x) => x.classList.toggle('is-focus', x === fd)); return; }
+      if (ev.target.closest('[data-field]')) return;
       // the tactile button (21st.dev Add to Cart Button, bidyut10, MIT; rebuilt): it sinks, works for a moment, then
       // says «Заявку надіслано» with a tick and the sparks; back to itself after 3 s
       const send = ev.target.closest('[data-send]');
       if (!send || send.classList.contains('is-busy') || send.classList.contains('is-sent')) return;
+      // both fields filled in first: a name, a phone of nine digits or more; the empty one shakes and takes the focus
+      const ins = [...form.querySelectorAll('.fx-field__in')];
+      const bad = ins.filter((x, i) => (i ? x.value.replace(/\D/g, '').length < 9 : x.value.trim().length < 2));
+      ins.forEach((x) => x.closest('.fx-field').classList.toggle('is-err', bad.includes(x)));
+      if (bad.length) {
+        if (!still) bad.forEach((x) => x.closest('.fx-field').animate([{ translate: '0 0' }, { translate: '-.6cqw 0' }, { translate: '.5cqw 0' }, { translate: '-.3cqw 0' }, { translate: '0 0' }], { duration: 360, easing: 'ease-out' }));
+        bad[0].focus({ preventScroll: true });
+        return;
+      }
       clearTimeout(send._t);
       const done = () => {
         send.classList.remove('is-busy');
@@ -898,6 +907,18 @@ export function enhance(site, ctx = {}) {
       send._t = setTimeout(done, 750);
     });
   }
+  // (the sample sits inside the calculator's form, which redraws the sample on any «change» in it: what is typed here
+  // stays here; Enter takes the next field, then sends, and never submits the calculator's form)
+  form?.addEventListener('input', (ev) => { ev.stopPropagation(); ev.target.closest('.fx-field')?.classList.remove('is-err'); });
+  form?.addEventListener('change', (ev) => ev.stopPropagation());
+  form?.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' || !ev.target.matches('.fx-field__in')) return;
+    ev.preventDefault();
+    const ins = [...form.querySelectorAll('.fx-field__in')];
+    const next = ins[ins.indexOf(ev.target) + 1];
+    if (next) next.focus({ preventScroll: true });
+    else form.querySelector('[data-send]')?.click();
+  });
   // a hall chosen in the form (by its chip, or by «Забронювати цей зал»): JellyRadio's swell, the board flips
   function pickHall(o) {
     if (!form || !o) return;
@@ -964,13 +985,11 @@ export function enhance(site, ctx = {}) {
   if (usesEl) {
     const rows = [...usesEl.querySelectorAll('.fx-use')];
     const imgs = [...usesEl.querySelectorAll('.fx-uses__img')];
-    const tape = usesEl.querySelector('[data-usetape]');
     let on = 0;
     const useOn = (i) => {
       if (i === on || !rows[i]) return;
       rows.forEach((r, k) => r.classList.toggle('is-on', k === i));
       imgs.forEach((im, k) => { im.classList.toggle('was-on', k === on); im.classList.toggle('is-on', k === i); });
-      if (tape) tape.textContent = `${pad(i + 1)} / ${pad(imgs.length)}`;
       on = i;
     };
     usesEl.addEventListener('pointerover', (ev) => { if (ev.pointerType === 'mouse') { const r = ev.target.closest('.fx-use'); if (r) useOn(+r.dataset.use); } });

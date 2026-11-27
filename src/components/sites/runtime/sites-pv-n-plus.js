@@ -563,7 +563,7 @@ export function build(H, c, data, e, opts = {}) {
           <div class="pn-pick" data-group>${s.halls.map(([n, , p], i) => `<span class="pn-pick__o${i ? '' : ' is-on'}"><b>${LET[i]} · ${esc(n)}</b><small>${esc(p)}</small></span>`).join('')}</div>
           <span class="pn-form__k">${esc(t('date'))}</span>
           <div class="pn-pick pn-pick--d" data-group>${t('days').map((d, i) => `<span class="pn-pick__o${i === 1 ? ' is-on' : ''}"><b>${esc(d)}</b></span>`).join('')}</div>
-          ${s.fields.map(([k, v]) => `<span class="pn-field"><span>${esc(k)}</span><b>${esc(v)}</b></span>`).join('')}
+          ${s.fields.map(([k], i) => `<label class="pn-field"><span>${esc(k)}</span><input class="pn-field__in" type="${i ? 'tel' : 'text'}" inputmode="${i ? 'tel' : 'text'}" placeholder="${esc((L === 'ru' ? ['Ваше имя', '+380'] : ['Ваше імʼя', '+380'])[i] || '')}" autocomplete="off" maxlength="40" tabindex="-1"></label>`).join('')}
           ${pbtn(`<span class="pn-send__t"><span class="pn-send__a">${esc(s.send)}</span><span class="pn-send__b">${TICK}${esc(t('sent'))}</span></span>`, ' pn-send', ' data-send')}
           <span class="pn-note">${ICO.clock}${esc(s.formNote)}</span>
           <div class="pn-stamp" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="1" y="1" width="98" height="98" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
@@ -1034,6 +1034,11 @@ export function enhance(site, ctx = {}) {
       }
       const send = ev.target.closest('[data-send]');
       if (send && !send.classList.contains('is-sent')) {
+        // both fields filled in first (a name, a phone of nine digits or more); the empty one is marked and takes the focus
+        const ins = $$('.pn-field__in', send.closest('.pn-form'));
+        const bad = ins.filter((x, i) => (i ? x.value.replace(/\D/g, '').length < 9 : x.value.trim().length < 2));
+        ins.forEach((x) => x.closest('.pn-field').classList.toggle('is-err', bad.includes(x)));
+        if (bad.length) { bad[0].focus({ preventScroll: true }); return; }
         // the form's states: «Надіслати» → the button turns sage, the fields step back and an approval stamp is
         // drawn over them with what was asked for (hall · day); 3 s later it lifts and the form is back
         const form = send.closest('.pn-form');
@@ -1052,6 +1057,18 @@ export function enhance(site, ctx = {}) {
       }
       // the address, the phone, the mail: the studio on the site plan answers
       if (ev.target.closest('.pn-ci span')) anim($('.pn-site__blk', bookEl), [{ opacity: 1 }, { opacity: 0.25 }, { opacity: 1 }, { opacity: 0.25 }, { opacity: 1 }], { duration: 900, fill: 'none', easing: 'linear' });
+    });
+    // (the sample sits inside the calculator's form, which redraws the sample on any «change» in it: what is typed
+    // here stays here; a field typed into loses its mark; Enter takes the next field, then sends)
+    bookEl.addEventListener('input', (ev) => { ev.stopPropagation(); ev.target.closest('.pn-field')?.classList.remove('is-err'); });
+    bookEl.addEventListener('change', (ev) => ev.stopPropagation());
+    bookEl.addEventListener('keydown', (ev) => {
+      if (ev.key !== 'Enter' || !ev.target.matches('.pn-field__in')) return;
+      ev.preventDefault();
+      const ins = $$('.pn-field__in', ev.target.closest('.pn-form'));
+      const next = ins[ins.indexOf(ev.target) + 1];
+      if (next) next.focus({ preventScroll: true });
+      else $('[data-send]', ev.target.closest('.pn-form'))?.click();
     });
     api.formHall = (i) => { const g = $('.pn-pick', bookEl); const o = $$('.pn-pick__o', g)[i]; if (!o) return; $$('.pn-pick__o', g).forEach((x) => x.classList.toggle('is-on', x === o)); later(() => anim(o, [{ scale: '0.9' }, { scale: '1.04', offset: 0.6 }, { scale: '1' }], { duration: 560, fill: 'none' }), 700); };
     seen(bookEl, () => {
