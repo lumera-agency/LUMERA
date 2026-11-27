@@ -3680,14 +3680,15 @@
 }
 /* a page's title sheet: the words on the left, the drawing on the right */
 .pv-site--n.pv-n-plus .pn-pg { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3.4cqw; align-items: start; padding: 3.6cqw var(--m) 6cqw; }
-.pv-site--n.pv-n-plus .pn-pg__txt { display: grid; align-content: start; justify-items: start; }
+.pv-site--n.pv-n-plus .pn-pg__txt { align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; }
 .pv-site--n.pv-n-plus .pn-pg__h { font: 300 4.2cqw/1.04 var(--disp); letter-spacing: -0.03em; color: var(--gr); text-wrap: balance; }
-.pv-site--n.pv-n-plus .pn-pg .pn-sub { max-width: 40ch; }
-.pv-site--n.pv-n-plus .pn-pg__idx { justify-self: stretch; margin-top: 3cqw; border-top: 1px solid var(--gr); }
+.pv-site--n.pv-n-plus .pn-pg .pn-sub { max-width: 40ch; margin-bottom: 3cqw; }
+/* (the index on the drawing's foot line: the title above, the plan's frame beside it) */
+.pv-site--n.pv-n-plus .pn-pg__idx { align-self: stretch; margin-top: auto; border-top: 1px solid var(--gr); }
 .pv-site--n.pv-n-plus .pn-plan--pg { justify-self: stretch; max-height: none; }
 /* the shots: the title, the chips beside it, the words under it, then the wall of frames */
 .pv-site--n.pv-n-plus .pn-pg--works { grid-template-columns: minmax(0, 1fr); gap: 2.6cqw; }
-.pv-site--n.pv-n-plus .pn-pg__txt--w { grid-template-columns: minmax(0, 1fr) auto; column-gap: 3cqw; align-items: end; justify-items: stretch; }
+.pv-site--n.pv-n-plus .pn-pg__txt--w { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 3cqw; align-items: end; justify-items: stretch; }
 .pv-site--n.pv-n-plus .pn-pg__txt--w .pn-crumb { grid-column: 1 / -1; }
 .pv-site--n.pv-n-plus .pn-pg__txt--w .pn-sub { grid-column: 1 / -1; }
 .pv-site--n.pv-n-plus .pn-gal { columns: 3; column-gap: 1.6cqw; }
@@ -3708,7 +3709,9 @@
 .pv-site--n.pv-n-plus .pn-hx--r .pn-hx__ph { order: 2; }
 .pv-site--n.pv-n-plus .pn-hx__ph { display: grid; gap: 0.6cqw; margin: 0; }
 .pv-site--n.pv-n-plus .pn-hx__ph .pn-ph { aspect-ratio: 4 / 3; }
-.pv-site--n.pv-n-plus .pn-hx__t { display: grid; gap: 1.8cqw; align-content: start; justify-items: start; }
+.pv-site--n.pv-n-plus .pn-hx__t { display: grid; gap: 2.6cqw; align-content: start; justify-items: start; }
+/* (the hall's name and its one line belong together: tight under the name, a step before the spec) */
+.pv-site--n.pv-n-plus .pn-hx__t > .pn-p { margin-top: -1.6cqw; }
 .pv-site--n.pv-n-plus .pn-spec { justify-self: stretch; display: grid; margin: 0; border-top: 1px solid var(--gr); }
 .pv-site--n.pv-n-plus .pn-spec > div { display: grid; grid-template-columns: 9.4cqw minmax(0, 1fr); gap: 1.2cqw; padding: 0.95cqw 0; border-bottom: 1px solid var(--hl); }
 .pv-site--n.pv-n-plus .pn-spec dt { font: 400 0.76cqw/1.5 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
@@ -3734,12 +3737,13 @@
 .pv-site--n.pv-n-plus .pn-case__t { font: 300 1.7cqw/1.15 var(--disp); letter-spacing: -0.02em; }
 .pv-site--n.pv-n-plus .pn-case p { margin: 0; font-size: 1.12cqw; line-height: 1.45; color: var(--mute); }
 /* the contacts: the list as a schedule, the socials, the site plan in light ink */
-.pv-site--n.pv-n-plus .pn-cinfo { justify-self: stretch; display: grid; margin: 3cqw 0 0; border-top: 1px solid var(--gr); }
+.pv-site--n.pv-n-plus .pn-cinfo { align-self: stretch; display: grid; margin: auto 0 0; border-top: 1px solid var(--gr); }
 .pv-site--n.pv-n-plus .pn-cinfo > div { display: grid; grid-template-columns: 9.4cqw minmax(0, 1fr); gap: 1.2cqw; padding: 1cqw 0; border-bottom: 1px solid var(--hl); }
 .pv-site--n.pv-n-plus .pn-cinfo dt { font: 400 0.76cqw/1.6 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
 .pv-site--n.pv-n-plus .pn-cinfo dd { margin: 0; font-size: 1.25cqw; line-height: 1.45; }
 .pv-site--n.pv-n-plus .pn-cinfo__soc { margin-top: 2cqw; }
-.pv-site--n.pv-n-plus .pn-map2 { display: grid; gap: 1cqw; margin: 0; padding: 1.6cqw; background: var(--cy); box-shadow: 0 0 0 1px var(--hl2); }
+/* (the site plan's sheet reaches the column's foot: the label at its head, the plan in the middle, the north bar at its foot) */
+.pv-site--n.pv-n-plus .pn-map2 { align-self: stretch; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; align-items: center; gap: 1cqw; margin: 0; padding: 1.6cqw; background: var(--cy); box-shadow: 0 0 0 1px var(--hl2); }
 .pv-site--n.pv-n-plus .pn-map2 .pn-map__k { font: 400 0.78cqw/1 var(--mono); letter-spacing: 0.12em; color: var(--mute); }
 .pv-site--n.pv-n-plus .pn-map2 .pn-tb__nb { justify-self: end; }
 .pv-site--n.pv-n-plus .pn-site--l { box-shadow: 0 0 0 1px var(--hl); background: var(--cy); }
@@ -3788,7 +3792,7 @@
   .pv-site--n.pv-n-plus .pn-crumb::before { width: 1.4cqw; height: 1.4cqw; }
   .pv-site--n.pv-n-plus .pn-pg { grid-template-columns: minmax(0, 1fr); gap: 8cqw; padding: 7cqw var(--m) 12cqw; }
   .pv-site--n.pv-n-plus .pn-pg__h { font-size: 8.3cqw; }
-  .pv-site--n.pv-n-plus .pn-pg .pn-sub { order: 0; margin-top: 4.4cqw; font-size: 3.5cqw; }
+  .pv-site--n.pv-n-plus .pn-pg .pn-sub { order: 0; margin-top: 4.4cqw; margin-bottom: 0; font-size: 3.5cqw; }
   .pv-site--n.pv-n-plus .pn-pg__idx { margin-top: 6cqw; }
   .pv-site--n.pv-n-plus .pn-pg--works { gap: 6cqw; }
   .pv-site--n.pv-n-plus .pn-pg__txt--w { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
@@ -3802,7 +3806,8 @@
   .pv-site--n.pv-n-plus .pn-hx--r .pn-hx__grid { grid-template-columns: minmax(0, 1fr); }
   .pv-site--n.pv-n-plus .pn-hx--r .pn-hx__ph { order: 0; }
   .pv-site--n.pv-n-plus .pn-hx__ph { gap: 1.6cqw; }
-  .pv-site--n.pv-n-plus .pn-hx__t { gap: 4.4cqw; }
+  .pv-site--n.pv-n-plus .pn-hx__t { gap: 5.6cqw; }
+  .pv-site--n.pv-n-plus .pn-hx__t > .pn-p { margin-top: -3cqw; }
   .pv-site--n.pv-n-plus :is(.pn-spec, .pn-cinfo) > div { grid-template-columns: 24cqw minmax(0, 1fr); gap: 3cqw; padding: 2.4cqw 0; }
   .pv-site--n.pv-n-plus :is(.pn-spec, .pn-cinfo) dt { font-size: 2.1cqw; }
   .pv-site--n.pv-n-plus :is(.pn-spec, .pn-cinfo) dd { font-size: 3.3cqw; }

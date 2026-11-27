@@ -334,6 +334,8 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-dev__pages b { padding: 8px 13px; border-radius: 999px; font-size: var(--fs-small); font-weight: 500; line-height: 1; color: rgba(239, 235, 227, 0.74); white-space: nowrap; cursor: pointer; transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out); -webkit-tap-highlight-color: transparent; }
 .st-dev__pages b.is-on { background: var(--ember); color: var(--on-accent); }
 @media (hover: hover) and (pointer: fine) { .st-dev__pages b:not(.is-on):hover { background: rgba(239, 235, 227, 0.1); color: #efebe3; } }
+/* (a step of air between the window and its tabs; the phone frame keeps its foot on the same line) */
+.st-dev--plus { padding-bottom: 60px; }
 /* the 5–7 pages: four windows fanned in depth and one more for «1–3 на вибір» */
 .st-fan { position: relative; height: 470px; perspective: 1400px; }
 .st-fan__p { position: absolute; left: calc(var(--i) * 13%); top: calc(var(--i) * 7.5%); width: 52%; margin: 0; border-radius: 12px; overflow: hidden; background: #161514; box-shadow: 0 0 0 1px rgba(239, 235, 227, 0.12), 0 40px 60px -30px #000; transform: rotateY(-16deg) rotateX(4deg); transform-origin: 0 50%; transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out); }
