@@ -17,6 +17,7 @@
  * Every move is a transform, an opacity or a filter run by the compositor (each letter of the name a canvas of its
  * own, moved as a layer; only the chrome's flow inside them is drawn from script).
  *
+ * The main page only (the owner, 26 Nov 2026): the service pages, the cases and the rest come up at once.
  * Once per visit (sessionStorage): opened again in the same tab the page comes up at once, unless the
  * language was switched; reached from another page of the site it comes up at once too (the owner, 12 Nov 2026: the
  * visitor is on the site already, 3.1 to 3.5 s of the roll were in their way). While it runs the page can't be scrolled (html.is-loading).
@@ -66,12 +67,15 @@ function clock(cfg: { words: string[]; mark: string; chrome: [string, string] })
   // and so does the page reached from another page of the site (the site's links load the next page whole, so it says
   // where it came from); a reload plays it again. A language switch stays in the page (LangSwitch): the sheet the new
   // words render with is never shown (preloader.css, html.pl-done)
-  let again = false;
+  // the main page only (the owner, 26 Nov 2026: an ad's click opens a service page, and that is a first visit every
+  // time; the sheet held its first screen 2 to 4 s). Every other page comes up at once, as on a repeat visit
+  const home = /^\/(ru\/?)?$/.test(location.pathname);
+  let again = !home;
   try {
     const nav = performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined;
     const reload = nav?.type === "reload";
     const fromSite = !!document.referrer && new URL(document.referrer).origin === location.origin;
-    again = !reload && (sessionStorage.getItem("eclo:seen") === "1" || fromSite);
+    again = again || (!reload && (sessionStorage.getItem("eclo:seen") === "1" || fromSite));
     sessionStorage.setItem("eclo:seen", "1");
   } catch {}
   if (again) {

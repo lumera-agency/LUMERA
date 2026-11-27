@@ -3,6 +3,7 @@ import { ContactClient } from "@/components/sections/contact/ContactClient";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 import { aiRich as R } from "@/components/ai/rich";
 import { FormMore } from "@/components/ai/FormMore";
+import { telegramHref } from "@/config/contacts";
 import "@/components/sections/contact/contact.css";
 
 /**
@@ -48,6 +49,17 @@ export async function SitesContact() {
         <form className="lead-form card" data-lead-form="" method="post" action="#contact" data-endpoint="/api/lead" noValidate aria-labelledby="contact-title">
           <input type="hidden" name="lang" defaultValue="uk" data-form-lang="" />
           <input type="hidden" name="task" defaultValue="Сайт" />
+          {/* how to order, above the fields (the owner's keyword round, 23 Nov 2026, as on the ads page): Telegram or this form */}
+          <p className="st-order">
+            {s.rich("form.order", {
+              ...R,
+              tg: (chunks) => (
+                <a className="link" href={telegramHref()} target="_blank" rel="noopener">
+                  {chunks}
+                </a>
+              ),
+            })}
+          </p>
           {/* a field people never see or reach: a bot that fills it in is ignored by /api/lead */}
           <div className="lead-form__hp" aria-hidden="true">
             <label>

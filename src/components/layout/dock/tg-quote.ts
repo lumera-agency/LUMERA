@@ -1,5 +1,5 @@
 /*
- * «Отримати розрахунок у Telegram» beside a calculator's sum (the owner, 26 Nov 2026: «з підставленим текстом»): a link
+ * «Написати в Telegram» (until 26 Nov 2026 «Отримати розрахунок у Telegram») beside a calculator's sum (the owner, 26 Nov 2026: «з підставленим текстом»): a link
  * to the studio's Telegram whose message box comes filled with what the visitor counted. Telegram takes the text as
  * ?text= on a chat link, by username or by phone number (core.telegram.org/api/links).
  *

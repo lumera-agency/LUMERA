@@ -1,5 +1,7 @@
 /**
- * POST /api/lead — the contact form's request (8 · Заявка, lead-form.js) → the studio.
+ * POST /api/lead — the contact form's request (8 · Заявка, lead-form.js) → the studio. Also the sites page's
+ * calculator (form: "calculator", the owner, 26 Nov 2026): one field, a phone or a Telegram name, and the sum counted;
+ * it comes without a name, and the message says where it came from.
  *
  * Where it goes is set in the host's environment, never in the code:
  *   LEAD_WEBHOOK_URL                       any webhook (n8n, Make, a CRM) that takes the JSON as is; or
@@ -43,6 +45,8 @@ function clean(body: Record<string, unknown>) {
     site: line(body.site, 240),
     note: str(body.note, 2000),
     lang: body.lang === "ru" ? "ru" : "uk",
+    /** which form: the page's request form, or the calculator's one field (sites page) */
+    form: body.form === "calculator" ? "calculator" : "contact",
     page: str(body.page, 300),
     sentAt: str(body.sentAt, 40),
   };
@@ -76,6 +80,7 @@ function telegramMessage(lead: Lead) {
   const fields: [label: string, value: string, code: boolean][] = [
     ["Имя: ", lead.name, true],
     ["Контакт: ", lead.contact, !LIVE_CONTACT.test(lead.contact)],
+    ["Форма: ", lead.form === "calculator" ? "калькулятор" : "", false],
     ["Задача: ", lead.task, true],
     ["Выбрано в калькуляторе: ", lead.package, true],
     ["Состав:\n", lead.details, true],
@@ -137,8 +142,8 @@ export async function POST(request: Request) {
   if (str(fields.fax, 200)) return Response.json({ ok: true }); // a bot: nothing is sent
 
   const lead = clean(fields);
-  // the same minimum the form checks: a name and a way to reach the person
-  if (lead.name.length < 2 || lead.contact.length < 3) return fail(422, "name and contact required");
+  // the same minimum the form checks: a name and a way to reach the person (the calculator's field asks only the way)
+  if ((lead.form !== "calculator" && lead.name.length < 2) || lead.contact.length < 3) return fail(422, "name and contact required");
 
   const { LEAD_WEBHOOK_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } = process.env;
   if (!LEAD_WEBHOOK_URL && !(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID)) {

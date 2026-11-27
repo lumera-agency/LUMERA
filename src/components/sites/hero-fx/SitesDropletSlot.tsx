@@ -95,11 +95,22 @@ export function SitesDropletSlot() {
             if (isLite()) showStill(host);
             setMode(isLite() ? "still" : "live");
           }}
+          onLost={() => {
+            // its graphics context taken back by the browser (Safari under memory pressure): the still
+            showStill(host);
+            setMode("still");
+          }}
         />
       )}
       {host && mode === "live" && (
         <WebGLGate onSkip={() => showStill(host)}>
-          <SitesDroplet host={host} />
+          <SitesDroplet
+            host={host}
+            onLost={() => {
+              showStill(host);
+              setMode("still");
+            }}
+          />
         </WebGLGate>
       )}
     </>

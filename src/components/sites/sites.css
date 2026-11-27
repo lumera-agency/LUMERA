@@ -329,6 +329,13 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-ruler li.is-on::before { background: var(--signal); box-shadow: 0 0 0 3px rgba(218, 255, 2, 0.18); }
 .st-dev__badge { position: absolute; left: 0; bottom: 0; display: inline-flex; align-items: baseline; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: var(--fs-small); color: var(--on-accent); background: var(--ember); }
 .st-dev__badge b { font-size: 1.15rem; font-weight: 500; }
+/* Лендінг+'s pages (27 Nov 2026): the sample's tabs under the frames, the open one in ember (where the badge was) */
+.st-dev__pages { position: absolute; left: 0; bottom: 0; z-index: 6; display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(15, 14, 13, 0.88); box-shadow: 0 0 0 1px rgba(239, 235, 227, 0.16), 0 18px 34px -20px #000; }
+.st-dev__pages b { padding: 8px 13px; border-radius: 999px; font-size: var(--fs-small); font-weight: 500; line-height: 1; color: rgba(239, 235, 227, 0.74); white-space: nowrap; cursor: pointer; transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out); -webkit-tap-highlight-color: transparent; }
+.st-dev__pages b.is-on { background: var(--ember); color: var(--on-accent); }
+@media (hover: hover) and (pointer: fine) { .st-dev__pages b:not(.is-on):hover { background: rgba(239, 235, 227, 0.1); color: #efebe3; } }
+/* (a step of air between the window and its tabs; the phone frame keeps its foot on the same line) */
+.st-dev--plus { padding-bottom: 60px; }
 /* the 5–7 pages: four windows fanned in depth and one more for «1–3 на вибір» */
 .st-fan { position: relative; height: 470px; perspective: 1400px; }
 .st-fan__p { position: absolute; left: calc(var(--i) * 13%); top: calc(var(--i) * 7.5%); width: 52%; margin: 0; border-radius: 12px; overflow: hidden; background: #161514; box-shadow: 0 0 0 1px rgba(239, 235, 227, 0.12), 0 40px 60px -30px #000; transform: rotateY(-16deg) rotateX(4deg); transform-origin: 0 50%; transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out); }
@@ -352,6 +359,8 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
 .st-mk-wait .st-mk { background-size: 0% 58%; }
 .st-mk-run .st-mk { animation: st-mk-in 0.8s var(--ease-out) 0.55s forwards; }
 @keyframes st-mk-in { to { background-size: 100% 58%; } }
+/* how to order, the form's first line (as the ads page's .rk-order) */
+.st-order { margin: 0; font-size: var(--fs-body-s); font-weight: 300; line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
 .st-fmts__end { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 32px; margin-top: var(--rhythm-s); }
 .st-fmts__note { margin: 0; font-size: var(--fs-body-s); font-weight: 300; color: var(--ink-dark-soft); }
 .st-fmts__note .link { padding-block: 12px; color: var(--ember-deep); }
@@ -527,6 +536,10 @@ main[data-ai-page="sites"] .ai-hero--center .ai-hero__actions { margin-top: clam
   .st-ruler { display: none; }
   .st-dev__phone { width: 28%; right: -2px; }
   .st-dev__badge { bottom: 0; padding: 6px 12px; font-size: 12px; }
+  .st-dev__pages b { padding: 8px 10px; font-size: 12px; }
+  /* (the tabs under the phone, not over it: the phone rises above them) */
+  .st-dev--plus { padding-bottom: 80px; }
+  .st-dev--plus .st-dev__phone { bottom: 48px; }
   .st-fan { height: 300px; }
   .st-fan__chip { position: static; display: flex; width: max-content; margin: 0 0 12px auto; }
   .st-dev__desk .st-dev__bar span:not(.ai-sample) { display: none; }
@@ -1118,33 +1131,48 @@ html:not(.motion) .faq__item::after { transition: none; }
 html:not(.motion) :is(.st-bd__trk b, .st-hw::after, .st-hseg::before, .st-hw__tick, .st-hw, .st-hw__n) { transition: none; }
 
 /* ==========================================================================
-   phones (round 12, the owner: «облегчить блок 4 на телефоне»). The board is not pinned any more: it sits under the
-   heading and goes through the five states once by itself when it is on screen (the ribbon's numbers show a state on
-   a tap). Each stage keeps its name, its result and the client's part; its list folds under a button with the list's
-   own heading (js/sites-fx-how.js sets data-fold). Computers and tablets stay as they are
+   up to 860 px (the owner, 26 Nov 2026: «Сократить путь до формы»; round 12 folded the lists on phones before): the
+   board is not shown, the time is one line (the format named after the label: block 3's, no switch), and the stages are
+   an accordion. Each keeps its number, its name and its result; a tap on that head opens the client's part, the note and
+   the list (the first one open, fx-how.js). The button covers the head and the panel lies over the rest, so the whole
+   head is the target and a tap on the panel's words reads them. Computers and tablets keep the board and the rows
    ========================================================================== */
-.st-hw__more { display: none; }
+.st-hw__tg { display: none; }
 .st-hw-time__f { display: none; }
-@media (max-width: 600px) {
-  /* (the phone audit, 15 Oct) the time follows block 3's format, named after the label: no third format switch; the
-     closing note repeats stage 1 and the form («30 хвилин», «відповімо протягом робочого дня») */
-  .st-hseg { display: none; }
-  .st-hw-time__f { display: inline; }
+@media (max-width: 860px) {
+  #how .st-bd { display: none; }
+  .st-hseg,
+  .st-hw-time__note,
   .st-hw-end__note { display: none; }
-  .st-bd { position: relative; top: auto; z-index: auto; }
-  .st-bd__seg { pointer-events: auto; min-height: 44px; padding: 8px 0 4px; }
-  .st-hw-list[data-fold] .st-hw__dl { display: none; margin-top: 12px; }
-  .st-hw-list[data-fold] .st-hw.is-open .st-hw__dl { display: block; }
-  .st-hw-list[data-fold] .st-hw__h { display: none; }
-  .st-hw-list[data-fold] .st-hw__more { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin: 8px 0 0; padding: 0 4px 0 0; border: 0; font: 400 11px/1.3 var(--font-mono); letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-dark); background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .st-hw__more i { position: relative; flex: none; width: 24px; height: 24px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transition: transform 0.35s var(--ease-out), background-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out); }
-  .st-hw__more i::before,
-  .st-hw__more i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 1.5px; margin: -0.75px 0 0 -5px; border-radius: 1px; background: currentColor; }
-  .st-hw__more i::after { transform: rotate(90deg); }
-  .st-hw__more[aria-expanded="true"] i { color: var(--ivory); background: var(--ink-dark); box-shadow: none; transform: rotate(45deg); }
-  .st-hw__more:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; border-radius: 6px; }
+  /* the time as one line under the heading: «ВІД ПЕРШОЇ РОЗМОВИ ДО ЗАПУСКУ · ЛЕНДІНГ», then «≈ 1–2 тижні» */
+  #how .st-hw-time { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; order: 2; margin-top: 0; }
+  #how .st-hw-time .st-hw-time__row { order: 1; display: block; margin: 0; }
+  #how .st-hw-time__br { order: 2; display: block; height: auto; margin: 0; border: 0; }
+  #how .st-hw-time__vw { position: static; display: inline-flex; flex-direction: row; align-items: baseline; gap: 8px; padding: 0; background: none; }
+  #how .st-hw-time__v { font-size: 1.125rem; }
+  /* (the format keeps its dot: «· ЛЕНДІНГ» wraps whole, never a dot left at a line's end) */
+  .st-hw-time__f { display: inline; white-space: nowrap; }
+  /* (#how: the page's «main.ai ol { margin: 0 }» outranks a bare class; the list never got its room under the time) */
+  #how .st-hw-list { margin-top: 26px; }
+  .st-hw { padding: 22px 0 24px; }
+  .st-hw__t,
+  .st-hw__r { padding-right: 44px; }
+  .st-hw__r { margin-top: 8px; }
+  .st-hw__tg { display: block; position: absolute; inset: 0; z-index: 0; width: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .st-hw__tg:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: -2px; border-radius: 10px; }
+  /* the sign at the head's right: a plus in a ring, turned into a cross on ink when open (as the questions') */
+  .st-hw__tg i { position: absolute; right: 2px; top: 20px; width: 28px; height: 28px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(15, 14, 13, 0.3); transition: transform 0.35s var(--ease-out), background-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out); }
+  .st-hw__tg i::before,
+  .st-hw__tg i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 11px; height: 1.5px; margin: -0.75px 0 0 -5.5px; border-radius: 1px; background: var(--ink-dark); transition: background-color 0.3s var(--ease-out); }
+  .st-hw__tg i::after { transform: rotate(90deg); }
+  .st-hw__tg[aria-expanded="true"] i { background: var(--ink-dark); box-shadow: none; transform: rotate(45deg); }
+  .st-hw__tg[aria-expanded="true"] i::before,
+  .st-hw__tg[aria-expanded="true"] i::after { background: var(--ivory, #fcfcfa); }
+  .st-hw__p { position: relative; z-index: 1; }
+  .st-hw:not(.is-open) .st-hw__p { display: none; }
+  .st-hw__dl { margin-top: 16px; }
+  .st-hw__h { margin-bottom: 10px; }
 }
-
 /* ==========================================================================
    a phone on its side (601–860 px wide, a low screen; QA 19 Oct, S-01): the pinned strip was taller than the screen
    and covered all five stages. Here the board sits under the heading as on a phone held upright, sized so it fits the
@@ -1198,7 +1226,6 @@ main[data-ai-page="sites"] .ai-pick::after { inset: calc(50% - 22px) 0; }
   .st-hw-time__calc,
   .st-bd__sl,
   main[data-ai-page="sites"] .ai-pick { font-size: 12px; }
-  .st-hw-list[data-fold] .st-hw__more { font-size: 12px; }
 }
 
 /* S-16: the four format cards are one height (the tallest one's, sites-runtime.js evenStages), so another format never
@@ -1206,3 +1233,45 @@ main[data-ai-page="sites"] .ai-pick::after { inset: calc(50% - 22px) 0; }
 @media (max-width: 960px) { .st-stage { align-content: start; } }
 /* (the moment of the measure: no picture starts loading, the phone still gets only the open format's stills) */
 .st-measure .st-stage :is(*, *::before, *::after) { background-image: none !important; }
+
+/* ==========================================================================
+   the owner's round of 26 Nov 2026 (the request in the calculator, the packages)
+   ========================================================================== */
+/* the request in the sum card: the field as the page's form has it, the card's own button, then the sum to Telegram
+   and «Обговорити проєкт» as a quiet link to the form at the foot of the page */
+.st-lead { display: grid; gap: 0.5rem; margin-top: 0; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+.st-lead__l { font-size: var(--fs-small); color: var(--ink-soft); }
+/* (16 px at least: a phone zooms into a smaller field) */
+.st-lead__in { width: 100%; min-height: 3.25rem; padding: 0.875rem 1rem; border: 1px solid var(--border); border-radius: 0.75rem; background: rgba(255, 255, 255, 0.03); color: var(--ink); font: inherit; font-size: max(1rem, 16px); font-weight: 300; transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast); }
+@media (hover: hover) { .st-lead__in:hover { border-color: rgba(246, 246, 243, 0.2); } }
+.st-lead__in:focus { outline: none; border-color: rgba(246, 246, 243, 0.55); background: rgba(255, 255, 255, 0.05); box-shadow: 0 0 0 0.1875rem rgba(246, 246, 243, 0.08); }
+.st-lead__in[aria-invalid="true"] { border-color: var(--err); }
+.st-lead__err,
+.st-lead__fail { margin: 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--err); }
+.st-sum .st-lead .ai-calc__send { margin-top: 0.25rem; }
+.st-lead__note { margin: 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-mute); text-wrap: pretty; }
+/* (the promise and the reassurance read as one line of thought, never cut inside «ні до чого не зобов’язує»; the data line
+   under them, a line of its own) */
+.st-lead__say { display: block; text-wrap: balance; }
+.st-lead__priv { display: block; }
+.st-lead__done { display: flex; align-items: flex-start; gap: 0.625rem; margin: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink); }
+.st-lead__done[hidden] { display: none; }
+.st-lead__done .check { flex: none; width: 1.375rem; height: 1.375rem; margin-top: 0.05em; }
+.st-lead__done .check svg { width: 0.8125rem; height: 0.8125rem; }
+.st-lead :is(.st-lead__fail, .st-lead__done):focus { outline: none; }
+/* sent: the thanks takes the form's place */
+.st-lead.is-sent > :not([data-lead-done]) { display: none; }
+/* (the request and its note are one group; Telegram and «Обговорити проєкт» the quieter ways after a clear step) */
+.st-sum .tg-quote { margin-top: 1.25rem; }
+.st-sum__talk { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.75rem; margin-top: 0.375rem; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-decoration-color: rgb(246 246 243 / 0.35); text-underline-offset: 0.25em; -webkit-tap-highlight-color: transparent; }
+.st-sum__talk svg { flex: none; width: 0.875rem; height: 0.875rem; }
+@media (hover: hover) { .st-sum__talk:hover { text-decoration-color: currentColor; } }
+.st-sum__talk:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 6px; }
+.st-sum .st-sum__talk + .ai-calc__fine { margin-top: 0; text-align: center; }
+
+/* «Що входить у ціну»: the AI search's note under its line, in small type (the panels and the calculator) */
+.st-inc__note { display: block; margin-top: 0.25rem; font-size: var(--fs-caption); font-weight: 300; line-height: 1.45; color: var(--ink-mute); text-wrap: pretty; }
+/* Лендінг+ under the calculator's sample: a shortened sample, its three inner pages not shown */
+.st-pv__more { margin: 10px 0 0; font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-mute); }
+.st-pv__more[hidden] { display: none; }
+

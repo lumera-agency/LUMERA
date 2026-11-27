@@ -21,3 +21,7 @@ are cropped out or retouched; no faces, no signs.
 
 Not used: `ayIDFHEA-Nk` (the kitchen: the real studio's name is on its wall), `2-aK4pHxlmA` and `I5Zwil2LIRQ` (excluded by the art
 director: a door sign, a posters wall).
+
+Since 26 Nov 2026 the Лендінг sample («Фуксія», js/sites-pv-n-landing.js, round 11) also shows set-1 … set-6, hall-south,
+hall-graphite, hall-attic, kit-backdrops, kit-light and meet (its blocks «Для яких зйомок», «У ціні оренди», «Кадри гостей»,
+«Хто вас зустріне»). Same files, same licence.

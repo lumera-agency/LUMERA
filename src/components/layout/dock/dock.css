@@ -58,6 +58,9 @@
   /* (the AI pages, the cases and the sites page float their request bar above the edge with their own, stronger rules:
      body:has(main[data-ai-page]); this one outranks them) */
   html.dock-on body:has(main[data-ai-page]) .ai-sticky { bottom: calc(var(--dock-h) + 0.625rem); }
+  /* the old request button at the foot goes on phones (the owner, 26 Nov 2026): the dock stands in for it, the topbar
+     keeps «Обговорити» (and while a field is typed in, with the dock away, it stays away too) */
+  html body .ai-sticky { display: none; }
   html.dock-on .st-sumbar { bottom: calc(var(--dock-h) + 0.625rem); }
   html.dock-on .cfg-bar { bottom: calc(var(--dock-h) + 0.75rem); }
 }

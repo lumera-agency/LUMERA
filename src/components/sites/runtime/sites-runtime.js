@@ -13,7 +13,7 @@
  */
 import * as ENGINE from '@/components/sections/pricing/configurator/engine.js';
 import { STRINGS } from '@/components/sections/pricing/configurator/strings.js';
-import { leadForm, goToForm as glideToForm } from '@/components/sections/contact/lead-form.js';
+import { leadForm, goToForm as glideToForm, sendLead, contactOk } from '@/components/sections/contact/lead-form.js';
 import { restorePlace, restoreScroll } from '@/lib/boot';
 import { getLenis } from '@/lib/scroll';
 import { SPRING, slideIn, rollNumber } from './sites-rb.js';
@@ -62,7 +62,8 @@ const stringsReady = Promise.resolve(STRINGS);
 const FORMATS = ['landing', 'landingPlus', 'corporate', 'ecommerce'];
 // Лендінг+: the owner's OK, 14 Oct 2026 ($700). In engine.js since 17 Oct (the main page's configurator has it);
 // this stays the fallback, like FALLBACK below
-const LANDING_PLUS = { price: 700, weeks: [2, 3], design: [300, 1], motion: [200, 0.5], lang: [100, 0] };
+// (the owner, 27 Nov 2026: «лендинг плюс тоже примерно неделю»: 1 week, as the landing)
+const LANDING_PLUS = { price: 700, weeks: [1, 1], design: [300, 1], motion: [200, 0.5], lang: [100, 0] };
 // engine.js as of 14 Oct 2026, used only if it can't be read: [price, weeks]
 const FALLBACK = {
   landing: { price: 500, weeks: [1, 2], design: [200, 1], motion: [150, 0.5], lang: [100, 0] },
@@ -143,6 +144,7 @@ async function boot() {
   initScenes();
   initDialogs();
   initCalc();
+  initCalcLead();
   initHow();
   initTabs();
   initSumbar();
@@ -599,6 +601,55 @@ function sliceStill(img) {
   img.after(col);
 }
 
+/* ---------- block 2 · Лендінг+'s pages on its stage (the owner, 27 Nov 2026: the landing and 2–3 separate pages; the
+   sample shows three): a tab under the frames puts that page's stills in them (decoded first, sliced as the others),
+   its sheets on the ruler, and plays the scroll again ---------- */
+function initStagePages(room) {
+  const art = $('.st-stage[data-fmt="landingPlus"] .st-stage__art', room);
+  const bar = art && $('[data-ptabs]', art);
+  if (!bar) return;
+  const desk = $('.st-dev__desk .st-dev__img', art), phoneImg = $('.st-dev__phone .st-dev__img', art);
+  const ruler = $('.st-ruler', art);
+  const words = (k) => t(k, '').split('·').map((w) => w.trim()).filter(Boolean);
+  let on = 0, tok = 0;
+  bar.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-pi]');
+    if (!b) return;
+    const i = Number(b.dataset.pi);
+    if (i === on) return;
+    on = i;
+    const my = ++tok;
+    $$('[data-pi]', bar).forEach((x) => x.classList.toggle('is-on', x === b));
+    const format = await stillFormat;
+    const pick = [[desk, t(i ? `sites.img.landingPlus.p${i}` : 'sites.img.landingPlus', ''), 900], [phoneImg, t(`sites.img.landingPlus.${i ? `p${i}m` : 'm'}`, ''), 300]];
+    const ready = await Promise.all(pick.map(async ([img, base, w]) => {
+      if (!img || !base) return null;
+      // (a phone, or a tablet up to 860 px, takes the 600-px copy of the computer's still, as at the start)
+      const src = (narrowMQ.matches && w === 900 ? base.replace(/\.webp$/, '-s.webp') : base).replace(/\.webp$/, `.${format}`);
+      const pre = new Image();
+      pre.src = src;
+      await pre.decode().catch(() => {});
+      return [img, src, w, pre.naturalWidth ? Math.round((w * pre.naturalHeight) / pre.naturalWidth) : 0];
+    }));
+    if (my !== tok) return; // another tab since
+    for (const x of ready) {
+      if (!x) continue;
+      const [img, src, w, h] = x;
+      img.src = src;
+      if (h) { img.setAttribute('width', String(w)); img.setAttribute('height', String(h)); }
+      const col = img.nextElementSibling;
+      if (col?.classList.contains('st-dev__col')) col.remove();
+      img.classList.remove('is-src');
+      sliceStill(img);
+    }
+    if (ruler) ruler.replaceChildren(...words(i ? `sites.pv.lp.p${i}` : 'sites.pv.lp.n.all').map((w) => Object.assign(document.createElement('li'), { textContent: w })));
+    const scene = scenes.find((s) => s.el === art);
+    if (!scene) return;
+    finish(scene);
+    setTimeout(() => request(scene, true), 80);
+  });
+}
+
 function playDev(scene) {
   const art = scene.el;
   const deskImg = $('.st-dev__desk .st-dev__img', art);
@@ -755,6 +806,13 @@ const state = { format: 'landing', design: 'essential', variant: 1, motion: fals
 let renderCalc = () => {};
 let syncTabs = () => {};
 let syncHow = () => {};
+/** what was counted, for a request: one line, and the lines with their prices (initCalc sets it) */
+let calcPlan = () => ({ summary: '', details: '' });
+/** a line of «Що входить у ціну»: its text, or its text and the small note under it (the AI search's) */
+const incLine = (li) => {
+  const note = $('.st-inc__note', li);
+  return note ? [li.firstChild.textContent.trim(), note.textContent.trim()] : li.textContent.trim();
+};
 
 function setFormat(f) {
   if (!FORMATS.includes(f)) return;
@@ -794,7 +852,7 @@ function initCalc() {
     // (owner, 15 Oct: one design level only; the samples are the design the price buys)
     const extras = [];
     const lines = [`${fName} — ${money(row.price)}`];
-    const groups = [[`${fName} · ${money(row.price)}`, $$(`[data-inc="${state.format}"] li`).map((li) => li.textContent.trim())]];
+    const groups = [[`${fName} · ${money(row.price)}`, $$(`[data-inc="${state.format}"] > li`).map(incLine)]];
     if (state.motion) {
       extras.push(mark('motion', 'sites.mark.motion'));
       const n = name('advancedMotion', 'sites.o.motion');
@@ -844,8 +902,8 @@ function initCalc() {
       secondLanguage: state.second, growth: 'none', adsManagement: false, automation: 'none',
     });
     renderMap();
-    // the sum
-    out.name.textContent = r.title;
+    // the sum («Лендінг · дизайн під ваш бренд»: the owner, 26 Nov 2026, for every format)
+    out.name.textContent = `${r.title} · ${t('sites.calc.design', 'дизайн під ваш бренд')}`;
     out.extra.hidden = !r.extras.length;
     out.extra.textContent = r.extras.join(', ');
     const anims = rollNumber(out.price, r.priceText, { roll: roll && motion });
@@ -860,7 +918,12 @@ function initCalc() {
       const box2 = document.createElement('div');
       const h = Object.assign(document.createElement('p'), { className: 'ai-calc__inc-h', textContent: title });
       const ul = document.createElement('ul');
-      ul.append(...items.map((line) => Object.assign(document.createElement('li'), { textContent: line })));
+      ul.append(...items.map((line) => {
+        const li = document.createElement('li');
+        if (Array.isArray(line)) li.append(line[0], Object.assign(document.createElement('small'), { className: 'st-inc__note', textContent: line[1] }));
+        else li.textContent = line;
+        return li;
+      }));
       box2.append(h, ul);
       return box2;
     }));
@@ -876,6 +939,8 @@ function initCalc() {
 
   form.addEventListener('change', (e) => {
     const input = e.target;
+    // (the request's field in the sum card changes nothing in the sum)
+    if (input.closest('[data-calc-lead]')) return;
     if (input.name === 'calc-format') {
       state.format = input.value;
       syncTabs();
@@ -898,13 +963,84 @@ function initCalc() {
 
   renderCalc(false);
 
-  out.send.addEventListener('click', (e) => {
+  calcPlan = () => {
     const r = renderCalc(false);
-    const summary = [r.title, r.extras.join(', '), `${r.priceText} ${text('sites.once', 'разово')}`, r.weeks].filter(Boolean).join(' · ');
+    return {
+      summary: [r.title, r.extras.join(', '), `${r.priceText} ${text('sites.once', 'разово')}`, r.weeks].filter(Boolean).join(' · '),
+      details: r.lines.join('\n'),
+    };
+  };
+  // «Обговорити проєкт» (a link now, under the request): to the form at the foot of the page, the sum in its plan box
+  out.send.addEventListener('click', (e) => {
+    e.preventDefault();
+    const { summary, details } = calcPlan();
     const pick = lead.picks?.find((p) => p.dataset.pick === state.format);
     pressPick(pick || null);
-    setAttached(summary, r.lines.join('\n'));
+    setAttached(summary, details);
     goToForm(byKeys(e));
+  });
+}
+
+/* ---------- 3 · the request in the sum card (the owner, 26 Nov 2026: «Заявка прямо в калькуляторі»): a phone or a
+   Telegram name, checked as the form checks its contact; sent through the form's own handler (lead-form.js sendLead)
+   to the same chat, with the form's hidden fields: the language, the task, what was counted and its lines, the bots'
+   trap; GA4 counts it as lead_form, form_name calculator. The thanks takes the form's place ---------- */
+function initCalcLead() {
+  const box = $('[data-calc-lead]');
+  if (!box) return;
+  const field = box.elements.contact;
+  const err = $('.st-lead__err', box);
+  const fail = $('[data-lead-fail]', box);
+  const failServer = $('[data-lead-fail-server]', box);
+  const done = $('[data-lead-done]', box);
+  const submit = $('button[type="submit"]', box);
+  let touched = false;
+  const mark = () => {
+    const ok = contactOk(field.value);
+    err.hidden = ok;
+    if (ok) field.removeAttribute('aria-invalid');
+    else field.setAttribute('aria-invalid', 'true');
+    return ok;
+  };
+  field.addEventListener('blur', () => {
+    if (field.value.trim()) touched = true;
+    if (touched) mark();
+  });
+  field.addEventListener('input', () => {
+    if (touched && contactOk(field.value)) mark();
+  });
+  box.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    touched = true;
+    if (!mark()) {
+      field.focus();
+      return;
+    }
+    if (submit.disabled) return; // already on its way: a second tap doesn't send it twice
+    const { summary, details } = calcPlan();
+    box.elements.lang.value = document.documentElement.lang === 'ru' ? 'ru' : 'uk';
+    box.elements.package.value = summary;
+    box.elements.details.value = details;
+    fail.hidden = true;
+    failServer.hidden = true;
+    submit.disabled = true;
+    submit.setAttribute('aria-busy', 'true');
+    try {
+      await sendLead(box, !motion);
+      // a lead the server took counts in Google Analytics (production only); a bot's (the hidden fax filled) nowhere
+      if (!box.elements.fax.value) window.ecloTrackLead?.('calculator');
+      box.classList.add('is-sent');
+      done.hidden = false;
+      done.focus();
+    } catch (error) {
+      console.warn('[calculator] the request was not sent.', error);
+      const message = error?.server ? failServer : fail;
+      message.hidden = false;
+      message.focus();
+    } finally {
+      submit.disabled = false;
+      submit.removeAttribute('aria-busy');
+    }
   });
 }
 
@@ -919,9 +1055,11 @@ function renderMap() {
   const words = (k) => t(k, '').split('·').map((w) => w.trim()).filter(Boolean);
   let items;
   if (state.format === 'landingPlus' && t(`sites.pv.lp.${d}.all`, '')) {
-    // a Лендінг+ with its own design: its ten blocks in order, the extras at the indexes in sites.pv.lp.<d>.add
-    const add = t(`sites.pv.lp.${d}.add`, '').split(',').map(Number);
+    // a Лендінг+ with its own design: its ten blocks in order, the extras at the indexes in sites.pv.lp.<d>.add (none
+    // since 26 Nov 2026: a landing has up to ten blocks itself); then its own pages (27 Nov 2026), marked as its extras
+    const add = t(`sites.pv.lp.${d}.add`, '').split(',').filter(Boolean).map(Number);
     items = words(`sites.pv.lp.${d}.all`).map((w, i) => [w, add.includes(i)]);
+    items.push(...words(`sites.pv.lp.${d}.pages`).map((w) => [w, true]));
   } else {
     const base = words(`sites.pv.${key}`);
     const extra = state.format === 'landingPlus' ? words(`sites.pv.lp.${d}`) : [];
@@ -936,6 +1074,9 @@ function renderMap() {
     return li;
   }));
   count.textContent = t(`sites.pv.n.${state.format === 'landingPlus' ? `lp.${d}` : key}`, '');
+  // Лендінг+: its pages are switched by the tabs over the sample, said under its list
+  const more = $('[data-pv-more]');
+  if (more) more.hidden = state.format !== 'landingPlus';
 }
 
 /* ---------- 3 · the sample sites: the main page's configurator samples (js/sites-pv.js and its modules, copied):
@@ -1022,12 +1163,13 @@ function initTabs() {
   for (const ol of $$('[data-ruler]', room)) {
     const plus = ol.dataset.ruler === 'landingPlus';
     const words = (k) => t(k, '').split('·').map((w) => w.trim()).filter(Boolean);
-    const add = t('sites.pv.lp.n.add', '').split(',').map(Number);
+    const add = t('sites.pv.lp.n.add', '').split(',').filter(Boolean).map(Number);
     const corp = ol.dataset.ruler === 'corporate';
     const items = plus ? words('sites.pv.lp.n.all').map((w, i) => [w, add.includes(i)]) : words(corp ? 'sites.pv.c' : 'sites.pv.l.n').map((w) => [w, false]);
     ol.replaceChildren(...items.map(([w, add]) => Object.assign(document.createElement('li'), { textContent: w, className: add ? 'is-add' : '' })));
   }
   evenStages(room);
+  initStagePages(room);
   let shown = state.format;
   glide = OG ? null : mountGlide($('.st-rail', room));
   let placed = false;
@@ -1222,6 +1364,15 @@ function initSumbar() {
     bar.setAttribute('aria-hidden', String(!on));
     bar.tabIndex = on ? 0 : -1;
   };
+  // «До розрахунку» leads to the request in the sum card (the owner, 26 Nov 2026), the sum above it in sight
+  bar.addEventListener('click', (e) => {
+    const box = $('[data-calc-lead]');
+    if (!box) return;
+    e.preventDefault();
+    box.scrollIntoView({ behavior: motion ? 'smooth' : 'instant', block: 'center' });
+    // (from the keyboard the field takes the focus; a tap never opens the phone's keyboard by itself)
+    if (byKeys(e)) setTimeout(() => box.elements.contact.focus({ preventScroll: true }), motion ? 500 : 0);
+  });
   // (the top band under the header does not count: block 3's last pixels there are not «in block 3»)
   new IntersectionObserver((entries) => { inBlock = entries[entries.length - 1].isIntersecting; update(); }, { rootMargin: '-15% 0px -35% 0px' }).observe(block);
   new IntersectionObserver((entries) => { cardSeen = entries[entries.length - 1].isIntersecting; update(); }, { threshold: 0.15 }).observe(card);

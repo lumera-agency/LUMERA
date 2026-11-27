@@ -17,7 +17,8 @@ import { TitleFx } from "@/components/sites/hero-fx/TitleFx";
  * the formats' lead (a tablet), the prices and the button, the sample site under them. No numbers on the labels or the
  * prices (the owner, 5 Nov). The sample site is assembled block by block once (scene «build»). On a computer block 2
  * slides over the pinned first screen again (the owner, 10 Nov 2026: data-cover, sites-runtime initCover); on a phone
- * it scrolls in after it. Rules: sites-hero.css.
+ * it scrolls in after it. Under the H1 one line, the offer (the owner, 26 Nov 2026); on a phone the first screen keeps
+ * the contact dock's room at its foot (the dock is on from the start here). Rules: sites-hero.css.
  */
 const FORMATS = [
   { key: "landing", name: "hg.f1" },
@@ -50,6 +51,9 @@ export async function SitesHero({ facts: F }: { facts: SitesFacts }) {
             <Title raw={t.raw("hero.title") as string} />
             <TitleFx />
           </h1>
+          {/* the line under the H1 (the owner, 26 Nov 2026): the offer in one sentence. Upright under «САЙТІВ.», on the
+              computer's sheet in the right column above the prices (sites-hero.css) */}
+          <p className="st-hg__sub">{t("hero.sub")}</p>
           {/* the poster's corners (sites-hero.css): on a computer each a block of its own, upright their parts join the column */}
           <div className="st-hg__corner st-hg__corner--tl">
             {label(t("nav.formats"), "lead")}

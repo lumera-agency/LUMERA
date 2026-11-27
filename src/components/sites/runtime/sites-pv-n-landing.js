@@ -11,6 +11,18 @@
  * The six blocks (pd.md §1): Перший екран · Зали й ціни · Чому нам вірять · Як забронювати · Питання · Заявка й контакти
  * (the footer with the wordmark closes the last one).
  *
+ * Round 11 (26 Nov 2026, the owner: a landing has up to ten blocks, its sample shows at least nine): ten blocks. Under
+ * the first screen a strip of marigold tape runs the shoot types (only while it is in the frame); then U «Для яких
+ * зйомок» (a list in the display face: the row under the pointer, or the tapped one, brings its frame, which unrolls
+ * over the last), the halls, K «У ціні оренди» (a bento of paper tiles, two of them photos, the numbers count), the
+ * numbers and reviews, G «Кадри гостей» (white-bordered prints on a table: a mouse drags one, a tap lifts one,
+ * «Перемішати» deals them again; a phone swipes them in a row), the steps, M «Хто вас зустріне» (the hall as the host
+ * leaves it, no face or name, three ticks that draw, the studio's round stamp landing on the photo's corner), the
+ * questions, the booking. Ideas, not code: Dribbble's editorial studio pages, Awwwards (a list that shows its picture,
+ * prints to move about, a stamp), MotionSites (a bento of large numbers). The new blocks' photos are the Лендінг+
+ * series (photos/plus/CREDITS.md) beside two of this sample's own. Their keys are letters (u, k, g, m), so the links'
+ * numbers (data-to) still name the same six blocks.
+ *
  * Components, ported to vanilla DOM + WAAPI in our own code:
  *   React Bits (reactbits.dev, David Haz, MIT + Commons Clause, notice below): PillNav (components/pill-nav: the pill
  *   that slides between the anchors and takes the current block's paper, the hover circle), FoldText
@@ -104,6 +116,21 @@ export const object3d = true;
 // (lead, 15 Oct) phones get the 640-px copies in m/: a phone frame never shows a photo wider than that, and the
 // full-size ones decoded together outgrow a phone browser's memory
 const IMG = typeof matchMedia === 'function' && matchMedia('(max-width: 700px)').matches ? '/img/sites/photos/landing/m/' : '/img/sites/photos/landing/';
+// (round 11) the same studio's other series, the Лендінг+ sample's (Neon Wang, Unsplash License: photos/plus/CREDITS.md)
+const IMG2 = IMG.replace('/landing/', '/plus/');
+const PHONE = () => typeof matchMedia === 'function' && matchMedia('(max-width: 700px)').matches;
+// round 11 · U the shoots: each row's frame ([folder, file])
+const USES = [[IMG2, 'set-1.webp'], [IMG2, 'set-5.webp'], [IMG2, 'set-6.webp'], [IMG2, 'set-3.webp'], [IMG, 'hall-attic.webp'], [IMG2, 'set-4.webp']];
+// round 11 · K what the rent includes: each tile's paper and photo (the bento's two photo tiles)
+const KIT = [{ p: 'ch', img: [IMG2, 'kit-backdrops.webp'] }, { p: 'ch', img: [IMG2, 'kit-light.webp'] }, { p: 'fx' }, { p: 'pw' }, { p: 'mg' }, { p: 'ch2' }];
+// round 11 · G the guests' shots: the prints, and where they lie on the window's table (left %, top %, turn °): three
+// deals for «Перемішати» (a phone lays them in a row to swipe through instead: CSS)
+const PRINTS = [[IMG2, 'set-2.webp'], [IMG2, 'hall-south.webp'], [IMG, 'hall-graphite.webp'], [IMG2, 'hall-attic.webp'], [IMG2, 'hall-graphite.webp'], [IMG2, 'set-4.webp']];
+const DEALS = [
+  [[1, 8, -6], [17, 30, 4], [33, 3, -3], [49, 27, 5], [63, 6, -4], [77, 24, 7]],
+  [[4, 26, 5], [19, 2, -5], [36, 30, 3], [51, 4, -6], [66, 28, 4], [76, 2, -3]],
+  [[2, 2, 3], [20, 24, -4], [37, 8, 6], [50, 31, -3], [64, 3, 5], [78, 29, -6]],
+];
 // the rack, top to bottom, as in the hero photo: the studio's six backdrop colours. `sheet` is the paper as it hangs in
 // the hero (teal and grass a shade deeper, so white text keeps ≥ 4.5:1); `ink` the text on it
 const ROLLS = [
@@ -162,14 +189,45 @@ const T = {
   date: { uk: 'Дата', ru: 'Дата' },
   time: { uk: 'Час', ru: 'Время' },
   sent: { uk: 'Заявку надіслано', ru: 'Заявка отправлена' },
+  // the fields are empty to fill in (the owner, 27 Nov 2026: no name written in for the visitor)
+  ph: { uk: ['Ваше імʼя', '+380'], ru: ['Ваше имя', '+380'] },
   days: { uk: ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'], ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'] },
   mail: 'hello@vash-sait.ua',
+  // round 11 (the owner, 26 Nov 2026: a landing of up to ten blocks, its sample at least nine): the run of shoot types
+  // and four more blocks; facts as the studio's own (the halls, the six backdrops, the steamer, the parking)
+  run: { uk: ['Портрети', 'Предметна зйомка', 'Love story', 'Каталоги одягу', 'Відео й подкасти', 'Дитячі зйомки'], ru: ['Портреты', 'Предметная съёмка', 'Love story', 'Каталоги одежды', 'Видео и подкасты', 'Детские съёмки'] },
+  usesK: { uk: 'Для яких зйомок', ru: 'Для каких съёмок' },
+  usesH: { uk: 'Що у нас знімають найчастіше', ru: 'Что у нас снимают чаще всего' },
+  usesA: { uk: 'Напишіть, що знімаєте, і ми порадимо зал і фон.', ru: 'Напишите, что снимаете, и мы посоветуем зал и фон.' },
+  uses: {
+    uk: [['Портрети', 'Південь: денне світло з трьох вікон'], ['Предметна зйомка', 'Графіт: темні стіни й імпульсне світло'], ['Love story', 'Мансарда: скошена стеля й вікна в даху'], ['Каталоги одягу', 'Фони 6 кольорів і відпарювач'], ['Відео й подкасти', 'Стіл і світло для двох ведучих'], ['Дитячі зйомки', 'Південь: світлі фони й реквізит']],
+    ru: [['Портреты', 'Юг: дневной свет из трёх окон'], ['Предметная съёмка', 'Графит: тёмные стены и импульсный свет'], ['Love story', 'Мансарда: скошенный потолок и окна в крыше'], ['Каталоги одежды', 'Фоны 6 цветов и отпариватель'], ['Видео и подкасты', 'Стол и свет для двух ведущих'], ['Детские съёмки', 'Юг: светлые фоны и реквизит']],
+  },
+  // the halls' line beside their heading (it repeated the first screen's line before)
+  hallsA: { uk: 'Ціна за годину. У кожному залі вікна й денне світло.', ru: 'Цена за час. В каждом зале окна и дневной свет.' },
+  kitK: { uk: 'У ціні оренди', ru: 'В цене аренды' },
+  kitH: { uk: 'Без доплат за фони й світло', ru: 'Без доплат за фоны и свет' },
+  kit: {
+    uk: [['6', 'кольорів фону', 'Фуксія, жовтий, бірюзовий, зелений, білий і чорний'], ['4', 'спалахи', 'Імпульсне світло з софтбоксами й відбивачами'], ['', 'Гримерка', 'Дзеркало зі світлом і вішаки'], ['', 'Відпарювач', 'Щоб одяг у кадрі був без складок'], ['', 'Парковка', 'Біля входу в студію'], ['', 'Wi‑Fi і кава', 'Поки виставляємо світло']],
+    ru: [['6', 'цветов фона', 'Фуксия, жёлтый, бирюзовый, зелёный, белый и чёрный'], ['4', 'вспышки', 'Импульсный свет с софтбоксами и отражателями'], ['', 'Гримёрка', 'Зеркало со светом и вешалки'], ['', 'Отпариватель', 'Чтобы одежда в кадре была без складок'], ['', 'Парковка', 'У входа в студию'], ['', 'Wi‑Fi и кофе', 'Пока выставляем свет']],
+  },
+  galK: { uk: 'Кадри гостей', ru: 'Кадры гостей' },
+  galH: { uk: 'Знято в наших залах', ru: 'Снято в наших залах' },
+  mix: { uk: 'Перемішати', ru: 'Перемешать' },
+  galC: {
+    uk: ['Предмет · Графіт', 'Портрет · Південь', 'Відео · Графіт', 'Love story · Мансарда', 'Каталог · Графіт', 'Дитяча · Південь'],
+    ru: ['Предмет · Графит', 'Портрет · Юг', 'Видео · Графит', 'Love story · Мансарда', 'Каталог · Графит', 'Детская · Юг'],
+  },
+  meetK: { uk: 'На зйомці', ru: 'На съёмке' },
+  meetH: { uk: 'Вас зустріне адміністратор', ru: 'Вас встретит администратор' },
+  meetP: { uk: 'Приходьте за 15 хвилин до початку: зал і гримерка вже будуть готові.', ru: 'Приходите за 15 минут до начала: зал и гримёрка уже будут готовы.' },
+  meetL: { uk: ['Покаже реквізит і відпарювач', 'Допоможе виставити світло', 'Поміняє фон між сетами'], ru: ['Покажет реквизит и отпариватель', 'Поможет выставить свет', 'Поменяет фон между сетами'] },
+  stamp: { uk: 'з 2016 · на Подолі · фотостудія · ', ru: 'с 2016 · на Подоле · фотостудия · ' },
 };
 const SLOTS = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
 // the mock availability: busy slots per day of the strip (nothing is promised)
 const BUSY = [[1, 4], [0, 3], [2], [1, 5], [0, 2, 4], [3], [1]];
 
-const pad = (n) => String(n).padStart(2, '0');
 const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path pathLength="1" d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m12 2.8 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 16.8l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>';
@@ -202,7 +260,7 @@ export function build(H, c, data, e, opts = {}) {
      left the frame the header tightens (21st.dev Truncating Navbar's idea, Maxim Bortnikov, MIT): the rack rolls up and
      a hairline in the current block's paper runs along the bar ---------- */
   const navE = e ? T.nav.en : null;
-  const nav = T.nav[L].map((x, i) => `<span class="fx-nav__i${i ? '' : ' is-on'}" data-go="${i}"><i class="fx-nav__hc" aria-hidden="true"></i><span class="fx-nav__t"><small class="fx-nav__no">${pad(i + 1)}</small>${lx(x, navE?.[i])}</span></span>`).join('');
+  const nav = T.nav[L].map((x, i) => `<span class="fx-nav__i${i ? '' : ' is-on'}" data-go="${i}"><i class="fx-nav__hc" aria-hidden="true"></i><span class="fx-nav__t">${lx(x, navE?.[i])}</span></span>`).join('');
   const rack = ROLLS.map((r, i) => `<i class="fx-roll${r.k === 'fx' ? ' is-on' : ''}" data-roll="${r.k}" style="--c:${r.c}" title="${esc(T.rolls[L][i])}"></i>`).join('');
   const lockup = `<i class="fx-logo__disc">${IRIS('fx-iris fx-logo__m')}</i><span class="fx-logo__w"><b>${esc(c.brand)}</b><small>${esc(s.studioLabel || '')} · ${esc(s.meta?.[1] || '')}</small></span>`;
   const header = `<header class="pv-hdr fx-hdr" data-hdr data-paper="fx">
@@ -216,7 +274,7 @@ export function build(H, c, data, e, opts = {}) {
     </header>`;
   // the phone's full-screen menu: a charcoal sheet rolls down with the anchors
   const menu = `<div class="fx-menu" data-menu aria-hidden="true"><i class="fx-menu__pre" data-c="mg"></i><i class="fx-menu__pre" data-c="fx"></i><i class="fx-menu__sheet"></i>
-      <div class="fx-menu__in">${T.nav[L].map((x, i) => `<span class="fx-menu__i" data-go="${i}"><small>${pad(i + 1)}</small>${lx(x, navE?.[i])}</span>`).join('')}
+      <div class="fx-menu__in">${T.nav[L].map((x, i) => `<span class="fx-menu__i" data-go="${i}">${lx(x, navE?.[i])}</span>`).join('')}
         ${fb(esc(s.btn), 'fx-menu__cta', 'data-to="5"')}</div></div>`;
 
   /* ---------- 01 · the first screen ---------- */
@@ -244,13 +302,13 @@ export function build(H, c, data, e, opts = {}) {
   const inPrice = String(s.sub || '').replace(/^[^.]*\.\s+/, '');
   const halls = `<section class="fx-blk fx-halls" data-blk="1" data-paper="pw" data-nav="0">
       <i class="fx-sheet" aria-hidden="true"></i>
-      <div class="fx-head"><span class="fx-kick">${esc(s.servicesKicker)}</span><h2 class="fx-h2" data-fold>${fw(s.servicesTitle)}</h2><p class="fx-aside">${esc(inPrice)}</p></div>
+      <div class="fx-head"><span class="fx-kick">${esc(s.servicesKicker)}</span><h2 class="fx-h2" data-fold>${fw(s.servicesTitle)}</h2><p class="fx-aside">${esc(T.hallsA[L] || inPrice)}</p></div>
       <div class="fx-acc" data-acc>${s.halls.slice(0, 3).map(([name, area, p], i) => {
         const [n, unit] = price(p);
         const d = H.noArea ? H.noArea(s.services[i]?.[1] || '') : (s.services[i]?.[1] || '');
         return `<article class="fx-hall${i ? '' : ' is-on'}" data-hall="${i}" data-p="${HALL[i].p}">
-          <span class="fx-hall__tab"><i class="fx-hall__roll" aria-hidden="true"></i><span class="fx-hall__n">${pad(i + 1)}</span><b class="fx-hall__name" aria-label="${esc(name)}">${shutter(name)}</b><span class="fx-hall__area">${esc(area)}</span></span>
-          <span class="fx-hall__stage"><b class="fx-hall__big" aria-hidden="true">${pad(i + 1)}</b><span class="fx-hall__ph"><img src="${IMG}${HALL[i].img}" alt="" loading="lazy" decoding="async"><i class="fx-glare" aria-hidden="true"></i></span></span>
+          <span class="fx-hall__tab"><i class="fx-hall__roll" aria-hidden="true"></i><b class="fx-hall__name" aria-label="${esc(name)}">${shutter(name)}</b><span class="fx-hall__area">${esc(area)}</span></span>
+          <span class="fx-hall__stage"><span class="fx-hall__ph"><img src="${IMG}${HALL[i].img}" alt="" loading="lazy" decoding="async"><i class="fx-glare" aria-hidden="true"></i></span></span>
           <span class="fx-hall__info"><span class="fx-hall__d">${esc(d)}</span>
             <span class="fx-hall__f"><span class="fx-hall__p"><b data-cnt="${esc(n)}">${esc(n)}</b><small>${esc(unit)}</small></span>${fb(esc(t('bookHall')), 'fx-hall__go', `data-to="5" data-hall-pick="${i}"`)}</span></span>
         </article>`;
@@ -263,7 +321,7 @@ export function build(H, c, data, e, opts = {}) {
   const [pre = '', year = '2016'] = String(s.meta?.[1] || '').split(/\s+/);
   const facts = [['', st[0][0], st[0][1], st[0][2]], ['', st[1][0], st[1][1], st[1][2]], ['', st[3][0], st[3][1], st[3][2]], [pre, year, '', t('year')[1]]];
   const cards = s.halls.slice(0, 3).map(([name], i) => `<figure class="fx-card" data-card="${i}" data-p="${['pw', 'fx', 'ch'][i]}"><i class="fx-card__fold" aria-hidden="true"></i><i class="fx-glare" aria-hidden="true"></i>
-        <span class="fx-card__top"><span class="fx-stars">${STAR.repeat(5)}</span><span class="fx-card__no">${pad(i + 1)} / 03</span></span>
+        <span class="fx-card__top"><span class="fx-stars">${STAR.repeat(5)}</span><span class="fx-card__no">${i + 1} / 3</span></span>
         <blockquote class="fx-card__q">${esc(t('rev'))}</blockquote>
         <figcaption><i class="fx-card__m">${esc(t('mono'))}</i><span><b>${esc(t('client'))}</b><small>${esc(s.services[i]?.[0] || name)}</small></span></figcaption>
       </figure>`).reverse().join('');
@@ -290,14 +348,14 @@ export function build(H, c, data, e, opts = {}) {
   const faq = `<section class="fx-blk fx-faq" data-blk="4" data-paper="fx" data-nav="2">
       <i class="fx-sheet" aria-hidden="true"></i>
       <div class="fx-faq__t"><span class="fx-kick">${esc(s.plus?.faqKicker || qs[0][0])}</span><h2 class="fx-h2" data-fold>${fw(s.plus?.faqTitle || '')}</h2></div>
-      <ol class="fx-qs" data-qs>${qs.map(([q, a], i) => `<li class="fx-q${i ? '' : ' is-on'}" data-q="${i}"><span class="fx-q__n">${pad(i + 1)}</span><b class="fx-q__t">${esc(q)}</b><i class="fx-q__x" aria-hidden="true"></i>
+      <ol class="fx-qs" data-qs>${qs.map(([q, a], i) => `<li class="fx-q${i ? '' : ' is-on'}" data-q="${i}"><b class="fx-q__t">${esc(q)}</b><i class="fx-q__x" aria-hidden="true"></i>
         <p class="fx-q__a">${esc(a)}</p></li>`).join('')}</ol>
     </section>`;
 
   /* ---------- 06 · the booking and the contacts, then the footer ---------- */
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, k) => { const d = new Date(today); d.setDate(today.getDate() + k + 1); return d; });
-  const field = ([k, v], i) => `<span class="fx-field${i ? '' : ' is-focus'}" data-field><span>${esc(k)}</span><b>${esc(v)}</b></span>`;
+  const field = ([k], i) => `<label class="fx-field" data-field><span>${esc(k)}</span><input class="fx-field__in" type="${i ? 'tel' : 'text'}" inputmode="${i ? 'tel' : 'text'}" placeholder="${esc(t('ph')[i])}" autocomplete="off" maxlength="40" tabindex="-1"></label>`;
   // the split-flap board: the chosen day, time and hall, in fixed cells (blank flaps pad the shorter names)
   const hallW = Math.max(...s.halls.slice(0, 3).map(([n]) => [...n].length));
   const flaps = (txt, w) => [...String(txt).toUpperCase().padEnd(w, ' ')].map((ch) => `<i class="fx-fl${ch === ' ' ? ' is-blank' : ''}">${ch === ' ' ? '' : esc(ch)}</i>`).join('');
@@ -320,7 +378,7 @@ export function build(H, c, data, e, opts = {}) {
           <span class="fx-form__k">${esc(t('date'))}</span>
           <div class="fx-days">${days.map((d, k) => `<span class="fx-day${k === 1 ? ' is-on' : ''}" data-day="${k}"><small>${esc(t('days')[d.getDay()])}</small><b>${d.getDate()}</b></span>`).join('')}</div>
           <span class="fx-form__k">${esc(t('time'))}</span>
-          <div class="fx-slots">${SLOTS.map((x, k) => `<span class="fx-slot${BUSY[1].includes(k) ? ' is-busy' : ''}${k === 2 ? ' is-on' : ''}" data-slot="${k}">${x}</span>`).join('')}</div>
+          <div class="fx-slots">${SLOTS.map((x, k) => `<span class="fx-slot${BUSY[1].includes(k) ? ' is-busy' : ''}${k === 2 ? ' is-on' : ''}" data-time="${k}">${x}</span>`).join('')}</div>
           <div class="fx-fields">${s.fields.slice(0, 2).map(field).join('')}</div>
           ${board}
           <span class="fx-send fx-fb" data-send><i class="fx-fb__sheet" aria-hidden="true"></i><i class="fx-fb__a fx-fb__a--in" aria-hidden="true">${ARROW}</i><span class="fx-send__t fx-fb__t"><span class="fx-send__a">${esc(s.send)}</span><span class="fx-send__c" aria-hidden="true"><i></i><i></i><i></i></span><span class="fx-send__b">${TICK}${esc(t('sent'))}</span></span><i class="fx-fb__a fx-fb__a--out" aria-hidden="true">${ARROW}</i></span>
@@ -331,7 +389,7 @@ export function build(H, c, data, e, opts = {}) {
         <div class="fx-ftr__halls">${s.halls.slice(0, 3).map(([n, a, p], i) => `<span class="fx-ftr__hall" data-p="${HALL[i].p}" data-to="1" data-hall-show="${i}"><i class="fx-ftr__roll" aria-hidden="true"></i><b>${esc(n)}</b><small>${esc(a)}</small><em>${esc(p)}</em><i class="fx-ftr__go" aria-hidden="true">${ARROW}</i></span>`).join('')}</div>
         <div class="fx-ftr__cols">
           <div class="fx-ftr__brand"><span class="fx-logo" data-to="0">${lockup}</span><p>${T.h1[L].map((ln) => ln.map(([w]) => esc(w)).join('')).join(' ')}</p></div>
-          <nav class="fx-ftr__nav">${T.nav[L].map((x, i) => `<span data-go="${i}"><small>${pad(i + 1)}</small>${esc(x)}</span>`).join('')}</nav>
+          <nav class="fx-ftr__nav">${T.nav[L].map((x, i) => `<span data-go="${i}">${esc(x)}</span>`).join('')}</nav>
           <div class="fx-ftr__c"><span class="fx-ftr__k">${esc(heads[0])}</span><b>${esc(f.addr || '')}</b><small>${esc(s.meta?.[0] || '')}</small></div>
           <div class="fx-ftr__c"><span class="fx-ftr__k">${esc(heads[1])}</span><b>${esc(f.phone || '')}</b><b>${esc(T.mail)}</b></div>
           <div class="fx-ftr__c"><span class="fx-ftr__k">${esc(heads[2])}</span>${(f.links || []).map((l) => `<b>${esc(l)}</b>`).join('')}</div>
@@ -342,16 +400,67 @@ export function build(H, c, data, e, opts = {}) {
       </footer>
     </section>`;
 
+  /* ---------- round 11 (26 Nov 2026, the owner: the $500 landing's sample shows ten blocks). Ideas taken from Dribbble's
+     editorial studio pages, Awwwards (a list whose row shows its picture, prints scattered to move about, a round stamp)
+     and MotionSites (a bento of large numbers); our own code, the «Фуксія» papers and type throughout ---------- */
+  /* the run of shoot types: a strip of marigold tape under the first screen (it runs while it is in the frame) */
+  const runGroup = `<span class="fx-run__g">${T.run[L].map((w) => `<b>${esc(w)}</b>${IRIS('fx-iris fx-run__iris')}`).join('')}</span>`;
+  const run = `<div class="fx-run" data-run aria-hidden="true"><div class="fx-run__in">${runGroup}${runGroup}</div></div>`;
+
+  /* U · the shoots: a list in the display face, the row under the pointer (or the tapped one) brings its frame, which
+     unrolls over the last one like a sheet of paper */
+  const uses = `<section class="fx-blk fx-uses" data-blk="u" data-paper="ch">
+      <i class="fx-sheet" aria-hidden="true"></i>
+      <div class="fx-head"><span class="fx-kick">${esc(t('usesK'))}</span><h2 class="fx-h2" data-fold>${fw(t('usesH'))}</h2><p class="fx-aside">${esc(t('usesA'))}</p></div>
+      <div class="fx-uses__in" data-uses>
+        <ol class="fx-uses__list">${T.uses[L].map(([n, d], i) => `<li class="fx-use${i ? '' : ' is-on'}" data-use="${i}"><b class="fx-use__t">${esc(n)}</b><i class="fx-use__go" aria-hidden="true">${ARROW}</i><span class="fx-use__d">${esc(d)}</span></li>`).join('')}</ol>
+        <figure class="fx-uses__ph" aria-hidden="true">${USES.map(([dir, img], i) => `<img class="fx-uses__img${i ? '' : ' is-on'}" data-img="${i}" src="${dir}${img}" alt="" loading="lazy" decoding="async">`).join('')}</figure>
+      </div>
+    </section>`;
+
+  /* K · what the rent includes: a bento of paper tiles, two of them photos; the numbers count up */
+  const kit = `<section class="fx-blk fx-kit" data-blk="k" data-paper="oak">
+      <i class="fx-sheet" aria-hidden="true"></i>
+      <div class="fx-head"><span class="fx-kick">${esc(t('kitK'))}</span><h2 class="fx-h2" data-fold>${fw(t('kitH'))}</h2></div>
+      <div class="fx-bento">${T.kit[L].map(([n, k, d], i) => `<div class="fx-tile fx-tile--${i}" data-p="${KIT[i].p}">${KIT[i].img ? `<img class="fx-tile__img" src="${KIT[i].img[0]}${KIT[i].img[1]}" alt="" loading="lazy" decoding="async">` : ''}${i === 0 ? `<i class="fx-tile__rack" aria-hidden="true">${ROLLS.map((r) => `<i style="--c:${r.c}"></i>`).join('')}</i>` : ''}<span class="fx-tile__k">${n ? `<b class="fx-tile__n" data-cnt="${n}">${n}</b>` : ''}<b class="fx-tile__t">${esc(k)}</b></span><span class="fx-tile__d">${esc(d)}</span></div>`).join('')}</div>
+    </section>`;
+
+  /* G · the guests' shots: prints on the table, to move about (a mouse drags them, a tap lifts one); «Перемішати» deals
+     them again. A phone lays them in a row to swipe through */
+  const gal = `<section class="fx-blk fx-gal" data-blk="g" data-paper="ch">
+      <i class="fx-sheet" aria-hidden="true"></i>
+      <div class="fx-head"><span class="fx-kick">${esc(t('galK'))}</span><h2 class="fx-h2" data-fold>${fw(t('galH'))}</h2>${fb(esc(t('mix')), 'fx-btn2 fx-gal__mix', 'data-mix')}</div>
+      <div class="fx-table" data-table>${PRINTS.map(([dir, img], i) => `<figure class="fx-print" data-print="${i}" style="--x:${DEALS[0][i][0]}%;--y:${DEALS[0][i][1]}%;--r:${DEALS[0][i][2]}deg"><span class="fx-print__ph"><img src="${dir}${img}" alt="" loading="lazy" decoding="async" draggable="false"></span><figcaption>${esc(T.galC[L][i])}</figcaption></figure>`).join('')}
+        <span class="fx-cond">${esc(t('cond'))}</span></div>
+    </section>`;
+
+  /* M · who meets you: the hall as the host leaves it for you (no face, no name), what they do, the studio's stamp */
+  const stampId = `fx-stamp-${(stampN += 1)}`;
+  const meet = `<section class="fx-blk fx-meet" data-blk="m" data-paper="pw">
+      <i class="fx-sheet" aria-hidden="true"></i>
+      <figure class="fx-meet__ph"><span class="fx-meet__img"><img src="${IMG2}meet.webp" alt="" loading="lazy" decoding="async"></span>
+        <i class="fx-stamp" aria-hidden="true"><svg viewBox="-60 -60 120 120"><defs><path id="${stampId}" d="M0,-45a45,45 0 1,1 0,90a45,45 0 1,1 0,-90"/></defs><circle class="fx-stamp__o" r="57"/><circle class="fx-stamp__i" r="31"/><text class="fx-stamp__t"><textPath href="#${stampId}">${esc(t('stamp').repeat(2))}</textPath></text><g transform="scale(.5)">${[0, 120, 240].map((r) => `<path class="fx-stamp__b" transform="rotate(${r})" d="M0-46A46 46 0 0 1 39.8 23L14 8.1C17-4 10.5-15.2 0-16.2z"/>`).join('')}</g></svg></i></figure>
+      <div class="fx-meet__t"><span class="fx-kick">${esc(t('meetK'))}</span><h2 class="fx-h2" data-fold>${fw(t('meetH'))}</h2><p class="fx-meet__p">${esc(t('meetP'))}</p>
+        <ul class="fx-meet__l">${T.meetL[L].map((x) => `<li><i>${TICK}</i><span>${esc(x)}</span></li>`).join('')}</ul></div>
+    </section>`;
+
   return `${header}${menu}
   <div class="pv-scroll fx-scroll">
     ${hero}
+    ${run}
+    ${uses}
     ${halls}
+    ${kit}
     ${trust}
+    ${gal}
     ${steps}
+    ${meet}
     ${faq}
     ${book}
   </div>`;
 }
+// (each built sample's stamp names its own text path: an old copy and a new one can stand in the frame at once)
+let stampN = 0;
 
 /* ==========================================================================
    enhance: the sample's life (once per render)
@@ -473,6 +582,41 @@ export function enhance(site, ctx = {}) {
       come([b.querySelector('.fx-book__sub'), ...b.querySelectorAll('.fx-ci li')], 520, 70);
       play(b.querySelector('.fx-form__roll'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 420, delay: 300, easing: ROLL });
       play(b.querySelector('.fx-form__in'), [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { duration: 560, delay: 420, easing: ROLL });
+    },
+    // round 11 · the shoots: the rows slide in one after another, the first frame unrolls
+    u: (b) => {
+      sheet(b);
+      foldWords(b.querySelector('.fx-h2'), 240);
+      come([b.querySelector('.fx-kick'), b.querySelector('.fx-aside')], 220, 80);
+      come([...b.querySelectorAll('.fx-use')], 420, 70, '-2cqw 0');
+      play(b.querySelector('.fx-uses__ph'), [{ clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)' }], { duration: 900, delay: 360, easing: ROLL });
+    },
+    // · what the rent includes: each tile rolls down from its top edge, the numbers count
+    k: (b) => {
+      sheet(b);
+      foldWords(b.querySelector('.fx-h2'), 240);
+      come([b.querySelector('.fx-kick')], 220);
+      [...b.querySelectorAll('.fx-tile')].forEach((tl, i) => play(tl, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { duration: 560, delay: 380 + i * 80, easing: ROLL }));
+      countIn(b, 760);
+    },
+    // · the guests' shots: the prints drop onto the table one after another
+    g: (b) => {
+      sheet(b);
+      foldWords(b.querySelector('.fx-h2'), 240);
+      come([b.querySelector('.fx-kick'), b.querySelector('.fx-gal__mix')], 220, 90);
+      [...b.querySelectorAll('.fx-print')].forEach((p, i) => play(p, [{ opacity: 0, transform: 'translateY(-5cqw) rotate(-9deg) scale(1.08)' }, { opacity: 1, transform: 'none' }], { duration: 700, delay: 380 + i * 90, easing: SPRING }));
+    },
+    // · who meets you: the photo unrolls, the ticks draw, the stamp lands
+    m: (b) => {
+      sheet(b);
+      play(b.querySelector('.fx-meet__img'), [{ clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)' }], { duration: 900, delay: 260, easing: ROLL });
+      foldWords(b.querySelector('.fx-h2'), 300);
+      come([b.querySelector('.fx-kick'), b.querySelector('.fx-meet__p')], 260, 120);
+      [...b.querySelectorAll('.fx-meet__l li')].forEach((li, i) => {
+        play(li, [{ opacity: 0, translate: '0 1cqw' }, { opacity: 1, translate: '0 0' }], { duration: 560, delay: 640 + i * 110 });
+        play(li.querySelector('path'), [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 420, delay: 760 + i * 110, easing: 'cubic-bezier(.65,0,.35,1)' });
+      });
+      play(b.querySelector('.fx-stamp'), [{ opacity: 0, transform: 'scale(1.9) rotate(-40deg)' }, { opacity: 1, transform: 'scale(.94) rotate(-12deg)', offset: 0.7 }, { opacity: 1, transform: 'scale(1) rotate(-12deg)' }], { duration: 640, delay: 1100, easing: 'cubic-bezier(.3,0,.2,1)' });
     },
   };
   const word = site.querySelector('[data-word]');
@@ -726,19 +870,27 @@ export function enhance(site, ctx = {}) {
         flap('time', free?.textContent || '');
         return;
       }
-      const sl = ev.target.closest('[data-slot]');
+      const sl = ev.target.closest('[data-time]');
       if (sl && !sl.classList.contains('is-busy')) {
         slots.forEach((x) => x.classList.toggle('is-on', x === sl));
         if (!still) sl.animate([{ transform: 'scale(0.92)' }, { transform: 'scale(1)' }], { duration: 420, easing: SPRING });
         flap('time', sl.textContent);
         return;
       }
-      const fd = ev.target.closest('[data-field]');
-      if (fd) { form.querySelectorAll('[data-field]').forEach((x) => x.classList.toggle('is-focus', x === fd)); return; }
+      if (ev.target.closest('[data-field]')) return;
       // the tactile button (21st.dev Add to Cart Button, bidyut10, MIT; rebuilt): it sinks, works for a moment, then
       // says «Заявку надіслано» with a tick and the sparks; back to itself after 3 s
       const send = ev.target.closest('[data-send]');
       if (!send || send.classList.contains('is-busy') || send.classList.contains('is-sent')) return;
+      // both fields filled in first: a name, a phone of nine digits or more; the empty one shakes and takes the focus
+      const ins = [...form.querySelectorAll('.fx-field__in')];
+      const bad = ins.filter((x, i) => (i ? x.value.replace(/\D/g, '').length < 9 : x.value.trim().length < 2));
+      ins.forEach((x) => x.closest('.fx-field').classList.toggle('is-err', bad.includes(x)));
+      if (bad.length) {
+        if (!still) bad.forEach((x) => x.closest('.fx-field').animate([{ translate: '0 0' }, { translate: '-.6cqw 0' }, { translate: '.5cqw 0' }, { translate: '-.3cqw 0' }, { translate: '0 0' }], { duration: 360, easing: 'ease-out' }));
+        bad[0].focus({ preventScroll: true });
+        return;
+      }
       clearTimeout(send._t);
       const done = () => {
         send.classList.remove('is-busy');
@@ -755,6 +907,18 @@ export function enhance(site, ctx = {}) {
       send._t = setTimeout(done, 750);
     });
   }
+  // (the sample sits inside the calculator's form, which redraws the sample on any «change» in it: what is typed here
+  // stays here; Enter takes the next field, then sends, and never submits the calculator's form)
+  form?.addEventListener('input', (ev) => { ev.stopPropagation(); ev.target.closest('.fx-field')?.classList.remove('is-err'); });
+  form?.addEventListener('change', (ev) => ev.stopPropagation());
+  form?.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' || !ev.target.matches('.fx-field__in')) return;
+    ev.preventDefault();
+    const ins = [...form.querySelectorAll('.fx-field__in')];
+    const next = ins[ins.indexOf(ev.target) + 1];
+    if (next) next.focus({ preventScroll: true });
+    else form.querySelector('[data-send]')?.click();
+  });
   // a hall chosen in the form (by its chip, or by «Забронювати цей зал»): JellyRadio's swell, the board flips
   function pickHall(o) {
     if (!form || !o) return;
@@ -805,6 +969,80 @@ export function enhance(site, ctx = {}) {
       });
     });
     word.addEventListener('pointerleave', () => { cancelAnimationFrame(raf); raf = 0; iris.style.transform = ''; });
+  }
+
+  /* ---------- round 11 · the run: the tape runs only while it is in the frame (nothing runs at rest) ---------- */
+  const runEl = site.querySelector('[data-run]');
+  if (runEl && vp && !still && 'IntersectionObserver' in window) {
+    const ioRun = new IntersectionObserver((es) => runEl.classList.toggle('is-run', es[es.length - 1].isIntersecting), { root: vp, threshold: 0 });
+    ioRun.observe(runEl);
+    onDispose(() => ioRun.disconnect());
+  }
+
+  /* ---------- round 11 · the shoots: the row under the pointer, or the tapped one, brings its frame; the new frame
+     unrolls over the last one (the last stays under it until it is covered) ---------- */
+  const usesEl = site.querySelector('[data-uses]');
+  if (usesEl) {
+    const rows = [...usesEl.querySelectorAll('.fx-use')];
+    const imgs = [...usesEl.querySelectorAll('.fx-uses__img')];
+    let on = 0;
+    const useOn = (i) => {
+      if (i === on || !rows[i]) return;
+      rows.forEach((r, k) => r.classList.toggle('is-on', k === i));
+      imgs.forEach((im, k) => { im.classList.toggle('was-on', k === on); im.classList.toggle('is-on', k === i); });
+      on = i;
+    };
+    usesEl.addEventListener('pointerover', (ev) => { if (ev.pointerType === 'mouse') { const r = ev.target.closest('.fx-use'); if (r) useOn(+r.dataset.use); } });
+    usesEl.addEventListener('click', (ev) => { const r = ev.target.closest('.fx-use'); if (r) useOn(+r.dataset.use); });
+  }
+
+  /* ---------- round 11 · the guests' shots: a mouse drags a print about the table (it rises above the others), a tap
+     lifts one to the top; «Перемішати» deals them again (three deals in turn). A phone swipes the row instead ---------- */
+  const table = site.querySelector('[data-table]');
+  if (table) {
+    const prints = [...table.querySelectorAll('.fx-print')];
+    let top = prints.length;
+    let deal = 0;
+    const lift = (p) => { p.style.zIndex = String(++top); };
+    let drag = null;
+    table.addEventListener('pointerdown', (ev) => {
+      const p = ev.target.closest('.fx-print');
+      if (!p) return;
+      lift(p);
+      if (ev.pointerType !== 'mouse' || PHONE()) {
+        if (!still) p.animate([{ scale: '1' }, { scale: '1.05' }, { scale: '1' }], { duration: 420, easing: EASE });
+        return;
+      }
+      ev.preventDefault();
+      const T0 = table.getBoundingClientRect();
+      drag = { p, id: ev.pointerId, x0: ev.clientX, y0: ev.clientY, px: parseFloat(p.style.getPropertyValue('--x')), py: parseFloat(p.style.getPropertyValue('--y')), w: T0.width, h: T0.height, pw: p.offsetWidth, ph: p.offsetHeight };
+      p.classList.add('is-drag');
+      try { table.setPointerCapture(ev.pointerId); } catch { /* (no capture: the moves still come while over the table) */ }
+    });
+    table.addEventListener('pointermove', (ev) => {
+      if (!drag || ev.pointerId !== drag.id) return;
+      const maxX = 100 - (drag.pw / drag.w) * 100, maxY = 100 - (drag.ph / drag.h) * 100;
+      const x = Math.min(maxX, Math.max(0, drag.px + ((ev.clientX - drag.x0) / drag.w) * 100));
+      const y = Math.min(maxY, Math.max(0, drag.py + ((ev.clientY - drag.y0) / drag.h) * 100));
+      drag.p.style.setProperty('--x', `${x.toFixed(2)}%`);
+      drag.p.style.setProperty('--y', `${y.toFixed(2)}%`);
+    });
+    const drop = () => { if (!drag) return; drag.p.classList.remove('is-drag'); drag = null; };
+    table.addEventListener('pointerup', drop);
+    table.addEventListener('pointercancel', drop);
+    site.querySelector('[data-mix]')?.addEventListener('click', () => {
+      deal = (deal + 1) % DEALS.length;
+      prints.forEach((p, i) => {
+        const [x, y, r] = DEALS[deal][i];
+        p.style.setProperty('--x', `${x}%`);
+        p.style.setProperty('--y', `${y}%`);
+        p.style.setProperty('--r', `${r}deg`);
+        p.style.zIndex = String(i + 1);
+      });
+      top = prints.length;
+      // (a phone's row: the deal turns the prints and goes back to the first one)
+      if (PHONE()) table.scrollTo({ left: 0, behavior: still ? 'auto' : 'smooth' });
+    });
   }
 
   /* ---------- in the visitor's hands: every link goes somewhere, scripted demos stop ---------- */

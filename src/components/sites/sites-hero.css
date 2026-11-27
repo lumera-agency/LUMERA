@@ -154,6 +154,10 @@ main[data-ai-page="sites"] .st-hg .btn--primary { --btn-bg: var(--ember); --btn-
 /* ---------- the entrance: once, from the first paint (the lines, the lead and the button: sites.css) ---------- */
 html.motion main[data-ai-page="sites"] .st-hg .st-hg__k { animation: ai-rise-in 0.5s var(--ease-out) 0.26s backwards; }
 html.motion main[data-ai-page="sites"] .st-hg .st-hg__px { animation: ai-rise-in 0.6s var(--ease-out) 0.36s backwards; }
+html.motion main[data-ai-page="sites"] .st-hg .st-hg__sub { animation: ai-rise-in 0.6s var(--ease-out) 0.2s backwards; }
+
+/* the line under the H1 (the owner, 26 Nov 2026): the offer in one sentence, in the page's sans, quieter than the words */
+.st-hg .st-hg__sub { position: relative; z-index: 1; max-width: 34ch; margin: 0; font-size: 1rem; font-weight: 400; line-height: 1.45; letter-spacing: -0.005em; color: var(--ink-soft); text-wrap: pretty; }
 html.motion main[data-ai-page="sites"] .st-hg .st-hg__mark { animation: st-hg-fade 0.8s var(--ease-out) 0.5s backwards; }
 /* the pills scale in once, after the lead's words, one after another */
 html.motion main[data-ai-page="sites"] .st-hg .st-hg__pill { animation: st-hg-pill 0.8s var(--ease-out) calc(0.62s + var(--i, 1) * 0.09s) backwards; }
@@ -325,6 +329,8 @@ html.motion .st-hg .ai-hero__rock.is-live .ai-hero__canvas { animation: st-drop-
   /* the prices bottom right, under «САЙТІВ.»: the format in the words' face, «від» and the sum in mono */
   /* (sized in the sheet's units, so on a low screen they keep clear of «САЙТІВ.» above them) */
   .st-hg .st-hg__corner--bl { display: block; position: absolute; z-index: 3; left: calc(var(--ox) + 1190 * var(--u)); top: calc(var(--oy) + 900 * var(--v) - 250 * var(--u)); width: calc(620 * var(--u)); }
+  /* the line under the H1: the right column under «САЙТІВ.», its foot a little above the prices' corner */
+  .st-hg .st-hg__sub { position: absolute; z-index: 3; left: calc(var(--ox) + 1190 * var(--u)); bottom: calc(var(--hg-h) - var(--oy) - 900 * var(--v) + 250 * var(--u) + 40 * var(--u)); width: calc(620 * var(--u)); max-width: none; font-size: max(0.9375rem, 25 * var(--u)); line-height: 1.4; }
   .st-hg .st-hg__k--px { font-size: max(0.6875rem, 18 * var(--u)); }
   .st-hg .st-hg__px { margin-top: calc(16 * var(--u)); border-top: 1px solid rgb(246 246 243 / 0.3); font-size: max(0.875rem, 26 * var(--u)); }
   .st-hg .st-hg__pi { column-gap: 1rem; padding: calc(9 * var(--u)) 0; border-bottom: 1px solid rgb(246 246 243 / 0.14); }
@@ -428,25 +434,28 @@ html.motion .st-hg .ai-hero__rock.is-live .ai-hero__canvas { animation: st-drop-
   .st-hg .st-hg__stone { grid-column: 1; grid-row: 1; justify-self: center; align-self: start; width: 0; height: 0; margin: calc(107 * var(--pu) + var(--gap) * 0.58) calc(24 * var(--pu)) 0 0; z-index: 2; font-size: calc(var(--gap) * 0.2); }
   .st-hg .ai-hero__rock { top: 0; }
   .st-hg .st-hg__k--lead { display: none; }
-  .st-hg .st-hg__lead { grid-column: 1; grid-row: 2; justify-self: start; max-width: 30ch; margin-top: calc(26 * var(--pu)); text-align: left; }
-  .st-hg .st-hg__acts { grid-column: 1; grid-row: 3; justify-self: stretch; margin-top: 1.5rem; }
-  .st-hg .st-hg__k--px { grid-column: 1; grid-row: 4; margin-top: 2.25rem; }
-  .st-hg .st-hg__px { grid-column: 1; grid-row: 5; margin-top: 0.5rem; }
+  /* the line under the H1, right under «САЙТІВ.» */
+  .st-hg .st-hg__sub { grid-column: 1; grid-row: 2; justify-self: start; margin-top: calc(16 * var(--pu)); }
+  .st-hg .st-hg__lead { grid-column: 1; grid-row: 3; justify-self: start; max-width: 30ch; margin-top: calc(26 * var(--pu)); text-align: left; }
+  .st-hg .st-hg__acts { grid-column: 1; grid-row: 4; justify-self: stretch; margin-top: 1.5rem; }
+  .st-hg .st-hg__k--px { grid-column: 1; grid-row: 5; margin-top: 2.25rem; }
+  .st-hg .st-hg__px { grid-column: 1; grid-row: 6; margin-top: 0.5rem; }
 }
 @media (min-width: 761px) and (max-aspect-ratio: 999/1000) {
   /* a wide upright screen (a tablet, a tall window): the column keeps the poster's width, the formats and the prices
      side by side under it */
   .st-hg .st-hg__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); max-width: calc(440 * var(--pu)); margin-inline: auto; }
   .st-hg :is(.st-hg__title, .st-hg__stone) { grid-column: 1 / -1; }
-  .st-hg .st-hg__lead { grid-column: 1 / 7; grid-row: 2 / 4; }
-  .st-hg .st-hg__acts { grid-column: 1 / 7; grid-row: 4; justify-self: start; }
-  .st-hg .st-hg__k--px { grid-column: 8 / -1; grid-row: 2; margin-top: calc(26 * var(--pu)); }
-  .st-hg .st-hg__px { grid-column: 8 / -1; grid-row: 3; }
+  .st-hg .st-hg__sub { grid-column: 1 / -1; grid-row: 2; }
+  .st-hg .st-hg__lead { grid-column: 1 / 7; grid-row: 3 / 5; }
+  .st-hg .st-hg__acts { grid-column: 1 / 7; grid-row: 5; justify-self: start; }
+  .st-hg .st-hg__k--px { grid-column: 8 / -1; grid-row: 3; margin-top: calc(26 * var(--pu)); }
+  .st-hg .st-hg__px { grid-column: 8 / -1; grid-row: 4; }
 }
 @media (orientation: landscape) and (max-height: 500px) {
   /* a phone turned sideways: the words sized from the screen's height, the rest in a column under them */
   main[data-ai-page="sites"] .st-hg { --pu: min(calc(100cqi / 358), calc((100svh - var(--topbar-h) - 2rem) / 340)); }
-  .st-hg :is(.st-hg__lead, .st-hg__acts, .st-hg__k--px, .st-hg__px) { justify-self: center; width: min(100%, 30rem); }
+  .st-hg :is(.st-hg__sub, .st-hg__lead, .st-hg__acts, .st-hg__k--px, .st-hg__px) { justify-self: center; width: min(100%, 30rem); }
   .st-hg .st-hg__mark { display: none; }
   /* the words keep a phone's column in the middle (the screen is wide, they are sized from its height) */
   .st-hg .st-hg__title { justify-self: center; width: calc(358 * var(--pu)); }
@@ -458,18 +467,28 @@ html.motion .st-hg .ai-hero__rock.is-live .ai-hero__canvas { animation: st-drop-
   /* (the first screen in the small screen; the sample site follows the button at its own margin, so its top may show
      under the browser's floating bar on the first screen: the owner, 10 Nov 2026, a gap of about 110 pt rather than an
      empty strip under the bar, «110 давай») */
-  main[data-ai-page="sites"] .st-hg { --hg-h: calc(var(--screen-s) - var(--topbar-h) - 2.25rem); padding-top: calc(var(--topbar-h) + 1.5rem); }
-  .st-hg .st-hg__grid { grid-template-rows: auto minmax(1rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
+  /* (26 Nov 2026, the owner: the contact dock is on from the start here, and the line under the H1 joins the first
+     screen: the screen less the dock's room is the poster's, and the room for the line comes out of the droplet's gap
+     first (down to 110 pu instead of 150), then out of the words) */
+  main[data-ai-page="sites"] .st-hg {
+    --hg-h: calc(var(--screen-s) - var(--topbar-h) - 2.25rem - var(--dock-h, 0px));
+    --avail: calc(var(--hg-h) - 17.5rem);
+    --pu: min(calc(100cqi / 380), calc(var(--avail) / 334));
+    --gap: clamp(calc(110 * var(--pu)), calc(var(--avail) - 224 * var(--pu)), calc(200 * var(--pu)));
+    padding-top: calc(var(--topbar-h) + 1.5rem);
+  }
+  .st-hg .st-hg__grid { grid-template-rows: auto auto minmax(0.75rem, 1fr) auto auto auto minmax(0, 0.5fr); min-height: var(--hg-h); }
   /* the words and the droplet at the top, under the topbar */
   .st-hg .st-hg__title,
   .st-hg .st-hg__stone { grid-row: 1; align-self: start; }
   .st-hg .st-hg__title { margin-top: 0; }
+  .st-hg .st-hg__sub { grid-row: 2; margin-top: 0.875rem; font-size: 0.9375rem; }
   .st-hg .st-hg__lead { display: none; }
-  .st-hg .st-hg__k--px { grid-row: 3; margin-top: 0; }
-  .st-hg .st-hg__px { grid-row: 4; font-size: 0.9375rem; }
-  .st-hg .st-hg__pi { padding: 0.4rem 0; }
+  .st-hg .st-hg__k--px { grid-row: 4; margin-top: 0; }
+  .st-hg .st-hg__px { grid-row: 5; font-size: 0.9375rem; }
+  .st-hg .st-hg__pi { padding: 0.3rem 0; }
   /* (the phone's old rule zeroes the actions' margins: this one is as strong) */
-  main[data-ai-page="sites"] .st-hg .ai-hero__actions.st-hg__acts { grid-row: 5; margin: 2rem 0 0; }
+  main[data-ai-page="sites"] .st-hg .ai-hero__actions.st-hg__acts { grid-row: 6; margin: 1.25rem 0 0; }
   /* (about 110 pt from the button to the sample site, more on an iPhone: there the sample starts below the screen's
      foot, under Safari's floating bar, not seen on the first screen; the owner, 10 Nov 2026, «чтоб не видно было».
      --screen-under counts the status bar too, which the page is not told (iPhone 18 Pro, measured: small 714, screen
