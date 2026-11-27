@@ -6,7 +6,8 @@ import { STRINGS } from "@/components/sections/pricing/configurator/strings.js";
  * prices). Лендінг+ is this page's own (the owner's OK, 14 Oct 2026: $700, 2–3 weeks) until the engine has it. The
  * messages carry them as ICU arguments: {landing} {landingPlus} {corporate} {ecommerce} and {wLanding} … {wEcommerce}.
  */
-export const LANDING_PLUS = { price: 700, weeks: [2, 3] as const };
+// (the owner, 27 Nov 2026: «лендинг плюс тоже примерно неделю»: 1 week, as the landing)
+export const LANDING_PLUS = { price: 700, weeks: [1, 1] as const };
 const NBSP = " ";
 
 export function sitesFacts(locale: string) {

@@ -62,7 +62,8 @@ const stringsReady = Promise.resolve(STRINGS);
 const FORMATS = ['landing', 'landingPlus', 'corporate', 'ecommerce'];
 // Лендінг+: the owner's OK, 14 Oct 2026 ($700). In engine.js since 17 Oct (the main page's configurator has it);
 // this stays the fallback, like FALLBACK below
-const LANDING_PLUS = { price: 700, weeks: [2, 3], design: [300, 1], motion: [200, 0.5], lang: [100, 0] };
+// (the owner, 27 Nov 2026: «лендинг плюс тоже примерно неделю»: 1 week, as the landing)
+const LANDING_PLUS = { price: 700, weeks: [1, 1], design: [300, 1], motion: [200, 0.5], lang: [100, 0] };
 // engine.js as of 14 Oct 2026, used only if it can't be read: [price, weeks]
 const FALLBACK = {
   landing: { price: 500, weeks: [1, 2], design: [200, 1], motion: [150, 0.5], lang: [100, 0] },

@@ -72,7 +72,7 @@ export const PRICING = {
   formats: {
     landing:   { price: 500,  weeks: [1, 1] }, // the owner, 26 Nov 2026: «за 1 неделю, не 1–2»
     // the owner, 17 Oct: «Лендінг+», as on /dyzain-i-saity (since 26 Nov 2026 the landing and 3 inner pages)
-    landingPlus: { price: 700, weeks: [2, 3] },
+    landingPlus: { price: 700, weeks: [1, 1] }, // the owner, 27 Nov 2026: «лендинг плюс тоже примерно неделю»
     corporate: { price: 900,  weeks: [3, 4] },
     ecommerce: { price: 1500, weeks: [4, 6] },
     // NEW · «У мене вже є сайт»: we don't build a site, so no site options (its weeks: calculateTimeline)
