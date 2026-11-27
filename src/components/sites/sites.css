@@ -1190,6 +1190,7 @@ html:not(.motion) :is(.st-bd__trk b, .st-hw::after, .st-hseg::before, .st-hw__ti
 /* S-03: a question a link leads to («Сайт уже є?» from block 2) stops under the topbar, not behind it */
 main[data-ai-page="sites"] .faq__item[id] { scroll-margin-top: calc(var(--topbar-h) + 24px); }
 
+
 /* S-10: «Детальніше»: wherever the panel scrolls (a phone's sheet, a low screen, a tablet held upright), its head with the
    «×» stays at the top. The head reaches over the panel's side padding (the black under it hides what scrolls by) and
    keeps its place at rest; a panel that fits does not move at all */

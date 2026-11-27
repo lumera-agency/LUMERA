@@ -137,7 +137,6 @@ async function boot() {
   strings = s?.[lang()] ?? null;
   fillFacts();
   initPicks();
-  initFaq();
   initSticky();
   initToTop();
   initCover();
@@ -306,19 +305,8 @@ function goToForm(kb = false) {
 }
 const byKeys = (e) => e?.detail === 0;
 
-/* ---------- 5 · questions: the main page's FAQ (FaqList animates the answers) ---------- */
-function initFaq() {
-  // (the phone audit, 15 Oct) on a phone the open question is «Ви гарантуєте заявки?»: the prices are on screen four
-  // times before it, the honest answer about guarantees is what is missing
-  if (phoneMQ.matches) {
-    const items = $$('[data-faq] .faq__item');
-    const trust = items[5]; // the sixth question
-    if (trust) {
-      items.forEach((item) => { item.open = false; });
-      trust.open = true;
-    }
-  }
-}
+/* ---------- 5 · questions: FaqList (components/sections/faq) animates the answers, folds the list after the fourth
+   (the row «Показати інші питання») and starts it closed on phones; nothing here waits for this script ---------- */
 
 // the main page's button back up (BackToTop) steps aside from the bars in its corner, checking on scroll: a bar that
 // comes or goes between two scroll events tells it

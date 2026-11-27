@@ -14,21 +14,25 @@ import type { SitesFacts } from "@/components/sites/facts";
 const NW = { nw: (chunks: React.ReactNode) => <span style={{ whiteSpace: "nowrap" }}>{chunks}</span> };
 
 /** «Що входить у ціну» per format (the owner's packages, 26 Nov 2026): the panels («Детальніше») list every line and
- *  the calculator reads them there ([data-inc], sites-runtime); the AI search's line carries its note in small type */
+ *  the calculator reads them there ([data-inc], sites-runtime); a line with a note (NOTE) carries it in small type.
+ *  27 Nov: the main page's competitor analysis (its block «Спершу дивимось на ваших конкурентів») leads every list;
+ *  Лендінг+ has it through «Усе, що входить у «Лендінг»» */
 const INC = {
-  landing: ["inc.landing.1", "inc.landing.2", "inc.landing.3", "inc.landing.4", "inc.landing.5", "inc.landing.6", "inc.landing.7", "inc.landing.8", "inc.landing.9"],
+  landing: ["inc.comp", "inc.landing.1", "inc.landing.2", "inc.landing.3", "inc.landing.4", "inc.landing.5", "inc.landing.6", "inc.landing.7", "inc.landing.8", "inc.landing.9"],
   landingPlus: ["inc.plus.all", "inc.plus.1", "inc.plus.2"],
-  corporate: ["inc.corp.1", "inc.corp.2", "inc.landing.2", "inc.corp.3", "inc.landing.4", "inc.plus.2", "inc.landing.5", "inc.landing.6", "inc.landing.9"],
-  ecommerce: ["inc.shop.1", "inc.shop.2", "inc.shop.3", "inc.landing.2", "inc.shop.4", "inc.landing.4", "inc.landing.5", "inc.shop.5", "inc.landing.9"],
+  corporate: ["inc.comp", "inc.corp.1", "inc.corp.2", "inc.landing.2", "inc.corp.3", "inc.landing.4", "inc.plus.2", "inc.landing.5", "inc.landing.6", "inc.landing.9"],
+  ecommerce: ["inc.comp", "inc.shop.1", "inc.shop.2", "inc.shop.3", "inc.landing.2", "inc.shop.4", "inc.landing.4", "inc.landing.5", "inc.shop.5", "inc.landing.9"],
 } as const;
 /** the format's card: the main lines only, the rest in its panel */
 const CARD = {
-  landing: ["inc.landing.1", "inc.landing.2", "inc.landing.3", "inc.landing.4", "inc.landing.9"],
+  landing: ["inc.comp", "inc.landing.1", "inc.landing.2", "inc.landing.3", "inc.landing.4", "inc.landing.9"],
   landingPlus: ["inc.plus.all", "inc.plus.1", "inc.plus.2", "inc.landing.9"],
-  corporate: ["inc.corp.1", "inc.corp.2", "inc.landing.2", "inc.plus.2", "inc.landing.9"],
-  ecommerce: ["inc.shop.1", "inc.shop.2", "inc.shop.3", "inc.shop.4", "inc.landing.9"],
+  corporate: ["inc.comp", "inc.corp.1", "inc.corp.2", "inc.landing.2", "inc.plus.2", "inc.landing.9"],
+  ecommerce: ["inc.comp", "inc.shop.1", "inc.shop.2", "inc.shop.3", "inc.shop.4", "inc.landing.9"],
 } as const;
-const AI_LINE: string = "inc.landing.5";
+/** the lines that explain themselves in small type under them: the competitor analysis (the main page's words) and
+ *  the AI search */
+const NOTE: Record<string, string> = { "inc.comp": "inc.compNote", "inc.landing.5": "inc.ai" };
 
 export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
@@ -213,7 +217,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 <p className="ai-dlg__h">{t("inc.h")}</p>
                 <ul className="ai-dlg__inc" data-inc="landing">
                   {INC.landing.map((k) => (
-                    <li key={k}>{t(k)}{k === AI_LINE && <small className="st-inc__note">{t("inc.ai")}</small>}</li>
+                    <li key={k}>{t(k)}{NOTE[k] && <small className="st-inc__note">{t(NOTE[k])}</small>}</li>
                   ))}
                 </ul>
                 <p className="ai-dlg__price"><span>{t("from")}</span> <b className="ai-dlg__sum" data-fprice="landing">{F.landing}</b> <span className="ai-dlg__once">{t("once")}</span> <span className="ai-dlg__wk"><span>{t("launch")}</span> <span data-fweeks="landing">{F.wLanding}</span></span></p>
@@ -250,7 +254,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 <p className="ai-dlg__h">{t("inc.h")}</p>
                 <ul className="ai-dlg__inc" data-inc="landingPlus">
                   {INC.landingPlus.map((k) => (
-                    <li key={k}>{t(k)}{k === AI_LINE && <small className="st-inc__note">{t("inc.ai")}</small>}</li>
+                    <li key={k}>{t(k)}{NOTE[k] && <small className="st-inc__note">{t(NOTE[k])}</small>}</li>
                   ))}
                 </ul>
                 <p className="ai-dlg__price"><span>{t("from")}</span> <b className="ai-dlg__sum" data-fprice="landingPlus">{F.landingPlus}</b> <span className="ai-dlg__once">{t("once")}</span> <span className="ai-dlg__wk"><span>{t("launch")}</span> <span data-fweeks="landingPlus">{F.wLandingPlus}</span></span></p>
@@ -288,7 +292,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 <p className="ai-dlg__h">{t("inc.h")}</p>
                 <ul className="ai-dlg__inc" data-inc="corporate">
                   {INC.corporate.map((k) => (
-                    <li key={k}>{t(k)}{k === AI_LINE && <small className="st-inc__note">{t("inc.ai")}</small>}</li>
+                    <li key={k}>{t(k)}{NOTE[k] && <small className="st-inc__note">{t(NOTE[k])}</small>}</li>
                   ))}
                 </ul>
                 <p className="ai-dlg__price"><span>{t("from")}</span> <b className="ai-dlg__sum" data-fprice="corporate">{F.corporate}</b> <span className="ai-dlg__once">{t("once")}</span> <span className="ai-dlg__wk"><span>{t("launch")}</span> <span data-fweeks="corporate">{F.wCorporate}</span></span></p>
@@ -324,7 +328,7 @@ export async function SitesFormats({ facts: F }: { facts: SitesFacts }) {
                 <p className="ai-dlg__h">{t("inc.h")}</p>
                 <ul className="ai-dlg__inc" data-inc="ecommerce">
                   {INC.ecommerce.map((k) => (
-                    <li key={k}>{t(k)}{k === AI_LINE && <small className="st-inc__note">{t("inc.ai")}</small>}</li>
+                    <li key={k}>{t(k)}{NOTE[k] && <small className="st-inc__note">{t(NOTE[k])}</small>}</li>
                   ))}
                 </ul>
                 <p className="ai-dlg__price"><span>{t("from")}</span> <b className="ai-dlg__sum" data-fprice="ecommerce">{F.ecommerce}</b> <span className="ai-dlg__once">{t("once")}</span> <span className="ai-dlg__wk"><span>{t("launch")}</span> <span data-fweeks="ecommerce">{F.wEcommerce}</span></span></p>
