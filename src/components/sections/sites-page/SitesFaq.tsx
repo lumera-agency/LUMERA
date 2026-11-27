@@ -7,8 +7,11 @@ import "@/components/sections/faq/faq.css";
 /**
  * 5 · Питання: the main page's FAQ (native <details>, the answers open with an animated height), the site part. Prices
  * and weeks in the answers from the configurator engine (facts). The fourth answer («Сайт уже є?») is linked from
- * block 2. On phones the runtime opens «Ви гарантуєте заявки?» instead of the first (the phone audit, 15 Oct).
+ * block 2. Four questions show, «Показати інші питання» shows the rest (the owner, 27 Nov 2026: «сократить до 4
+ * вопросов»; runtime: initFaq); the structured data keeps all eleven. On phones the four start closed.
  */
+/** how many questions show before «Показати інші питання» */
+const SHOWN = 4;
 /** The questions and answers, in order: the list below and the page's structured data (components/seo) read them
  *  here, so the two always say the same. */
 export async function sitesFaqItems(facts: SitesFacts) {
@@ -26,7 +29,7 @@ export async function SitesFaq({ facts }: { facts: SitesFacts }) {
   const t = await getTranslations("sites");
   const items = await sitesFaqItems(facts);
   return (
-    <section className="section ai-sec" id="faq" aria-labelledby="faq-title">
+    <section className="section ai-sec st-faq" id="faq" aria-labelledby="faq-title">
       <div className="container faq-wrap">
         <header className="s-head s-head--side">
           <p className="s-head__meta">
@@ -40,7 +43,7 @@ export async function SitesFaq({ facts }: { facts: SitesFacts }) {
         </header>
         <FaqList>
           {items.map((item) => (
-            <details className="faq__item" open={item.n === 1} id={item.n === 4 ? "faq-has" : undefined} key={item.n}>
+            <details className={`faq__item${item.n > SHOWN ? " faq__item--more" : ""}`} open={item.n === 1} id={item.n === 4 ? "faq-has" : undefined} key={item.n}>
               <summary>
                 <span className="faq__num" aria-hidden="true">{item.n}</span>
                 <span className="faq__q">{item.q}</span>
@@ -51,6 +54,14 @@ export async function SitesFaq({ facts }: { facts: SitesFacts }) {
               </div>
             </details>
           ))}
+          {/* the row after the fourth: the count where the numbers stand, the questions' disc; a tap shows the rest */}
+          {items.length > SHOWN && (
+            <button type="button" className="st-faq-more" aria-expanded="false" aria-label={t("faq.moreA", { n: items.length - SHOWN })} data-faq-more="">
+              <span className="st-faq-more__n" aria-hidden="true">+{items.length - SHOWN}</span>
+              <span className="st-faq-more__t">{t("faq.more")}</span>
+              <span className="faq__icon" aria-hidden="true"></span>
+            </button>
+          )}
         </FaqList>
       </div>
     </section>

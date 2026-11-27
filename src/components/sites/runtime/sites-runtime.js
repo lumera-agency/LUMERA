@@ -306,18 +306,23 @@ function goToForm(kb = false) {
 }
 const byKeys = (e) => e?.detail === 0;
 
-/* ---------- 5 · questions: the main page's FAQ (FaqList animates the answers) ---------- */
+/* ---------- 5 · questions: the main page's FAQ (FaqList animates the answers); four show, the row «Показати інші
+   питання» shows the rest (the owner, 27 Nov 2026: «сократить до 4 вопросов»): they come in one after another, the
+   focus goes to the fifth (the row goes with the tap) ---------- */
 function initFaq() {
-  // (the phone audit, 15 Oct) on a phone the open question is «Ви гарантуєте заявки?»: the prices are on screen four
-  // times before it, the honest answer about guarantees is what is missing
-  if (phoneMQ.matches) {
-    const items = $$('[data-faq] .faq__item');
-    const trust = items[5]; // the sixth question
-    if (trust) {
-      items.forEach((item) => { item.open = false; });
-      trust.open = true;
-    }
-  }
+  const sec = $('#faq');
+  const more = sec && $('[data-faq-more]', sec);
+  more?.addEventListener('click', () => {
+    sec.classList.add('is-all');
+    more.setAttribute('aria-expanded', 'true');
+    const rest = $$('.faq__item--more', sec);
+    if (motion) rest.forEach((item, i) => slideIn(item, Math.min(i, 6) * 45, { distance: 14 }));
+    rest[0]?.querySelector('summary')?.focus({ preventScroll: true });
+  });
+  // (the phone audit, 15 Oct: the prices are on screen four times before the questions) on a phone the four start
+  // closed, so the block is four lines and the row. «Ви гарантуєте заявки?», open here since that audit, now waits
+  // behind the row
+  if (phoneMQ.matches) $$('[data-faq] .faq__item').forEach((item) => { item.open = false; });
 }
 
 // the main page's button back up (BackToTop) steps aside from the bars in its corner, checking on scroll: a bar that
