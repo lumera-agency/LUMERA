@@ -20,7 +20,7 @@
 const uk = {
   brand: 'Ваш бренд',
   url: 'vash-sait.ua',
-  tabs: { landing: ['Головна'], corporate: ['Головна', 'Послуги', 'Про нас', 'Контакти'], ecommerce: ['Головна', 'Каталог', 'Товар', 'Кошик'], existing: ['Ваш сайт'] },
+  tabs: { landing: ['Головна'], landingPlus: ['Головна', 'Зали', 'Роботи', 'Контакти'], corporate: ['Головна', 'Послуги', 'Про нас', 'Контакти'], ecommerce: ['Головна', 'Каталог', 'Товар', 'Кошик'], existing: ['Ваш сайт'] },
   more: (n) => '+' + n,
   studio: {
     // Лендінг+ (this page): the headings of its four extra blocks; the facts are the studio's own, below
@@ -152,7 +152,7 @@ const uk = {
 const ru = {
   brand: 'Ваш бренд',
   url: 'vash-sait.ua',
-  tabs: { landing: ['Главная'], corporate: ['Главная', 'Услуги', 'О нас', 'Контакты'], ecommerce: ['Главная', 'Каталог', 'Товар', 'Корзина'], existing: ['Ваш сайт'] },
+  tabs: { landing: ['Главная'], landingPlus: ['Главная', 'Залы', 'Работы', 'Контакты'], corporate: ['Главная', 'Услуги', 'О нас', 'Контакты'], ecommerce: ['Главная', 'Каталог', 'Товар', 'Корзина'], existing: ['Ваш сайт'] },
   more: (n) => '+' + n,
   studio: {
     plus: { inclTitle: 'Всё для съёмки уже на месте', faqKicker: 'Вопросы', faqTitle: 'Частые вопросы',

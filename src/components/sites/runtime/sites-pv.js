@@ -949,6 +949,8 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
         // the visitor's own hands (fx): a link inside the sample scrolls to its section; scripted demos stop once
         // the visitor has taken the sample (onUser), and ctx.user says whether they have
         scrollTo: (target) => fx.scrollTo(target),
+        // a link inside the sample to another of its pages (Лендінг+): the frame draws that page
+        goPage: (i) => showPage(i),
         get user() { return fx.user; },
         onUser: (fn) => { const h = () => fn(); el.addEventListener('pv:user', h); site._dispose.push(() => el.removeEventListener('pv:user', h)); },
       };
@@ -956,26 +958,32 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
     }
     // the 3D object into the new hero (the same element: the live cube keeps its context)
     site.querySelector('[data-obj]')?.append(obj);
-    // the browser tabs: corporate has four pages (a click switches; the tour switches too)
-    const list = C.tabs[cfg.format];
-    const on = cfg.format === 'corporate' ? pg : 0;
+    // the browser tabs: corporate and Лендінг+ have four pages (a click switches; the tour switches too)
+    const list = tabsOf(cfg);
+    const on = paged(cfg) ? pg : 0;
     tabs.innerHTML = list.map((x, i) => `<span class="pvw__tab${i === on ? ' is-on' : ''}${i ? ' is-more' : ''}" data-page="${i}">${esc(x)}</span>`).join('')
       + (list.length > 1 ? `<span class="pvw__count">${esc(C.more(list.length - 1))}</span>` : '');
     return site;
   }
 
+  // the pages a sample has (its browser tabs): the corporate site, and Лендінг+ (the landing and its own pages, the
+  // owner, 27 Nov 2026); the store's tabs are only its chrome
+  function tabsOf(cfg) { return (cfg && (C.tabs[cfg.plus ? 'landingPlus' : cfg.format] || C.tabs[cfg.format])) || []; }
+  function paged(cfg) { return !!cfg && (cfg.format === 'corporate' || !!cfg.plus) && tabsOf(cfg).length > 1; }
   function showPage(i) {
-    if (!prev || prev.format !== 'corporate') return;
-    page = ((i % 4) + 4) % 4;
+    if (!paged(prev)) return;
+    const n = tabsOf(prev).length;
+    page = ((i % n) + n) % n;
     render(prev, page, true);
     fx.page(page);
   }
-  // corporate: a click on a tab (a mouse), or a tap anywhere on the frame (touch) shows the next page
+  // a click on a tab shows its page; on the corporate site a tap anywhere on the frame (touch) shows the next one
+  // (Лендінг+ is a live site under the finger: its own links and the tabs switch its pages)
   el.addEventListener('click', (e) => {
-    if (prev?.format !== 'corporate') return;
+    if (!paged(prev)) return;
     const tab = e.target.closest('.pvw__tab');
     if (tab) showPage(+tab.dataset.page);
-    else if (e.target.closest('.pv-vp') && matchMedia('(hover: none)').matches) showPage(page + 1);
+    else if (prev.format === 'corporate' && e.target.closest('.pv-vp') && matchMedia('(hover: none)').matches) showPage(page + 1);
   });
 
   /* ---------- 3D: the live cube (cube-gl.js), loaded on an intent toward the 3D row, never before ---------- */
@@ -1110,7 +1118,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
       || (ownObj(cfg) && before.threeDHero !== cfg.threeDHero); // a module with its own 3D object draws it in build()
     if (reshape) {
       if (firstRun || before.format !== cfg.format || before.plus !== cfg.plus) page = 0;
-      render(cfg, cfg.format === 'corporate' ? page : 0, !firstRun);
+      render(cfg, paged(cfg) ? page : 0, !firstRun);
     }
     const ads = hasAds(cfg);
     const stats = cfg.growth === 'analytics'; // analytics alone (with ads it is part of the ads setup)
@@ -1155,7 +1163,7 @@ export function mountPreview(el, { t, lang = 'uk', assets = {}, reducedMotion = 
       quiet: needsFaces(cfg), // «Синя година»: no Silk and no loops; its blocks enter once each (rb-anim.js mountCover)
       origin: shop && cfg.design === 'custom' ? 'top-center' : 'top-right', // the light falls on the visual
       // their site rests: the story moves; the studio's Авторський (a magazine) turns its pages ([data-page])
-      tour: cfg.format === 'corporate' ? 'pages' : needsFaces(cfg) ? 'flip' : site ? 'scroll' : 'none', // (the second samples: pages or scroll, as their format)
+      tour: paged(cfg) ? 'pages' : needsFaces(cfg) ? 'flip' : site ? 'scroll' : 'none', // (the second samples: pages or scroll, as their format)
       restart: !firstRun, // every change: back to the hero, a pause, then the tour again
       lang2: cfg.secondLanguage && site,
       cart: shop,

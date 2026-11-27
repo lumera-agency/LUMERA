@@ -600,6 +600,55 @@ function sliceStill(img) {
   img.after(col);
 }
 
+/* ---------- block 2 · Лендінг+'s pages on its stage (the owner, 27 Nov 2026: the landing and 2–3 separate pages; the
+   sample shows three): a tab under the frames puts that page's stills in them (decoded first, sliced as the others),
+   its sheets on the ruler, and plays the scroll again ---------- */
+function initStagePages(room) {
+  const art = $('.st-stage[data-fmt="landingPlus"] .st-stage__art', room);
+  const bar = art && $('[data-ptabs]', art);
+  if (!bar) return;
+  const desk = $('.st-dev__desk .st-dev__img', art), phoneImg = $('.st-dev__phone .st-dev__img', art);
+  const ruler = $('.st-ruler', art);
+  const words = (k) => t(k, '').split('·').map((w) => w.trim()).filter(Boolean);
+  let on = 0, tok = 0;
+  bar.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-pi]');
+    if (!b) return;
+    const i = Number(b.dataset.pi);
+    if (i === on) return;
+    on = i;
+    const my = ++tok;
+    $$('[data-pi]', bar).forEach((x) => x.classList.toggle('is-on', x === b));
+    const format = await stillFormat;
+    const pick = [[desk, t(i ? `sites.img.landingPlus.p${i}` : 'sites.img.landingPlus', ''), 900], [phoneImg, t(`sites.img.landingPlus.${i ? `p${i}m` : 'm'}`, ''), 300]];
+    const ready = await Promise.all(pick.map(async ([img, base, w]) => {
+      if (!img || !base) return null;
+      // (a phone, or a tablet up to 860 px, takes the 600-px copy of the computer's still, as at the start)
+      const src = (narrowMQ.matches && w === 900 ? base.replace(/\.webp$/, '-s.webp') : base).replace(/\.webp$/, `.${format}`);
+      const pre = new Image();
+      pre.src = src;
+      await pre.decode().catch(() => {});
+      return [img, src, w, pre.naturalWidth ? Math.round((w * pre.naturalHeight) / pre.naturalWidth) : 0];
+    }));
+    if (my !== tok) return; // another tab since
+    for (const x of ready) {
+      if (!x) continue;
+      const [img, src, w, h] = x;
+      img.src = src;
+      if (h) { img.setAttribute('width', String(w)); img.setAttribute('height', String(h)); }
+      const col = img.nextElementSibling;
+      if (col?.classList.contains('st-dev__col')) col.remove();
+      img.classList.remove('is-src');
+      sliceStill(img);
+    }
+    if (ruler) ruler.replaceChildren(...words(i ? `sites.pv.lp.p${i}` : 'sites.pv.lp.n.all').map((w) => Object.assign(document.createElement('li'), { textContent: w })));
+    const scene = scenes.find((s) => s.el === art);
+    if (!scene) return;
+    finish(scene);
+    setTimeout(() => request(scene, true), 80);
+  });
+}
+
 function playDev(scene) {
   const art = scene.el;
   const deskImg = $('.st-dev__desk .st-dev__img', art);
@@ -1006,9 +1055,10 @@ function renderMap() {
   let items;
   if (state.format === 'landingPlus' && t(`sites.pv.lp.${d}.all`, '')) {
     // a Лендінг+ with its own design: its ten blocks in order, the extras at the indexes in sites.pv.lp.<d>.add (none
-    // since 26 Nov 2026: a landing has up to ten blocks itself, Лендінг+ adds three pages the sample does not show)
+    // since 26 Nov 2026: a landing has up to ten blocks itself); then its own pages (27 Nov 2026), marked as its extras
     const add = t(`sites.pv.lp.${d}.add`, '').split(',').filter(Boolean).map(Number);
     items = words(`sites.pv.lp.${d}.all`).map((w, i) => [w, add.includes(i)]);
+    items.push(...words(`sites.pv.lp.${d}.pages`).map((w) => [w, true]));
   } else {
     const base = words(`sites.pv.${key}`);
     const extra = state.format === 'landingPlus' ? words(`sites.pv.lp.${d}`) : [];
@@ -1023,7 +1073,7 @@ function renderMap() {
     return li;
   }));
   count.textContent = t(`sites.pv.n.${state.format === 'landingPlus' ? `lp.${d}` : key}`, '');
-  // Лендінг+: a shortened sample, said under its list (the main page only, not its three inner pages)
+  // Лендінг+: its pages are switched by the tabs over the sample, said under its list
   const more = $('[data-pv-more]');
   if (more) more.hidden = state.format !== 'landingPlus';
 }
@@ -1118,6 +1168,7 @@ function initTabs() {
     ol.replaceChildren(...items.map(([w, add]) => Object.assign(document.createElement('li'), { textContent: w, className: add ? 'is-add' : '' })));
   }
   evenStages(room);
+  initStagePages(room);
   let shown = state.format;
   glide = OG ? null : mountGlide($('.st-rail', room));
   let placed = false;

@@ -113,6 +113,8 @@ const DRAW = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const INK = '#1e1e1c', SAGE = '#7e8b6a', CYC = '#f7f5f1';
 const pad = (n) => String(n).padStart(2, '0');
 const r1 = (n) => Math.round(n * 10) / 10;
+// a link to another page of the sample: where to land on it once it is drawn ({ pg, at, hall }); one at a time
+let PENDING = null;
 
 /* ---------- the interface's own words (the rest is the studio's copy) ---------- */
 const T = {
@@ -173,6 +175,60 @@ const T = {
   sheets: { uk: 'Перелік аркушів', ru: 'Перечень листов' },
   back: { uk: 'Аркуш 01', ru: 'Лист 01' },
   perHour: { uk: 'Ціна за годину', ru: 'Цена за час' },
+  // (27 Nov 2026, the owner: Лендінг+ is everything the landing has and 2–3 separate pages; the sample shows three)
+  pages: { uk: ['Головна', 'Зали', 'Роботи', 'Контакти'], ru: ['Главная', 'Залы', 'Работы', 'Контакты'] },
+  pagesEn: ['Home', 'Studios', 'Work', 'Contacts'],
+  pagesK: { uk: 'Сторінки сайту', ru: 'Страницы сайта' },
+  next: { uk: 'Наступна сторінка', ru: 'Следующая страница' },
+  more1: { uk: 'Докладніше про зали', ru: 'Подробнее о залах' },
+  more2: { uk: 'Усі роботи', ru: 'Все работы' },
+  more3: { uk: 'Маршрут і контакти', ru: 'Маршрут и контакты' },
+  book1: { uk: 'Забронювати', ru: 'Забронировать' },
+  specK: { uk: ['Площа', 'Стіни', 'Світло', 'Підходить для', 'Ціна за годину'], ru: ['Площадь', 'Стены', 'Свет', 'Подходит для', 'Цена за час'] },
+  // each hall: the walls, the light, what it suits
+  hx: {
+    uk: [['Білі', 'Денне, три вікна на південь', 'Портрети, каталоги одягу, предметна зйомка'],
+      ['Темні', 'Денне й імпульсне', 'Портрети, відео, контрастні кадри'],
+      ['Світлі, скошена стеля', 'Денне, вікна в даху', 'Портрети, love story, контент для соцмереж']],
+    ru: [['Белые', 'Дневной, три окна на юг', 'Портреты, каталоги одежды, предметная съёмка'],
+      ['Тёмные', 'Дневной и импульсный', 'Портреты, видео, контрастные кадры'],
+      ['Светлые, скошенный потолок', 'Дневной, окна в крыше', 'Портреты, love story, контент для соцсетей']],
+  },
+  galCap: { uk: { g: 'загальний вигляд', k0: 'фон і циклорама', k1: 'світло й дзеркало', m: 'реквізит і декорації' },
+    ru: { g: 'общий вид', k0: 'фон и циклорама', k1: 'свет и зеркало', m: 'реквизит и декорации' } },
+  // the pages' own words: [1] the halls, [2] the shots, [3] the contacts
+  pg: {
+    uk: [null,
+      { k: 'Зали', t: 'Три зали з денним світлом', p: 'Південь, Графіт і Мансарда. Фони, світло й гримерка входять у ціну години.',
+        cmpK: 'Порівняння', cmpT: 'Порівняйте зали', pay: 'Передоплата 30%, решта в день зйомки', incl: 'Фони, світло, гримерка й парковка в ціні',
+        nextT: 'Обрали зал?', nextP: 'Залиште заявку. Відповімо за 15 хвилин і підтвердимо час.' },
+      { k: 'Роботи', p: 'Що знімають у наших залах. Оберіть зал, щоб побачити тільки його кадри.',
+        casesK: 'Проєкти', casesT: 'Що в нас знімали',
+        caseP: ['Предметна зйомка на білому фоні при денному світлі.', 'Каталог на темному фоні з контрастним світлом.', 'Лукбук під скошеною стелею, світло з вікон у даху.'],
+        nextT: 'Сподобалися кадри?', nextP: 'Забронюйте зал. Асистент допоможе виставити світло.' },
+      { k: 'Контакти', p: 'Київ, Поділ. Від метро «Контрактова площа» 10 хвилин пішки.', hoursK: 'Графік', hours: 'Щодня, 9:00–21:00',
+        mapK: 'Ситуаційний план', routeK: 'Маршрут', routeT: 'Як дійти до студії',
+        route: [['Метро «Контрактова площа»', '10 хвилин пішки вулицею Межигірською'], ['Вхід з двору', 'Ворота поруч із кавʼярнею'],
+          ['Парковка', 'У дворі, для гостей студії'], ['Студія', 'Другий поверх, адміністратор зустріне біля входу']],
+        notesK: 'Примітки', notesT: 'Перед зйомкою',
+        notes: ['Передоплата 30%, решту платите в день зйомки.', 'Приходьте за 15 хвилин до початку: зал і гримерка вже будуть готові.',
+          'Фони, світло, гримерка й парковка вже в ціні.', 'Асистент допоможе виставити світло, навіть якщо ви прийшли вперше.'] }],
+    ru: [null,
+      { k: 'Залы', t: 'Три зала с дневным светом', p: 'Юг, Графит и Мансарда. Фоны, свет и гримёрка входят в цену часа.',
+        cmpK: 'Сравнение', cmpT: 'Сравните залы', pay: 'Предоплата 30%, остальное в день съёмки', incl: 'Фоны, свет, гримёрка и парковка в цене',
+        nextT: 'Выбрали зал?', nextP: 'Оставьте заявку. Ответим за 15 минут и подтвердим время.' },
+      { k: 'Работы', p: 'Что снимают в наших залах. Выберите зал, чтобы увидеть только его кадры.',
+        casesK: 'Проекты', casesT: 'Что у нас снимали',
+        caseP: ['Предметная съёмка на белом фоне при дневном свете.', 'Каталог на тёмном фоне с контрастным светом.', 'Лукбук под скошенным потолком, свет из окон в крыше.'],
+        nextT: 'Понравились кадры?', nextP: 'Забронируйте зал. Ассистент поможет выставить свет.' },
+      { k: 'Контакты', p: 'Киев, Подол. От метро «Контрактовая площадь» 10 минут пешком.', hoursK: 'График', hours: 'Ежедневно, 9:00–21:00',
+        mapK: 'Ситуационный план', routeK: 'Маршрут', routeT: 'Как дойти до студии',
+        route: [['Метро «Контрактовая площадь»', '10 минут пешком по улице Межигорской'], ['Вход со двора', 'Ворота рядом с кофейней'],
+          ['Парковка', 'Во дворе, для гостей студии'], ['Студия', 'Второй этаж, администратор встретит у входа']],
+        notesK: 'Примечания', notesT: 'Перед съёмкой',
+        notes: ['Предоплата 30%, остальное платите в день съёмки.', 'Приходите за 15 минут до начала: зал и гримёрка уже будут готовы.',
+          'Фоны, свет, гримёрка и парковка уже в цене.', 'Ассистент поможет выставить свет, даже если вы пришли впервые.'] }],
+  },
   scr: 'АБВГДЕЄЖЗИІКЛМНОПРСТУФХЦЧШЮЯ0123456789·+/×−',
 };
 
@@ -373,34 +429,44 @@ export function build(H, c, data, e, opts = {}) {
   // (SplitText: each word in its own mask, risen once on entry)
   const wm = (x) => String(x).split(/\s+/).filter(Boolean).map((w) => `<span class="pn-wm"><span>${esc(w)}</span></span>`).join(' ');
   const key = (text, n = 1) => { const w = String(text).split(/\s+/); return `${wm(w.slice(0, -n).join(' '))} <em class="pn-key">${wm(w.slice(-n).join(' '))}</em>`; };
+  // (27 Nov 2026) Лендінг+ is the landing and its own pages: 0 the main page (the ten sheets), 1 the halls, 2 the
+  // shots, 3 the contacts. The frame's tabs, the site's menu and the links between them switch pages (ctx.goPage)
+  const pg = Math.max(0, Math.min(3, Math.round(Number(opts.page) || 0)));
+  const PG = t('pages');
+  const W = pg ? t('pg')[pg] : null;
+  const sheets = pg === 1 ? [W.k, ...names, W.cmpK] : pg === 2 ? [W.k, W.casesK] : pg === 3 ? [W.k, W.routeK, t('bookK'), W.notesK] : t('rail');
+  const NS = sheets.length;
+  // the menu: Зали and Ціни → the halls page (Ціни to its comparison), Роботи, Контакти; the page it is on is marked
+  const NAVPG = [[1, ''], [1, 'cmp'], [2, ''], [3, '']];
+  const toPg = (p, at = '', extra = '') => `data-pg="${p}"${at ? ` data-at="${at}"` : ''}${extra}`;
+  const toForm = pg === 0 ? 'data-go="10"' : toPg(3, 'form');
+  const toHome = pg === 0 ? 'data-go="1"' : toPg(0);
   // the drawn button (StarBorder's outline trace, as a hairline frame that draws itself once on hover with a sage nib
   // running ahead of it; the fill wipes in from the arrow's side; the arrow rolls through its box). One markup for
   // the primary (graphite), the secondary (--line) and the small header one (--sm)
   const pbtn = (label, mod = '', attrs = '') => `<span class="pn-btn${mod}"${attrs}><i class="pn-btn__fill" aria-hidden="true"></i>`
     + `<span class="pn-btn__frm" aria-hidden="true"><svg><rect pathLength="1" width="100%" height="100%"/></svg><i class="pn-btn__nib"></i></span>`
     + `<span class="pn-btn__t">${label}</span><b class="pn-btn__ar" aria-hidden="true"><span class="pn-roll">${ARROW}${ARROW}</span></b></span>`;
-  // where the menu's links lead: Зали, Ціни → the halls; Роботи → the shots; Контакти → the booking
-  const NAVGO = [2, 2, 5, 10];
   // each block opens like a sheet of the set: its number, its label, a rule, «Арк. 03 / 10»
-  const head = (n, kick) => `<div class="pn-head" data-in><span class="pn-head__n">${pad(n)}</span><span class="pn-head__k">${esc(kick)}</span><i class="pn-head__r"></i><span class="pn-head__s">${esc(t('sheet'))} ${pad(n)} / 10</span></div>`;
+  const head = (n, kick, of = 10) => `<div class="pn-head" data-in><span class="pn-head__n">${pad(n)}</span><span class="pn-head__k">${esc(kick)}</span><i class="pn-head__r"></i><span class="pn-head__s">${esc(t('sheet'))} ${pad(n)} / ${pad(of)}</span></div>`;
   const dimLine = (label, cls = '') => `<span class="pn-dim${cls}" aria-hidden="true"><i class="pn-dim__l"></i>${label ? `<b>${label}</b>` : ''}</span>`;
 
   /* ---------- the header, the rail, the phone's menu ---------- */
-  const logo = `<span class="pn-logo" data-go="1"><i class="pn-logo__m">${MARK}</i><b>${esc(c.brand)}</b></span>`;
+  const logo = `<span class="pn-logo" ${toHome}><i class="pn-logo__m">${MARK}</i><b>${esc(c.brand)}</b></span>`;
   // the header as a drawing's title strip: the lockup | the menu with its sheet references | the language and the
   // button; along its foot the scale bar of the ten sheets (read so far in graphite, the current one in sage)
   const header = `<header class="pv-hdr pn-hdr">
-      <span class="pn-logo pn-logo--hdr" data-go="1"><i class="pn-logo__m">${MARK}</i><span class="pn-logo__t"><b>${esc(c.brand)}</b><small>${esc(s.studioLabel)} · ${esc(s.meta[0])}</small></span></span>
-      <nav class="pn-nav">${s.nav.map((x, i) => `<span class="pn-nav__i" data-go="${NAVGO[i]}" data-nav="${i}"><span class="pn-nav__l">${lx(x, e?.nav?.[i])}</span><sup class="pn-nav__r">${pad(NAVGO[i])}</sup></span>`).join('')}</nav>
-      <div class="pn-hdr__r">${e ? '<span class="pv-lang" aria-hidden="true"><b class="pv-lang__a">UA</b><b class="pv-lang__b">EN</b></span>' : ''}${pbtn(lx(s.cta, e?.cta), ' pn-btn--sm pn-cta', ' data-go="10"')}
-        <span class="pn-cta-i" data-go="10" aria-hidden="true"><span class="pn-roll">${ARROW}${ARROW}</span></span><span class="pn-burger" data-burger aria-hidden="true"><i></i><i></i></span></div>
-      <span class="pn-scale" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => `<i data-go="${i + 1}" data-sc="${i + 1}"${i ? '' : ' class="is-on"'}></i>`).join('')}</span>
+      <span class="pn-logo pn-logo--hdr" ${toHome}><i class="pn-logo__m">${MARK}</i><span class="pn-logo__t"><b>${esc(c.brand)}</b><small>${esc(s.studioLabel)} · ${esc(s.meta[0])}</small></span></span>
+      <nav class="pn-nav">${s.nav.map((x, i) => `<span class="pn-nav__i${pg && NAVPG[i][0] === pg && !NAVPG[i][1] ? ' is-on' : ''}" ${toPg(...NAVPG[i])} data-nav="${i}"><span class="pn-nav__l">${lx(x, e?.nav?.[i])}</span></span>`).join('')}</nav>
+      <div class="pn-hdr__r">${e ? '<span class="pv-lang" aria-hidden="true"><b class="pv-lang__a">UA</b><b class="pv-lang__b">EN</b></span>' : ''}${pbtn(lx(s.cta, e?.cta), ' pn-btn--sm pn-cta', ` ${toForm}`)}
+        <span class="pn-cta-i" ${toForm} aria-hidden="true"><span class="pn-roll">${ARROW}${ARROW}</span></span><span class="pn-burger" data-burger aria-hidden="true"><i></i><i></i></span></div>
+      <span class="pn-scale" aria-hidden="true" style="--n:${NS}">${Array.from({ length: NS }, (_, i) => `<i data-go="${i + 1}" data-sc="${i + 1}"${i ? '' : ' class="is-on"'}></i>`).join('')}</span>
     </header>`;
-  const rail = `<nav class="pn-rail" aria-hidden="true" data-rail><ol>${t('rail').map((x, i) => `<li class="pn-rail__i${i ? '' : ' is-on'}" data-r="${i + 1}" data-go="${i + 1}"><i class="pn-rail__t"></i><span class="pn-rail__n">${pad(i + 1)}</span></li>`).join('')}</ol>`
-    + `<span class="pn-rail__cur">${t('rail').map((x, i) => `<span${i ? '' : ' class="is-on"'} data-r="${i + 1}">${pad(i + 1)} · ${esc(x)}</span>`).join('')}</span></nav>`;
+  const rail = `<nav class="pn-rail" aria-hidden="true" data-rail><ol>${sheets.map((x, i) => `<li class="pn-rail__i${i ? '' : ' is-on'}" data-r="${i + 1}" data-go="${i + 1}"><i class="pn-rail__t"></i><span class="pn-rail__n">${pad(i + 1)}</span></li>`).join('')}</ol>`
+    + `<span class="pn-rail__cur">${sheets.map((x, i) => `<span${i ? '' : ' class="is-on"'} data-r="${i + 1}">${pad(i + 1)} · ${esc(x)}</span>`).join('')}</span></nav>`;
   const menu = `<div class="pn-menu" data-menu aria-hidden="true"><i class="pn-menu__l pn-menu__l--1"></i><i class="pn-menu__l pn-menu__l--2"></i>
-      <div class="pn-menu__p"><ol>${t('rail').map((x, i) => `<li data-go="${i + 1}"><span class="pn-menu__n">${pad(i + 1)}</span><span class="pn-menu__t"><span>${lx(x, e ? T.railEn[i] : null)}</span></span></li>`).join('')}</ol>
-        <div class="pn-menu__f"><span>${esc(f.phone || '')}</span>${pbtn(lx(s.cta, e?.cta), ' pn-btn--sm pn-btn--full', ' data-go="10"')}</div></div></div>`;
+      <div class="pn-menu__p"><ol>${PG.map((x, i) => `<li${i === pg ? ' class="is-on"' : ''} ${toPg(i)}><span class="pn-menu__n">${pad(i + 1)}</span><span class="pn-menu__t"><span>${lx(x, e ? T.pagesEn[i] : null)}</span></span></li>`).join('')}</ol>
+        <div class="pn-menu__f"><span>${esc(f.phone || '')}</span>${pbtn(lx(s.cta, e?.cta), ' pn-btn--sm pn-btn--full', ` ${toForm}`)}</div></div></div>`;
 
   /* ---------- 01 · the first screen: the headline draws itself, the plan of the halls beside it ---------- */
   const h1Lines = (lines) => lines.map((ln) => `<span class="pn-h1__s">${ln.split(/\s+/).map((w) => (/^\*.*\*$/.test(w) ? `<span class="pn-w pn-w--key">${esc(w.slice(1, -1))}<i class="pn-w__bar" aria-hidden="true"></i></span>` : `<span class="pn-w">${esc(w)}</span>`)).join(' ')}</span>`).join('');
@@ -433,6 +499,7 @@ export function build(H, c, data, e, opts = {}) {
           <ol class="pn-halls__list">${s.services.slice(0, 3).map(([, , p], i) => `<li class="pn-hrow${i ? '' : ' is-on'}" data-h="${i}"><span class="pn-hrow__l">${LET[i]}</span><b>${esc(names[i])}</b><span class="pn-hrow__a">${esc(s.halls[i][1])}</span><span class="pn-hrow__p">${esc(p)}</span></li>`).join('')}</ol>
           <div class="pn-rate"><span class="pn-rate__k" data-rate-k>${up(`${t('hall')} ${LET[0]} · ${t('perHour')}`)}</span><b class="pn-rate__v"><span class="pn-num" data-rate-n>${digits(price(s.services[0][2])[0])}</span><small>${esc(price(s.services[0][2])[1])}</small></b></div>
           ${pbtn(esc(t('hallBtn')), ' pn-btn--line', ' data-book-hall')}
+          <span class="pn-link pn-more" ${toPg(1)}>${esc(t('more1'))}</span>
         </div>
         <figure class="pn-halls__view" data-in>
           <div class="pn-halls__ph">${hallImg.map((im, i) => `<img class="${i ? '' : 'is-on'}" data-h="${i}" src="${PH}${im}.webp" alt="" decoding="async">`).join('')}<div class="pn-px" aria-hidden="true">${'<i></i>'.repeat(PXC * PXR)}</div></div>
@@ -486,6 +553,7 @@ export function build(H, c, data, e, opts = {}) {
       <div class="pn-works__top"><h2 class="pn-h2">${key(s.worksTitle)}</h2>
         <div class="pn-chips" data-in>${[t('all'), ...names].map((x, k) => `<span class="pn-chip${k ? '' : ' is-on'}" data-f="${k - 1}">${esc(x)}</span>`).join('')}</div></div>
       <div class="pn-strip" data-strip><div class="pn-strip__row">${t('sets').map((x, i) => `<figure class="pn-shot" data-h="${setHall[i]}"><div class="pn-shot__ph"><img src="${PH}set-${i + 1}.webp" alt="" decoding="async" draggable="false"></div><figcaption><b>${up(`${names[setHall[i]]} · ${pad(i + 1)}`)}</b><span>${esc(x)}</span></figcaption></figure>`).join('')}</div></div>
+      <div class="pn-works__more"><span class="pn-link" ${toPg(2)}>${esc(t('more2'))}</span></div>
     </section>`;
 
   /* ---------- 06 · how to book: four steps on the dashed rail ---------- */
@@ -539,7 +607,7 @@ export function build(H, c, data, e, opts = {}) {
     </section>`;
 
   /* ---------- 10 · the booking: the site plan and the contacts, the form ---------- */
-  const site = `<svg class="pn-site" viewBox="0 0 320 200" aria-hidden="true">
+  const siteSvg = (cls = 'pn-site') => `<svg class="${cls}" viewBox="0 0 320 200" aria-hidden="true">
       <path class="pn-site__st" pathLength="1" d="M-10 52 330 34M-10 150 330 138M70 -10 92 210M214 -10 236 210"/>
       <path class="pn-site__st pn-site__st--s" pathLength="1" d="M-10 98 330 84M142 -10 160 210M276 -10 292 210"/>
       <rect class="pn-site__blk" x="160" y="96" width="50" height="36" transform="rotate(-2.4 185 114)"/>
@@ -549,16 +617,8 @@ export function build(H, c, data, e, opts = {}) {
       <text class="pn-site__p" x="126" y="122" text-anchor="middle">P</text>
       <text class="pn-site__t pn-site__t--b" x="185" y="160" text-anchor="middle">${esc(c.brand.toUpperCase())}</text>
     </svg>`;
-  const book = `<section class="pn-sec pn-book" data-blk="10" data-book>
-      ${head(10, t('bookK'))}
-      <div class="pn-book__grid">
-        <div class="pn-book__l" data-in>
-          <h2 class="pn-h2">${key(s.formTitle)}</h2>
-          <p class="pn-p">${esc(s.formSub)}</p>
-          <div class="pn-map"><span class="pn-map__k">${up(P2.mapTitle || '')}</span>${site}</div>
-          <div class="pn-ci">${[[ICO.pin, f.addr], [ICO.phone, f.phone], [ICO.mail, MAIL]].map(([ic, v]) => `<span>${ic}${esc(v || '')}</span>`).join('')}</div>
-        </div>
-        <div class="pn-form" data-in>
+  const site = siteSvg();
+  const formHTML = `<div class="pn-form" data-in>
           <span class="pn-form__k">${esc(t('hall'))}</span>
           <div class="pn-pick" data-group>${s.halls.map(([n, , p], i) => `<span class="pn-pick__o${i ? '' : ' is-on'}"><b>${LET[i]} · ${esc(n)}</b><small>${esc(p)}</small></span>`).join('')}</div>
           <span class="pn-form__k">${esc(t('date'))}</span>
@@ -568,7 +628,18 @@ export function build(H, c, data, e, opts = {}) {
           <span class="pn-note">${ICO.clock}${esc(s.formNote)}</span>
           <div class="pn-stamp" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="1" y="1" width="98" height="98" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
             <span class="pn-stamp__i">${TICK}</span><b class="pn-stamp__t">${esc(t('sent'))}</b><span class="pn-stamp__s" data-stamp-s></span><span class="pn-stamp__n">${esc(s.formNote)}</span></div>
+        </div>`;
+  const book = `<section class="pn-sec pn-book" data-blk="10" data-book>
+      ${head(10, t('bookK'))}
+      <div class="pn-book__grid">
+        <div class="pn-book__l" data-in>
+          <h2 class="pn-h2">${key(s.formTitle)}</h2>
+          <p class="pn-p">${esc(s.formSub)}</p>
+          <div class="pn-map"><span class="pn-map__k">${up(P2.mapTitle || '')}</span>${site}</div>
+          <div class="pn-ci">${[[ICO.pin, f.addr], [ICO.phone, f.phone], [ICO.mail, MAIL]].map(([ic, v]) => `<span>${ic}${esc(v || '')}</span>`).join('')}</div>
+          <span class="pn-link pn-more" ${toPg(3)}>${esc(t('more3'))}</span>
         </div>
+        ${formHTML}
       </div>
     </section>`;
 
@@ -585,22 +656,132 @@ export function build(H, c, data, e, opts = {}) {
       <div class="pn-ftr__grid">
         <div><span class="pn-ftr__k">${esc(heads[0])}</span><b>${esc(f.addr || '')}</b></div>
         <div><span class="pn-ftr__k">${esc(heads[1])}</span><b>${esc(f.phone || '')}</b><b>${MAIL}</b></div>
-        <div><span class="pn-ftr__k">${esc(t('nav'))}</span>${s.nav.map((x, i) => `<b class="pn-ftr__a" data-go="${NAVGO[i]}">${esc(x)}<sup>${pad(NAVGO[i])}</sup></b>`).join('')}</div>
+        <div><span class="pn-ftr__k">${esc(t('nav'))}</span>${s.nav.map((x, i) => `<b class="pn-ftr__a" ${toPg(...NAVPG[i])}>${esc(x)}</b>`).join('')}</div>
         <div class="pn-ftr__tb">
           <span class="pn-tb__w">${esc(c.brand)} · ${esc(s.studioLabel)}</span>
-          <span>${esc(c.url)}</span><span>${esc(t('sheet'))} 10 / 10</span>
+          <span>${esc(c.url)}</span><span>${esc(t('sheet'))} ${pad(NS)} / ${pad(NS)}</span>
           <span class="pn-tb__w pn-tb__n">${NBAR}</span>
           <span class="pn-tb__w pn-tb__c">${esc(f.copy || '')}</span>
         </div>
       </div>
-      <div class="pn-ftr__list"><span class="pn-ftr__k">${esc(t('sheets'))}</span><ol>${t('rail').map((x, i) => `<li data-go="${i + 1}"${i === 9 ? ' class="is-on"' : ''}><span>${pad(i + 1)}</span><b>${esc(x)}</b></li>`).join('')}</ol></div>
+      ${pg === 0 ? `<div class="pn-ftr__list"><span class="pn-ftr__k">${esc(t('sheets'))}</span><ol>${t('rail').map((x, i) => `<li data-go="${i + 1}"${i === 9 ? ' class="is-on"' : ''}><span>${pad(i + 1)}</span><b>${esc(x)}</b></li>`).join('')}</ol></div>`
+        : `<div class="pn-ftr__list pn-ftr__list--pg"><span class="pn-ftr__k">${esc(t('pagesK'))}</span><ol>${PG.map((x, i) => `<li ${toPg(i)}${i === pg ? ' class="is-on"' : ''}><span>${pad(i + 1)}</span><b>${esc(x)}</b></li>`).join('')}</ol></div>`}
       <div class="pn-word" aria-hidden="true">${[...String(c.brand).toLowerCase()].map((ch) => `<span>${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('')}</div>
     </footer>`;
+
+  /* ---------- Лендінг+'s own pages (27 Nov 2026): the halls, the shots, the contacts. Each opens with its title
+     sheet (the way back home, the title, the words, a drawing or the filters), its sheets follow, a graphite band
+     offers the request and the next page; the footer is the main page's ---------- */
+  const crumb = (name) => `<span class="pn-crumb" data-in><span ${toPg(0)}>${esc(PG[0])}</span><i>/</i><b>${esc(name)}</b></span>`;
+  const nextBand = (to) => `<section class="pn-next" data-pgsec>
+      <div class="pn-next__l" data-in><h2 class="pn-h2">${key(W.nextT)}</h2><p class="pn-p">${esc(W.nextP)}</p></div>
+      <div class="pn-next__r" data-in>${pbtn(lx(s.cta, e?.cta), '', ` ${toPg(3, 'form')}`)}<span class="pn-next__pg" ${toPg(to)}><small>${esc(t('next'))}</small><b>${esc(PG[to])}</b><i>${ARROW}</i></span></div>
+    </section>`;
+  const inner = () => {
+    const HX = t('hx'), SK = t('specK');
+    if (pg === 1) {
+      const top = `<section class="pn-pg" data-blk="1" data-pgsec>
+      <div class="pn-pg__txt">
+        ${crumb(W.k)}
+        <div class="pn-pg__h" data-in>${key(W.t, 2)}</div>
+        <p class="pn-sub" data-in>${esc(W.p)}</p>
+        <ol class="pn-pg__idx" data-in>${names.map((n, i) => `<li class="pn-hrow" data-go="${2 + i}"><span class="pn-hrow__l">${LET[i]}</span><b>${esc(n)}</b><span class="pn-hrow__a">${esc(s.halls[i][1])}</span><span class="pn-hrow__p">${esc(s.services[i][2])}</span></li>`).join('')}</ol>
+      </div>
+      <div class="pn-plan pn-plan--pg" data-pgplan>${planSVG(model)}</div>
+    </section>`;
+      const hx = names.map((n, i) => {
+        const [v, unit] = price(s.services[i][2]);
+        const d = H.noArea ? H.noArea(s.services[i][1]) : s.services[i][1];
+        return `<section class="pn-sec pn-hx${i % 2 ? ' pn-hx--r' : ''}" data-blk="${2 + i}" data-pgsec>
+      ${head(2 + i, `${t('hall')} ${LET[i]}`, NS)}
+      <div class="pn-hx__grid">
+        <figure class="pn-hx__ph" data-in>${dimLine(esc(s.halls[i][1]))}<div class="pn-ph"><img src="${PH}${hallImg[i]}.webp" alt="" decoding="async"></div></figure>
+        <div class="pn-hx__t">
+          <h2 class="pn-h2">${key(`${t('hall')} «${n}»`)}</h2>
+          <p class="pn-p" data-in>${esc(d)}</p>
+          <dl class="pn-spec" data-in>${[[SK[0], s.halls[i][1]], [SK[1], HX[i][0]], [SK[2], HX[i][1]], [SK[3], HX[i][2]]].map(([k, x]) => `<div><dt>${esc(k)}</dt><dd>${esc(x)}</dd></div>`).join('')}</dl>
+          <div class="pn-hx__f" data-in><div class="pn-rate"><span class="pn-rate__k">${up(SK[4])}</span><b class="pn-rate__v"><span class="pn-num">${digits(v)}</span><small>${esc(unit)}</small></b></div>
+            ${pbtn(esc(t('hallBtn')), ' pn-btn--line', ` ${toPg(3, 'form', ` data-hall="${i}"`)}`)}</div>
+        </div>
+      </div>
+    </section>`;
+      }).join('');
+      const rows = [[SK[0], (i) => s.halls[i][1]], [SK[1], (i) => HX[i][0]], [SK[2], (i) => HX[i][1]], [SK[3], (i) => HX[i][2]], [SK[4], (i) => s.services[i][2]]];
+      const cmp = `<section class="pn-sec pn-cmp" data-blk="5" data-sheet="cmp" data-pgsec>
+      ${head(5, W.cmpK, NS)}
+      <div class="pn-cmp__top"><h2 class="pn-h2">${key(W.cmpT)}</h2><span class="pn-cond" data-in>${esc(t('cond'))}</span></div>
+      <div class="pn-tbl" data-in>
+        <div class="pn-tbl__r pn-tbl__r--h"><span></span>${names.map((n, i) => `<b>${LET[i]} · ${esc(n)}</b>`).join('')}</div>
+        ${rows.map(([k, x], r) => `<div class="pn-tbl__r${r === rows.length - 1 ? ' pn-tbl__r--p' : ''}"><span>${esc(k)}</span>${names.map((_, i) => `<span>${esc(x(i))}</span>`).join('')}</div>`).join('')}
+        <div class="pn-tbl__r pn-tbl__r--b"><span></span>${names.map((_, i) => `<span><span class="pn-link" ${toPg(3, 'form', ` data-hall="${i}"`)}>${esc(t('book1'))}</span></span>`).join('')}</div>
+      </div>
+      <div class="pn-cmp__f" data-in><span class="pn-note">${ICO.clock}${esc(W.pay)}</span><span class="pn-note">${TICK}${esc(W.incl)}</span></div>
+    </section>`;
+      return `${top}${hx}${cmp}${nextBand(2)}`;
+    }
+    if (pg === 2) {
+      // the shots, hall by hall (the series' own photos: the six sets, each hall's view, the backdrop, the light, the props)
+      const GAL = [['set-1', 0, 0], ['set-3', 1, 2], ['hall-attic', 2, 'g'], ['hall-south', 0, 'g'], ['set-5', 2, 4], ['set-4', 1, 3],
+        ['kit-light', 0, 'k1'], ['hall-graphite', 1, 'g'], ['set-6', 2, 5], ['set-2', 0, 1], ['meet', 1, 'm'], ['kit-backdrops', 0, 'k0']];
+      const cap = (k) => (typeof k === 'number' ? t('sets')[k] : t('galCap')[k]);
+      const gal = `<section class="pn-pg pn-pg--works" data-blk="1" data-gal data-pgsec>
+      <div class="pn-pg__txt pn-pg__txt--w">
+        ${crumb(W.k)}
+        <div class="pn-pg__h" data-in>${key(s.worksTitle)}</div>
+        <div class="pn-chips" data-in>${[t('all'), ...names].map((x, k) => `<span class="pn-chip${k ? '' : ' is-on'}" data-f="${k - 1}">${esc(x)}</span>`).join('')}</div>
+        <p class="pn-sub" data-in>${esc(W.p)}</p>
+      </div>
+      <div class="pn-gal">${GAL.map(([im, h, k]) => `<figure class="pn-tile${/^set/.test(im) ? ' pn-tile--p' : ''}" data-h="${h}"><div class="pn-ph"><img src="${PH}${im}.webp" alt="" decoding="async"></div><figcaption><b>${up(names[h])}</b><span>${esc(cap(k))}</span></figcaption></figure>`).join('')}</div>
+    </section>`;
+      const cases = `<section class="pn-sec pn-cases" data-blk="2" data-pgsec>
+      ${head(2, W.casesK, NS)}
+      <h2 class="pn-h2">${key(W.casesT)}</h2>
+      <div class="pn-cases__row">${(s.works || []).slice(0, 3).map(([ttl, meta], i) => `<article class="pn-case" data-in><div class="pn-ph"><img src="${PH}${['set-2', 'set-4', 'set-6'][i]}.webp" alt="" decoding="async"></div><span class="pn-case__m">${up(meta)}</span><b class="pn-case__t">${esc(ttl)}</b><p>${esc(W.caseP[i] || '')}</p></article>`).join('')}</div>
+    </section>`;
+      return `${gal}${cases}${nextBand(3)}`;
+    }
+    const top = `<section class="pn-pg" data-blk="1" data-pgsec>
+      <div class="pn-pg__txt">
+        ${crumb(W.k)}
+        <div class="pn-pg__h" data-in>${key(P2.mapTitle || W.k)}</div>
+        <p class="pn-sub" data-in>${esc(W.p)}</p>
+        <dl class="pn-cinfo" data-in>${[[P2.addr, f.addr], [P2.phone, f.phone], [P2.mail || (L === 'ru' ? 'Почта' : 'Пошта'), MAIL], [W.hoursK, W.hours]].map(([k, x]) => `<div><dt>${esc(k || '')}</dt><dd>${esc(x || '')}</dd></div>`).join('')}</dl>
+        <span class="pn-ftr__soc pn-cinfo__soc" data-in>${[ICO.ig, ICO.tg, ICO.fb].map((ic, i) => `<i title="${esc(f.links?.[i] || '')}">${ic}</i>`).join('')}</span>
+      </div>
+      <figure class="pn-map2" data-in><span class="pn-map__k">${up(W.mapK)}</span>${siteSvg('pn-site pn-site--l')}${NBAR.replace('class="pn-tb__nb"', 'class="pn-tb__nb pn-map2__nb"')}</figure>
+    </section>`;
+    const route = `<section class="pn-sec pn-steps pn-way" data-blk="2" data-steps>
+      ${head(2, W.routeK, NS)}
+      <div class="pn-steps__grid">
+        <div class="pn-steps__l" data-in><h2 class="pn-h2">${key(W.routeT)}</h2><span class="pn-cond">${esc(t('cond'))}</span></div>
+        <ol class="pn-route"><i class="pn-route__rail" aria-hidden="true"></i>${W.route.map(([a, b], i) => `<li class="pn-stop${i ? '' : ' is-pick'}"><span class="pn-stop__n">${pad(i + 1)}</span><b>${esc(a)}</b><span>${esc(b)}</span></li>`).join('')}</ol>
+      </div>
+    </section>`;
+    const book3 = `<section class="pn-sec pn-book" data-blk="3" data-book data-sheet="form">
+      ${head(3, t('bookK'), NS)}
+      <div class="pn-book__grid">
+        <div class="pn-book__l" data-in>
+          <h2 class="pn-h2">${key(s.formTitle)}</h2>
+          <p class="pn-p">${esc(s.formSub)}</p>
+          <div class="pn-ci">${[[ICO.pin, f.addr], [ICO.phone, f.phone], [ICO.mail, MAIL]].map(([ic, v]) => `<span>${ic}${esc(v || '')}</span>`).join('')}</div>
+        </div>
+        ${formHTML}
+      </div>
+    </section>`;
+    const notes = `<section class="pn-sec pn-notes" data-blk="4" data-pgsec>
+      ${head(4, W.notesK, NS)}
+      <div class="pn-notes__grid">
+        <h2 class="pn-h2">${key(W.notesT)}</h2>
+        <ol class="pn-notes__l">${W.notes.map((x, i) => `<li data-in><span>${i + 1}.</span><p>${esc(x)}</p></li>`).join('')}</ol>
+      </div>
+    </section>`;
+    return `${top}${route}${book3}${notes}`;
+  };
 
   return `${header}${rail}${menu}
   <div class="pv-scroll pn-scroll">
     <div class="pn-sel" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    ${hero}${halls}${incl}${trust}${works}${steps}${revs}${meet}${faq}${book}${footer}
+    ${pg === 0 ? `${hero}${halls}${incl}${trust}${works}${steps}${revs}${meet}${faq}${book}` : inner()}${footer}
   </div>`;
 }
 
@@ -616,6 +797,8 @@ export function enhance(site, ctx = {}) {
   const dispose = (fn) => off.push(fn);
   ctx.onDispose?.(() => { for (const fn of off) { try { fn(); } catch { /* gone with the node */ } } });
   site.classList.toggle('pn-still', still);
+  // the page of the sample it draws (0 the main page; 1 the halls, 2 the shots, 3 the contacts)
+  const pg = Math.max(0, Math.min(3, Math.round(Number(ctx.page) || 0)));
   const $ = (sel, root = site) => root.querySelector(sel);
   const $$ = (sel, root = site) => [...root.querySelectorAll(sel)];
   const anim = (el, kf, o) => (still || !el ? null : el.animate(kf, { easing: EASE, fill: 'backwards', ...o }));
@@ -662,7 +845,7 @@ export function enhance(site, ctx = {}) {
   };
 
   /* ---------- ClickSpark (ReactBits): a click throws eight drafting ticks out of its point ---------- */
-  const SPARK = '.pn-ftr__soc i, .pn-btn, .pn-cta, .pn-cta-i, .pn-chip, .pn-tab, .pn-pick__o, .pn-send, .pn-sw__i, .pn-hrow, .pn-revs__n, .pn-arr, .pn-link, .pn-stop, .pn-role, .pn-qa__q, .pn-shot, [data-go]';
+  const SPARK = '.pn-ftr__soc i, .pn-btn, .pn-cta, .pn-cta-i, .pn-chip, .pn-tab, .pn-pick__o, .pn-send, .pn-sw__i, .pn-hrow, .pn-revs__n, .pn-arr, .pn-link, .pn-stop, .pn-role, .pn-qa__q, .pn-shot, .pn-tile, .pn-case, [data-go], [data-pg]';
   const spark = (ev) => {
     if (still) return;
     const r = site.getBoundingClientRect();
@@ -683,8 +866,23 @@ export function enhance(site, ctx = {}) {
     for (const path of g.children) path.animate([{ strokeDasharray: '1 1', strokeDashoffset: 1, opacity: 1 }, { strokeDasharray: '1 1', strokeDashoffset: 0, opacity: 1, offset: 0.45 }, { strokeDasharray: '1 1', strokeDashoffset: 0, opacity: 0 }], { duration: 520, easing: 'cubic-bezier(.2,.8,.3,1)' });
     g.animate([{ scale: '0.7' }, { scale: '1.25' }], { duration: 520, easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => g.remove();
   };
+  // a page of the site (the menu, «Забронювати» elsewhere than the form, the next page): this one scrolls to the
+  // sheet asked for; another one is drawn by the frame (ctx.goPage) and lands there itself, a hall chosen in the form
+  const arrive = ({ at = '', hall = null } = {}) => {
+    if (hall != null) api.formHall?.(hall);
+    const el = at ? $(`[data-sheet="${at}"]`) : $('[data-blk="1"]');
+    if (el && ctx.scrollTo) ctx.scrollTo(el);
+  };
   site.addEventListener('click', (ev) => {
     if (ev.target.closest(SPARK)) spark(ev);
+    const toP = ev.target.closest('[data-pg]');
+    if (toP) {
+      menuClose?.();
+      const p = Number(toP.dataset.pg), at = toP.dataset.at || '', hall = toP.dataset.hall != null ? Number(toP.dataset.hall) : null;
+      if (p === pg) arrive({ at, hall });
+      else if (ctx.goPage) { PENDING = { pg: p, at, hall }; ctx.goPage(p); }
+      return;
+    }
     const to = ev.target.closest('[data-go]');
     if (to) { menuClose?.(); go(Number(to.dataset.go)); }
   });
@@ -709,10 +907,7 @@ export function enhance(site, ctx = {}) {
         items.forEach((it) => it.classList.toggle('is-on', it.dataset.r === n));
         const cur = $(`.pn-rail__cur > [data-r="${n}"]`, rail);
         if (cur && cur._n !== n) { cur._n = n; decrypt(cur, cur.textContent, 380); }
-        // the header's menu follows: the halls, the shots, the contacts
         const k = Number(n);
-        const on = k >= 2 && k <= 4 ? 0 : k >= 5 && k <= 8 ? 2 : k >= 9 ? 3 : -1;
-        $$('.pn-nav > [data-nav]').forEach((a) => a.classList.toggle('is-on', Number(a.dataset.nav) === on));
         $$('.pn-scale > i').forEach((g) => { const m = Number(g.dataset.sc); g.classList.toggle('is-on', m === k); g.classList.toggle('is-done', m < k); });
       }
     }, { root: vp, rootMargin: '-38% 0px -61% 0px', threshold: 0 });
@@ -1117,7 +1312,7 @@ export function enhance(site, ctx = {}) {
   if (fine) {
     /* TargetCursor (ReactBits), as a drawing program's selection: four corner brackets glide to the card under the
        pointer (they ride with the page: they live inside it) */
-    const SEL = '.pn-hrow, .pn-tab, .pn-fact, .pn-shot, .pn-stop, .pn-quote, .pn-role, .pn-qa__q, .pn-ask, .pn-pick__o, .pn-ftr__tb, .pn-ftr__list li, .pn-panels, .pn-halls__ph, .pn-meet__ph .pn-ph, .pn-hero__ph .pn-ph, .pn-map';
+    const SEL = '.pn-hrow, .pn-tab, .pn-fact, .pn-shot, .pn-stop, .pn-quote, .pn-role, .pn-qa__q, .pn-ask, .pn-pick__o, .pn-ftr__tb, .pn-ftr__list li, .pn-panels, .pn-halls__ph, .pn-meet__ph .pn-ph, .pn-hero__ph .pn-ph, .pn-map, .pn-hx__ph .pn-ph, .pn-spec, .pn-tbl, .pn-tile, .pn-case, .pn-cinfo, .pn-map2, .pn-notes__l li, .pn-next__pg';
     const sel = $('.pn-sel');
     const scroll = $('.pn-scroll');
     let selOn = null, selT = 0;
@@ -1203,8 +1398,46 @@ export function enhance(site, ctx = {}) {
     }
   }
 
+  /* ---------- Лендінг+'s own pages: each sheet comes in once (the words rise, the lines draw, the photos open) ---------- */
+  if (pg > 0) {
+    for (const sec of $$('[data-pgsec]')) {
+      seen(sec, () => {
+        $$('[data-in]', sec).forEach((el, i) => rise(el, i * 90));
+        $$('.pn-pg__h .pn-wm > span', sec).forEach((w, i) => anim(w, [{ translate: '0 108%' }, { translate: '0 0' }], { duration: 900, delay: 160 + i * 60, easing: 'cubic-bezier(.2,.9,.25,1)' }));
+        $$('.pn-dim__l', sec).forEach((l, i) => anim(l, [{ scale: '0 1' }, { scale: '1 1' }], { duration: 900, delay: 200 + i * 100, easing: DRAW }));
+        $$('.pn-hx__ph .pn-ph, .pn-case .pn-ph', sec).forEach((ph, i) => anim(ph, [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 1100, delay: 150 + i * 120, easing: DRAW }));
+        $$('.pn-tbl__r', sec).forEach((r, i) => anim(r, [{ opacity: 0, translate: '0 0.8cqw' }, { opacity: 1, translate: '0 0' }], { duration: 600, delay: 200 + i * 70 }));
+        $$('.pn-hx .pn-dg__c', sec).forEach((col, k) => anim(col, [{ translate: '-50% 0' }, { translate: '-50% calc(var(--v) * -1.1em)' }], { duration: 1100, delay: 700 + k * 60, easing: 'cubic-bezier(.22,1,.36,1)' }));
+        const pl = $('[data-pgplan]', sec);
+        if (pl) {
+          $$('path[pathLength]', pl).forEach((p) => drawIn(p, 1200, 200 + Number(p.dataset.g || 0) * 220));
+          $$('.pp-fill, .pp-hidden', pl).forEach((p) => anim(p, [{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 1300 + Number(p.dataset.g || 0) * 120, easing: 'linear' }));
+          $$('.pp-t, .pp-tag, .pp-grid, .pp-frame', pl).forEach((p, i) => anim(p, [{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 1500 + (i % 12) * 40, easing: 'linear' }));
+        }
+        $$('.pn-site [pathLength]', sec).forEach((p, i) => drawIn(p, 1200, 300 + i * 80));
+      });
+    }
+    // the shots: the chips show one hall's frames (Усі: all of them)
+    const galEl = $('[data-gal]');
+    if (galEl) {
+      const tiles = $$('.pn-tile', galEl);
+      galEl.addEventListener('click', (ev) => {
+        const chip = ev.target.closest('[data-f]');
+        if (!chip) return;
+        const k = Number(chip.dataset.f);
+        $$('[data-f]', galEl).forEach((x) => x.classList.toggle('is-on', x === chip));
+        tiles.forEach((x) => { x.hidden = k >= 0 && Number(x.dataset.h) !== k; });
+        tiles.filter((x) => !x.hidden).forEach((x, i) => anim(x, [{ opacity: 0, translate: '0 1.6cqw' }, { opacity: 1, translate: '0 0' }], { duration: 600, delay: i * 60, fill: 'none' }));
+      });
+      seen(galEl, () => tiles.forEach((x, i) => anim(x, [{ opacity: 0, translate: '0 2cqw' }, { opacity: 1, translate: '0 0' }], { duration: 800, delay: 260 + i * 70 })));
+    }
+  }
+  // a link from another page: land where it asked (after the frame has put the new page at its top)
+  if (PENDING && PENDING.pg === pg) { const p = PENDING; PENDING = null; later(() => arrive(p), 160); }
+  else PENDING = null;
+
   /* ---------- 3D: the lens on the plan ---------- */
-  if (ctx.three) lensApi = mountLens(site, ctx, { L, plan, still, phone: phoneMQ.matches || !!ctx.phone, vp, dispose, seen: (el, fn) => { if (still) fn(); else seen(el, fn); }, swatch: () => swatch });
+  if (ctx.three && pg === 0) lensApi = mountLens(site, ctx, { L, plan, still, phone: phoneMQ.matches || !!ctx.phone, vp, dispose, seen: (el, fn) => { if (still) fn(); else seen(el, fn); }, swatch: () => swatch });
 }
 
 /* ==========================================================================
