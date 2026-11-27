@@ -395,6 +395,18 @@ export function TitleFx() {
       // (LITE holds no WebGL context: this one is let go at once)
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     });
+    // its context taken back by the browser (27 Nov 2026, an iPhone: Safari under memory pressure): the page's own
+    // letters again, as in LITE, for the rest of the visit (a lost canvas left over them showed as a dark sheet)
+    let lost = false;
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      lost = true;
+      live = false;
+      run();
+      canvas.classList.remove("is-live");
+      host.classList.remove("is-fx");
+    };
+    canvas.addEventListener("webglcontextlost", onLost);
 
     // after the words' entrance (every word's animation finished) and with the faces in: the plain letters, then the
     // page's hide. Awaited, not timed: in a tab opened in the background the entrance waits until the tab shows, a timer
@@ -403,12 +415,12 @@ export function TitleFx() {
     let timer = 0;
     let gone = false;
     Promise.all([document.fonts.ready, ...entrance]).catch(() => undefined).then(() => {
-      if (gone) return;
+      if (gone || lost) return;
       timer = window.setTimeout(() => {
         draw();
         render(0);
         requestAnimationFrame(() => {
-          if (gone) return;
+          if (gone || lost) return;
           live = true;
           canvas.classList.add("is-live");
           host.classList.add("is-fx");
@@ -424,6 +436,7 @@ export function TitleFx() {
       clearTimeout(timer);
       stopCover();
       stopLite();
+      canvas.removeEventListener("webglcontextlost", onLost);
       io.disconnect();
       ro.disconnect();
       removeEventListener("pointermove", onPointer);

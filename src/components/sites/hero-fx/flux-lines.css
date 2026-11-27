@@ -21,6 +21,13 @@ html.is-lite .flux-lines-container { background: url("/img/sites/flux-d.webp") c
 @media (max-width: 600px) {
   html.is-lite .flux-lines-container { background-image: url("/img/sites/flux-m.webp"); }
 }
+/* (27 Nov 2026) the same where the browser took the canvas' graphics context back (Safari under memory pressure; a lost
+   canvas can show as a flat sheet): FluxLines marks its box .is-lost */
+.flux-lines-container.is-lost .flux-lines-canvas { display: none; }
+.flux-lines-container.is-lost { background: url("/img/sites/flux-d.webp") center / cover no-repeat; }
+@media (max-width: 600px) {
+  .flux-lines-container.is-lost { background-image: url("/img/sites/flux-m.webp"); }
+}
 
 /* in the hero: the first screen, under the words and the stone, fading out towards the sample site below, so the
    canvas never draws what nobody sees. The fade is a still black gradient laid over the canvas (a mask on a canvas

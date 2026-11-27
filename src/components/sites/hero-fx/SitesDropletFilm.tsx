@@ -9,11 +9,13 @@ import { useEffect, useRef } from "react";
 import { playAlphaFilm } from "@/components/fx/alpha-film/alpha-film";
 import { watchCover } from "./hero-cover";
 
-export function SitesDropletFilm({ host, src, onFail }: { host: HTMLElement; src: string; onFail: () => void }) {
+export function SitesDropletFilm({ host, src, onFail, onLost }: { host: HTMLElement; src: string; onFail: () => void; onLost?: () => void }) {
   const failRef = useRef(onFail);
+  const lostRef = useRef(onLost);
   useEffect(() => {
     failRef.current = onFail;
-  }, [onFail]);
+    lostRef.current = onLost;
+  }, [onFail, onLost]);
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
@@ -31,10 +33,25 @@ export function SitesDropletFilm({ host, src, onFail }: { host: HTMLElement; src
       onShown: () => host.classList.add("is-live"),
       onFail: () => failRef.current(),
     });
-    return () => {
+    // its context taken back by the browser (27 Nov 2026, an iPhone: Safari under memory pressure): the still instead
+    // (a lost canvas can show as a flat dark sheet)
+    let ended = false;
+    const end = () => {
+      if (ended) return;
+      ended = true;
       stop();
       canvas.remove();
       host.classList.remove("is-live");
+    };
+    const onCtxLost = (e: Event) => {
+      e.preventDefault();
+      end();
+      lostRef.current?.();
+    };
+    canvas.addEventListener("webglcontextlost", onCtxLost);
+    return () => {
+      canvas.removeEventListener("webglcontextlost", onCtxLost);
+      end();
     };
   }, [host, src]);
 

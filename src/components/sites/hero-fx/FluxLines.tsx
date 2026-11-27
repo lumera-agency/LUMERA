@@ -368,6 +368,8 @@ export default function FluxLines({
     let time = 0;
     let reveal = settingsRef.current.intro && !reduce ? 0 : 1;
     let raf = 0;
+    // (27 Nov 2026) its context taken back by the browser: no more frames, the still picture instead (flux-lines.css)
+    let lost = false;
     let last = 0;
     let visible = true;
 
@@ -408,7 +410,7 @@ export default function FluxLines({
 
     const frame = (now: number) => {
       raf = 0;
-      if (!visible || document.hidden) return;
+      if (lost || !visible || document.hidden) return;
       const s = settingsRef.current;
       // (this page) a frame cap: skip this frame if the last one was drawn less than 1/fps ago
       if (s.fps && last && now - last < 1000 / s.fps - 2) {
@@ -527,8 +529,18 @@ export default function FluxLines({
       wake();
     };
 
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      lost = true;
+      cancelAnimationFrame(raf);
+      raf = 0;
+      container.classList.add("is-lost");
+    };
+    canvas.addEventListener("webglcontextlost", onLost);
+
     return () => {
       cancelAnimationFrame(raf);
+      canvas.removeEventListener("webglcontextlost", onLost);
       wakeRef.current = null;
       resizeObserver.disconnect();
       intersection.disconnect();

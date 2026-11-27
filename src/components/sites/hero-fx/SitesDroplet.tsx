@@ -11,8 +11,24 @@ import DropletScene from "@/components/three/droplet/DropletScene";
 /** The first screen counts as covered once less than this much of it shows under the topbar (px). */
 const COVER_EDGE = 20;
 
-export default function SitesDroplet({ host }: { host: HTMLElement }) {
+export default function SitesDroplet({ host, onLost }: { host: HTMLElement; onLost?: () => void }) {
   const box = useRef<HTMLDivElement>(null);
+  const lostRef = useRef(onLost);
+  useEffect(() => {
+    lostRef.current = onLost;
+  }, [onLost]);
+  // its context taken back by the browser (27 Nov 2026: Safari under memory pressure): the still instead (the event
+  // is caught on its box: it does not bubble, the capture still reaches the box)
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const onCtxLost = () => {
+      host.classList.remove("is-live");
+      lostRef.current?.();
+    };
+    el.addEventListener("webglcontextlost", onCtxLost, true);
+    return () => el.removeEventListener("webglcontextlost", onCtxLost, true);
+  }, [host]);
   const [visible, setVisible] = useState(false);
   const [interactive] = useState(() => matchMedia("(hover: hover) and (pointer: fine)").matches);
   const [awake, setAwake] = useState(false);
