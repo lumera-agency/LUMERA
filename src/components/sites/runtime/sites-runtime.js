@@ -137,7 +137,6 @@ async function boot() {
   strings = s?.[lang()] ?? null;
   fillFacts();
   initPicks();
-  initFaq();
   initSticky();
   initToTop();
   initCover();
@@ -306,24 +305,8 @@ function goToForm(kb = false) {
 }
 const byKeys = (e) => e?.detail === 0;
 
-/* ---------- 5 · questions: the main page's FAQ (FaqList animates the answers); four show, the row «Показати інші
-   питання» shows the rest (the owner, 27 Nov 2026: «сократить до 4 вопросов»): they come in one after another, the
-   focus goes to the fifth (the row goes with the tap) ---------- */
-function initFaq() {
-  const sec = $('#faq');
-  const more = sec && $('[data-faq-more]', sec);
-  more?.addEventListener('click', () => {
-    sec.classList.add('is-all');
-    more.setAttribute('aria-expanded', 'true');
-    const rest = $$('.faq__item--more', sec);
-    if (motion) rest.forEach((item, i) => slideIn(item, Math.min(i, 6) * 45, { distance: 14 }));
-    rest[0]?.querySelector('summary')?.focus({ preventScroll: true });
-  });
-  // (the phone audit, 15 Oct: the prices are on screen four times before the questions) on a phone the four start
-  // closed, so the block is four lines and the row. «Ви гарантуєте заявки?», open here since that audit, now waits
-  // behind the row
-  if (phoneMQ.matches) $$('[data-faq] .faq__item').forEach((item) => { item.open = false; });
-}
+/* ---------- 5 · questions: FaqList (components/sections/faq) animates the answers, folds the list after the fourth
+   (the row «Показати інші питання») and starts it closed on phones; nothing here waits for this script ---------- */
 
 // the main page's button back up (BackToTop) steps aside from the bars in its corner, checking on scroll: a bar that
 // comes or goes between two scroll events tells it

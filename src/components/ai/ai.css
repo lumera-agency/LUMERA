@@ -148,7 +148,8 @@ html:not(.motion) .ai-replay { display: none; }
 
   .faq-wrap,
   .contact { row-gap: 1.75rem; }
-  .faq__item summary { padding: 1rem 0; }
+  .faq__item summary,
+  .faq__fold { padding: 1rem 0; }
   /* phones: fewer words: the route's footnote goes */
   #how .ai-foot { display: none; }
 
